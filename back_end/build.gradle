@@ -15,7 +15,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    configureEach {
+    all {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 }
