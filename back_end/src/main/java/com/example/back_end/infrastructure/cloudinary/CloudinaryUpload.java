@@ -1,6 +1,5 @@
 package com.example.back_end.infrastructure.cloudinary;
 
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -18,7 +16,6 @@ import java.util.Map;
 @Component
 @Log4j2
 public class CloudinaryUpload {
-
 
     @Autowired
     private Cloudinary cloudinaryConfig;

@@ -1,6 +1,5 @@
 package com.example.back_end.core.common;
 
-
 import lombok.Builder;
 import lombok.Getter;
 

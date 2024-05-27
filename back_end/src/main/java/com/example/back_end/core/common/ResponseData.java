@@ -1,6 +1,5 @@
 package com.example.back_end.core.common;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
