@@ -1,6 +1,5 @@
 package com.example.back_end.infrastructure.exception;
 
-
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,28 +42,28 @@ public class GlobalExceptionHandler {
              }
             """))})})
     public ErrorResponse handleValidationException(Exception e, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(new Date());
-        errorResponse.setStatus(BAD_REQUEST.value());
-        errorResponse.setPath(request.getDescription(false).replace("uri=", ""));
+
+        ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""));
+
         String message = e.getMessage();
+
         if (e instanceof MethodArgumentNotValidException) {
             int start = message.lastIndexOf("[") + 1;
             int end = message.lastIndexOf("]") - 1;
             message = message.substring(start, end);
-            errorResponse.setError("Invalid Payload");
-            errorResponse.setMessage(message);
+            builder.error("Invalid Payload").message(message);
         } else if (e instanceof MissingServletRequestParameterException) {
-            errorResponse.setError("Invalid Parameter");
-            errorResponse.setMessage(message);
+            builder.error("Invalid Parameter").message(message);
         } else if (e instanceof ConstraintViolationException) {
-            errorResponse.setError("Invalid Parameter");
-            errorResponse.setMessage(message.substring(message.indexOf(" ") + 1));
+            builder.error("Invalid Parameter").message(message.substring(message.indexOf(" ") + 1));
         } else {
-            errorResponse.setError("Invalid Data");
-            errorResponse.setMessage(message);
+            builder.error("Invalid Data").message(message);
         }
-        return errorResponse;
+
+        return builder.build();
     }
 
     /**
@@ -86,14 +85,14 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(new Date());
-        errorResponse.setPath(request.getDescription(false).replace("uri=", ""));
-        errorResponse.setStatus(NOT_FOUND.value());
-        errorResponse.setError(NOT_FOUND.getReasonPhrase());
-        errorResponse.setMessage(e.getMessage());
 
-        return errorResponse;
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(NOT_FOUND.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(NOT_FOUND.getReasonPhrase())
+                .message(e.getMessage())
+                .build();
     }
 
     /**
@@ -115,14 +114,14 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleDuplicateKeyException(InvalidDataException e, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(new Date());
-        errorResponse.setPath(request.getDescription(false).replace("uri=", ""));
-        errorResponse.setStatus(CONFLICT.value());
-        errorResponse.setError(CONFLICT.getReasonPhrase());
-        errorResponse.setMessage(e.getMessage());
 
-        return errorResponse;
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(CONFLICT.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(CONFLICT.getReasonPhrase())
+                .message(e.getMessage())
+                .build();
     }
 
     /**
@@ -144,13 +143,13 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleException(Exception e, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(new Date());
-        errorResponse.setPath(request.getDescription(false).replace("uri=", ""));
-        errorResponse.setStatus(INTERNAL_SERVER_ERROR.value());
-        errorResponse.setError(INTERNAL_SERVER_ERROR.getReasonPhrase());
-        errorResponse.setMessage(e.getMessage());
 
-        return errorResponse;
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(INTERNAL_SERVER_ERROR.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .message(e.getMessage())
+                .build();
     }
 }
