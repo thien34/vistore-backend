@@ -40,6 +40,7 @@ public class CloudinaryUpload {
             }
 
             return uploadResult.get("url").toString();
+
         } catch (Exception e) {
             log.error("An error occurred during file upload", e);
             throw new RuntimeException(e);
