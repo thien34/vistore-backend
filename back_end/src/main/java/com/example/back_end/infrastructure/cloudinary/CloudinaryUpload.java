@@ -54,5 +54,4 @@ public class CloudinaryUpload {
         fos.close();
         return convFile;
     }
-
 }
