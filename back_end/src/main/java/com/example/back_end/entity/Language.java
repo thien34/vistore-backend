@@ -31,8 +31,8 @@ public class Language {
     @Column(name = "name", nullable = true, length = 255)
     private String name;
 
-    @Column(name = "_seo_code", nullable = true, length = 255)
-    private String seoCode;
+    @Column(name = "unique_seo_code", nullable = true, length = 255)
+    private String uniqueSeoCode;
 
     @Column(name = "flag_image_file_name", nullable = true, length = 255)
     private String flagImageFileName;
