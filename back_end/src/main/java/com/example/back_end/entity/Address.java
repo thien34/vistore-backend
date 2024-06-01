@@ -44,8 +44,8 @@ public class Address {
     @Column(name = "city", nullable = true, length = 255)
     private String city;
 
-    @Column(name = "address", nullable = true, length = 255)
-    private String address;
+    @Column(name = "address_name", nullable = true, length = 255)
+    private String addressName;
 
     @Column(name = "phone_number", nullable = true, length = 255)
     private String phoneNumber;

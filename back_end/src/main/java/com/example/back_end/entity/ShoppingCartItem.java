@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.ShoppingCartType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,7 +42,7 @@ public class ShoppingCartItem {
     private Store store;
 
     @Column(name = "shopping_cart_type_id", nullable = true)
-    private Integer shoppingCartTypeId;
+    private ShoppingCartType shoppingCartType;
 
     @Column(name = "attribute_json", nullable = true, length = 255)
     private String attributeJson;

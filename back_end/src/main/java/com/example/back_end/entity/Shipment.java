@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +31,9 @@ public class Shipment {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "order_id", nullable = true)
-    private Integer orderId;
+    @ManyToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
+    private Order order;
 
     @Column(name = "tracking_number", nullable = true, length = 255)
     private String trackingNumber;

@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,17 +28,20 @@ public class ReturnRequest {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "customer_id", nullable = true)
-    private Integer customerId;
+    @ManyToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private Customer customer;
 
-    @Column(name = "order_item_id", nullable = true)
-    private Integer orderItemId;
+    @ManyToOne
+    @JoinColumn(name = "order_item_id", referencedColumnName = "id")
+    private OrderItem orderItem;
 
     @Column(name = "upload_file_id", nullable = true)
     private Integer uploadFileId;
 
-    @Column(name = "store_id", nullable = true)
-    private Integer storeId;
+    @ManyToOne
+    @JoinColumn(name = "store_id", referencedColumnName = "id")
+    private Store storeId;
 
     @Column(name = "return_request_status_id", nullable = true)
     private Integer returnRequestStatusId;

@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.AttributeControlType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,11 +18,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "product_product_attribute_mapping", schema = "public", catalog = "store_db")
 public class ProductProductAttributeMapping {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -42,7 +44,7 @@ public class ProductProductAttributeMapping {
     private Boolean isRequired;
 
     @Column(name = "attribute_control_type_id", nullable = true)
-    private Integer attributeControlTypeId;
+    private AttributeControlType attributeControlType;
 
     @Column(name = "display_order", nullable = true)
     private Integer displayOrder;

@@ -1,5 +1,8 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.OrderStatusType;
+import com.example.back_end.infrastructure.constant.PaymentStatusType;
+import com.example.back_end.infrastructure.constant.ShippingStatusType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +19,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -53,19 +57,19 @@ public class Order {
     private Store store;
 
     @Column(name = "order_guid", nullable = true)
-    private Object orderGuid;
+    private String orderGuid;
 
     @Column(name = "pickup_in_store", nullable = true)
     private Boolean pickupInStore;
 
     @Column(name = "order_status_id", nullable = true)
-    private Integer orderStatusId;
+    private OrderStatusType orderStatus;
 
     @Column(name = "shipping_status_id", nullable = true)
-    private Integer shippingStatusId;
+    private ShippingStatusType shippingStatus;
 
     @Column(name = "payment_status_id", nullable = true)
-    private Integer paymentStatusId;
+    private PaymentStatusType paymentStatus;
 
     @ManyToOne
     @JoinColumn(name = "payment_method_id", nullable = true)

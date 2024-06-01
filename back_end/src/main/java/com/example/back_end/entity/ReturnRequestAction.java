@@ -19,7 +19,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "return_request_action", schema = "public", catalog = "store_db")
-public class ReturnRequestAction {
+public class ReturnRequestAction extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

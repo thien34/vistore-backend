@@ -1,5 +1,7 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.DiscountLimitationType;
+import com.example.back_end.infrastructure.constant.DiscountType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,10 +33,10 @@ public class Discount {
     private Long id;
 
     @Column(name = "discount_type_id", nullable = true)
-    private Integer discountTypeId;
+    private DiscountType discountType;
 
     @Column(name = "discount_limitation_id", nullable = true)
-    private Integer discountLimitationId;
+    private DiscountLimitationType discountLimitation;
 
     @Column(name = "name", nullable = true, length = 255)
     private String name;

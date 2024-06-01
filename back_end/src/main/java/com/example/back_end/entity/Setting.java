@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +27,9 @@ public class Setting {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @ManyToOne
     @Column(name = "store_id", nullable = true)
-    private Integer storeId;
+    private Store store;
 
     @Column(name = "name", nullable = true, length = 255)
     private String name;

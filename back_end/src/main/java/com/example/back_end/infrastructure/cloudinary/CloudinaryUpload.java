@@ -12,22 +12,24 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 @Log4j2
 public class CloudinaryUpload {
 
-    @Autowired
-    private Cloudinary cloudinaryConfig;
+    private final Cloudinary cloudinaryConfig;
 
-    public static void main(String[] args) {
+    @Autowired
+    public CloudinaryUpload(Cloudinary cloudinaryConfig) {
+        this.cloudinaryConfig = cloudinaryConfig;
     }
 
     public String uploadFile(MultipartFile gif, CloudinaryTypeFolder folderName) {
         try {
             File uploadedFile = convertMultiPartToFile(gif);
 
-            Map<String, Object> uploadParams = ObjectUtils.asMap("folder", folderName.toString());
+            Map uploadParams = ObjectUtils.asMap("folder", folderName.toString());
 
             Map uploadResult = cloudinaryConfig.uploader().upload(uploadedFile, uploadParams);
 
@@ -48,7 +50,7 @@ public class CloudinaryUpload {
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
+        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(file.getBytes());
         fos.close();

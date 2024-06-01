@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.RoundingType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +31,7 @@ public class Currency {
     private Long id;
 
     @Column(name = "rounding_type_id", nullable = true)
-    private Integer roundingTypeId;
+    private RoundingType roundingType;
 
     @Column(name = "name", nullable = true, length = 255)
     private String name;

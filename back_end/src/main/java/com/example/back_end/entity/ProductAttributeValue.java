@@ -58,7 +58,8 @@ public class ProductAttributeValue {
     @Column(name = "display_order", nullable = true)
     private Integer displayOrder;
 
-    @Column(name = "picture_id", nullable = true)
-    private Integer pictureId;
+    @ManyToOne
+    @JoinColumn(name = "picture_id", referencedColumnName = "id", nullable = true)
+    private Picture picture;
 
 }

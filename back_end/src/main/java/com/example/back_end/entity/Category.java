@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +35,11 @@ public class Category {
     private String description;
 
     @Column(name = "parent_category_id", nullable = true)
-    private Integer parentCategoryId;
+    private Long parentCategoryId;
 
-    @Column(name = "picture_id", nullable = true)
-    private Integer pictureId;
+    @ManyToOne
+    @JoinColumn(name = "picture_id", referencedColumnName = "id")
+    private Picture picture;
 
     @Column(name = "show_on_home_page", nullable = true)
     private Boolean showOnHomePage;

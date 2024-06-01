@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.GenderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -70,7 +71,7 @@ public class Customer {
     private String lastName;
 
     @Column(name = "gender", nullable = true)
-    private Boolean gender;
+    private GenderType gender;
 
     @Column(name = "phone", nullable = true, length = 255)
     private String phone;
