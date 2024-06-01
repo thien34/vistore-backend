@@ -19,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "customer_customer_role_mapping", schema = "public", catalog = "datn")
-public class CustomerCustomerRoleMappingEntity {
+public class CustomerCustomerRoleMappingEntity { 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
