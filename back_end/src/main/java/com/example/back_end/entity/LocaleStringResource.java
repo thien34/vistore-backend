@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,27 +14,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "discount_applied_to_manufacturers", schema = "public", catalog = "store_db")
-public class DiscountAppliedToManufacturers {
-
+@Table(name = "locale_string_resource")
+public class LocaleStringResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "discount_id", nullable = true)
-    private Discount discount;
+    @Column(name = "resource_name", length = Integer.MAX_VALUE)
+    private String resourceName;
 
-    @ManyToOne
-    @JoinColumn(name = "manufacturer_id", nullable = true)
-    private Manufacturer manufacturer;
+    @Column(name = "resource_value", length = Integer.MAX_VALUE)
+    private String resourceValue;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "language_id")
+    private Language language;
 
 }

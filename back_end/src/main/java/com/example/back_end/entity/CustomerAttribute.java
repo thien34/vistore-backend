@@ -3,6 +3,7 @@ package com.example.back_end.entity;
 import com.example.back_end.infrastructure.constant.AttributeControlType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,28 +16,28 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "customer_attribute", schema = "public", catalog = "store_db")
-public class CustomerAttribute {
-
+@Table(name = "customer_attribute")
+public class CustomerAttribute extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "is_required", nullable = true)
+    @Column(name = "is_required")
     private Boolean isRequired;
 
-    @Column(name = "attribute_control_type_id", nullable = true)
-    private AttributeControlType attributeControlType;
+    @Enumerated
+    @Column(name = "attribute_control_type_id")
+    private AttributeControlType attributeControlTypeId;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
 }

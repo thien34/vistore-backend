@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,29 +14,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "customer_password", schema = "public", catalog = "store_db")
-public class CustomerPassword {
-
+@Table(name = "customer_password")
+public class CustomerPassword extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "password", nullable = true, length = 255)
+    @Column(name = "password", length = Integer.MAX_VALUE)
     private String password;
 
-    @Column(name = "password_salt", nullable = true, length = 255)
+    @Column(name = "password_salt", length = Integer.MAX_VALUE)
     private String passwordSalt;
 
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,26 +14,24 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "setting", schema = "public", catalog = "store_db")
-public class Setting {
-
+@Table(name = "setting")
+public class Setting extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @Column(name = "store_id", nullable = true)
-    private Store store;
+    @Column(name = "store_id")
+    private Integer storeId;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "value", nullable = true, length = 255)
+    @Column(name = "value", length = Integer.MAX_VALUE)
     private String value;
 
 }

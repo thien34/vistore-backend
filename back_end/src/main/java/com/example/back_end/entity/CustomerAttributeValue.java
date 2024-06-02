@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,31 +14,34 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "customer_attribute_value", schema = "public", catalog = "store_db")
-public class CustomerAttributeValue {
-
+@Table(name = "customer_attribute_value")
+public class CustomerAttributeValue extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
-    @ManyToOne
-    @JoinColumn(name = "customer_attribute_id", nullable = true)
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "customer_attribute_id")
     private CustomerAttribute customerAttribute;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "is_pre_selected", nullable = true)
+    @Column(name = "is_pre_selected")
     private Boolean isPreSelected;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
 }

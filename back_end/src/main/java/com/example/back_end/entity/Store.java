@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,47 +14,45 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "store", schema = "public", catalog = "store_db")
-public class Store {
-
+@Table(name = "store")
+public class Store extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "url", nullable = true, length = 255)
+    @Column(name = "url", length = Integer.MAX_VALUE)
     private String url;
 
-    @Column(name = "hosts", nullable = true, length = 255)
+    @Column(name = "hosts", length = Integer.MAX_VALUE)
     private String hosts;
 
-    @Column(name = "company_name", nullable = true, length = 255)
+    @Column(name = "company_name", length = Integer.MAX_VALUE)
     private String companyName;
 
-    @Column(name = "company_address", nullable = true, length = 255)
+    @Column(name = "company_address", length = Integer.MAX_VALUE)
     private String companyAddress;
 
-    @Column(name = "company_phone", nullable = true, length = 255)
+    @Column(name = "company_phone", length = Integer.MAX_VALUE)
     private String companyPhone;
 
-    @Column(name = "ssl_enabled", nullable = true)
+    @Column(name = "ssl_enabled")
     private Boolean sslEnabled;
 
-    @ManyToOne
-    @JoinColumn(name = "default_language_id", nullable = true)
-    private Language defaultLanguage;
+    @Column(name = "default_language_id")
+    private Integer defaultLanguageId;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
-    @Column(name = "deleted", nullable = true)
+    @Column(name = "deleted")
     private Boolean deleted;
 
 }

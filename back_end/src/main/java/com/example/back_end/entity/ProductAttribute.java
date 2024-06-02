@@ -14,22 +14,21 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Entity
-@Table(name = "product_attribute", schema = "public", catalog = "store_db")
-public class ProductAttribute {
-
+@Table(name = "product_attribute")
+public class ProductAttribute extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "description", nullable = true, length = 255)
+    @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
 }

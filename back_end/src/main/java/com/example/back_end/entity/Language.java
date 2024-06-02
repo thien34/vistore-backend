@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,35 +14,33 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "language", schema = "public", catalog = "store_db")
-public class Language {
-
+@Table(name = "language")
+public class Language extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "unique_seo_code", nullable = true, length = 255)
+    @Column(name = "unique_seo_code", length = Integer.MAX_VALUE)
     private String uniqueSeoCode;
 
-    @Column(name = "flag_image_file_name", nullable = true, length = 255)
+    @Column(name = "flag_image_file_name", length = Integer.MAX_VALUE)
     private String flagImageFileName;
 
-    @ManyToOne
-    @JoinColumn(name = "default_currency_id", nullable = true)
-    private Currency defaultCurrency;
+    @Column(name = "default_currency_id")
+    private Integer defaultCurrencyId;
 
-    @Column(name = "published", nullable = true)
+    @Column(name = "published")
     private Boolean published;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
 }

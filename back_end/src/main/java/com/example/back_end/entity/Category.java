@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,50 +14,48 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Entity
-@Table(name = "category", schema = "public", catalog = "store_db")
-public class Category {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "category")
+public class Category extends Auditable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "description", nullable = true, length = 255)
+    @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @Column(name = "parent_category_id", nullable = true)
-    private Long parentCategoryId;
+    @Column(name = "parent_category_id")
+    private Integer parentCategoryId;
 
-    @ManyToOne
-    @JoinColumn(name = "picture_id", referencedColumnName = "id")
-    private Picture picture;
+    @Column(name = "picture_id")
+    private Integer pictureId;
 
-    @Column(name = "show_on_home_page", nullable = true)
+    @Column(name = "show_on_home_page")
     private Boolean showOnHomePage;
 
-    @Column(name = "include_in_top_menu", nullable = true)
+    @Column(name = "include_in_top_menu")
     private Boolean includeInTopMenu;
 
-    @Column(name = "page_size", nullable = true)
+    @Column(name = "page_size")
     private Integer pageSize;
 
-    @Column(name = "published", nullable = true)
+    @Column(name = "published")
     private Boolean published;
 
-    @Column(name = "deleted", nullable = true)
+    @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
-    @Column(name = "price_range_filtering", nullable = true)
+    @Column(name = "price_range_filtering")
     private Boolean priceRangeFiltering;
 
 }

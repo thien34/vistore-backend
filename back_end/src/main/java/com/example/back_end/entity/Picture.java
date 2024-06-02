@@ -14,37 +14,36 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "picture", schema = "public", catalog = "store_db")
-public class Picture {
-
+@Table(name = "picture")
+public class Picture extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "mime_type", nullable = true, length = 255)
+    @Column(name = "mime_type", length = Integer.MAX_VALUE)
     private String mimeType;
 
-    @Column(name = "link_img", nullable = true, length = 255)
+    @Column(name = "link_img", length = Integer.MAX_VALUE)
     private String linkImg;
 
-    @Column(name = "seo_file_name", nullable = true, length = 255)
+    @Column(name = "seo_file_name", length = Integer.MAX_VALUE)
     private String seoFileName;
 
-    @Column(name = "alt_attribute", nullable = true, length = 255)
+    @Column(name = "alt_attribute", length = Integer.MAX_VALUE)
     private String altAttribute;
 
-    @Column(name = "title_attribute", nullable = true, length = 255)
+    @Column(name = "title_attribute", length = Integer.MAX_VALUE)
     private String titleAttribute;
 
-    @Column(name = "is_new", nullable = true)
+    @Column(name = "is_new")
     private Boolean isNew;
 
-    @Column(name = "virtual_path", nullable = true, length = 255)
+    @Column(name = "virtual_path", length = Integer.MAX_VALUE)
     private String virtualPath;
 
 }

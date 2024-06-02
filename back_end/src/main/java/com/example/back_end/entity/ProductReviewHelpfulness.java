@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,30 +14,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "product_review_helpfulness", schema = "public", catalog = "store_db")
-public class ProductReviewHelpfulness {
-
+@Table(name = "product_review_helpfulness")
+public class ProductReviewHelpfulness extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_review_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_review_id")
     private ProductReview productReview;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = true)
-    private Customer customer;
+    @Column(name = "customer_id")
+    private Integer customerId;
 
-    @Column(name = "was_helpful", nullable = true)
+    @Column(name = "was_helpful")
     private Boolean wasHelpful;
 
 }

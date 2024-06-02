@@ -14,19 +14,18 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Entity
-@Table(name = "video", schema = "public", catalog = "store_db")
-public class Video {
-
+@Table(name = "video")
+public class Video extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "video_url", nullable = true, length = 255)
+    @Column(name = "video_url", length = Integer.MAX_VALUE)
     private String videoUrl;
 
 }

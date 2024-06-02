@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,30 +24,22 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "product_specification_attribute_mapping")
-public class ProductSpecificationAttributeMapping extends Auditable {
+@Table(name = "discount_applied_to_manufacturers")
+public class DiscountAppliedToManufacturer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "discount_applied_to_manufacturers_id_gen")
+    @SequenceGenerator(name = "discount_applied_to_manufacturers_id_gen", sequenceName = "discount_applied_to_manufacturers_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "specification_attribute_option_id")
-    private SpecificationAttributeOption specificationAttributeOption;
-
-    @Column(name = "custom_value", length = Integer.MAX_VALUE)
-    private String customValue;
-
-    @Column(name = "show_on_product_page")
-    private Boolean showOnProductPage;
-
-    @Column(name = "display_order")
-    private Integer displayOrder;
+    @JoinColumn(name = "manufacturer_id")
+    private Manufacturer manufacturer;
 
 }

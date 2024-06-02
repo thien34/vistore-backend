@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,30 +14,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "shipment_item", schema = "public", catalog = "store_db")
-public class ShipmentItem {
-
+@Table(name = "shipment_item")
+public class ShipmentItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "shipment_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "shipment_id")
     private Shipment shipment;
 
-    @ManyToOne
-    @JoinColumn(name = "order_item_id", referencedColumnName = "id", nullable = false)
-    private OrderItem orderItem;
+    @Column(name = "order_item_id")
+    private Integer orderItemId;
 
-    @Column(name = "quantity", nullable = true)
+    @Column(name = "quantity")
     private Integer quantity;
 
 }

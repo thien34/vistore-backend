@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,44 +14,46 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "shipment", schema = "public", catalog = "store_db")
-public class Shipment {
-
+@Table(name = "shipment")
+public class Shipment extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "order_id")
     private Order order;
 
-    @Column(name = "tracking_number", nullable = true, length = 255)
+    @Column(name = "tracking_number", length = Integer.MAX_VALUE)
     private String trackingNumber;
 
-    @Column(name = "total_weight", nullable = true, precision = 2)
+    @Column(name = "total_weight", precision = 18, scale = 2)
     private BigDecimal totalWeight;
 
-    @Column(name = "shipped_date_utc", nullable = true)
-    private LocalDateTime shippedDateUtc;
+    @Column(name = "shipped_date_utc")
+    private Instant shippedDateUtc;
 
-    @Column(name = "delivery_date_utc", nullable = true)
-    private LocalDateTime deliveryDateUtc;
+    @Column(name = "delivery_date_utc")
+    private Instant deliveryDateUtc;
 
-    @Column(name = "ready_for_pickup_date_utc", nullable = true)
-    private LocalDateTime readyForPickupDateUtc;
+    @Column(name = "ready_for_pickup_date_utc")
+    private Instant readyForPickupDateUtc;
 
-    @Column(name = "admin_comment", nullable = true, length = 255)
+    @Column(name = "admin_comment", length = Integer.MAX_VALUE)
     private String adminComment;
 
 }

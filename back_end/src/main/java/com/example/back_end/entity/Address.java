@@ -14,43 +14,42 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "address", schema = "public", catalog = "store_db")
-public class Address {
-
+@Table(name = "address")
+public class Address extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "first_name", nullable = true, length = 255)
+    @Column(name = "first_name", length = Integer.MAX_VALUE)
     private String firstName;
 
-    @Column(name = "last_name", nullable = true, length = 255)
+    @Column(name = "last_name", length = Integer.MAX_VALUE)
     private String lastName;
 
-    @Column(name = "email", nullable = true, length = 255)
+    @Column(name = "email", length = Integer.MAX_VALUE)
     private String email;
 
-    @Column(name = "company", nullable = true, length = 255)
+    @Column(name = "company", length = Integer.MAX_VALUE)
     private String company;
 
-    @Column(name = "county", nullable = true, length = 255)
+    @Column(name = "county", length = Integer.MAX_VALUE)
     private String county;
 
-    @Column(name = "city", nullable = true, length = 255)
+    @Column(name = "city", length = Integer.MAX_VALUE)
     private String city;
 
-    @Column(name = "address_name", nullable = true, length = 255)
+    @Column(name = "address_name", length = Integer.MAX_VALUE)
     private String addressName;
 
-    @Column(name = "phone_number", nullable = true, length = 255)
+    @Column(name = "phone_number", length = Integer.MAX_VALUE)
     private String phoneNumber;
 
-    @Column(name = "custom_attributes", nullable = true, length = 255)
+    @Column(name = "custom_attributes", length = Integer.MAX_VALUE)
     private String customAttributes;
 
 }

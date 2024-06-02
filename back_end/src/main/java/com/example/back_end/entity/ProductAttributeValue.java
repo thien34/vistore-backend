@@ -2,6 +2,7 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,53 +14,54 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "product_attribute_value", schema = "public", catalog = "store_db")
-public class ProductAttributeValue {
-
+@Table(name = "product_attribute_value")
+public class ProductAttributeValue extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_attribute_mapping_id", nullable = true)
-    private ProductProductAttributeMapping productProductAttributeMapping;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_attribute_mapping_id")
+    private ProductProductAttributeMapping productAttributeMapping;
 
-    @Column(name = "name", nullable = true)
+    @Column(name = "name")
     private Integer name;
 
-    @Column(name = "color_squares_rgb", nullable = true)
+    @Column(name = "color_squares_rgb")
     private Integer colorSquaresRgb;
 
-    @Column(name = "price_adjustment", nullable = true, precision = 2)
+    @Column(name = "price_adjustment", precision = 18, scale = 2)
     private BigDecimal priceAdjustment;
 
-    @Column(name = "price_adjustment_percentage", nullable = true)
+    @Column(name = "price_adjustment_percentage")
     private Boolean priceAdjustmentPercentage;
 
-    @Column(name = "weight_adjustment", nullable = true, precision = 2)
+    @Column(name = "weight_adjustment", precision = 18, scale = 2)
     private BigDecimal weightAdjustment;
 
-    @Column(name = "cost", nullable = true, precision = 2)
+    @Column(name = "cost", precision = 18, scale = 2)
     private BigDecimal cost;
 
-    @Column(name = "is_pre_selected", nullable = true)
+    @Column(name = "is_pre_selected")
     private Boolean isPreSelected;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
-    @ManyToOne
-    @JoinColumn(name = "picture_id", referencedColumnName = "id", nullable = true)
-    private Picture picture;
+    @Column(name = "picture_id")
+    private Integer pictureId;
 
 }

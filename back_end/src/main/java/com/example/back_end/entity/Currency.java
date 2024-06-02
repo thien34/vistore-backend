@@ -3,6 +3,7 @@ package com.example.back_end.entity;
 import com.example.back_end.infrastructure.constant.RoundingType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,40 +16,39 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "currency", schema = "public", catalog = "store_db")
-public class Currency {
-
+@Table(name = "currency")
+public class Currency extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "rounding_type_id", nullable = true)
-    private RoundingType roundingType;
+    @Enumerated
+    @Column(name = "rounding_type_id")
+    private RoundingType roundingTypeId;
 
-    @Column(name = "name", nullable = true, length = 255)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "currency_code", nullable = true, length = 255)
+    @Column(name = "currency_code", length = Integer.MAX_VALUE)
     private String currencyCode;
 
-    @Column(name = "display_locale", nullable = true, length = 255)
+    @Column(name = "display_locale", length = Integer.MAX_VALUE)
     private String displayLocale;
 
-    @Column(name = "rate", nullable = true, precision = 2)
+    @Column(name = "rate", precision = 18, scale = 2)
     private BigDecimal rate;
 
-    @Column(name = "published", nullable = true)
+    @Column(name = "published")
     private Boolean published;
 
-    @Column(name = "display_order", nullable = true)
+    @Column(name = "display_order")
     private Integer displayOrder;
 
 }

@@ -3,6 +3,8 @@ package com.example.back_end.entity;
 import com.example.back_end.infrastructure.constant.ShoppingCartType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,41 +16,43 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
 @Entity
-@Table(name = "shopping_cart_item", schema = "public", catalog = "store_db")
-public class ShoppingCartItem {
-
+@Table(name = "shopping_cart_item")
+public class ShoppingCartItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name = "store_id", nullable = true)
-    private Store store;
+    @Column(name = "store_id")
+    private Integer storeId;
 
-    @Column(name = "shopping_cart_type_id", nullable = true)
-    private ShoppingCartType shoppingCartType;
+    @Enumerated
+    @Column(name = "shopping_cart_type_id")
+    private ShoppingCartType shoppingCartTypeId;
 
-    @Column(name = "attribute_json", nullable = true, length = 255)
+    @Column(name = "attribute_json", length = Integer.MAX_VALUE)
     private String attributeJson;
 
-    @Column(name = "quantity", nullable = true)
+    @Column(name = "quantity")
     private Integer quantity;
-
 
 }
