@@ -29,7 +29,7 @@ public class Discount extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Enumerated
     @Column(name = "discount_type_id")

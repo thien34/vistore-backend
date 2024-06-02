@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,10 +26,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "discount_applied_to_product")
 public class DiscountAppliedToProduct {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "discount_applied_to_product_id_gen")
-    @SequenceGenerator(name = "discount_applied_to_product_id_gen", sequenceName = "discount_applied_to_product_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)

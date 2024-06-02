@@ -23,7 +23,7 @@ public class Address extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "first_name", length = Integer.MAX_VALUE)
     private String firstName;
