@@ -1,4 +1,4 @@
-import Products from '@/components/Products'
+import Products from '@/components/client/Products'
 const itemProduct = {
     id: 1,
     name: 'Samsung Galaxy Watch6 Classic 47mm Black',

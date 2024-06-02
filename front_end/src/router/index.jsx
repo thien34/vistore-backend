@@ -1,24 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
-import LayoutMain from '../layouts/LayoutMain'
-import Home from '@/pages/home'
+import { routersPrivateClient, routersPublicClient } from './client'
+import routesAdmin from './admin'
 
-export const routers = createBrowserRouter([
-    {
-        element: <LayoutMain />,
-        children: [
-            {
-                path: '/',
-                element: <Home />
-            }
-        ]
-    },
-    {
-        element: <LayoutMain />,
-        children: [
-            {
-                path: '/login',
-                element: <Home />
-            }
-        ]
-    }
-])
+export const routersPublic = createBrowserRouter(routersPublicClient)
+export const routersPrivate = createBrowserRouter([...routesAdmin, ...routersPrivateClient])
