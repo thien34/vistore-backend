@@ -1,5 +1,23 @@
+import Banner from '@/components/Banner'
+import SmallerBanners from './SmallerBanners'
+import Categories from './Categories'
+import Products from './Products'
+import DiscountProducts from './DiscountProducts'
+import Banners from './Banners'
+import BannerFoot from './BannerFoot'
+
 function Home() {
-    return <h1 className='text-3xl font-bold underline'>Home</h1>
+    return (
+        <div>
+            <Banner />
+            <SmallerBanners />
+            <Categories />
+            <Products />
+            <Banners />
+            <DiscountProducts />
+            <BannerFoot bg='https://source.unsplash.com/random' />
+        </div>
+    )
 }
 
 export default Home
