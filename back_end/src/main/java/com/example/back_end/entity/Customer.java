@@ -66,7 +66,6 @@ public class Customer extends Auditable {
     private Store registeredInStore;
 
     @Column(name = "customer_guid")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID customerGuid;
 
     @Column(name = "username", length = Integer.MAX_VALUE)

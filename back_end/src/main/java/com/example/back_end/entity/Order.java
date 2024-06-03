@@ -58,7 +58,6 @@ public class Order extends Auditable {
     private Integer storeId;
 
     @Column(name = "order_guid")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID orderGuid;
 
     @Column(name = "pickup_in_store")
