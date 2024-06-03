@@ -23,7 +23,7 @@ public class Picture extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "mime_type", length = Integer.MAX_VALUE)
     private String mimeType;

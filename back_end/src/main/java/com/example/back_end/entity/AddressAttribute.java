@@ -21,11 +21,11 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "address_attribute")
-public class AddressAttribute extends Auditable {
+public class AddressAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;

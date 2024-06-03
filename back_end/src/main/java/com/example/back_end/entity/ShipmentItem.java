@@ -28,15 +28,17 @@ public class ShipmentItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "shipment_id")
     private Shipment shipment;
 
-    @Column(name = "order_item_id")
-    private Integer orderItemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "order_item_id")
+    private OrderItem orderItem;
 
     @Column(name = "quantity")
     private Integer quantity;

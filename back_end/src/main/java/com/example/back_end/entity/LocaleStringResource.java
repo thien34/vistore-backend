@@ -28,7 +28,7 @@ public class LocaleStringResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "resource_name", length = Integer.MAX_VALUE)
     private String resourceName;

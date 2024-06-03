@@ -19,11 +19,11 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "return_request_action")
-public class ReturnRequestAction extends Auditable {
+public class ReturnRequestAction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;

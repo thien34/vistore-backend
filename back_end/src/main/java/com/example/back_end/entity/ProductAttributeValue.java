@@ -30,7 +30,7 @@ public class ProductAttributeValue extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -38,10 +38,10 @@ public class ProductAttributeValue extends Auditable {
     private ProductProductAttributeMapping productAttributeMapping;
 
     @Column(name = "name")
-    private Integer name;
+    private String name;
 
     @Column(name = "color_squares_rgb")
-    private Integer colorSquaresRgb;
+    private String colorSquaresRgb;
 
     @Column(name = "price_adjustment", precision = 18, scale = 2)
     private BigDecimal priceAdjustment;
@@ -61,7 +61,9 @@ public class ProductAttributeValue extends Auditable {
     @Column(name = "display_order")
     private Integer displayOrder;
 
-    @Column(name = "picture_id")
-    private Integer pictureId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "picture_id")
+    private Picture picture;
 
 }

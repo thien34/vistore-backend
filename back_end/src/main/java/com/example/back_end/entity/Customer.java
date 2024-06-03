@@ -1,14 +1,15 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.GenderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,10 +31,9 @@ import java.util.UUID;
 @Table(name = "customer")
 public class Customer extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_id_gen")
-    @SequenceGenerator(name = "customer_id_gen", sequenceName = "payment_method_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
@@ -46,19 +46,24 @@ public class Customer extends Auditable {
     private Language language;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "billing_address_id")
     private Address billingAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "shipping_address_id")
     private Address shippingAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "home_address_id")
     private Address homeAddress;
 
-    @Column(name = "registered_in_store_id")
-    private Integer registeredInStoreId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "registered_in_store_id")
+    private Store registeredInStore;
 
     @Column(name = "customer_guid")
     private UUID customerGuid;
@@ -75,10 +80,11 @@ public class Customer extends Auditable {
     @Column(name = "last_name", length = Integer.MAX_VALUE)
     private String lastName;
 
+    @Enumerated
     @Column(name = "gender")
-    private Boolean gender;
+    private GenderType gender;
 
-    @Column(name = "phone", length = Integer.MAX_VALUE)
+    @Column(name = "phone", length = 15)
     private String phone;
 
     @Column(name = "custom_customer_attribute_json", length = Integer.MAX_VALUE)

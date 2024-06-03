@@ -30,21 +30,25 @@ public class ReturnRequest extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "order_item_id")
-    private Integer orderItemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "order_item_id")
+    private OrderItem orderItem;
 
     @Column(name = "upload_file_id")
     private Integer uploadFileId;
 
-    @Column(name = "store_id")
-    private Integer storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @Enumerated
     @Column(name = "return_request_status_id")
