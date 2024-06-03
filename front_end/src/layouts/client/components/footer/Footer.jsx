@@ -1,5 +1,5 @@
-import Columns from '@/layouts/components/columns'
-import Logo from '@/layouts/components/header/Logo'
+import Columns from '@/layouts/client/components/columns'
+import Logo from '@/layouts/client/components/header/Logo'
 import LogoIcon from '@/assets/logo-light.svg'
 import { Link } from 'react-router-dom'
 

@@ -1,4 +1,4 @@
-import Columns from '@/layouts/components/columns'
+import Columns from '@/layouts/client/components/columns'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import Category from './Category'
 import { Smartphone, Watch, Camera, Headphones, Tv2, Gamepad2, ChevronRight, ChevronLeft } from 'lucide-react'

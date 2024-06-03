@@ -1,4 +1,4 @@
-import Columns from '@/layouts/components/columns'
+import Columns from '@/layouts/client/components/columns'
 import ProductBig from './ProductBig'
 import ProductTop from './ProductTop'
 import ProductButton from './ProductButton'

@@ -1,4 +1,4 @@
-import Banner from '@/components/Banner'
+import Banner from '@/components/client/Banner'
 import SmallerBanners from './SmallerBanners'
 import Categories from './Categories'
 import Products from './Products'

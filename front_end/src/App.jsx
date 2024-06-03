@@ -1,8 +1,11 @@
 import { RouterProvider } from 'react-router-dom'
-import { routers } from './router'
+import { routersPrivate, routersPublic } from './router'
+import useAuth from './hooks/useAuth'
 
 function App() {
-  return <RouterProvider router={routers}></RouterProvider>
+    const { user } = useAuth()
+    const routers = user ? routersPrivate : routersPublic
+    return <RouterProvider router={routers}></RouterProvider>
 }
 
 export default App

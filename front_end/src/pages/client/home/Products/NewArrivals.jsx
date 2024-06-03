@@ -1,5 +1,5 @@
-import Product from '@/components/Product'
-import Columns from '@/layouts/components/columns'
+import Product from '@/components/client/Product'
+import Columns from '@/layouts/client/components/columns'
 import PropTypes from 'prop-types'
 const NewArrivals = ({ products }) => {
     return (

@@ -1,4 +1,4 @@
-import Columns from '@/layouts/components/columns'
+import Columns from '@/layouts/client/components/columns'
 import Banner from './Banner'
 
 const itemProduct = {
