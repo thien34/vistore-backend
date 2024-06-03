@@ -24,11 +24,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @Entity
 @Table(name = "product_specification_attribute_mapping")
-public class ProductSpecificationAttributeMapping extends Auditable {
+public class ProductSpecificationAttributeMapping {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)

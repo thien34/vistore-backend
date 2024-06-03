@@ -28,15 +28,17 @@ public class ProductReviewHelpfulness extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_review_id")
     private ProductReview productReview;
 
-    @Column(name = "customer_id")
-    private Integer customerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @Column(name = "was_helpful")
     private Boolean wasHelpful;

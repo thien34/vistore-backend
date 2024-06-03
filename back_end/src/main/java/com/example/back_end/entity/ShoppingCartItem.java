@@ -26,11 +26,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @Entity
 @Table(name = "shopping_cart_item")
-public class ShoppingCartItem extends Auditable {
+public class ShoppingCartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -42,8 +42,10 @@ public class ShoppingCartItem extends Auditable {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "store_id")
-    private Integer storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @Enumerated
     @Column(name = "shopping_cart_type_id")

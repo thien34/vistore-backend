@@ -28,7 +28,7 @@ public class ProductReview extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -45,8 +45,10 @@ public class ProductReview extends Auditable {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @Column(name = "product_review_parent_id")
-    private Integer productReviewParentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_review_parent_id")
+    private ProductReview productReview;
 
     @Column(name = "is_approved")
     private Boolean isApproved;

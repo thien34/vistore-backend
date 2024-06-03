@@ -28,14 +28,16 @@ public class ProductAttributeCombinationPicture extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_attribute_combination_id")
     private ProductAttributeCombination productAttributeCombination;
 
-    @Column(name = "picture_id")
-    private Integer pictureId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "picture_id")
+    private Picture picture;
 
 }
