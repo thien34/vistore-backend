@@ -58,12 +58,17 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.38.0'
     implementation "org.springframework.boot:spring-boot-starter-log4j2"
+
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
         implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
     }
+
+    implementation "org.mapstruct:mapstruct:1.6.0.Beta1", "org.projectlombok:lombok:1.18.30"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.6.0.Beta1", "org.projectlombok:lombok:1.18.30", "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+
 }
 
 tasks.named('test') {
