@@ -1,14 +1,3 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:5.0.0.4638"
-    }
-}
-
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.0'
@@ -20,7 +9,7 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = JavaLanguageVersion.of(17)
 }
 
 configurations {
@@ -49,30 +38,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'com.cloudinary:cloudinary-http44:1.38.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.38.0'
-    implementation "org.springframework.boot:spring-boot-starter-log4j2"
 
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
-        implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
     }
-
-    implementation "org.mapstruct:mapstruct:1.6.0.Beta1", "org.projectlombok:lombok:1.18.30"
-    annotationProcessor "org.mapstruct:mapstruct-processor:1.6.0.Beta1", "org.projectlombok:lombok:1.18.30", "org.projectlombok:lombok-mapstruct-binding:0.2.0"
-
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-apply plugin: "org.sonarqube"

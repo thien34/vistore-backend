@@ -11,5 +11,4 @@ public interface LocaleStringResourceMapper {
 
     LocaleStringResourceDtoResponse toDto(LocaleStringResource localeStringResource);
 
-
 }

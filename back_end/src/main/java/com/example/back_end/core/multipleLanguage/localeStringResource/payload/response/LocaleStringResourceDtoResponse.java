@@ -1,6 +1,5 @@
 package com.example.back_end.core.multipleLanguage.localeStringResource.payload.response;
 
-
 import lombok.Builder;
 import lombok.Getter;
 

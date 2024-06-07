@@ -48,7 +48,7 @@ public class ProductReview extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_review_parent_id")
-    private ProductReview productReview;
+    private ProductReview productReviewParent;
 
     @Column(name = "is_approved")
     private Boolean isApproved;

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: back_end
+  datasource:
+    url: jdbc:postgresql://localhost:5432/store_db
+    username: postgres
+    password: "123456"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: true
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        format_sql: true
+  sql:
+    init:
+      encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  main:
+    allow-bean-definition-overriding: true
+
+cloudinary:
+  cloud-name: dccuxj8ll
+  api-key: 934946519676845
+  api-secret: JORMLqc5oK1HzEPqS3toNumm5XI

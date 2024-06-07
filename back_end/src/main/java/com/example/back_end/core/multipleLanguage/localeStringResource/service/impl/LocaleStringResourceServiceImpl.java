@@ -1,6 +1,5 @@
 package com.example.back_end.core.multipleLanguage.localeStringResource.service.impl;
 
-
 import com.example.back_end.core.multipleLanguage.localeStringResource.mapper.LocaleStringResourceMapper;
 import com.example.back_end.core.multipleLanguage.localeStringResource.payload.response.LocaleStringResourceDtoResponse;
 import com.example.back_end.core.multipleLanguage.localeStringResource.service.LocaleStringResourceService;
@@ -12,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @Slf4j
@@ -34,6 +31,6 @@ public class LocaleStringResourceServiceImpl implements LocaleStringResourceServ
 
         return localeStringResources.stream()
                 .map(localeStringResourceMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
