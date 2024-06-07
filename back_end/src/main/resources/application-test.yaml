@@ -1,11 +1,13 @@
 spring:
   application:
     name: back_end
+
   datasource:
     url: jdbc:postgresql://localhost:5432/store_db
-    username: postgres
-    password: "123456"
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,17 +17,20 @@ spring:
       hibernate:
         globally_quoted_identifiers: true
         format_sql: true
+
   sql:
     init:
       encoding: UTF-8
+
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
   main:
     allow-bean-definition-overriding: true
 
 cloudinary:
-  cloud-name: dccuxj8ll
-  api-key: 934946519676845
-  api-secret: JORMLqc5oK1HzEPqS3toNumm5XI
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:dccuxj8ll}
+  api-key: ${CLOUDINARY_API_KEY:934946519676845}
+  api-secret: ${CLOUDINARY_API_SECRET:JORMLqc5oK1HzEPqS3toNumm5XI}

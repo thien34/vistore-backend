@@ -46,7 +46,7 @@ public class Address extends Auditable {
     @Column(name = "address_name", length = Integer.MAX_VALUE)
     private String addressName;
 
-    @Column(name = "phone_number", length = Integer.MAX_VALUE)
+    @Column(name = "phone_number", length = 15)
     private String phoneNumber;
 
     @Column(name = "custom_attributes", length = Integer.MAX_VALUE)
