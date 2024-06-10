@@ -1,23 +1,22 @@
 package com.example.back_end.core.admin.product.service.impl;
 
-
 import com.example.back_end.core.admin.product.mapper.ProductTagMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductTagRequestDto;
 import com.example.back_end.core.admin.product.payload.response.ProductTagDtoResponse;
 import com.example.back_end.core.admin.product.service.ProductTagService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Product;
-import com.example.back_end.entity.ProductTag;
 import com.example.back_end.entity.ProductProductTagMapping;
+import com.example.back_end.entity.ProductTag;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.repository.ProductProductTagMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ProductTagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,26 +61,15 @@ public class ProductTagServiceImpl implements ProductTagService {
         Page<ProductTag> productTagPage = productTagRepository.findByNameContaining(name, pageable);
 
         // Map to DTO responses
-        List<ProductTagDtoResponse> productTagDtoResponses = productTagPage
-                .stream()
-                .map(productTagMapper::toDto)
-                .sorted(Comparator.comparing(ProductTagDtoResponse::getId).reversed())
-                .collect(Collectors.toList());
+        List<ProductTagDtoResponse> productTagDtoResponses = productTagPage.stream().map(productTagMapper::toDto).sorted(Comparator.comparing(ProductTagDtoResponse::getId).reversed()).collect(Collectors.toList());
 
         // Build the page response
-        return PageResponse.builder()
-                .page(productTagPage.getNumber())
-                .size(productTagPage.getSize())
-                .total(productTagPage.getTotalPages())
-                .items(productTagDtoResponses)
-                .build();
+        return PageResponse.builder().page(productTagPage.getNumber()).size(productTagPage.getSize()).total(productTagPage.getTotalPages()).items(productTagDtoResponses).build();
     }
-
 
     @Override
     public ProductTagDtoResponse getProductTag(Long id) {
-        ProductTag productTag = productTagRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product tag with id not found: " + id));
+        ProductTag productTag = productTagRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product tag with id not found: " + id));
 
         return productTagMapper.toDto(productTag);
     }
@@ -105,11 +93,8 @@ public class ProductTagServiceImpl implements ProductTagService {
         productTagRepository.deleteAllInBatch(productTags);
     }
 
-
-
     private Product getProduct(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
+        return productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
     }
 
     private ProductTag saveProductTag(ProductTagRequestDto request) {
@@ -117,24 +102,13 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     private void saveProductTagMapping(Product product, ProductTag productTag) {
-        ProductProductTagMapping productTagMapping = ProductProductTagMapping.builder()
-                .product(product)
-                .productTag(productTag)
-                .build();
+        ProductProductTagMapping productTagMapping = ProductProductTagMapping.builder().product(product).productTag(productTag).build();
         productProductTagMappingRepository.save(productTagMapping);
     }
 
     private PageResponse<?> convertToPageResponse(Page<ProductTag> productTagPage, Pageable pageable) {
-        List<ProductTagDtoResponse> response = productTagPage.getContent()
-                .stream()
-                .map(productTagMapper::toDto)
-                .collect(Collectors.toList());
+        List<ProductTagDtoResponse> response = productTagPage.getContent().stream().map(productTagMapper::toDto).collect(Collectors.toList());
 
-        return PageResponse.builder()
-                .page(pageable.getPageNumber())
-                .size(pageable.getPageSize())
-                .total(productTagPage.getTotalPages())
-                .items(response)
-                .build();
+        return PageResponse.builder().page(pageable.getPageNumber()).size(pageable.getPageSize()).total(productTagPage.getTotalPages()).items(response).build();
     }
 }

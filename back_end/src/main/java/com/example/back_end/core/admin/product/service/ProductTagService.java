@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProductTagService {
 
-    void createProductTag(ProductTagRequestDto request );
+    void createProductTag(ProductTagRequestDto request);
 
     void updateProductTag(ProductTagRequestDto request, Long id);
 

@@ -10,7 +10,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -24,11 +30,7 @@ public class ProductTagController {
 
     @Operation(method = "GET", summary = "Get all product tags", description = "Send a request via this API to get all product tags")
     @GetMapping
-    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
-                                  @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize,
-                                  @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
-    ) {
+    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = "pageNo", defaultValue = "0") int pageNo, @RequestParam(value = "pageSize", defaultValue = "6") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy) {
         try {
             PageResponse<?> response = productTagService.getAll(name, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get product tags success", response);
@@ -64,5 +66,4 @@ public class ProductTagController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
-
 }

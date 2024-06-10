@@ -1,6 +1,5 @@
 package com.example.back_end.utils;
 
-
 import com.example.back_end.entity.Language;
 import com.example.back_end.entity.LocalizedProperty;
 
@@ -38,5 +37,4 @@ public class LocalizedPropertyUtils {
         }
         return localizedProperties;
     }
-
 }

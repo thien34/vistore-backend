@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 public interface ProductTagMapper {
 
     ProductTag toEntity(ProductTagRequestDto productTagRequestDto);
+
     @Mapping(target = "productId", expression = "java(getProductId(productTag))")
     ProductTagDtoResponse toDto(ProductTag productTag);
-
 
     default Long getProductId(ProductTag productTag) {
         if (productTag.getProductProductTagMappings() != null && !productTag.getProductProductTagMappings().isEmpty()) {

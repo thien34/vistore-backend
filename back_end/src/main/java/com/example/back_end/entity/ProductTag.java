@@ -2,10 +2,10 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,4 +33,5 @@ public class ProductTag extends Auditable {
 
     @OneToMany(mappedBy = "productTag")
     private List<ProductProductTagMapping> productProductTagMappings;
+
 }

@@ -16,7 +16,6 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -58,13 +57,12 @@ public class GlobalExceptionHandler {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             List<String> errorMessages = fieldErrors.stream()
                     .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
-                    .collect(Collectors.toList());
+                    .toList();
             message = String.join(", ", errorMessages);
             builder.error("Invalid Payload").message(message);
         } else {
             builder.error("Invalid Data").message(message);
         }
-
 
         return builder.build();
     }

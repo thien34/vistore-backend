@@ -47,5 +47,4 @@ public class LocalizedProperty {
     @Column(name = "entity_id")
     private Long entityId;
 
-
 }
