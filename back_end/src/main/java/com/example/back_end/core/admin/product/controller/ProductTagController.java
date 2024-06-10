@@ -28,9 +28,14 @@ public class ProductTagController {
 
     private final ProductTagService productTagService;
 
-    @Operation(method = "GET", summary = "Get all product tags", description = "Send a request via this API to get all product tags")
+    @Operation(method = "GET", summary = "Get all product tags",
+            description = "Send a request via this API to get all product tags")
     @GetMapping
-    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = "pageNo", defaultValue = "0") int pageNo, @RequestParam(value = "pageSize", defaultValue = "6") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy) {
+    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
+                                  @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize,
+                                  @RequestParam(value = "sortBy", defaultValue = "id")
+                                  String sortBy) {
         try {
             PageResponse<?> response = productTagService.getAll(name, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get product tags success", response);
@@ -40,7 +45,8 @@ public class ProductTagController {
         }
     }
 
-    @Operation(method = "POST", summary = "Add new product tag", description = "Send a request via this API to create new product tag")
+    @Operation(method = "POST", summary = "Add new product tag",
+            description = "Send a request via this API to create new product tag")
     @PostMapping
     public ResponseData<?> create(@Valid @RequestBody ProductTagRequestDto request) {
 
@@ -54,7 +60,8 @@ public class ProductTagController {
         }
     }
 
-    @Operation(method = "DELETE", summary = "Delete product tags", description = "Send a request via this API to delete product tags")
+    @Operation(method = "DELETE", summary = "Delete product tags",
+            description = "Send a request via this API to delete product tags")
     @DeleteMapping
     public ResponseData<?> delete(@RequestBody List<Long> ids) {
         log.info("Request to delete product tags with ids: {}", ids);

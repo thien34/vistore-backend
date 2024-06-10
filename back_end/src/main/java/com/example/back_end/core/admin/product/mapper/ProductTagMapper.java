@@ -5,10 +5,8 @@ import com.example.back_end.core.admin.product.payload.response.ProductTagDtoRes
 import com.example.back_end.entity.ProductTag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
-@Component
 public interface ProductTagMapper {
 
     ProductTag toEntity(ProductTagRequestDto productTagRequestDto);
