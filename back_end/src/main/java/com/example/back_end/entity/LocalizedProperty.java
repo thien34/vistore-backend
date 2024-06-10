@@ -45,6 +45,7 @@ public class LocalizedProperty {
     private Language language;
 
     @Column(name = "entity_id")
-    private Integer entityId;
+    private Long entityId;
+
 
 }

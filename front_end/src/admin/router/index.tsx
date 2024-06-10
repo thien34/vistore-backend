@@ -1,10 +1,18 @@
 import LayoutMain from '@admin/layouts/LayoutMain'
+import ProductTag from '../pages/product_tag/ProductTag'
 
 const routers = [
     {
         path: '',
         layout: 'main',
         element: <h1>Home Page</h1>,
+    },
+    {
+        path: 'product-tag',
+        layout: 'main',
+        element: <ProductTag />,
+        breadcrumbName: 'ProductTag',
+        pageType: 'product-tag',
     },
 ]
 
@@ -20,6 +28,7 @@ const routesAdmin = [
                     {
                         path: item.path,
                         element: item.element,
+                        breadcrumbName: item.breadcrumbName,
                     },
                 ],
             }

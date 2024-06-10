@@ -25,7 +25,7 @@ public class LocaleStringResourceController {
     private final LocaleStringResourceService localeStringResourceService;
 
     @GetMapping
-    public ResponseData<?> findByLanguageName(@RequestParam(value = "languageName", defaultValue = "vi") String languageName) {
+    public ResponseData<List<LocaleStringResourceDtoResponse>> findByLanguageName(@RequestParam(value = "languageName", defaultValue = "vi") String languageName) {
         log.info("Request languageName={}", languageName);
 
         try {

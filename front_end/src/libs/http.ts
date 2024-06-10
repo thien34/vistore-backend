@@ -1,6 +1,6 @@
 import { nomarlUrl } from './helper'
 
-type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD'
 
 class HttpError extends Error {
     status: number
@@ -9,20 +9,25 @@ class HttpError extends Error {
         this.status = status
     }
 }
-
 const httpRequest = async <Response>(url: string, method: Method = 'GET', body: unknown, config?: RequestInit) => {
     try {
         const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${nomarlUrl(url)}`
-        const res = await fetch(fullUrl, {
+        const options: RequestInit = {
             method,
-            body: JSON.stringify(body),
             credentials: 'include',
             ...config,
             headers: {
                 'Content-Type': 'application/json',
                 ...config?.headers,
             },
-        })
+        }
+
+        const noBodyMethods: Method[] = ['GET', 'HEAD']
+        if (!noBodyMethods.includes(method)) {
+            options.body = JSON.stringify(body)
+        }
+
+        const res = await fetch(fullUrl, options)
         const payload: Response = await res.json()
         const data = {
             status: res.status,
