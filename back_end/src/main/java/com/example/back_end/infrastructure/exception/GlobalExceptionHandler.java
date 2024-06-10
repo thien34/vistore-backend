@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -49,16 +52,14 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false).replace("uri=", ""));
 
         String message = e.getMessage();
-
         if (e instanceof MethodArgumentNotValidException) {
-            int start = message.lastIndexOf("[") + 1;
-            int end = message.lastIndexOf("]") - 1;
-            message = message.substring(start, end);
+            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            List<String> errorMessages = fieldErrors.stream()
+                    .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
+                    .toList();
+            message = String.join(", ", errorMessages);
             builder.error("Invalid Payload").message(message);
-        } else if (e instanceof MissingServletRequestParameterException) {
-            builder.error("Invalid Parameter").message(message);
-        } else if (e instanceof ConstraintViolationException) {
-            builder.error("Invalid Parameter").message(message.substring(message.indexOf(" ") + 1));
         } else {
             builder.error("Invalid Data").message(message);
         }
