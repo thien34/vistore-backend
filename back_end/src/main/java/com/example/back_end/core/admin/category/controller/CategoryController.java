@@ -1,6 +1,8 @@
 package com.example.back_end.core.admin.category.controller;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryCreationRequest;
+import com.example.back_end.core.admin.category.payload.request.CategoryUpdateRequest;
+import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
@@ -9,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,6 +51,24 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseData<?> getById(@PathVariable Long id) {
+        try {
+            CategoryResponse response = categoryService.getCategory(id);
+            return ResponseData.builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Get category success")
+                    .data(response)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error getting category", e);
+            return ResponseData.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
+
     @PostMapping
     public ResponseData<?> create(@RequestBody CategoryCreationRequest request) {
         log.info("Request add category, {}", request);
@@ -65,9 +87,28 @@ public class CategoryController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseData<?> update(@PathVariable Long id, @RequestBody CategoryUpdateRequest request) {
+        log.info("Request to update category with id: {}, {}", id, request);
+        try {
+            categoryService.updateCategory(id, request);
+            return ResponseData.builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Update product tag success")
+                    .build();
+        } catch (Exception e) {
+            log.error("Error updating product tag", e);
+            return ResponseData.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
+
     @DeleteMapping
     public ResponseData<?> delete(@RequestBody List<Long> ids) {
         log.info("Request to delete categories with ids: {}", ids);
+
         try {
             categoryService.deleteCategories(ids);
             return ResponseData.builder()
@@ -82,5 +123,4 @@ public class CategoryController {
                     .build();
         }
     }
-
 }

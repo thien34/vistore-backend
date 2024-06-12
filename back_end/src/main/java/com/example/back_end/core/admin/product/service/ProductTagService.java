@@ -17,4 +17,5 @@ public interface ProductTagService {
     ProductTagDtoResponse getProductTag(Long id);
 
     void delete(List<Long> ids);
+
 }
