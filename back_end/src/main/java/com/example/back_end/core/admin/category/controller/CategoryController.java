@@ -108,6 +108,7 @@ public class CategoryController {
     @DeleteMapping
     public ResponseData<?> delete(@RequestBody List<Long> ids) {
         log.info("Request to delete categories with ids: {}", ids);
+
         try {
             categoryService.deleteCategories(ids);
             return ResponseData.builder()
