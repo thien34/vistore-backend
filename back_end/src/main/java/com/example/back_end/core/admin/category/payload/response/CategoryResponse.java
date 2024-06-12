@@ -1,10 +1,11 @@
 package com.example.back_end.core.admin.category.payload.response;
 
-import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Picture;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class CategoryResponse {
 
     private Long id;
@@ -13,7 +14,7 @@ public class CategoryResponse {
 
     private String description;
 
-    private Category categoryParent;
+    private CategoryParentResponse categoryParent;
 
     private Picture picture;
 

@@ -2,18 +2,22 @@ package com.example.back_end.core.admin.category.payload.request;
 
 import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Picture;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class CategoryUpdateRequest {
 
+    @NotBlank
     private String name;
 
     private String description;
 
-    private Category categoryParent;
+    private Long categoryParentId;
 
-    private Picture picture;
+    private Long pictureId;
 
     private Boolean showOnHomePage;
 
@@ -27,4 +31,21 @@ public class CategoryUpdateRequest {
 
     private Boolean priceRangeFiltering;
 
+    public Category getCategoryParent() {
+        if (categoryParentId == null) {
+            return null;
+        }
+        Category categoryParent = new Category();
+        categoryParent.setId(categoryParentId);
+        return categoryParent;
+    }
+
+    public Picture getPicture() {
+        if (pictureId == null) {
+            return null;
+        }
+        Picture picture = new Picture();
+        picture.setId(pictureId);
+        return picture;
+    }
 }

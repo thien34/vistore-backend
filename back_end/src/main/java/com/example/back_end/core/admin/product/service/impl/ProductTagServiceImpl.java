@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class ProductTagServiceImpl implements ProductTagService {
         List<ProductTagDtoResponse> productTagDtoResponses = productTagPage.stream()
                 .map(productTagMapper::toDto)
                 .sorted(Comparator.comparing(ProductTagDtoResponse::getId).reversed())
-                .collect(Collectors.toList());
+                .toList();
 
         // Build the page response
         return PageResponse.builder()

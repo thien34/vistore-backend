@@ -15,7 +15,9 @@ public interface ProductTagMapper {
     ProductTagDtoResponse toDto(ProductTag productTag);
 
     default Long getProductId(ProductTag productTag) {
-        if (productTag.getProductProductTagMappings() != null && !productTag.getProductProductTagMappings().isEmpty()) {
+        if (productTag.getProductProductTagMappings() != null
+                && !productTag.getProductProductTagMappings().isEmpty()) {
+
             return productTag.getProductProductTagMappings().get(0).getProduct().getId();
         }
         return null;
