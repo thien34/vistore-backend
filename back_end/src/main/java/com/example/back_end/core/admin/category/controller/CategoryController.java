@@ -6,6 +6,7 @@ import com.example.back_end.core.admin.category.payload.response.CategoryRespons
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.core.common.ResponseError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,18 +37,10 @@ public class CategoryController {
                                   @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
         try {
             PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);
-
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Get categories success")
-                    .data(response)
-                    .build();
+            return new ResponseData<>(HttpStatus.OK.value(), "Get categories success", response);
         } catch (Exception e) {
             log.error("Error getting categories", e);
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -55,17 +48,10 @@ public class CategoryController {
     public ResponseData<?> getById(@PathVariable Long id) {
         try {
             CategoryResponse response = categoryService.getCategory(id);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Get category success")
-                    .data(response)
-                    .build();
+            return new ResponseData<>(HttpStatus.OK.value(), "Get category success", response);
         } catch (Exception e) {
             log.error("Error getting category", e);
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -74,16 +60,10 @@ public class CategoryController {
         log.info("Request add category, {}", request);
         try {
             categoryService.createCategory(request);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Add product tag success")
-                    .build();
+            return new ResponseData<>(HttpStatus.OK.value(), "Add product tag success");
         } catch (Exception e) {
             log.error("Error adding categories", e);
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -92,16 +72,10 @@ public class CategoryController {
         log.info("Request to update category with id: {}, {}", id, request);
         try {
             categoryService.updateCategory(id, request);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Update product tag success")
-                    .build();
+            return new ResponseData<>(HttpStatus.OK.value(), "Update product tag success");
         } catch (Exception e) {
             log.error("Error updating product tag", e);
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -111,16 +85,10 @@ public class CategoryController {
 
         try {
             categoryService.deleteCategories(ids);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Delete product tags success")
-                    .build();
+            return new ResponseData<>(HttpStatus.OK.value(), "Delete product tags success");
         } catch (Exception e) {
             log.error("Error deleting product tags", e);
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 }
