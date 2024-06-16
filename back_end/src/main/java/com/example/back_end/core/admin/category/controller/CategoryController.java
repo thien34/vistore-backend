@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/categories")
+@RequestMapping("/admin/categories")
 @Slf4j
 public class CategoryController {
 
@@ -33,8 +33,8 @@ public class CategoryController {
     @GetMapping
     public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
                                   @RequestParam(value = "published", defaultValue = "") Boolean published,
-                                  @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+                                  @RequestParam(value = "pageNo", defaultValue = "0") Integer pageNo,
+                                  @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
         try {
             PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get categories success", response);
@@ -82,7 +82,6 @@ public class CategoryController {
     @DeleteMapping
     public ResponseData<?> delete(@RequestBody List<Long> ids) {
         log.info("Request to delete categories with ids: {}", ids);
-
         try {
             categoryService.deleteCategories(ids);
             return new ResponseData<>(HttpStatus.OK.value(), "Delete product tags success");

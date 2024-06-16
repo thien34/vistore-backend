@@ -55,21 +55,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PageResponse<?> getAll(String name, Boolean published, int pageNo, int pageSize) {
+    public PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-        Page<Category> categoryPage;
-        if (published == null) {
-            categoryPage = categoryRepository.findByNameContaining(name, pageable);
-        } else {
-            categoryPage = categoryRepository.findByNameContainingAndPublished(name, published, pageable);
-        }
+        Page<Category> categoryPage = categoryRepository.findAll(
+                CategorySpecification.filterByNameAndPublished(name, published),
+                pageable
+        );
 
         List<CategoriesResponse> categoriesResponses = categoryPage.getContent()
-                .stream().map(categoryMapper::toCategoriesResponse)
+                .stream()
+                .map(categoryMapper::toCategoriesResponse)
                 .toList();
 
         return PageResponse.builder()

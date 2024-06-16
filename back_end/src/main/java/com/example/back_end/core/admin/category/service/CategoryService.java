@@ -13,7 +13,7 @@ public interface CategoryService {
 
     void updateCategory(Long id, CategoryUpdateRequest request);
 
-    PageResponse<?> getAll(String name, Boolean published, int pageNo, int pageSize);
+    PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
 
     CategoryResponse getCategory(Long id);
 
