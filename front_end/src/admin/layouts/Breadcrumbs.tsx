@@ -23,13 +23,11 @@ const Breadcrumbs: React.FC = () => {
     })
 
     return (
-        <>
-            <Row>
-                <Col className='flex items-center gap-2 p-4'>
-                    <Breadcrumb>{breadcrumbItems}</Breadcrumb>
-                </Col>
-            </Row>
-        </>
+        <Row>
+            <Col className='flex items-center gap-2 p-4'>
+                <Breadcrumb>{breadcrumbItems}</Breadcrumb>
+            </Col>
+        </Row>
     )
 }
 
