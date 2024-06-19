@@ -1,7 +1,6 @@
 package com.example.back_end.core.admin.category.controller;
 
-import com.example.back_end.core.admin.category.payload.request.CategoryCreationRequest;
-import com.example.back_end.core.admin.category.payload.request.CategoryUpdateRequest;
+import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
@@ -56,7 +55,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseData<?> create(@RequestBody CategoryCreationRequest request) {
+    public ResponseData<?> create(@RequestBody CategoryRequest request) {
         log.info("Request add category, {}", request);
         try {
             categoryService.createCategory(request);
@@ -68,7 +67,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseData<?> update(@PathVariable Long id, @RequestBody CategoryUpdateRequest request) {
+    public ResponseData<?> update(@PathVariable Long id, @RequestBody CategoryRequest request) {
         log.info("Request to update category with id: {}, {}", id, request);
         try {
             categoryService.updateCategory(id, request);

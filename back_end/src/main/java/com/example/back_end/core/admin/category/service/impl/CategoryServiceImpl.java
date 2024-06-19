@@ -1,8 +1,7 @@
 package com.example.back_end.core.admin.category.service.impl;
 
 import com.example.back_end.core.admin.category.mapper.CategoryMapper;
-import com.example.back_end.core.admin.category.payload.request.CategoryCreationRequest;
-import com.example.back_end.core.admin.category.payload.request.CategoryUpdateRequest;
+import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
@@ -32,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final PictureRepository pictureRepository;
 
     @Override
-    public void createCategory(CategoryCreationRequest request) {
+    public void createCategory(CategoryRequest request) {
         validateCategoryParent(request.getCategoryParentId());
         validatePicture(request.getPictureId());
 
@@ -42,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void updateCategory(Long id, CategoryUpdateRequest request) {
+    public void updateCategory(Long id, CategoryRequest request) {
         Category category = categoryRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));

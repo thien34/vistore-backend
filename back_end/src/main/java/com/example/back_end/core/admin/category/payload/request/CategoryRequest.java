@@ -4,9 +4,11 @@ import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Picture;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-public class CategoryCreationRequest {
+@Setter
+public class CategoryRequest {
 
     @NotBlank
     private String name;

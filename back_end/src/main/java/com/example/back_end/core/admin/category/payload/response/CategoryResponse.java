@@ -16,7 +16,7 @@ public class CategoryResponse {
 
     private CategoryParentResponse categoryParent;
 
-    private Picture picture;
+    private Picture picture; //note
 
     private Boolean showOnHomePage;
 
