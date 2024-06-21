@@ -44,11 +44,6 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     @Override
-    public void updateProductTag(ProductTagRequestDto request, Long id) {
-
-    }
-
-    @Override
     public PageResponse<?> getAll(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
