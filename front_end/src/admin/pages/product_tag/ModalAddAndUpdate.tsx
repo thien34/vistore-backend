@@ -28,7 +28,7 @@ export default function ModalAddAndUpdate({
     selectedTag,
     title,
     setTitle,
-}: Props) {
+}: Readonly<Props>) {
     const [form] = Form.useForm()
 
     useEffect(() => {
@@ -81,18 +81,7 @@ export default function ModalAddAndUpdate({
                         <Option value='1'>Product</Option>
                     </Select>
                 </Form.Item>
-                <Form.Item
-                    noStyle
-                    shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
-                >
-                    {({ getFieldValue }) =>
-                        getFieldValue('gender') === 'other' ? (
-                            <Form.Item name='customizeGender' label='Customize Gender' rules={[{ required: true }]}>
-                                <Input />
-                            </Form.Item>
-                        ) : null
-                    }
-                </Form.Item>
+
                 <Form.Item {...tailLayout}>
                     <Space>
                         <Button type='primary' htmlType='submit'>
