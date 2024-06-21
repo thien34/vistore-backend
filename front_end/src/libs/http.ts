@@ -9,6 +9,7 @@ class HttpError extends Error {
         this.status = status
     }
 }
+
 const httpRequest = async <Response>(url: string, method: Method = 'GET', body: unknown, config?: RequestInit) => {
     try {
         const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${nomarlUrl(url)}`
