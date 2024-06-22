@@ -5,7 +5,7 @@ class CategoryService {
     async getAll(filter: CategoryFilter) {
         const queryParams = new URLSearchParams({
             name: filter.name ?? '',
-            pageNo: filter.pageNo?.toString() ?? '0',
+            pageNo: filter.pageNo?.toString() ?? '1',
             pageSize: filter.pageSize?.toString() ?? '6',
             published: filter.published?.toString() ?? '',
         })

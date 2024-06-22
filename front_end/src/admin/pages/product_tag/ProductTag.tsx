@@ -35,7 +35,7 @@ export default function ProductTag() {
                 setSelectedRowKeys([])
             }
             setTags(tagsWithKey)
-            setTotalPage(response.data.data.total + 5)
+            setTotalPage(response.data.data.totalPage + 5)
         } catch (error) {
             console.error('Error fetching product tags:', error)
         }

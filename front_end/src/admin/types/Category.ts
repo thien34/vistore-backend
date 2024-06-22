@@ -46,7 +46,7 @@ export type CategoryResponseWithPage = {
     data: {
         page: number
         size: number
-        total: number
+        totalPage: number
         items: CategoriesResponse[]
     }
 }
