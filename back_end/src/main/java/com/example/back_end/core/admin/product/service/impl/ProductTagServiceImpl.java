@@ -64,7 +64,7 @@ public class ProductTagServiceImpl implements ProductTagService {
         return PageResponse.builder()
                 .page(productTagPage.getNumber())
                 .size(productTagPage.getSize())
-                .total(productTagPage.getTotalPages())
+                .totalPage(productTagPage.getTotalPages())
                 .items(productTagDtoResponses)
                 .build();
     }
@@ -123,7 +123,7 @@ public class ProductTagServiceImpl implements ProductTagService {
         return PageResponse.builder()
                 .page(pageable.getPageNumber())
                 .size(pageable.getPageSize())
-                .total(productTagPage.getTotalPages())
+                .totalPage(productTagPage.getTotalPages())
                 .items(response).build();
     }
 }

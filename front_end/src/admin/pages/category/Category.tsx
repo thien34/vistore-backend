@@ -7,11 +7,13 @@ import { EditOutlined } from '@ant-design/icons'
 import { useSearchParams } from 'react-router-dom'
 
 type TableRowSelection<T> = TableProps<T>['rowSelection']
+
 const columns: TableColumnsType<CategoriesResponse> = [
     {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        sorter: (a, b) => a.name.length - b.name.length,
     },
     {
         title: 'Published',
@@ -41,15 +43,16 @@ const columns: TableColumnsType<CategoriesResponse> = [
 ]
 export default function Category() {
     const [searchParams, setSearchParams] = useSearchParams()
-    const pageNo = searchParams.get('pageNo')
+    const pageNo = Number(searchParams.get('pageNo')) || 1
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-    const { data, isLoading, error } = useCategories({
+    const [filter, setFilter] = useState({
         name: '',
+        pageNo,
         pageSize: 6,
-        pageNo: pageNo ? parseInt(pageNo) : 0,
         published: undefined,
     })
+    const { data, isLoading, error } = useCategories({ ...filter })
 
     useEffect(() => {
         if (error) {
@@ -67,10 +70,14 @@ export default function Category() {
         onChange: onSelectChange,
     }
 
-    const onChange: TableProps<CategoriesResponse>['onChange'] = (pagination) => {
+    const handleTableChange = (pagination: { current: number; pageSize: number }) => {
+        setFilter((prevFilter) => ({
+            ...prevFilter,
+            pageNo: pagination.current,
+        }))
         setSearchParams(
             new URLSearchParams({
-                pageNo: (pagination.current! - 1)?.toString() ?? '0',
+                pageNo: pagination.current?.toString(),
             }),
         )
     }
@@ -82,14 +89,15 @@ export default function Category() {
                 <Table
                     style={{ marginBottom: 15, marginTop: 25 }}
                     rowSelection={rowSelection}
+                    bordered
                     columns={columns}
                     dataSource={data.data.items}
-                    onChange={onChange}
                     rowKey='id'
                     pagination={{
-                        pageSize: 6,
-                        total: data.data.total * 6,
-                        current: data.data.page + 1,
+                        pageSize: filter.pageSize,
+                        total: data.data.totalPage * 6,
+                        current: filter.pageNo,
+                        onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
                     }}
                 />
             )}

@@ -13,7 +13,7 @@ public class PageResponse<T> implements Serializable {
 
     private int size;
 
-    private long total;
+    private long totalPage;
 
     private T items;
 

@@ -32,7 +32,7 @@ public class CategoryController {
     @GetMapping
     public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
                                   @RequestParam(value = "published", defaultValue = "") Boolean published,
-                                  @RequestParam(value = "pageNo", defaultValue = "0") Integer pageNo,
+                                  @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
                                   @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
         try {
             PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);

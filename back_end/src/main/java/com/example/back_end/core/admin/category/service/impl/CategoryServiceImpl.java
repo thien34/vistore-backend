@@ -55,11 +55,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
+        if (pageNo -1 < 0 || pageSize  <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNo -1, pageSize, Sort.by("id").descending());
         Page<Category> categoryPage = categoryRepository.findAll(
                 CategorySpecification.filterByNameAndPublished(name, published),
                 pageable
@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
         return PageResponse.builder()
                 .page(categoryPage.getNumber())
                 .size(categoryPage.getSize())
-                .total(categoryPage.getTotalPages())
+                .totalPage(categoryPage.getTotalPages())
                 .items(categoriesResponses)
                 .build();
     }
