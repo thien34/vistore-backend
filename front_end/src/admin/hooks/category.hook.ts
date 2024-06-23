@@ -4,7 +4,7 @@ import { CategoryFilter } from '../types/Category'
 
 export const useCategories = (filter: CategoryFilter) => {
     return useQuery({
-        queryKey: ['categories', filter.pageNo],
+        queryKey: ['categories', filter.pageNo, filter.name, filter.published],
         queryFn: () => CategoryService.getAll(filter),
     })
 }
