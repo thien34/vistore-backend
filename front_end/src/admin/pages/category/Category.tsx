@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Table } from 'antd'
 import type { TableColumnsType, TableProps } from 'antd'
-import { useCategories } from '@/admin/hooks/category.hook'
-import { CategoriesResponse, CategoryFilter } from '@/admin/types/Category'
+import { useCategories, useDeleteCategory } from '@/admin/hooks/category.hook'
+import { CategoriesResponse, CategoryFilter, CategoryParentResponse } from '@/admin/types/Category'
 import { EditOutlined } from '@ant-design/icons'
 import CategorySearch from './CategorySearch'
 
 type TableRowSelection<T> = TableProps<T>['rowSelection']
+
+function getCategoryFullName(category: CategoriesResponse | CategoryParentResponse): string {
+    if (!category.categoryParent) {
+        return `${category.name}`
+    }
+    return `${getCategoryFullName(category.categoryParent)} >> ${category.name}`
+}
 
 const columns: TableColumnsType<CategoriesResponse> = [
     {
@@ -14,7 +21,12 @@ const columns: TableColumnsType<CategoriesResponse> = [
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        sorter: (a, b) => a.name.length - b.name.length,
+        render: (_, record) => getCategoryFullName(record),
+        sorter: (a, b) => {
+            const aName = a.categoryParent ? `${a.categoryParent.name} >> ${a.name}` : a.name
+            const bName = b.categoryParent ? `${b.categoryParent.name} >> ${b.name}` : b.name
+            return aName.localeCompare(bName)
+        },
     },
     {
         width: '25%',
@@ -35,14 +47,12 @@ const columns: TableColumnsType<CategoriesResponse> = [
         align: 'center',
         title: 'Action',
         key: 'action',
-        render: () => (
-            <Button
-                className='bg-[#374151] border-[#374151] text-white'
-                icon={<EditOutlined />}
-                // onClick={() => handleEdit(record)}
-            >
-                Edit
-            </Button>
+        render: (_, record) => (
+            <a href={`/admin/category/${record.id}/update`}>
+                <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
+                    Edit
+                </Button>
+            </a>
         ),
     },
 ]
@@ -54,7 +64,8 @@ export default function Category() {
         pageSize: 6,
         published: undefined,
     })
-    const { data, isLoading, error } = useCategories({ ...filter })
+    const { data, isLoading, error, refetch } = useCategories({ ...filter })
+    const deleteCategory = useDeleteCategory()
 
     useEffect(() => {
         if (error) {
@@ -63,7 +74,6 @@ export default function Category() {
     }, [error])
 
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        console.log('selectedRowKeys changed: ', newSelectedRowKeys)
         setSelectedRowKeys(newSelectedRowKeys)
     }
 
@@ -87,9 +97,18 @@ export default function Category() {
         }))
     }
 
+    const handleDelete = () => {
+        deleteCategory.mutate(selectedRowKeys as number[], {
+            onSuccess: () => {
+                refetch()
+                setSelectedRowKeys([])
+            },
+        })
+    }
+
     return (
-        <div>
-            <CategorySearch onSearch={handleSearch} />
+        <>
+            <CategorySearch onSearch={handleSearch} selectedRowKeys={selectedRowKeys} handleDelete={handleDelete} />
             {isLoading && <p>Loading ...</p>}
             <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {data && (
@@ -108,6 +127,6 @@ export default function Category() {
                     />
                 )}
             </div>
-        </div>
+        </>
     )
 }

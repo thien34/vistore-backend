@@ -95,7 +95,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (categories.size() != ids.size()) {
             throw new ResourceNotFoundException("One or more categories not found for the given ids");
         }
-
+    
         categoryRepository.deleteAll(categories);
     }
 

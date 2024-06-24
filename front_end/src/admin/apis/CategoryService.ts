@@ -19,6 +19,18 @@ class CategoryService {
         const result = await http.post<CategoryResponseBasic>(url, request)
         return { status: result.payload.status, message: result.payload.message }
     }
+
+    async update(request: Partial<CategoryRequest>) {
+        const url = '/admin/categories'
+        const result = await http.put<CategoryResponseBasic>(url, request)
+        return { status: result.payload.status, message: result.payload.message }
+    }
+
+    async delete(ids: number[]) {
+        const url = '/admin/categories'
+        const result = await http.delete<CategoryResponseBasic>(url, ids)
+        return { status: result.payload.status, message: result.payload.message }
+    }
 }
 
 export default new CategoryService()

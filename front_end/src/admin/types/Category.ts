@@ -30,8 +30,8 @@ export type CategoryRequest = {
     id?: number
     name: string
     description: string
-    categoryParentId: number
-    pictureId: number
+    categoryParentId: number | null
+    pictureId: number | null
     showOnHomePage: boolean
     includeInTopMenu: boolean
     pageSize: number

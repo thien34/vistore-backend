@@ -5,9 +5,11 @@ import { useState } from 'react'
 
 interface CategorySearchProps {
     onSearch: (filter: { name: string; published: boolean | undefined }) => void
+    handleDelete: () => void
+    selectedRowKeys: React.Key[]
 }
 
-export default function CategorySearch({ onSearch }: Readonly<CategorySearchProps>) {
+export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete }: Readonly<CategorySearchProps>) {
     const [name, setName] = useState<string>('')
     const [published, setPublished] = useState<boolean | undefined>(undefined)
 
@@ -20,7 +22,7 @@ export default function CategorySearch({ onSearch }: Readonly<CategorySearchProp
             <div>
                 <h3 className='text-xl font-bold'>Search</h3>
                 <div className='flex pt-5 justify-between'>
-                    <div className='flex gap-4'>
+                    <div className='flex gap-4 flex-wrap'>
                         <Input
                             className='w-56'
                             size='large'
@@ -52,8 +54,8 @@ export default function CategorySearch({ onSearch }: Readonly<CategorySearchProp
                     </div>
                     <div className=''>
                         <Button
-                            // disabled={selectedRowKeys.length === 0}
-                            // onClick={handleDelete}
+                            disabled={selectedRowKeys.length === 0}
+                            onClick={handleDelete}
                             type='primary'
                             className='me-5'
                             danger
@@ -62,13 +64,11 @@ export default function CategorySearch({ onSearch }: Readonly<CategorySearchProp
                             Delete
                         </Button>
 
-                        <Button
-                            className='bg-[#475569] text-white'
-                            size='large'
-                            // onClick={showModal}
-                        >
-                            Add
-                        </Button>
+                        <a href='/admin/category/add'>
+                            <Button className='bg-[#475569] text-white' size='large'>
+                                Add
+                            </Button>
+                        </a>
                     </div>
                 </div>
             </div>
