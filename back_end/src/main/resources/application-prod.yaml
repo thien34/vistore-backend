@@ -3,9 +3,9 @@ spring:
     name: back_end
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/store_db
+    url: jdbc:postgresql://localhost:5432/Store_DB
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:123456}
+    password: ${DB_PASSWORD:19082004}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -17,6 +17,7 @@ spring:
       hibernate:
         globally_quoted_identifiers: true
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   sql:
     init:

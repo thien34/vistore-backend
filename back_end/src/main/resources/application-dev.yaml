@@ -10,13 +10,15 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+
     show-sql: true
     open-in-view: true
     properties:
       hibernate:
         globally_quoted_identifiers: true
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   sql:
     init:
