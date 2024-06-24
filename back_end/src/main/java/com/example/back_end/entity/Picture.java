@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,10 +20,11 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "picture")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Picture extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "mime_type", length = Integer.MAX_VALUE)

@@ -3,9 +3,9 @@ spring:
     name: back_end
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/store_db
+    url: jdbc:postgresql://localhost:5432/Store_DB
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1}
+    password: ${DB_PASSWORD:19082004}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -24,12 +24,14 @@ spring:
 
   servlet:
     multipart:
+      enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
 
   main:
     allow-bean-definition-overriding: true
-
+file:
+    upload-dir: I:/FPT POLYTECHNIC/DATN/CODE/18.3-DATN/back_end/src/main/java/com/example/back_end/imagelocal
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:dccuxj8ll}
   api-key: ${CLOUDINARY_API_KEY:934946519676845}

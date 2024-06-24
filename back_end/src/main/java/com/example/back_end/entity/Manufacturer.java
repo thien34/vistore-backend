@@ -1,5 +1,7 @@
 package com.example.back_end.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +26,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @Entity
 @Table(name = "manufacturer")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Manufacturer extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +42,7 @@ public class Manufacturer extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "picture_id")
+    @JsonIgnore
     private Picture picture;
 
     @Column(name = "page_size")
