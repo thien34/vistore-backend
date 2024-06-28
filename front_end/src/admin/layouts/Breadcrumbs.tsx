@@ -14,22 +14,18 @@ const Breadcrumbs: React.FC = () => {
         const title = snippet.replace(/-/g, ' ')
         const isLastItem = index === pathSnippets.length - 1
 
-        return (
-            <Breadcrumb.Item key={url} {...(isLastItem && { className: 'ant-breadcrumb-link' })}>
-                {' '}
-                {isLastItem ? capitalizeChar(title) : <NavLink to={url}>{capitalizeChar(title)}</NavLink>}
-            </Breadcrumb.Item>
-        )
+        return {
+            key: url,
+            title: isLastItem ? capitalizeChar(title) : <NavLink to={url}>{capitalizeChar(title)}</NavLink>,
+        }
     })
 
     return (
-        <>
-            <Row>
-                <Col className='flex items-center gap-2 p-4'>
-                    <Breadcrumb>{breadcrumbItems}</Breadcrumb>
-                </Col>
-            </Row>
-        </>
+        <Row>
+            <Col className='flex items-center gap-2 p-4'>
+                <Breadcrumb items={breadcrumbItems} />
+            </Col>
+        </Row>
     )
 }
 

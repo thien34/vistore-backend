@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { DesktopOutlined, FileOutlined, PieChartOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
-import { Layout, Menu, theme } from 'antd'
+import { Layout, Menu } from 'antd'
 import { Outlet } from 'react-router-dom'
 import { Breadcrumbs } from './Breadcrumbs'
 
@@ -28,41 +28,24 @@ const items: MenuItem[] = [
 
 const LayoutMain: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false)
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken()
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sider
-                style={{ backgroundColor: colorBgContainer }}
-                collapsible
-                collapsed={collapsed}
-                onCollapse={(value) => setCollapsed(value)}
-            >
+        <Layout className='min-h-screen'>
+            <Sider className='!bg-[#fff]' collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
                 <Menu theme='light' defaultSelectedKeys={['1']} mode='inline' items={items} />
             </Sider>
 
             <Layout>
-                <Header style={{ padding: 0, background: colorBgContainer }} />
-                <Content style={{ margin: '0 16px' }}>
-                    <Breadcrumbs />
-
-                    <div
-                        style={{
-                            padding: 24,
-                            minHeight: 360,
-
-                            borderRadius: borderRadiusLG,
-                        }}
-                    >
+                <Header className='bg-[#fff]' />
+                <Content>
+                    <div className='px-6'>
+                        <Breadcrumbs />
+                    </div>
+                    <div className='px-8'>
                         <Outlet />
                     </div>
                 </Content>
-
-                <Footer style={{ textAlign: 'center' }}>
-                    Ant Design ©{new Date().getFullYear()} Created by Ant UED
-                </Footer>
+                <Footer className='text-center'>Ant Design ©{new Date().getFullYear()} Created by Ant UED</Footer>
             </Layout>
         </Layout>
     )

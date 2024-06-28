@@ -1,7 +1,6 @@
 package com.example.back_end.core.admin.category.service;
 
-import com.example.back_end.core.admin.category.payload.request.CategoryCreationRequest;
-import com.example.back_end.core.admin.category.payload.request.CategoryUpdateRequest;
+import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.common.PageResponse;
 
@@ -9,11 +8,11 @@ import java.util.List;
 
 public interface CategoryService {
 
-    void createCategory(CategoryCreationRequest request);
+    void createCategory(CategoryRequest request);
 
-    void updateCategory(Long id, CategoryUpdateRequest request);
+    void updateCategory(Long id, CategoryRequest request);
 
-    PageResponse<?> getAll(String name, Boolean published, int pageNo, int pageSize);
+    PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
 
     CategoryResponse getCategory(Long id);
 

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ProductTagDtoResponse {
+public class ProductTagResponse {
 
     private Long id;
 

@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.category.payload.response;
 
-import com.example.back_end.entity.Picture;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,9 +13,9 @@ public class CategoryResponse {
 
     private String description;
 
-    private CategoryParentResponse categoryParent;
+    private Long categoryParentId;
 
-    private Picture picture;
+    private Long pictureId;
 
     private Boolean showOnHomePage;
 

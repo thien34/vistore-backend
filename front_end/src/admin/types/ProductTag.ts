@@ -16,7 +16,7 @@ export type ProductTagResponseWithPage = {
     data: {
         page: number
         size: number
-        total: number
+        totalPage: number
         items: ProductTagResponse[]
     }
 }
