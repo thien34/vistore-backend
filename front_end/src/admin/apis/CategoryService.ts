@@ -1,5 +1,11 @@
 import { http } from '@/libs/http'
-import { CategoryFilter, CategoryRequest, CategoryResponseBasic, CategoryResponseWithPage } from '../types/Category'
+import {
+    CategoryFilter,
+    CategoryRequest,
+    CategoryResponse,
+    CategoryResponseBasic,
+    CategoryResponseWithPage,
+} from '../types/Category'
 
 class CategoryService {
     async getAll(filter: CategoryFilter) {
@@ -14,6 +20,14 @@ class CategoryService {
         return result.payload
     }
 
+    async get(id: number) {
+        const url = `/admin/categories/${id}`
+        const result = await http.get<{
+            data: CategoryResponse
+        }>(url)
+        return result.payload.data
+    }
+
     async create(request: CategoryRequest) {
         const url = '/admin/categories'
         const result = await http.post<CategoryResponseBasic>(url, request)
@@ -21,7 +35,7 @@ class CategoryService {
     }
 
     async update(request: Partial<CategoryRequest>) {
-        const url = '/admin/categories'
+        const url = `/admin/categories/${request.id}`
         const result = await http.put<CategoryResponseBasic>(url, request)
         return { status: result.payload.status, message: result.payload.message }
     }

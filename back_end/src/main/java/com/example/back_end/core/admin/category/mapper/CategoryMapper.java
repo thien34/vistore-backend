@@ -11,6 +11,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
+    @Mapping(source = "categoryParent.id", target = "categoryParentId")
+    @Mapping(source = "picture.id", target = "pictureId")
     CategoryResponse toDto(Category category);
 
     CategoriesResponse toCategoriesResponse(Category category);

@@ -1,6 +1,6 @@
 package com.example.back_end.core.admin.product.controller;
 
-import com.example.back_end.core.admin.product.payload.request.ProductTagRequestDto;
+import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
 import com.example.back_end.core.admin.product.service.ProductTagService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
@@ -48,7 +48,7 @@ public class ProductTagController {
     @Operation(method = "POST", summary = "Add new product tag",
             description = "Send a request via this API to create new product tag")
     @PostMapping
-    public ResponseData<?> create(@Valid @RequestBody ProductTagRequestDto request) {
+    public ResponseData<?> create(@Valid @RequestBody ProductTagRequest request) {
 
         log.info("Request add product tag, {}", request);
         try {

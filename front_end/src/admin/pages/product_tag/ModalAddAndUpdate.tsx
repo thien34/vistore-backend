@@ -35,9 +35,7 @@ export default function ModalAddAndUpdate({
         const updateFormValues = () => {
             if (selectedTag && form) {
                 form.setFieldsValue({
-                    id: selectedTag.id,
-                    name: selectedTag.name,
-                    productId: selectedTag.productId,
+                    ...selectedTag,
                 })
             }
         }

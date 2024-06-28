@@ -1,9 +1,10 @@
+import { useCategories, useCategory, useCreateCategory, useUpdateCategory } from '@/admin/hooks/category.hook'
+import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/admin/types/Category'
 import { PlusOutlined } from '@ant-design/icons'
 import {
     Button,
     Card,
     Checkbox,
-    CheckboxProps,
     Col,
     Form,
     GetProp,
@@ -16,7 +17,8 @@ import {
     UploadFile,
     UploadProps,
 } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const layout = {
     labelCol: { span: 8 },
@@ -24,39 +26,66 @@ const layout = {
 }
 const validateMessages = {
     required: '${label} is required!',
-    types: {
-        email: '${label} is not a valid email!',
-        number: '${label} is not a valid number!',
-    },
     number: {
         range: '${label} must be between ${min} and ${max}',
     },
 }
-const onFinish = (values: string) => {
-    console.log(values)
-}
+
 const getBase64 = (file: FileType): Promise<string> =>
     new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.readAsDataURL(file)
         reader.onload = () => resolve(reader.result as string)
-        reader.onerror = (error) => reject(error)
+        reader.onerror = (error) => reject(new Error(error.total.toString()))
     })
 
-const onChange: CheckboxProps['onChange'] = (e) => {
-    console.log(`checked = ${e.target.checked}`)
+function getCategoryFullName(category: CategoriesResponse | CategoryParentResponse): string {
+    return category.categoryParent
+        ? `${getCategoryFullName(category.categoryParent)} >> ${category.name}`
+        : category.name
 }
+
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
+
 export default function CategoryCreateUpdate() {
+    const { id } = useParams<{ id: string }>()
+    const isUpdateMode = Boolean(id)
+    const [form] = Form.useForm()
     const [previewOpen, setPreviewOpen] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
     const [fileList, setFileList] = useState<UploadFile[]>([])
+    const { mutate: createCategory, isPending } = useCreateCategory()
+    const { mutate: updateCategory } = useUpdateCategory()
+    const categoryResponse = useCategory(Number(id))
+    const navigation = useNavigate()
+    const { data } = useCategories({
+        name: '',
+        pageNo: 1,
+        pageSize: 6,
+        published: undefined,
+    })
+
+    useEffect(() => {
+        if (isUpdateMode && categoryResponse.data) {
+            form.setFieldsValue({
+                ...categoryResponse.data,
+            })
+        }
+    }, [isUpdateMode, categoryResponse, form])
+
+    const onFinish = (values: CategoryRequest) => {
+        if (isUpdateMode) {
+            updateCategory({ id: Number(id), ...values }, { onSuccess: () => navigation(-1) })
+        } else {
+            createCategory(values, { onSuccess: () => navigation(-1) })
+        }
+    }
+
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType)
         }
-
-        setPreviewImage(file.url || (file.preview as string))
+        setPreviewImage(file.url ?? (file.preview as string))
         setPreviewOpen(true)
     }
 
@@ -68,19 +97,27 @@ export default function CategoryCreateUpdate() {
             <div style={{ marginTop: 8 }}>Upload</div>
         </button>
     )
+
     return (
-        <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
-            <Form {...layout} name='nest-messages' onFinish={onFinish} validateMessages={validateMessages}>
+        <div className='bg-[#fff] rounded-lg shadow-md p-6'>
+            <Form
+                {...layout}
+                name='nest-messages'
+                form={form}
+                onFinish={onFinish}
+                validateMessages={validateMessages}
+                initialValues={categoryResponse.data}
+            >
                 <Row gutter={[24, 8]}>
                     <Col span={12}>
                         <Card className='min-h-full' size='small' title='Category info'>
-                            <Form.Item name={['category', 'name']} label='Name' rules={[{ required: true }]}>
+                            <Form.Item name='name' label='Name' rules={[{ required: true }]}>
                                 <Input />
                             </Form.Item>
-                            <Form.Item name={['category', 'description']} label='Description'>
+                            <Form.Item name='description' label='Description'>
                                 <Input.TextArea />
                             </Form.Item>
-                            <Form.Item name={['category', 'parentCategoryId']} label='Parent category'>
+                            <Form.Item name='categoryParentId' label='Parent category'>
                                 <Select
                                     showSearch
                                     placeholder='[none]'
@@ -88,62 +125,73 @@ export default function CategoryCreateUpdate() {
                                         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                     }
                                     options={[
-                                        { value: '1', label: 'Jack' },
-                                        { value: '2', label: 'Lucy' },
-                                        { value: '3', label: 'Tom' },
+                                        { label: '[None]', value: null },
+                                        ...(data?.data.items.map((item) => ({
+                                            label: getCategoryFullName(item),
+                                            value: item.id,
+                                        })) ?? []),
                                     ]}
                                 />
                             </Form.Item>
-                            <Form.Item name={['category', 'pictureId']} label='Picture'>
-                                <Upload
-                                    action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'
-                                    listType='picture-card'
-                                    fileList={fileList}
-                                    onPreview={handlePreview}
-                                    onChange={handleChange}
-                                >
-                                    {fileList.length >= 8 ? null : uploadButton}
-                                </Upload>
-                                {previewImage && (
-                                    <Image
-                                        wrapperStyle={{ display: 'none' }}
-                                        preview={{
-                                            visible: previewOpen,
-                                            onVisibleChange: (visible) => setPreviewOpen(visible),
-                                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                                        }}
-                                        src={previewImage}
-                                    />
-                                )}
+                            <Form.Item name='pictureId' label='Picture'>
+                                <div>
+                                    <Upload
+                                        action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'
+                                        listType='picture-card'
+                                        fileList={fileList}
+                                        onPreview={handlePreview}
+                                        onChange={handleChange}
+                                    >
+                                        {fileList.length >= 8 ? null : uploadButton}
+                                    </Upload>
+                                    {previewImage && (
+                                        <Image
+                                            wrapperStyle={{ display: 'none' }}
+                                            preview={{
+                                                visible: previewOpen,
+                                                onVisibleChange: (visible) => setPreviewOpen(visible),
+                                                afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                                            }}
+                                            src={previewImage}
+                                        />
+                                    )}
+                                </div>
                             </Form.Item>
                         </Card>
                     </Col>
                     <Col span={12}>
                         <Card className='min-h-full' size='small' title='Display'>
-                            <Form.Item name={['category', 'published']} label='Published'>
-                                <Checkbox onChange={onChange} checked />
+                            <Form.Item name='published' label='Published' valuePropName='checked'>
+                                <Checkbox />
                             </Form.Item>
-                            <Form.Item name={['category', 'showOnHomePage']} label='Show on home page'>
-                                <Checkbox onChange={onChange} />
+                            <Form.Item name='showOnHomePage' label='Show on home page' valuePropName='checked'>
+                                <Checkbox />
                             </Form.Item>
-                            <Form.Item name={['category', 'includeInTopMenu']} label='Include in top menu'>
-                                <Checkbox onChange={onChange} checked />
+                            <Form.Item name='includeInTopMenu' label='Include in top menu' valuePropName='checked'>
+                                <Checkbox />
                             </Form.Item>
-                            <Form.Item name={['category', 'pageSize']} label='Page size'>
-                                <InputNumber defaultValue={6} />
+                            <Form.Item
+                                name='pageSize'
+                                label='Page size'
+                                rules={[{ required: true, min: 1, type: 'number' }]}
+                            >
+                                <InputNumber />
                             </Form.Item>
-                            <Form.Item name={['category', 'priceRangeFiltering']} label='Price range filtering'>
-                                <Checkbox onChange={onChange} />
+                            <Form.Item name='priceRangeFiltering' label='Price range filtering' valuePropName='checked'>
+                                <Checkbox />
                             </Form.Item>
-                            <Form.Item name={['category', 'displayOrder']} label='Display order'>
-                                <InputNumber defaultValue={0} />
+                            <Form.Item
+                                name='displayOrder'
+                                label='Display order'
+                                rules={[{ required: true, min: 0, type: 'number' }]}
+                            >
+                                <InputNumber />
                             </Form.Item>
                         </Card>
                     </Col>
                 </Row>
-
-                <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-                    <Button type='primary' htmlType='submit'>
+                <Form.Item className='flex justify-end pt-5 items-center' wrapperCol={{ ...layout.wrapperCol }}>
+                    <Button type='primary' htmlType='submit' size='large' loading={isPending}>
                         Submit
                     </Button>
                 </Form.Item>

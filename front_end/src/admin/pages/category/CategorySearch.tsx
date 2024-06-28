@@ -2,6 +2,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import Input from 'antd/es/input/Input'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 interface CategorySearchProps {
     onSearch: (filter: { name: string; published: boolean | undefined }) => void
@@ -64,11 +65,11 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                             Delete
                         </Button>
 
-                        <a href='/admin/category/add'>
+                        <Link to='/admin/category/add'>
                             <Button className='bg-[#475569] text-white' size='large'>
                                 Add
                             </Button>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

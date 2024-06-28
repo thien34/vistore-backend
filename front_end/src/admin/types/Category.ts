@@ -16,7 +16,8 @@ export type CategoryResponse = {
     id: number
     name: string
     description: string
-    categoryParent: CategoryParentResponse | null
+    categoryParentId: number | null
+    pictureId: number | null
     showOnHomePage: boolean
     includeInTopMenu: boolean
     pageSize: number

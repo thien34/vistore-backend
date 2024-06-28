@@ -1,8 +1,8 @@
 package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.product.mapper.ProductTagMapper;
-import com.example.back_end.core.admin.product.payload.request.ProductTagRequestDto;
-import com.example.back_end.core.admin.product.payload.response.ProductTagDtoResponse;
+import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
+import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;
 import com.example.back_end.core.admin.product.service.ProductTagService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Product;
@@ -36,7 +36,7 @@ public class ProductTagServiceImpl implements ProductTagService {
     private final ProductProductTagMappingRepository productProductTagMappingRepository;
 
     @Override
-    public void createProductTag(ProductTagRequestDto request) {
+    public void createProductTag(ProductTagRequest request) {
         Product product = getProduct(request.getProductId());
         ProductTag productTag = saveProductTag(request);
 
@@ -55,9 +55,9 @@ public class ProductTagServiceImpl implements ProductTagService {
         Page<ProductTag> productTagPage = productTagRepository.findByNameContaining(name, pageable);
 
         // Map to DTO responses
-        List<ProductTagDtoResponse> productTagDtoResponses = productTagPage.stream()
+        List<ProductTagResponse> productTagRespons = productTagPage.stream()
                 .map(productTagMapper::toDto)
-                .sorted(Comparator.comparing(ProductTagDtoResponse::getId).reversed())
+                .sorted(Comparator.comparing(ProductTagResponse::getId).reversed())
                 .toList();
 
         // Build the page response
@@ -65,12 +65,12 @@ public class ProductTagServiceImpl implements ProductTagService {
                 .page(productTagPage.getNumber())
                 .size(productTagPage.getSize())
                 .totalPage(productTagPage.getTotalPages())
-                .items(productTagDtoResponses)
+                .items(productTagRespons)
                 .build();
     }
 
     @Override
-    public ProductTagDtoResponse getProductTag(Long id) {
+    public ProductTagResponse getProductTag(Long id) {
         ProductTag productTag = productTagRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product tag with id not found: " + id));
@@ -102,7 +102,7 @@ public class ProductTagServiceImpl implements ProductTagService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
     }
 
-    private ProductTag saveProductTag(ProductTagRequestDto request) {
+    private ProductTag saveProductTag(ProductTagRequest request) {
         return productTagRepository.save(productTagMapper.toEntity(request));
     }
 
@@ -115,7 +115,7 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     private PageResponse<?> convertToPageResponse(Page<ProductTag> productTagPage, Pageable pageable) {
-        List<ProductTagDtoResponse> response = productTagPage.getContent()
+        List<ProductTagResponse> response = productTagPage.getContent()
                 .stream()
                 .map(productTagMapper::toDto)
                 .toList();

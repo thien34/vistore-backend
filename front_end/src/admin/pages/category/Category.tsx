@@ -5,6 +5,7 @@ import { useCategories, useDeleteCategory } from '@/admin/hooks/category.hook'
 import { CategoriesResponse, CategoryFilter, CategoryParentResponse } from '@/admin/types/Category'
 import { EditOutlined } from '@ant-design/icons'
 import CategorySearch from './CategorySearch'
+import { Link } from 'react-router-dom'
 
 type TableRowSelection<T> = TableProps<T>['rowSelection']
 
@@ -48,14 +49,15 @@ const columns: TableColumnsType<CategoriesResponse> = [
         title: 'Action',
         key: 'action',
         render: (_, record) => (
-            <a href={`/admin/category/${record.id}/update`}>
+            <Link to={`/admin/category/${record.id}/update`}>
                 <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
                     Edit
                 </Button>
-            </a>
+            </Link>
         ),
     },
 ]
+
 export default function Category() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<CategoryFilter>({
