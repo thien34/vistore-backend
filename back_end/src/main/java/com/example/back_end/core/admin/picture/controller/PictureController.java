@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/picture")
 @Slf4j
@@ -27,8 +29,8 @@ public class PictureController {
     public ResponseData<?> uploadImage(@ModelAttribute PictureRequest request) {
         log.info("Request add picture, {}", request);
         try {
-            Long id = pictureService.savePicture(request);
-            return new ResponseData<>(HttpStatus.OK.value(), "Upload image success!", id);
+            List<Long> ids = pictureService.savePicture(request);
+            return new ResponseData<>(HttpStatus.OK.value(), "Upload image success!", ids);
         } catch (Exception e) {
             log.error("An error occurred during file upload", e);
             return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());

@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,15 +25,17 @@ public class PictureServiceImpl implements PictureService {
     private final PictureMapper pictureMapper;
 
     @Override
-    public Long savePicture(PictureRequest request) {
-        String url = cloudinaryUpload.uploadFile(request.getImage(), CloudinaryTypeFolder.PRODUCTS);
+    public List<Long> savePicture(PictureRequest request) {
+        return request.getImages().stream().map(image -> {
+            String url = cloudinaryUpload.uploadFile(image, CloudinaryTypeFolder.PRODUCTS);
 
-        Picture picture = Picture.builder()
-                .linkImg(url)
-                .mimeType(request.getImage().getContentType())
-                .build();
+            Picture picture = Picture.builder()
+                    .linkImg(url)
+                    .mimeType(image.getContentType())
+                    .build();
 
-        return pictureRepository.save(picture).getId();
+            return pictureRepository.save(picture).getId();
+        }).toList();
     }
 
     @Override
