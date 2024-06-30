@@ -30,10 +30,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
-                                  @RequestParam(value = "published", defaultValue = "") Boolean published,
-                                  @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
-                                  @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
+    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = "published", defaultValue = "") Boolean published, @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
         try {
             PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get categories success", response);
@@ -55,10 +52,10 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseData<?> create(@RequestBody CategoryRequest request) {
-        log.info("Request add category, {}", request);
+    public ResponseData<?> create(@RequestBody CategoryRequest categoryRequest) {
+        log.info("Request add category, {}", categoryRequest);
         try {
-            categoryService.createCategory(request);
+            categoryService.createCategory(categoryRequest);
             return new ResponseData<>(HttpStatus.OK.value(), "Add product tag success");
         } catch (Exception e) {
             log.error("Error adding categories", e);
