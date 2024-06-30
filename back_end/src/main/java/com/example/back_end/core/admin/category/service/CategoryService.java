@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    void createCategory(CategoryRequest request);
+    void createCategory(CategoryRequest categoryRequest);
 
     void updateCategory(Long id, CategoryRequest request);
 
