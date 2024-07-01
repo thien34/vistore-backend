@@ -1,4 +1,5 @@
 import { useCategories, useCategory, useCreateCategory, useUpdateCategory } from '@/admin/hooks/category.hook'
+import { useCreatePictures } from '@/admin/hooks/picture.hook'
 import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/admin/types/Category'
 import { PlusOutlined } from '@ant-design/icons'
 import {
@@ -58,6 +59,7 @@ export default function CategoryCreateUpdate() {
     const { mutate: updateCategory } = useUpdateCategory()
     const categoryResponse = useCategory(Number(id))
     const navigation = useNavigate()
+    const { mutateAsync: createPictures } = useCreatePictures()
     const { data } = useCategories({
         name: '',
         pageNo: 1,
@@ -73,7 +75,15 @@ export default function CategoryCreateUpdate() {
         }
     }, [isUpdateMode, categoryResponse, form])
 
-    const onFinish = (values: CategoryRequest) => {
+    const onFinish = async (values: CategoryRequest) => {
+        if (fileList.length) {
+            try {
+                const result = await createPictures({ images: [fileList[0].originFileObj as File] })
+                values.pictureId = result.id[0]
+            } catch (error) {
+                console.error(error)
+            }
+        }
         if (isUpdateMode) {
             updateCategory({ id: Number(id), ...values }, { onSuccess: () => navigation(-1) })
         } else {
@@ -89,7 +99,9 @@ export default function CategoryCreateUpdate() {
         setPreviewOpen(true)
     }
 
-    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => setFileList(newFileList)
+    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+        setFileList(newFileList)
+    }
 
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type='button'>
@@ -136,13 +148,12 @@ export default function CategoryCreateUpdate() {
                             <Form.Item name='pictureId' label='Picture'>
                                 <div>
                                     <Upload
-                                        action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'
                                         listType='picture-card'
                                         fileList={fileList}
                                         onPreview={handlePreview}
                                         onChange={handleChange}
                                     >
-                                        {fileList.length >= 8 ? null : uploadButton}
+                                        {fileList.length >= 2 ? null : uploadButton}
                                     </Upload>
                                     {previewImage && (
                                         <Image
