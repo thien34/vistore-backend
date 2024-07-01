@@ -5,7 +5,6 @@ import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
-import com.example.back_end.core.admin.picture.service.PictureService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Category;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
@@ -30,7 +29,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final PictureRepository pictureRepository;
-    private final PictureService pictureService;
 
     @Transactional
     @Override
@@ -45,7 +43,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void updateCategory(Long id, CategoryRequest request) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
+        Category category = categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
 
         validateCategoryParent(request.getCategoryParentId());
         validatePicture(request.getPictureId());
@@ -61,16 +61,27 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
-        Page<Category> categoryPage = categoryRepository.findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
+        Page<Category> categoryPage = categoryRepository.
+                findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
 
-        List<CategoriesResponse> categoriesResponses = categoryPage.getContent().stream().map(categoryMapper::toCategoriesResponse).toList();
+        List<CategoriesResponse> categoriesResponses = categoryPage.getContent()
+                .stream()
+                .map(categoryMapper::toCategoriesResponse)
+                .toList();
 
-        return PageResponse.builder().page(categoryPage.getNumber()).size(categoryPage.getSize()).totalPage(categoryPage.getTotalPages()).items(categoriesResponses).build();
+        return PageResponse.builder()
+                .page(categoryPage.getNumber())
+                .size(categoryPage.getSize())
+                .totalPage(categoryPage.getTotalPages())
+                .items(categoriesResponses)
+                .build();
     }
 
     @Override
     public CategoryResponse getCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
+        Category category = categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
 
         return categoryMapper.toDto(category);
     }

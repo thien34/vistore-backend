@@ -1,7 +1,6 @@
 package com.example.back_end.core.admin.picture.service.impl;
 
 import com.example.back_end.core.admin.picture.mapper.PictureMapper;
-import com.example.back_end.core.admin.picture.payload.request.PictureRequest;
 import com.example.back_end.core.admin.picture.payload.response.PictureResponse;
 import com.example.back_end.core.admin.picture.service.PictureService;
 import com.example.back_end.entity.Picture;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,8 +25,8 @@ public class PictureServiceImpl implements PictureService {
     private final PictureMapper pictureMapper;
 
     @Override
-    public List<Long> savePicture(PictureRequest request) {
-        return request.getImages().stream().map(image -> {
+    public List<Long> savePicture(List<MultipartFile> images) {
+        return images.stream().map(image -> {
             String url = cloudinaryUpload.uploadFile(image, CloudinaryTypeFolder.PRODUCTS);
 
             Picture picture = Picture.builder()
