@@ -79,7 +79,7 @@ export default function CategoryCreateUpdate() {
         if (fileList.length) {
             try {
                 const result = await createPictures({ images: [fileList[0].originFileObj as File] })
-                values.pictureId = result.id[0]
+                values.pictureId = result.data[0]
             } catch (error) {
                 console.error(error)
             }
@@ -89,6 +89,7 @@ export default function CategoryCreateUpdate() {
         } else {
             createCategory(values, { onSuccess: () => navigation(-1) })
         }
+        console.log('Received values:', values)
     }
 
     const handlePreview = async (file: UploadFile) => {
