@@ -1,7 +1,10 @@
 package com.example.back_end.repository;
 
 import com.example.back_end.entity.PredefinedProductAttributeValue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PredefinedProductAttributeValueRepository extends JpaRepository<PredefinedProductAttributeValue, Long> {
+    Page<PredefinedProductAttributeValue> findByNameContaining(String name, Pageable pageable);
 }

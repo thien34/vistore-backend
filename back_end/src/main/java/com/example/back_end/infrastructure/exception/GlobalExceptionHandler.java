@@ -1,10 +1,13 @@
 package com.example.back_end.infrastructure.exception;
 
+import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.infrastructure.constant.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -153,4 +156,17 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
+    @ExceptionHandler(value = StoreException.class)
+    ResponseEntity<ResponseData> handlingAppException(StoreException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
+        ResponseData responseData = ResponseData.builder()
+                .status(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(responseData);
+    }
+
 }
