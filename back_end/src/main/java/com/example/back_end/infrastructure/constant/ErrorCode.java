@@ -32,7 +32,11 @@ public enum ErrorCode {
 
     UNAUTHORIZED(1009, "You do not have permission", HttpStatus.FORBIDDEN),
 
-    INVALID_PAGE_NUMBER_OR_PAGE_SIZE(1010, "Invalid page number or page size", HttpStatus.BAD_REQUEST);
+    INVALID_PAGE_NUMBER_OR_PAGE_SIZE(1010, "Invalid page number or page size", HttpStatus.BAD_REQUEST),
+
+    PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED(1011, "The predefined product attribute name already exists, you can reuse it", HttpStatus.BAD_REQUEST),
+
+    PRODUCT_ATTRIBUTE_EXISTED(1012, "Product attribute already existed", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

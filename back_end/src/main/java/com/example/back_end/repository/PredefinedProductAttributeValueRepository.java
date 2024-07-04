@@ -6,5 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PredefinedProductAttributeValueRepository extends JpaRepository<PredefinedProductAttributeValue, Long> {
+    boolean existsByName(String name);
     Page<PredefinedProductAttributeValue> findByNameContaining(String name, Pageable pageable);
 }

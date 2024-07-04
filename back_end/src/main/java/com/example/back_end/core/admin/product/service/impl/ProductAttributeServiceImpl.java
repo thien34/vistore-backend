@@ -32,8 +32,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Override
     @Transactional
     public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
-        if (productAttributeRepository.existsByName(request.getName()))
-            throw new StoreException(ErrorCode.USER_EXISTED);
+        if (productAttributeRepository
+                .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
+            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED);
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
         return productAttributeRepository.save(productAttribute);
     }
@@ -71,6 +72,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     public ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request) {
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
                 .orElseThrow(() -> new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED));
+        if (productAttributeRepository
+                .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
+            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED);
 
         productAttribute.setName(request.getName());
         productAttribute.setDescription(request.getDescription());
@@ -86,17 +90,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         if (!productAttributeRepository.existsById(id)) {
             throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED);
         }
-         productAttributeRepository.deleteById(id);
+        productAttributeRepository.deleteById(id);
     }
-
-//    private PageResponse<?> convertToPageResponse(Page<ProductAttribute> productAttributePage, Pageable pageable) {
-//        List<ProductAttributeResponse> response = productAttributeMapper.toDtos(productAttributePage);
-//
-//        return PageResponse.builder()
-//                .page(pageable.getPageNumber())
-//                .size(pageable.getPageSize())
-//                .totalPage(productAttributePage.getTotalPages())
-//                .items(response).build();
-//    }
 
 }
