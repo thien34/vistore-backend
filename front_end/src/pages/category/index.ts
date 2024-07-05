@@ -1,3 +1,1 @@
-import CategoryManage from './CategoryManage'
-// .....
-export { CategoryManage as default }
+export { default } from './CategoryManage'

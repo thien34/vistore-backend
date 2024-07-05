@@ -5,7 +5,6 @@ const clientApiPath = ApplicationConstants.CLIENT_API_PATH
 
 class ResourceURL {
     // ADMIN
-
     static PRODUCT = apiPath + '/products'
     static PRODUCT_TAG = apiPath + '/product-tags'
     static CATEGORY = apiPath + '/categories'

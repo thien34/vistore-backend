@@ -59,7 +59,7 @@ export default function ModalAddUpdate({
 
     return (
         <Modal closable={true} title={title} open={isModalOpen} onCancel={handleCancel} footer={null}>
-            <Form {...layout} form={form} name='control-hooks' onFinish={onFinish} style={{ maxWidth: 600 }}>
+            <Form {...layout} form={form} name='control-hooks' onFinish={onFinish}>
                 <Form.Item hidden name='id'>
                     <Input />
                 </Form.Item>

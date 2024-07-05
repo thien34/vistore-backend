@@ -1,6 +1,6 @@
 import useGetAllApi from '@/hooks/use-get-all-api'
 import ProductTagConfigs from './ProductTagConfigs'
-import { Button, Empty, Table, TableColumnsType, theme } from 'antd'
+import { Button, Empty, Table, TableColumnsType } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import ModalAddUpdate from './ModalAddUpdate'
 import useProductTagCreateViewModel from './ProductTag.vm'
@@ -9,10 +9,6 @@ import { ProductTagResponse } from '@/model/ProductTag'
 import AppActions from '@/constants/AppActions '
 
 export default function ProductTagManage() {
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken()
-
     const {
         selectedRowKeys,
         handleSearch,
@@ -56,7 +52,7 @@ export default function ProductTagManage() {
             key: 'action',
             render: (_, _record) => (
                 <Button
-                    style={{ backgroundColor: '#374151', borderColor: '#374151', color: '#ffffff' }}
+                    className='bg-[#475569] text-white border-[#475569]'
                     icon={<EditOutlined />}
                     onClick={() => handleEdit(_record)}
                 >
@@ -74,18 +70,10 @@ export default function ProductTagManage() {
                 showModal={showModal}
                 handleDelete={handleDelete}
             />
-            <div
-                style={{
-                    padding: 24,
-                    minHeight: 330,
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
-                }}
-            >
+            <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {listResponse?.items ? (
                     <Table
                         rowKey='id'
-                        style={{ marginBottom: 15, marginTop: 25 }}
                         bordered
                         rowSelection={rowSelection}
                         columns={columns}

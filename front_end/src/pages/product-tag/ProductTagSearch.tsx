@@ -1,8 +1,6 @@
 import React from 'react'
-import { Button, Space, Tooltip, theme } from 'antd'
-import { QuestionCircleOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
 import Search from 'antd/es/input/Search'
-import ProductTagConfigs from './ProductTagConfigs'
 import AppActions from '@/constants/AppActions '
 
 interface ProductTagSearchProps {
@@ -18,50 +16,30 @@ const ProductTagSearchComponent: React.FC<ProductTagSearchProps> = ({
     handleDelete,
     selectedRowKeys,
 }) => {
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken()
-
     return (
-        <div
-            className='mb-5'
-            style={{
-                padding: 24,
-                minHeight: 190,
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-            }}
-        >
+        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <div>
-                <h3 className='text-2xl font-bold'>{AppActions.SEARCH}</h3>
-                <div className='flex px-5 pt-5 justify-center '>
-                    <h3 className='text-xl font-bold me-5 '>
-                        {ProductTagConfigs.searchFieldName}
-                        <Tooltip title='Search by name tag ' className='ms-1'>
-                            <QuestionCircleOutlined className='bg-blue-500 text-white rounded-full' />
-                        </Tooltip>
-                    </h3>
+                <h3 className='text-xl font-bold'>{AppActions.SEARCH}</h3>
+                <div className='flex px-5 pt-5 justify-between'>
+                    <div className='flex gap-4 flex-wrap'>
+                        <Search size='large' placeholder='Product tag name' onSearch={onSearch} />
+                    </div>
+                    <div className=''>
+                        <Button
+                            disabled={selectedRowKeys.length === 0}
+                            onClick={handleDelete}
+                            type='primary'
+                            className='me-5'
+                            danger
+                            size='large'
+                        >
+                            {AppActions.Delete}
+                        </Button>
 
-                    <Space style={{ marginBottom: 16, width: 820 }}>
-                        <Search placeholder={ProductTagConfigs.searchFieldNameTooltip} onSearch={onSearch} />
-                    </Space>
-
-                    <Button
-                        disabled={selectedRowKeys.length === 0}
-                        onClick={handleDelete}
-                        type='primary'
-                        className='me-5'
-                        danger
-                    >
-                        {AppActions.Delete}
-                    </Button>
-
-                    <Button
-                        style={{ backgroundColor: '#374151', borderColor: '#374151', color: '#ffffff' }}
-                        onClick={showModal}
-                    >
-                        {AppActions.ADD}
-                    </Button>
+                        <Button className='bg-[#475569] text-white border-[#475569]' size='large' onClick={showModal}>
+                            {AppActions.ADD}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

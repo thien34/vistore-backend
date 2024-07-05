@@ -9,8 +9,6 @@ class ProductTagConfigs extends Configs {
     static createTitle = 'Create Product Tag'
     static updateTitle = 'Update Product Tag'
     static searchTitle = 'Search'
-    static searchFieldName = 'Tag name'
-    static searchFieldNameTooltip = 'Tag name'
 }
 
 export default ProductTagConfigs

@@ -1,8 +1,8 @@
 class ManagerPath {
-    static PRODUCT = '/admin/products'
-    static PRODUCT_TAG = '/admin/product-tags'
-    static CATEGORY = '/admin/categories'
-    static ORDER = '/admin/orders'
+    static readonly PRODUCT = '/admin/products'
+    static readonly PRODUCT_TAG = '/admin/product-tags'
+    static readonly CATEGORY = '/admin/categories'
+    static readonly ORDER = '/admin/orders'
 }
 
 export default ManagerPath
