@@ -1,5 +1,5 @@
 import { useCategories, useCategory, useCreateCategory, useUpdateCategory } from '@/admin/hooks/category.hook'
-import { useCreatePictures } from '@/admin/hooks/picture.hook'
+import { useCreatePictures, useGetPicture } from '@/admin/hooks/picture.hook'
 import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/admin/types/Category'
 import { PlusOutlined } from '@ant-design/icons'
 import {
@@ -60,6 +60,7 @@ export default function CategoryCreateUpdate() {
     const categoryResponse = useCategory(Number(id))
     const navigation = useNavigate()
     const { mutateAsync: createPictures } = useCreatePictures()
+    const pictureResponse = useGetPicture(categoryResponse.data?.pictureId ?? undefined)
     const { data } = useCategories({
         name: '',
         pageNo: 1,
@@ -72,13 +73,23 @@ export default function CategoryCreateUpdate() {
             form.setFieldsValue({
                 ...categoryResponse.data,
             })
+            if (categoryResponse.data.pictureId) {
+                setFileList([
+                    {
+                        uid: '-1',
+                        name: 'picture',
+                        status: 'done',
+                        url: pictureResponse.data?.linkImg ?? '',
+                    },
+                ])
+            }
         }
-    }, [isUpdateMode, categoryResponse, form])
+    }, [isUpdateMode, categoryResponse, form, pictureResponse])
 
     const onFinish = async (values: CategoryRequest) => {
         if (fileList.length) {
             try {
-                const result = await createPictures({ images: [fileList[0].originFileObj as File] })
+                const result = await createPictures([fileList[0].originFileObj as File])
                 values.pictureId = result.data[0]
             } catch (error) {
                 console.error(error)

@@ -1,10 +1,16 @@
-import { useMutation } from '@tanstack/react-query'
-import { PictureRequest } from '../types/Picture'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import PictureService from '../apis/PictureService'
 
 export const useCreatePictures = () => {
     return useMutation({
         mutationKey: ['createPictures'],
-        mutationFn: (picture: PictureRequest) => PictureService.uploadPicture(picture),
+        mutationFn: (picture: File[]) => PictureService.uploadPicture(picture),
+    })
+}
+
+export const useGetPicture = (id?: number) => {
+    return useQuery({
+        queryKey: ['getPicture', id],
+        queryFn: () => (id ? PictureService.getPicture(id) : null),
     })
 }

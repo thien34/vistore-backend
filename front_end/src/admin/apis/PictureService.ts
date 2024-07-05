@@ -1,14 +1,23 @@
-import { PictureRequest } from '../types/Picture'
+import { http } from '@/libs/http'
+import { PictureResponseBase } from '../types/Picture'
 
 class PictureService {
-    async uploadPicture(request: PictureRequest) {
+    async uploadPicture(request: File[]) {
         const formData = new FormData()
-        formData.set('images[0]', request.images[0])
+        request.forEach((file) => {
+            formData.append('images', file)
+        })
         const result = await fetch('http://localhost:8080/admin/picture', {
             body: formData,
             method: 'POST',
         })
         return result.json()
+    }
+
+    async getPicture(id: number) {
+        const url = `/admin/picture/${id}`
+        const result = await http.get<PictureResponseBase>(url)
+        return result.payload.data
     }
 }
 export default new PictureService()
