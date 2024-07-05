@@ -22,7 +22,7 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <div>
                 <h3 className='text-xl font-bold'>Search</h3>
-                <div className='flex pt-5 justify-between'>
+                <div className='flex px-5 pt-5 justify-between'>
                     <div className='flex gap-4 flex-wrap'>
                         <Input
                             className='w-56'

@@ -5,7 +5,7 @@ import {
     CategoryResponse,
     CategoryResponseBasic,
     CategoryResponseWithPage,
-} from '../types/Category'
+} from '@/model/Category'
 
 class CategoryService {
     async getAll(filter: CategoryFilter) {

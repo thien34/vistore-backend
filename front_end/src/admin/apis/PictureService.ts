@@ -1,5 +1,5 @@
 import { http } from '@/libs/http'
-import { PictureResponseBase } from '../types/Picture'
+import { PictureResponseBase } from '@/model/Picture'
 
 class PictureService {
     async uploadPicture(request: File[]) {

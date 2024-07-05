@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Button, Table } from 'antd'
 import type { TableColumnsType, TableProps } from 'antd'
 import { useCategories, useDeleteCategory } from '@/admin/hooks/category.hook'
-import { CategoriesResponse, CategoryFilter, CategoryParentResponse } from '@/admin/types/Category'
 import { EditOutlined } from '@ant-design/icons'
 import CategorySearch from './CategorySearch'
 import { Link } from 'react-router-dom'
+import { CategoriesResponse, CategoryFilter, CategoryParentResponse } from '@/model/Category'
 
 type TableRowSelection<T> = TableProps<T>['rowSelection']
 
@@ -115,11 +115,11 @@ export default function Category() {
             <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {data && (
                     <Table
-                        rowSelection={rowSelection}
+                        rowKey='id'
                         bordered
+                        rowSelection={rowSelection}
                         columns={columns}
                         dataSource={data.data.items}
-                        rowKey='id'
                         pagination={{
                             pageSize: filter.pageSize,
                             total: data.data.totalPage * 6,

@@ -1,6 +1,6 @@
 import { useCategories, useCategory, useCreateCategory, useUpdateCategory } from '@/admin/hooks/category.hook'
 import { useCreatePictures, useGetPicture } from '@/admin/hooks/picture.hook'
-import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/admin/types/Category'
+import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
 import { PlusOutlined } from '@ant-design/icons'
 import {
     Button,
