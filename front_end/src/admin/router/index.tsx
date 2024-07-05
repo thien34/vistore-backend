@@ -1,8 +1,9 @@
 import LayoutMain from '@admin/layouts/LayoutMain'
-import ProductTag from '../pages/product_tag/ProductTag'
 import Home from '../pages/home'
 import Category from '../pages/category/Category'
 import CategoryCreateUpdate from '../pages/category/CategoryCreateUpdate'
+import ProductTagManage from '@/pages/product-tag/ProductTagManage'
+import ManagerPath from '@/constants/ManagerPath '
 
 const routers = [
     {
@@ -11,14 +12,14 @@ const routers = [
         element: <Home />,
     },
     {
-        path: 'product-tag',
+        path: ManagerPath.PRODUCT_TAG,
         layout: 'main',
-        element: <ProductTag />,
+        element: <ProductTagManage />,
         breadcrumbName: 'ProductTag',
         pageType: 'product-tag',
     },
     {
-        path: 'category',
+        path: ManagerPath.PRODUCT_TAG,
         layout: 'main',
         element: <Category />,
         breadcrumbName: 'Category',
