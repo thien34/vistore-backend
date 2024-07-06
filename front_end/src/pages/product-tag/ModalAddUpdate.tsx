@@ -1,4 +1,4 @@
-import { ProductTagRequest, ProductTagResponse } from '@/admin/types/ProductTag'
+import { ProductTagRequest, ProductTagResponse } from '@/model/ProductTag'
 import { Modal, Form, Input, Select, Button, Space } from 'antd'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 

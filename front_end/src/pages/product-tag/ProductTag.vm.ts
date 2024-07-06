@@ -5,6 +5,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { RequestParams } from '@/utils/FetchUtils'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
 import { ProductTagRequest, ProductTagResponse } from '@/model/ProductTag'
+import useGetAllApi from '@/hooks/use-get-all-api'
+import getProductTagColumns from './ProductTagColumns'
 
 interface Search extends RequestParams {
     cate?: string
@@ -75,6 +77,14 @@ function useProductTagCreateViewModel() {
         }))
     }
 
+    const columns = getProductTagColumns(handleEdit)
+
+    const { data: listResponse } = useGetAllApi<ProductTagResponse>(
+        ProductTagConfigs.resourceUrl,
+        ProductTagConfigs.resourceKey,
+        filter,
+    )
+
     return {
         selectedRowKeys,
         handleSearch,
@@ -87,8 +97,9 @@ function useProductTagCreateViewModel() {
         title,
         setTitle,
         setIsModalOpen,
-        handleEdit,
+        columns,
         filter,
+        listResponse,
         handleTableChange,
     }
 }

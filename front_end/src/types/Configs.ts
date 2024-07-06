@@ -1,11 +1,11 @@
 import { TitleLink } from './TitleLink'
 
 export abstract class Configs {
-    static managerPath: string
-    static resourceUrl: string
-    static resourceKey: string
-    static createTitle: string
-    static updateTitle: string
-    static manageTitle: string
-    static manageTitleLinks: TitleLink[]
+    static readonly managerPath: string
+    static readonly resourceUrl: string
+    static readonly resourceKey: string
+    static readonly createTitle: string
+    static readonly updateTitle: string
+    static readonly manageTitle: string
+    static readonly manageTitleLinks: TitleLink[]
 }

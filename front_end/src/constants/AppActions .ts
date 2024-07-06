@@ -1,9 +1,9 @@
 class AppActions {
-    static ADD = 'Add new'
-    static UPDATE = 'Update'
-    static Delete = 'Delete'
-    static SEARCH = 'Search'
-    static EDIT = 'Edit'
+    static readonly ADD = 'Add new'
+    static readonly UPDATE = 'Update'
+    static readonly Delete = 'Delete'
+    static readonly SEARCH = 'Search'
+    static readonly EDIT = 'Edit'
 }
 
 export default AppActions

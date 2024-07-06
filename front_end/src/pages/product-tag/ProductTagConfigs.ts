@@ -2,13 +2,11 @@ import ManagerPath from '@/constants/ManagerPath '
 import ResourceURL from '@/constants/ResourceURL '
 import { Configs } from '@/types/Configs'
 
-class ProductTagConfigs extends Configs {
-    static managerPath = ManagerPath.PRODUCT_TAG
-    static resourceUrl = ResourceURL.PRODUCT_TAG
-    static resourceKey = 'product-tags'
-    static createTitle = 'Create Product Tag'
-    static updateTitle = 'Update Product Tag'
-    static searchTitle = 'Search'
+export default class ProductTagConfigs extends Configs {
+    static readonly managerPath = ManagerPath.PRODUCT_TAG
+    static readonly resourceUrl = ResourceURL.PRODUCT_TAG
+    static readonly resourceKey = 'product-tags'
+    static readonly createTitle = 'Create Product Tag'
+    static readonly updateTitle = 'Update Product Tag'
+    static readonly searchTitle = 'Search'
 }
-
-export default ProductTagConfigs
