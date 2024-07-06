@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import CategoryService from '../apis/CategoryService'
-import { CategoryFilter, CategoryRequest, CategoryResponse } from '../types/Category'
+import { CategoryFilter, CategoryRequest, CategoryResponse } from '@/model/Category'
 
 export const useCategories = (filter: CategoryFilter) => {
     return useQuery({

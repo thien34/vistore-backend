@@ -2,8 +2,8 @@ import LayoutMain from '@admin/layouts/LayoutMain'
 import ManagerPath from '@/constants/ManagerPath '
 import Home from '@/admin/pages/home'
 import ProductTagManage from '@/pages/product-tag/ProductTagManage'
-import Category from '@/admin/pages/category/Category'
-import CategoryCreateUpdate from '@/admin/pages/category/CategoryCreateUpdate'
+import CategoryCreateUpdate from '@/pages/category/CategoryCreateUpdate'
+import CategoryManage from '@/pages/category/CategoryManage'
 
 const routers = [
     {
@@ -21,7 +21,7 @@ const routers = [
     {
         path: ManagerPath.CATEGORY,
         layout: 'main',
-        element: <Category />,
+        element: <CategoryManage />,
         breadcrumbName: 'Category',
         pageType: 'category',
     },

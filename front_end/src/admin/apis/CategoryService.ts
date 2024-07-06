@@ -15,13 +15,13 @@ class CategoryService {
             pageSize: filter.pageSize?.toString() ?? '6',
             published: filter.published?.toString() ?? '',
         })
-        const url = `/admin/categories?${queryParams.toString()}`
+        const url = `/api/admin/categories?${queryParams.toString()}`
         const result = await http.get<CategoryResponseWithPage>(url)
         return result.payload
     }
 
     async get(id: number) {
-        const url = `/admin/categories/${id}`
+        const url = `/api/admin/categories/${id}`
         const result = await http.get<{
             data: CategoryResponse
         }>(url)
@@ -29,19 +29,19 @@ class CategoryService {
     }
 
     async create(request: CategoryRequest) {
-        const url = '/admin/categories'
+        const url = '/api/admin/categories'
         const result = await http.post<CategoryResponseBasic>(url, request)
         return { status: result.payload.status, message: result.payload.message }
     }
 
     async update(request: Partial<CategoryRequest>) {
-        const url = `/admin/categories/${request.id}`
+        const url = `/api/admin/categories/${request.id}`
         const result = await http.put<CategoryResponseBasic>(url, request)
         return { status: result.payload.status, message: result.payload.message }
     }
 
     async delete(ids: number[]) {
-        const url = '/admin/categories'
+        const url = '/api/admin/categories'
         const result = await http.delete<CategoryResponseBasic>(url, ids)
         return { status: result.payload.status, message: result.payload.message }
     }

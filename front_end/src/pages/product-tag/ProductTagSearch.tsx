@@ -33,7 +33,7 @@ const ProductTagSearchComponent: React.FC<ProductTagSearchProps> = ({
                             danger
                             size='large'
                         >
-                            {AppActions.Delete}
+                            {AppActions.DELETE}
                         </Button>
 
                         <Button className='bg-[#475569] text-white border-[#475569]' size='large' onClick={showModal}>

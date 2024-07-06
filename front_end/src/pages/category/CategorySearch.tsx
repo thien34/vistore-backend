@@ -1,3 +1,4 @@
+import AppActions from '@/constants/AppActions '
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import Input from 'antd/es/input/Input'
@@ -21,7 +22,7 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <div>
-                <h3 className='text-xl font-bold'>Search</h3>
+                <h3 className='text-xl font-bold'>{AppActions.SEARCH}</h3>
                 <div className='flex px-5 pt-5 justify-between'>
                     <div className='flex gap-4 flex-wrap'>
                         <Input
@@ -50,7 +51,7 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                             iconPosition={'end'}
                             onClick={handleSearch}
                         >
-                            Search
+                            {AppActions.SEARCH}
                         </Button>
                     </div>
                     <div className=''>
@@ -62,12 +63,11 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                             danger
                             size='large'
                         >
-                            Delete
+                            {AppActions.DELETE}
                         </Button>
-
                         <Link to='/admin/category/add'>
                             <Button className='bg-[#475569] text-white' size='large'>
-                                Add
+                                {AppActions.ADD}
                             </Button>
                         </Link>
                     </div>
