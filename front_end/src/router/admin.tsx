@@ -2,8 +2,9 @@ import LayoutMain from '@admin/layouts/LayoutMain'
 import ManagerPath from '@/constants/ManagerPath '
 import Home from '@/admin/pages/home'
 import ProductTagManage from '@/pages/product-tag/ProductTagManage'
-import CategoryCreateUpdate from '@/pages/category/CategoryCreateUpdate'
 import CategoryManage from '@/pages/category/CategoryManage'
+import CategoryCreate from '@/pages/category/CategoryCreate'
+import CategoryUpdate from '@/pages/category/CategoryUpdate'
 
 const routers = [
     {
@@ -26,16 +27,16 @@ const routers = [
         pageType: 'category',
     },
     {
-        path: 'category/add',
+        path: ManagerPath.CATEGORY_ADD,
         layout: 'main',
-        element: <CategoryCreateUpdate />,
+        element: <CategoryCreate />,
         breadcrumbName: 'Add Category',
         pageType: 'category',
     },
     {
-        path: 'category/:id/update',
+        path: ManagerPath.CATEGORY_UPDATE,
         layout: 'main',
-        element: <CategoryCreateUpdate />,
+        element: <CategoryUpdate />,
         breadcrumbName: 'Update Category',
         pageType: 'category',
     },

@@ -28,7 +28,7 @@ export default function CategoryManage() {
                         columns={columns}
                         dataSource={listResponse.items}
                         pagination={{
-                            current: filter.pageNo ?? 0,
+                            current: filter.pageNo ?? 1,
                             pageSize: filter.pageSize ?? 6,
                             total: listResponse.totalPages * (filter.pageSize ?? 6),
                             onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),

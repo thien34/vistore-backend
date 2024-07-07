@@ -65,7 +65,7 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                         >
                             {AppActions.DELETE}
                         </Button>
-                        <Link to='/admin/category/add'>
+                        <Link to='/admin/categories/add'>
                             <Button className='bg-[#475569] text-white' size='large'>
                                 {AppActions.ADD}
                             </Button>

@@ -7,7 +7,7 @@ class PictureService {
         request.forEach((file) => {
             formData.append('images', file)
         })
-        const result = await fetch('http://localhost:8080/admin/picture', {
+        const result = await fetch('http://localhost:8080/api/admin/picture', {
             body: formData,
             method: 'POST',
         })
@@ -15,7 +15,7 @@ class PictureService {
     }
 
     async getPicture(id: number) {
-        const url = `/admin/picture/${id}`
+        const url = `/api/admin/picture/${id}`
         const result = await http.get<PictureResponseBase>(url)
         return result.payload.data
     }
