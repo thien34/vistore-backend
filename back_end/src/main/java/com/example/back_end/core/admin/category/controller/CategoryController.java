@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.category.controller;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
+import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
@@ -29,13 +30,24 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping
+    @GetMapping()
     public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = "published", defaultValue = "") Boolean published, @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
         try {
             PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get categories success", response);
         } catch (Exception e) {
             log.error("Error getting categories", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/name")
+    public ResponseData<?> getAllName() {
+        try {
+            List<CategoryNameResponse> response = categoryService.getCategoriesName();
+            return new ResponseData<>(HttpStatus.OK.value(), "Get categories name success", response);
+        } catch (Exception e) {
+            log.error("Error getting categories name", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }

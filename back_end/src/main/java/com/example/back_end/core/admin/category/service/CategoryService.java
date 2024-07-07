@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.category.service;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
+import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.common.PageResponse;
 
@@ -17,5 +18,7 @@ public interface CategoryService {
     CategoryResponse getCategory(Long id);
 
     void deleteCategories(List<Long> ids);
+
+    List<CategoryNameResponse> getCategoriesName();
 
 }

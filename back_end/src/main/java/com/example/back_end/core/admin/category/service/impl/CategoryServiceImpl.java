@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.category.service.impl;
 import com.example.back_end.core.admin.category.mapper.CategoryMapper;
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
+import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
@@ -96,6 +97,11 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         categoryRepository.deleteAll(categories);
+    }
+
+    @Override
+    public List<CategoryNameResponse> getCategoriesName() {
+        return categoryRepository.findAllCategoriesName();
     }
 
     public void validateCategoryParent(Long categoryParentId) {
