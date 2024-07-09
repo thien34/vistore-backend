@@ -31,7 +31,10 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping()
-    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = "published", defaultValue = "") Boolean published, @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
+    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
+                                  @RequestParam(value = "published", defaultValue = "") Boolean published,
+                                  @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+                                  @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
         try {
             PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get categories success", response);
