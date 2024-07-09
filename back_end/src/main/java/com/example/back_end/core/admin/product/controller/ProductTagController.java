@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product-tags")
+@RequestMapping("/admin/product-tags")
 @Slf4j
 public class ProductTagController {
 
@@ -33,9 +33,7 @@ public class ProductTagController {
     @GetMapping
     public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
                                   @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize,
-                                  @RequestParam(value = "sortBy", defaultValue = "id")
-                                  String sortBy) {
+                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
         try {
             PageResponse<?> response = productTagService.getAll(name, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get product tags success", response);

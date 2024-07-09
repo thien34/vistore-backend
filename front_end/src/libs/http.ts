@@ -1,4 +1,4 @@
-import { nomarlUrl } from './helper'
+import { normalUrl } from './helper'
 
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD'
 
@@ -12,7 +12,7 @@ class HttpError extends Error {
 
 const httpRequest = async <Response>(url: string, method: Method = 'GET', body: unknown, config?: RequestInit) => {
     try {
-        const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${nomarlUrl(url)}`
+        const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${normalUrl(url)}`
         const options: RequestInit = {
             method,
             credentials: 'include',

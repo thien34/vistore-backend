@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.category.service.impl;
 import com.example.back_end.core.admin.category.mapper.CategoryMapper;
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
+import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
@@ -30,12 +31,13 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
     private final PictureRepository pictureRepository;
 
+    @Transactional
     @Override
-    public void createCategory(CategoryRequest request) {
-        validateCategoryParent(request.getCategoryParentId());
-        validatePicture(request.getPictureId());
+    public void createCategory(CategoryRequest categoryRequest) {
+        validateCategoryParent(categoryRequest.getCategoryParentId());
+        validatePicture(categoryRequest.getPictureId());
 
-        Category category = categoryMapper.mapToCategory(request);
+        Category category = categoryMapper.mapToCategory(categoryRequest);
         categoryRepository.save(category);
     }
 
@@ -55,15 +57,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize) {
-        if (pageNo -1 < 0 || pageSize  <= 0) {
+        if (pageNo - 1 < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
 
-        Pageable pageable = PageRequest.of(pageNo -1, pageSize, Sort.by("id").descending());
-        Page<Category> categoryPage = categoryRepository.findAll(
-                CategorySpecification.filterByNameAndPublished(name, published),
-                pageable
-        );
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
+        Page<Category> categoryPage = categoryRepository.
+                findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
 
         List<CategoriesResponse> categoriesResponses = categoryPage.getContent()
                 .stream()
@@ -95,8 +95,13 @@ public class CategoryServiceImpl implements CategoryService {
         if (categories.size() != ids.size()) {
             throw new ResourceNotFoundException("One or more categories not found for the given ids");
         }
-    
+
         categoryRepository.deleteAll(categories);
+    }
+
+    @Override
+    public List<CategoryNameResponse> getCategoriesName() {
+        return categoryRepository.findAllCategoriesName();
     }
 
     public void validateCategoryParent(Long categoryParentId) {
