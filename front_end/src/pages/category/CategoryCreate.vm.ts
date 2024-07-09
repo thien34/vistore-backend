@@ -1,4 +1,3 @@
-import { useCreatePictures } from '@/admin/hooks/picture.hook'
 import useCreateApi from '@/hooks/use-create-api'
 import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
 import { Form, GetProp, UploadFile, UploadProps } from 'antd'
@@ -7,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import CategoryConfigs from './CategoryConfigs'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import { RequestParams } from '@/utils/FetchUtils'
+import useUploadMultipleImagesApi from '@/hooks/use-upload-multiple-images-api'
 
 function useCategoryCreateViewModel() {
     const [form] = Form.useForm()
@@ -26,8 +26,8 @@ function useCategoryCreateViewModel() {
     }
 
     const { data } = useGetAllApi<CategoriesResponse>(CategoryConfigs.resourceUrl, CategoryConfigs.resourceKey, filter)
-    const { mutateAsync: createPictures } = useCreatePictures()
-    const { mutate: createCategoryApi, isPending } = useCreateApi<CategoryRequest, string>(CategoryConfigs.resourceUrl)
+    const { mutateAsync: createPictures, isPending } = useUploadMultipleImagesApi()
+    const { mutate: createCategoryApi } = useCreateApi<CategoryRequest, string>(CategoryConfigs.resourceUrl)
 
     // INITIAL VALUES
     const initialValues: CategoryRequest = {
@@ -77,7 +77,7 @@ function useCategoryCreateViewModel() {
         if (fileList.length) {
             try {
                 const result = await createPictures([fileList[0].originFileObj as File])
-                values.pictureId = result.data[0]
+                values.pictureId = result.content[0]
             } catch (error) {
                 console.error(error)
             }
@@ -92,6 +92,7 @@ function useCategoryCreateViewModel() {
         onFinish,
         isPending,
         fileList,
+        setFileList,
         handleChange,
         handlePreview,
         previewOpen,

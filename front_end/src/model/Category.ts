@@ -40,26 +40,3 @@ export type CategoryRequest = {
     displayOrder: number
     priceRangeFiltering: boolean
 }
-
-export type CategoryResponseWithPage = {
-    status: number
-    message: string
-    data: {
-        page: number
-        size: number
-        totalPage: number
-        items: CategoriesResponse[]
-    }
-}
-
-export type CategoryFilter = {
-    name?: string
-    pageNo?: number
-    pageSize?: number
-    published?: boolean
-}
-
-export type CategoryResponseBasic = {
-    status: number
-    message: string
-}

@@ -5,29 +5,42 @@ import useCategoryUpdateViewModel from './CategoryUpdate.vm'
 import useCategoryCreateViewModel from './CategoryCreate.vm'
 
 export default function CategoryUpdate() {
-    const { onFinish, categoryResponse, pictureResponse, isPending, isLoading } = useCategoryUpdateViewModel()
-
     const {
-        form,
-        layout,
-        data,
-        getCategoryFullName,
-        fileList,
+        onFinish,
+        categoryResponse,
+        pictureResponse,
+        isPending,
+        isLoading,
         handlePreview,
         handleChange,
-        previewImage,
+        fileList,
+        setFileList,
         previewOpen,
         setPreviewOpen,
+        previewImage,
         setPreviewImage,
-    } = useCategoryCreateViewModel()
+    } = useCategoryUpdateViewModel()
+
+    const { form, layout, data, getCategoryFullName } = useCategoryCreateViewModel()
 
     useEffect(() => {
         if (categoryResponse) {
+            if (categoryResponse.pictureId) {
+                setPreviewImage(pictureResponse?.linkImg ?? '')
+                setFileList([
+                    {
+                        uid: '-1',
+                        name: 'image.png',
+                        status: 'done',
+                        url: pictureResponse?.linkImg,
+                    },
+                ])
+            }
             form.setFieldsValue({
                 ...categoryResponse,
             })
         }
-    }, [categoryResponse, form, pictureResponse])
+    }, [categoryResponse, form, pictureResponse, setFileList, setPreviewImage])
 
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type='button'>
@@ -76,7 +89,7 @@ export default function CategoryUpdate() {
                                         onPreview={handlePreview}
                                         onChange={handleChange}
                                     >
-                                        {fileList.length >= 2 ? null : uploadButton}
+                                        {fileList.length >= 1 ? null : uploadButton}
                                     </Upload>
                                     {previewImage && (
                                         <Image

@@ -1,10 +1,10 @@
-import LayoutMain from '@admin/layouts/LayoutMain'
+import LayoutMain from '@/pages/layouts/LayoutMain'
 import ManagerPath from '@/constants/ManagerPath '
-import Home from '@/admin/pages/home'
 import ProductTagManage from '@/pages/product-tag/ProductTagManage'
 import CategoryManage from '@/pages/category/CategoryManage'
 import CategoryCreate from '@/pages/category/CategoryCreate'
 import CategoryUpdate from '@/pages/category/CategoryUpdate'
+import Home from '@/pages/home'
 
 const routers = [
     {

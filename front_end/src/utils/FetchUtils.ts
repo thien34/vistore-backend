@@ -304,11 +304,10 @@ class FetchUtils {
      * Hàm uploadMultipleImages dùng để tải lên nhiều tệp hình
      * @param images
      */
-    static async uploadMultipleImages(images: File[]): Promise<CollectionWrapper<number[]>> {
+    static async uploadMultipleImages(images: File[]): Promise<CollectionWrapper<number>> {
         const formData = new FormData()
         images.forEach((image) => formData.append('images', image))
-
-        const response = await fetch(ApplicationConstants.HOME_PATH + '/images/upload-multiple', {
+        const response = await fetch(ApplicationConstants.API_PATH + '/picture', {
             method: 'POST',
             body: formData,
         })
@@ -316,7 +315,8 @@ class FetchUtils {
         if (!response.ok) {
             throw await response.json()
         }
-        return await response.json()
+        const responseData = await response.json()
+        return new CollectionWrapper<number>(responseData.data)
     }
 
     /**

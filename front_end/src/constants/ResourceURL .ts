@@ -8,6 +8,7 @@ class ResourceURL {
     static readonly PRODUCT = apiPath + '/products'
     static readonly PRODUCT_TAG = apiPath + '/product-tags'
     static readonly CATEGORY = apiPath + '/categories'
+    static readonly PICTURE = apiPath + '/picture'
     static readonly BRAND = apiPath + '/brands'
 
     static readonly ORDER = apiPath + '/orders'

@@ -1,5 +1,5 @@
-import LayoutMain from '@/admin/layouts/LayoutMain'
-import Home from '@/admin/pages/home'
+import Home from '@/pages/home'
+import LayoutMain from '@/pages/layouts/LayoutMain'
 
 const routersPublic = [
     {
