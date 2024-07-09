@@ -5,9 +5,11 @@ import com.example.back_end.core.admin.product.payload.request.ProductAttributeR
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.StoreException;
+import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,6 +31,7 @@ import java.util.List;
 public class ProductAttributeServiceImpl implements ProductAttributeService {
     ProductAttributeRepository productAttributeRepository;
     ProductAttributeMapper productAttributeMapper;
+    PredefinedProductAttributeValueRepository predefinedProductAttributeValueRepository;
 
     @Override
     @Transactional
@@ -36,7 +40,23 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
             throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED);
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
-        return productAttributeRepository.save(productAttribute);
+        ProductAttribute productAttributeSave = productAttributeRepository.save(productAttribute);
+        List<PredefinedProductAttributeValue> values = new ArrayList<>();
+        request.getValues().forEach(predifend -> {
+            PredefinedProductAttributeValue predefinedProductAttributeValue = PredefinedProductAttributeValue.builder()
+                    .productAttribute(productAttributeSave)
+                    .cost(predifend.getCost())
+                    .displayOrder(predifend.getDisplayOrder())
+                    .name(predifend.getName())
+                    .priceAdjustment(predifend.getPriceAdjustment())
+                    .isPreSelected(predifend.getIsPreSelected())
+                    .weightAdjustment(predifend.getWeightAdjustment())
+                    .priceAdjustmentUsePercentage(predifend.getPriceAdjustmentUsePercentage())
+                    .build();
+            values.add(predefinedProductAttributeValue);
+        });
+        predefinedProductAttributeValueRepository.saveAll(values);
+        return productAttributeSave;
     }
 
     @Override
@@ -85,7 +105,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
 
     @Override
-    @Transactional
     public void deleteProductAttribute(Long id) {
         if (!productAttributeRepository.existsById(id)) {
             throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED);

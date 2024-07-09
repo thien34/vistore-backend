@@ -7,7 +7,6 @@ import com.example.back_end.entity.PredefinedProductAttributeValue;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-@Service
 public interface PredefinedProductAttributeValueService {
     PredefinedProductAttributeValue createProductAttributeValue(PredefinedProductAttributeValueRequest request);
     PageResponse<List<PredefinedProductAttributeValueResponse>> getAll(String name, int pageNo, int pageSize);

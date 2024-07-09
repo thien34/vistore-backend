@@ -6,7 +6,6 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.ProductAttribute;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface ProductAttributeService {
     ProductAttribute createProductAttribute(ProductAttributeRequest request);
     PageResponse<?> getAll(String name, int pageNo, int pageSize);

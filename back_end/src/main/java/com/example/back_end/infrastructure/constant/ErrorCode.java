@@ -30,7 +30,7 @@ public enum ErrorCode {
 
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED(1008, "Predefined product attribute value does not existed", HttpStatus.NOT_FOUND),
 
-    UNAUTHORIZED(1009, "You do not have permission", HttpStatus.FORBIDDEN),
+    FORBIDDEN(1009, "You do not have permission", HttpStatus.FORBIDDEN),
 
     INVALID_PAGE_NUMBER_OR_PAGE_SIZE(1010, "Invalid page number or page size", HttpStatus.BAD_REQUEST),
 
