@@ -33,19 +33,4 @@ public class Picture extends Auditable {
     @Column(name = "link_img", length = Integer.MAX_VALUE)
     private String linkImg;
 
-    @Column(name = "seo_file_name", length = Integer.MAX_VALUE)
-    private String seoFileName;
-
-    @Column(name = "alt_attribute", length = Integer.MAX_VALUE)
-    private String altAttribute;
-
-    @Column(name = "title_attribute", length = Integer.MAX_VALUE)
-    private String titleAttribute;
-
-    @Column(name = "is_new")
-    private Boolean isNew;
-
-    @Column(name = "virtual_path", length = Integer.MAX_VALUE)
-    private String virtualPath;
-
 }

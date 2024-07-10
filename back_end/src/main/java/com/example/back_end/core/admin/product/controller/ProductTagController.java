@@ -1,6 +1,6 @@
 package com.example.back_end.core.admin.product.controller;
 
-import com.example.back_end.core.admin.product.payload.request.ProductTagRequestDto;
+import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
 import com.example.back_end.core.admin.product.service.ProductTagService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product-tags")
+@RequestMapping("/admin/product-tags")
 @Slf4j
 public class ProductTagController {
 
@@ -33,9 +33,7 @@ public class ProductTagController {
     @GetMapping
     public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
                                   @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize,
-                                  @RequestParam(value = "sortBy", defaultValue = "id")
-                                  String sortBy) {
+                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
         try {
             PageResponse<?> response = productTagService.getAll(name, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get product tags success", response);
@@ -48,7 +46,7 @@ public class ProductTagController {
     @Operation(method = "POST", summary = "Add new product tag",
             description = "Send a request via this API to create new product tag")
     @PostMapping
-    public ResponseData<?> create(@Valid @RequestBody ProductTagRequestDto request) {
+    public ResponseData<?> create(@Valid @RequestBody ProductTagRequest request) {
 
         log.info("Request add product tag, {}", request);
         try {
