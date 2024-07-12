@@ -1,154 +1,94 @@
 package com.example.back_end.core.admin.manufacturer.controller;
 
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
+import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
-import com.example.back_end.core.admin.manufacturer.services.impl.ManufacturerServicesImpl;
+import com.example.back_end.core.admin.manufacturer.service.impl.ManufacturerServicesImpl;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
+import com.example.back_end.core.common.ResponseError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/manufacturers")
+@RequestMapping("/admin/manufacturers")
+@Slf4j
 public class ManufactureController {
     @Autowired
     private ManufacturerServicesImpl manufacturerServices;
 
-    @GetMapping("list")
-    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
+    @GetMapping()
+    public ResponseData<?> getAllManufacturers(@RequestParam(value = "name", defaultValue = "") String name,
                                   @RequestParam(value = "published", defaultValue = "") Boolean published,
-                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                  @RequestParam(value = "page", defaultValue = "1") int page,
                                   @RequestParam(value = "size", defaultValue = "10") int size) {
         try {
             PageResponse<?> response = manufacturerServices.getAll(name, published, page, size);
-
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Get List Manufacturers successfully")
-                    .data(response)
-                    .build();
+            return new ResponseData<>(HttpStatus.OK.value(), "Get Manufacturers successfully", response);
         } catch (Exception e) {
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            log.error("Error getting Manufacturers", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseData<?> add(
-            @ModelAttribute @Valid ManufacturerRequest manufacturerRequest,
-            BindingResult bindingResult,
-            @RequestParam("picture") MultipartFile picture) {
-        if (bindingResult.hasErrors()) {
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message("Validation errors")
-                    .data(bindingResult.getAllErrors())
-                    .build();
-        }
-
+    @PostMapping
+    public ResponseData<?> createManufacturer(@RequestBody ManufacturerRequest manufacturerRequest) {
+        log.info("Request add new Manufacturer, {}", manufacturerRequest);
         try {
-            ManufacturerResponse manufacturer = manufacturerServices.addManufacturer(picture, manufacturerRequest);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Add Manufacturer successfully")
-                    .data(manufacturer)
-                    .build();
+            manufacturerServices.createManufacturer(manufacturerRequest);
+            return new ResponseData<>(HttpStatus.OK.value(), "Add new Manufacturer successfully");
         } catch (Exception e) {
-            return ResponseData.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .message(e.getMessage())
-                    .build();
+            log.error("Error add new Manufacturer", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
-    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseData<?> update(
-            @RequestBody @Valid ManufacturerRequest manufacturer,
-            BindingResult bindingResult,
-            @RequestParam(value = "picture") MultipartFile file) {
-
-        // Check for validation errors
-        if (bindingResult.hasErrors()) {
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message("Validation errors")
-                    .data(bindingResult.getAllErrors())
-                    .build();
-        }
-
+    @PutMapping("/{id}")
+    public ResponseData<?> update(@PathVariable Long id, @RequestBody ManufacturerRequest manufacturerRequest) {
+        log.info("Request to update the manufacturer with id: {}, {}", id, manufacturerRequest);
         try {
-            // Call service to update manufacturer with the provided file
-            ManufacturerResponse manufacturerResponse = manufacturerServices.updateManufacturer(file, manufacturer);
-
-            // Return success response
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Update Manufacturer successfully")
-                    .data(manufacturerResponse)
-                    .build();
+            manufacturerServices.updateManufacturer(id, manufacturerRequest);
+            return new ResponseData<>(HttpStatus.OK.value(), "Update manufacturer with id : "+id+" successfully");
         } catch (Exception e) {
-            // Handle and return internal server error
-            return ResponseData.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .message(e.getMessage())
-                    .build();
+            log.error("Error updating manufacturer ", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseData<?> getManufacture(@PathVariable(name = "id") Long id) {
+    @GetMapping("/listname")
+    public ResponseData<?> getAllManufacturersName() {
         try {
-            if (id == null || id <= 0)
-                throw new IllegalArgumentException("Can't get Manufacturer because of invalid id");
-            ManufacturerResponse manufacturer = manufacturerServices.getManufacturer(id);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("GET Manufacturer has id   " + id + " successfully")
-                    .data(manufacturer)
-                    .build();
+            List<ManufacturerNameResponse> manufacturerNameResponses = manufacturerServices.getAlManufacturersName();
+            return new ResponseData<>(HttpStatus.OK.value(), "Get all manufacturers name successfully", manufacturerNameResponses);
         } catch (Exception e) {
-            return ResponseData.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getMessage())
-                    .build();
+            log.error("Error getting all manufacturers name", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+    @GetMapping("/{manufacturerId}")
+    public ResponseData<?> getManufacturerById(@PathVariable Long manufacturerId) {
+        try {
+            ManufacturerResponse manufacturerResponse = manufacturerServices.getManufacturer(manufacturerId);
+            return new ResponseData<>(HttpStatus.OK.value(), "Get Manufacturer successfully", manufacturerResponse);
+        } catch (Exception e) {
+            log.error("Error getting manufacturer", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
-    @DeleteMapping("delete/{id}")
-    public ResponseData<?> delete(@PathVariable(name = "id") Long id) {
+    @DeleteMapping
+    public ResponseData<?> deleteManufacturers(@RequestBody List<Long> ids) {
+        log.info(" Waiting to delete categories with ids: {}", ids);
         try {
-            manufacturerServices.deleteManufacturer(id);
-            return ResponseData.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Manufacturer with id " + id + " has been deleted successfully")
-                    .build();
-        } catch (EntityNotFoundException ex) {
-            return ResponseData.builder()
-                    .status(HttpStatus.NOT_FOUND.value())
-                    .message("Manufacturer with id " + id + " not found")
-                    .build();
+            manufacturerServices.deleteListManufacturer(ids);
+            return new ResponseData<>(HttpStatus.OK.value(), "Delete Manufacturers  successfully");
         } catch (Exception e) {
-            return ResponseData.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .message("Failed to delete manufacturer with id " + id + ": " + e.getMessage())
-                    .build();
+            log.error("Error when deleting Manufacturer", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 }

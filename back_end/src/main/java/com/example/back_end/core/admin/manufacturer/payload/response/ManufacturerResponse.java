@@ -15,7 +15,7 @@ public class ManufacturerResponse {
     private Long id;
     private String name;
     private String description;
-    private String linkImg;
+    private String pictureId;
     private Integer pageSize;
     private Boolean priceRangeFiltering;
     private Boolean published;
