@@ -184,17 +184,16 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(value = StoreException.class)
-    ResponseEntity<ErrorResponse> handlingAppException(StoreException exception) {
+    @ExceptionHandler(StoreException.class)
+    public ResponseEntity<ErrorResponse> handleStoreException(StoreException exception, WebRequest request) {
+        // Handle the StoreException here
         ErrorCode errorCode = exception.getErrorCode();
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(errorResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(errorResponse);
     }
 
 }

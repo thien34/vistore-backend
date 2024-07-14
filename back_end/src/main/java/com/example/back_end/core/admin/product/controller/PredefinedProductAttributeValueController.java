@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/predefined-product-attribute-value")
+@RequestMapping("/admin/predefined-product-attribute-values")
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PredefinedProductAttributeValueController {

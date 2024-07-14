@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatusCode;
 public enum SuccessCode {
     OPERATION_SUCCESSFUL(2000, "Operation completed successfully", HttpStatus.OK),
     PRODUCT_ATTRIBUTE_CREATED(2001, "Product attribute created successfully", HttpStatus.CREATED),
-    PRODUCT_ATTRIBUTE_GET_ALL(2002, "Get all product attribute successfully", HttpStatus.CREATED),
+    PRODUCT_ATTRIBUTE_GET_ALL(2002, "Get all product attribute successfully", HttpStatus.OK),
     PRODUCT_ATTRIBUTE_UPDATED(2003, "Product attribute updated successfully", HttpStatus.OK),
     PRODUCT_ATTRIBUTE_DELETED(2004, "Product attribute deleted successfully", HttpStatus.OK),
     GET_PRODUCT_ATTRIBUTE_BY_ID(2005, "Get product attribute successfully with id: ", HttpStatus.OK),
