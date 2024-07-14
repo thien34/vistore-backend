@@ -1,8 +1,11 @@
-import LayoutMain from '@admin/layouts/LayoutMain'
-import ProductTag from '../pages/product_tag/ProductTag'
-import Home from '../pages/home'
-import Category from '../pages/category/Category'
-import CategoryCreateUpdate from '../pages/category/CategoryCreateUpdate'
+import LayoutMain from '@/pages/layouts/LayoutMain'
+import ManagerPath from '@/constants/ManagerPath '
+import ProductTagManage from '@/pages/product-tag/ProductTagManage'
+import CategoryManage from '@/pages/category/CategoryManage'
+import CategoryCreate from '@/pages/category/CategoryCreate'
+import CategoryUpdate from '@/pages/category/CategoryUpdate'
+import Home from '@/pages/home'
+import ProductAttribute from '@/pages/productAttribute/ProductAttributeManage.tsx'
 
 const routers = [
     {
@@ -11,30 +14,37 @@ const routers = [
         element: <Home />,
     },
     {
-        path: 'product-tag',
+        path: ManagerPath.PRODUCT_TAG,
         layout: 'main',
-        element: <ProductTag />,
+        element: <ProductTagManage />,
         breadcrumbName: 'ProductTag',
         pageType: 'product-tag',
     },
     {
-        path: 'category',
+        path: ManagerPath.PRODUCT_ATTRIBUTE,
         layout: 'main',
-        element: <Category />,
+        element: <ProductAttribute />,
+        breadcrumbName: 'ProductAttribute',
+        pageType: 'product-attribute',
+    },
+    {
+        path: ManagerPath.CATEGORY,
+        layout: 'main',
+        element: <CategoryManage />,
         breadcrumbName: 'Category',
         pageType: 'category',
     },
     {
-        path: 'category/add',
+        path: ManagerPath.CATEGORY_ADD,
         layout: 'main',
-        element: <CategoryCreateUpdate />,
+        element: <CategoryCreate />,
         breadcrumbName: 'Add Category',
         pageType: 'category',
     },
     {
-        path: 'category/:id/update',
+        path: ManagerPath.CATEGORY_UPDATE,
         layout: 'main',
-        element: <CategoryCreateUpdate />,
+        element: <CategoryUpdate />,
         breadcrumbName: 'Update Category',
         pageType: 'category',
     },
