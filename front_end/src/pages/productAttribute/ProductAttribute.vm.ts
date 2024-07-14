@@ -1,5 +1,5 @@
 import { TableRowSelection } from 'antd/es/table/interface'
-// import getProductAttributeColumns from './ProductAttributeColumns'
+// import  {getProductAttributeColumns} from './ProductAttributeColumns'
 import { useState } from 'react'
 import { RequestParams } from '@/utils/FetchUtils'
 import useGetAllApi from '@/hooks/use-get-all-api'
@@ -39,7 +39,9 @@ function useProductAttributeViewModel() {
     }
 
     // GET COLUMNS
-    // const columns = getProductAttributeColumns()
+    // const columns = (setShowList) => {
+    //     <getProductAttributeColumns setShowList={setShowList} />
+    // }
 
     // HANDLE SELECT CHANGE
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {

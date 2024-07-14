@@ -1,17 +1,11 @@
-import Home from '@client/pages/home'
-import LayoutMain from '@client/layouts/LayoutMain'
-import Login from '@client/pages/login'
+import Home from '@/pages/home'
+import LayoutMain from '@/pages/layouts/LayoutMain'
 
 const routersPublic = [
     {
         path: '/',
         layout: 'main',
         element: <Home />,
-    },
-    {
-        path: '/login',
-        layout: 'main',
-        element: <Login />,
     },
 ]
 

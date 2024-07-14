@@ -5,7 +5,8 @@ import CategoryManage from '@/pages/category/CategoryManage'
 import CategoryCreate from '@/pages/category/CategoryCreate'
 import CategoryUpdate from '@/pages/category/CategoryUpdate'
 import Home from '@/pages/home'
-import ProductAttribute from '@/pages/productAttribute/ProductAttributeManage.tsx'
+import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.tsx'
+import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 
 const routers = [
     {
@@ -21,9 +22,16 @@ const routers = [
         pageType: 'product-tag',
     },
     {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_ADD,
+        layout: 'main',
+        element: <ProductAttributeCreate />,
+        breadcrumbName: 'ProductAttribute',
+        pageType: 'product-attribute',
+    },
+    {
         path: ManagerPath.PRODUCT_ATTRIBUTE,
         layout: 'main',
-        element: <ProductAttribute />,
+        element: <ProductAttributeSearch />,
         breadcrumbName: 'ProductAttribute',
         pageType: 'product-attribute',
     },

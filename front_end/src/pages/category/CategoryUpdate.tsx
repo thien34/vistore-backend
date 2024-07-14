@@ -1,95 +1,46 @@
-import { useCategories, useCategory, useCreateCategory, useUpdateCategory } from '@/admin/hooks/category.hook'
-import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/admin/types/Category'
 import { PlusOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Checkbox,
-    Col,
-    Form,
-    GetProp,
-    Image,
-    Input,
-    InputNumber,
-    Row,
-    Select,
-    Upload,
-    UploadFile,
-    UploadProps,
-} from 'antd'
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Button, Card, Checkbox, Col, Form, Image, Input, InputNumber, Row, Select, Upload } from 'antd'
+import { useEffect } from 'react'
+import useCategoryUpdateViewModel from './CategoryUpdate.vm'
+import useCategoryCreateViewModel from './CategoryCreate.vm'
 
-const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
-}
-const validateMessages = {
-    required: '${label} is required!',
-    number: {
-        range: '${label} must be between ${min} and ${max}',
-    },
-}
+export default function CategoryUpdate() {
+    const {
+        onFinish,
+        categoryResponse,
+        pictureResponse,
+        isPending,
+        isLoading,
+        handlePreview,
+        handleChange,
+        fileList,
+        setFileList,
+        previewOpen,
+        setPreviewOpen,
+        previewImage,
+        setPreviewImage,
+    } = useCategoryUpdateViewModel()
 
-const getBase64 = (file: FileType): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = (error) => reject(new Error(error.total.toString()))
-    })
-
-function getCategoryFullName(category: CategoriesResponse | CategoryParentResponse): string {
-    return category.categoryParent
-        ? `${getCategoryFullName(category.categoryParent)} >> ${category.name}`
-        : category.name
-}
-
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
-
-export default function CategoryCreateUpdate() {
-    const { id } = useParams<{ id: string }>()
-    const isUpdateMode = Boolean(id)
-    const [form] = Form.useForm()
-    const [previewOpen, setPreviewOpen] = useState(false)
-    const [previewImage, setPreviewImage] = useState('')
-    const [fileList, setFileList] = useState<UploadFile[]>([])
-    const { mutate: createCategory, isPending } = useCreateCategory()
-    const { mutate: updateCategory } = useUpdateCategory()
-    const categoryResponse = useCategory(Number(id))
-    const navigation = useNavigate()
-    const { data } = useCategories({
-        name: '',
-        pageNo: 1,
-        pageSize: 6,
-        published: undefined,
-    })
+    const { form, layout, data, getCategoryFullName } = useCategoryCreateViewModel()
 
     useEffect(() => {
-        if (isUpdateMode && categoryResponse.data) {
+        if (categoryResponse) {
+            if (categoryResponse.pictureId) {
+                setPreviewImage(pictureResponse?.linkImg ?? '')
+                setFileList([
+                    {
+                        uid: '-1',
+                        name: 'image.png',
+                        status: 'done',
+                        url: pictureResponse?.linkImg,
+                    },
+                ])
+            }
             form.setFieldsValue({
-                ...categoryResponse.data,
+                ...categoryResponse,
             })
         }
-    }, [isUpdateMode, categoryResponse, form])
-
-    const onFinish = (values: CategoryRequest) => {
-        if (isUpdateMode) {
-            updateCategory({ id: Number(id), ...values }, { onSuccess: () => navigation(-1) })
-        } else {
-            createCategory(values, { onSuccess: () => navigation(-1) })
-        }
-    }
-
-    const handlePreview = async (file: UploadFile) => {
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj as FileType)
-        }
-        setPreviewImage(file.url ?? (file.preview as string))
-        setPreviewOpen(true)
-    }
-
-    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => setFileList(newFileList)
+    }, [categoryResponse, form, pictureResponse, setFileList, setPreviewImage])
 
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type='button'>
@@ -98,16 +49,13 @@ export default function CategoryCreateUpdate() {
         </button>
     )
 
+    if (isLoading && !categoryResponse) {
+        return <div>Loading...</div>
+    }
+
     return (
         <div className='bg-[#fff] rounded-lg shadow-md p-6'>
-            <Form
-                {...layout}
-                name='nest-messages'
-                form={form}
-                onFinish={onFinish}
-                validateMessages={validateMessages}
-                initialValues={categoryResponse.data}
-            >
+            <Form {...layout} name='nest-messages' form={form} onFinish={onFinish}>
                 <Row gutter={[24, 8]}>
                     <Col span={12}>
                         <Card className='min-h-full' size='small' title='Category info'>
@@ -126,7 +74,7 @@ export default function CategoryCreateUpdate() {
                                     }
                                     options={[
                                         { label: '[None]', value: null },
-                                        ...(data?.data.items.map((item) => ({
+                                        ...(data?.items.map((item) => ({
                                             label: getCategoryFullName(item),
                                             value: item.id,
                                         })) ?? []),
@@ -136,13 +84,12 @@ export default function CategoryCreateUpdate() {
                             <Form.Item name='pictureId' label='Picture'>
                                 <div>
                                     <Upload
-                                        action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'
                                         listType='picture-card'
                                         fileList={fileList}
                                         onPreview={handlePreview}
                                         onChange={handleChange}
                                     >
-                                        {fileList.length >= 8 ? null : uploadButton}
+                                        {fileList.length >= 1 ? null : uploadButton}
                                     </Upload>
                                     {previewImage && (
                                         <Image

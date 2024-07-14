@@ -6,14 +6,14 @@ import { Link } from 'react-router-dom'
 import AppActions from '@/constants/AppActions .ts'
 
 interface ProductAttributeSearchProps {
-    onSearch: (filter: { name: string; published: boolean | undefined }) => void
-    handleDelete: () => void
-    selectedRowKeys: React.Key[]
+    onSearch?: (filter: { name: string; published: boolean | undefined }) => void
+    handleDelete?: () => void
+    selectedRowKeys?: React.Key[]
 }
 
 export default function ProductAttributeSearch({
     onSearch,
-    selectedRowKeys,
+    selectedRowKeys = [],
     handleDelete,
 }: Readonly<ProductAttributeSearchProps>) {
     const [name, setName] = useState<string>('')
