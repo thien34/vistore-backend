@@ -31,9 +31,6 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
-  file:
-    upload-dir: I:/FPT POLYTECHNIC/DATN/CODE/18.3-DATN/back_end/src/main/java/com/example/back_end/imagelocal
-
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:dccuxj8ll}
   api-key: ${CLOUDINARY_API_KEY:934946519676845}
