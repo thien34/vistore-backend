@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Date;
 import java.util.List;
-
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler({ConstraintViolationException.class, MissingServletRequestParameterException.class, MethodArgumentNotValidException.class})
     @ResponseStatus(BAD_REQUEST)
-    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "Handle exception when the data invalid. (@RequestBody, @RequestParam, @PathVariable)", summary = "Handle Bad Request", value = """
+    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "Handle exception when the data is invalid. (@RequestBody, @RequestParam, @PathVariable)", summary = "Handle Bad Request", value = """
             {
                  "timestamp": "2024-04-07T11:38:56.368+00:00",
                  "status": 400,
@@ -56,8 +56,8 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false).replace("uri=", ""));
 
         String message = e.getMessage();
-        if (e instanceof MethodArgumentNotValidException) {
-            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+        if (e instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
+            BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             List<String> errorMessages = fieldErrors.stream()
                     .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
@@ -194,6 +194,27 @@ public class GlobalExceptionHandler {
                 .message(errorCode.getMessage())
                 .build();
         return ResponseEntity.status(errorCode.getStatusCode()).body(errorResponse);
+    }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(NOT_FOUND)
+    @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "404 Response", summary = "Handle exception when type mismatch occurs", value = """
+            {
+              "timestamp": "2024-07-14T11:23:14.801+00:00",
+              "status": 404,
+              "path": "/api/admin/product-attributes/3bjbjjbjk",
+              "error": "Not Found",
+              "message": "Resource not found due to type mismatch"
+            }
+            """))})})
+    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, WebRequest request) {
+
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(NOT_FOUND.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error("Not Found")
+                .message("Resource not found due to type mismatch")
+                .build();
     }
 
 }

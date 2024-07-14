@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
+import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -66,19 +66,27 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         }
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-        Page<ProductAttribute> productAttribute = productAttributeRepository.findByNameContaining(name, pageable);
-        List<ProductAttributeResponse> productAttributeResponse = productAttribute.stream()
-                .map(productAttributeMapper::toDto)
+        Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
+        List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
+                .map(productAttribute -> {
+                    ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
+                    List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
+                            .map(PredefinedProductAttributeValueResponse::mapToResponse)
+                            .toList();
+                    response.setValues(values);
+                    return response;
+                })
                 .sorted(Comparator.comparing(ProductAttributeResponse::getId).reversed())
                 .toList();
 
         return PageResponse.builder()
-                .page(productAttribute.getNumber())
-                .size(productAttribute.getSize())
-                .totalPage(productAttribute.getTotalPages())
-                .items(productAttributeResponse)
+                .page(productAttributePage.getNumber())
+                .size(productAttributePage.getSize())
+                .totalPage(productAttributePage.getTotalPages())
+                .items(productAttributeResponseList)
                 .build();
     }
+
 
     @Override
     public ProductAttributeResponse getProductAttributeById(Long id) {

@@ -49,6 +49,8 @@ public class ProductAttributeController {
 
         ProductAttributeResponse attribute = productAttributeService.getProductAttributeById(id);
         return ResponseData.<ProductAttributeResponse>builder()
+                .status(SuccessCode.GET_PRODUCT_ATTRIBUTE_BY_ID.getStatusCode().value())
+                .message(SuccessCode.PRODUCT_ATTRIBUTE_GET_ALL.getMessage())
                 .data(attribute)
                 .build();
     }

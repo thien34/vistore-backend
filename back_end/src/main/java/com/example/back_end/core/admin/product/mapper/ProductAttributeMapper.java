@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProductAttributeMapper {
     @Mapping(target = "id", ignore = true)
     ProductAttribute toEntity(ProductAttributeRequest dto);
-
+    @Mapping(target = "values", source = "values")
     ProductAttributeResponse toDto(ProductAttribute entity);
 
     List<ProductAttribute> toEntities(List<ProductAttributeRequest> dtos);
