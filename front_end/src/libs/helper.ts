@@ -1,5 +1,5 @@
-const nomarlUrl = (url: string) => {
+const normalUrl = (url: string) => {
     return url.startsWith('/') ? url : `/${url}`
 }
 
-export { nomarlUrl }
+export { normalUrl }

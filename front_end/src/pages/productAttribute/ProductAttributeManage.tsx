@@ -1,82 +1,96 @@
 import { useState } from 'react'
 import { Form, Input, Button, Space, Modal, Table, Empty, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+import { PredefinedProductAttributeValueResponse } from '@/model/PredefinedProductAttributeValue.ts'
+import useProductAttributeViewModel from '@/pages/productAttribute/ProductAttribute.vm.ts'
+
 const pageSize = 5
+
 export default function ProductAttribute() {
     const [form] = Form.useForm()
     const [values, setValues] = useState([])
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isEdit, setIsEdit] = useState(false)
     const [newValue, setNewValue] = useState({
         name: '',
-        priceAdjustment: 0,
+        setISEdipriceAdjustment: 0,
         priceAdjustmentUsePercentage: false,
         weightAdjustment: 0,
         cost: 0,
         isPreSelected: false,
         displayOrder: 0,
+        id: 1,
     })
     const [loading, setLoading] = useState(false)
     const [current, setCurrent] = useState(1)
 
+    const { onFinish } = useProductAttributeViewModel()
+
+    const getNewId = (arr) => {
+        const maxId = Math.max(...arr.map((item) => item.id))
+        return arr.length === 0 ? 0 : maxId + 1
+    }
+
     const handleAddValue = () => {
-        form.validateFields()
-            .then(() => {
-                setValues([...values, { ...newValue, displayOrder: values.length + 1 }])
-                setNewValue({
-                    name: '',
-                    priceAdjustment: 0,
-                    priceAdjustmentUsePercentage: false,
-                    weightAdjustment: 0,
-                    cost: 0,
-                    isPreSelected: false,
-                    displayOrder: 0,
-                })
-                setIsModalOpen(false)
+        if (isEdit) {
+            const newArr = values.filter((v) => v.id !== newValue.id)
+            newArr.push({ ...newValue, displayOrder: newArr.length + 1 })
+            setValues(newArr)
+            setIsModalOpen(false)
+            setIsEdit(false)
+        } else {
+            form.resetFields()
+            newValue.id = getNewId(values)
+            setValues([...values, { ...newValue, displayOrder: values.length + 1 }])
+            setNewValue({
+                id: getNewId(values),
+                name: '',
+                priceAdjustment: 0,
+                priceAdjustmentUsePercentage: false,
+                weightAdjustment: 0,
+                cost: 0,
+                isPreSelected: false,
+                displayOrder: 0,
             })
-            .catch(() => {
-                // If validation fails, show error messages
-                message.error('Please complete the form all field.')
-            })
+            setIsModalOpen(false)
+        }
     }
 
     const handleRemoveValue = (value) => {
-        setValues(values.filter((v) => v !== value))
+        setValues(values.filter((v) => v.id !== value.id))
+    }
+
+    const handleEditValue = (value) => {
+        setIsModalOpen(true)
+        form.setFieldsValue(value)
+        setIsEdit(true)
     }
 
     const handleFinish = async (formValues) => {
-        setLoading(true);
+        setLoading(true)
         try {
-            const attributeData = {
-                name: formValues.name,
-                description: formValues.description,
+            // Simulated API call
+            // console.log('Submitting form:', formValues);
+            // console.log('Values:', values);
+            // message.success('Form submitted successfully');
+            form.resetFields()
+            setValues([])
+
+            const data: { name: string; description: string; values: PredefinedProductAttributeValueResponse } = {
+                name: formValues?.name,
+                description: formValues?.description,
                 values: values,
-            };
+            }
 
-            console.log('Submitting attributeData:', attributeData);
-
-            const attributeResponse = await ProductAttributeService.saveProductAttribute(attributeData)
-
-            const attributeId = attributeResponse.data.id
-            console.log('Received attributeId:', attributeId)
-
-            const predefinedValuesPromises = values.map((value) => {
-                const predefinedValueData = {
-                    productAttributeId: attributeId,
-                    ...value,
-                };
-                return ProductAttributeService.savePredefinedValue(predefinedValueData);
-            });
-            await Promise.all(predefinedValuesPromises);
-
-            console.log('Product Attribute saved successfully with predefined values');
-            form.resetFields();
-            setValues([]);
+            console.log('data: ', data)
+            await onFinish(data)
         } catch (error) {
-            console.error('Error saving product attribute and predefined values:', error);
+            console.error('Error submitting form:', error)
+            message.error('Failed to submit form')
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     const handlePageChange = (page) => {
         setCurrent(page)
@@ -105,7 +119,9 @@ export default function ProductAttribute() {
             key: 'action',
             render: (text, record) => (
                 <Space size='middle'>
-                    <Button type='link'>Edit</Button>
+                    <Button type='link' onClick={() => handleEditValue(record)}>
+                        Edit
+                    </Button>
                     <Button type='link' onClick={() => handleRemoveValue(record)}>
                         Remove
                     </Button>
@@ -148,7 +164,7 @@ export default function ProductAttribute() {
                                     total: values.length,
                                     onChange: (page) => handlePageChange(page),
                                 }}
-                                rowKey="displayOrder"
+                                rowKey='displayOrder'
                             />
                         )}
                     </Space>
@@ -162,10 +178,13 @@ export default function ProductAttribute() {
 
             <Modal
                 title='Add Predefined Value'
-                open={isModalOpen}
-                centered={true}
+                visible={isModalOpen}
+                centered
                 onOk={handleAddValue}
-                onCancel={() => setIsModalOpen(false)}
+                onCancel={() => {
+                    setIsModalOpen(false)
+                    setIsEdit(false)
+                }}
             >
                 <Form form={form} layout='vertical'>
                     <Form.Item
@@ -182,11 +201,21 @@ export default function ProductAttribute() {
                     <Form.Item
                         name='priceAdjustment'
                         label={<span style={{ fontWeight: 'bold' }}>Price Adjustment</span>}
-                        rules={[{ required: true, message: 'Please enter the price adjustment' }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please enter the price adjustment',
+                            },
+                        ]}
                     >
                         <Input
                             value={newValue.priceAdjustment}
-                            onChange={(e) => setNewValue({ ...newValue, priceAdjustment: parseFloat(e.target.value) })}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    priceAdjustment: parseFloat(e.target.value),
+                                })
+                            }
                             placeholder='Enter price adjustment'
                             type='number'
                         />
@@ -195,18 +224,33 @@ export default function ProductAttribute() {
                         <input
                             type='checkbox'
                             checked={newValue.priceAdjustmentUsePercentage}
-                            onChange={(e) => setNewValue({ ...newValue, priceAdjustmentUsePercentage: e.target.checked })}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    priceAdjustmentUsePercentage: e.target.checked,
+                                })
+                            }
                             style={{ marginLeft: 8 }}
                         />
                     </Form.Item>
                     <Form.Item
                         name='weightAdjustment'
                         label={<span style={{ fontWeight: 'bold' }}>Weight Adjustment</span>}
-                        rules={[{ required: true, message: 'Please enter the weight adjustment' }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please enter the weight adjustment',
+                            },
+                        ]}
                     >
                         <Input
                             value={newValue.weightAdjustment}
-                            onChange={(e) => setNewValue({ ...newValue, weightAdjustment: parseFloat(e.target.value) })}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    weightAdjustment: parseFloat(e.target.value),
+                                })
+                            }
                             placeholder='Enter weight adjustment'
                             type='number'
                         />
@@ -218,7 +262,12 @@ export default function ProductAttribute() {
                     >
                         <Input
                             value={newValue.cost}
-                            onChange={(e) => setNewValue({ ...newValue, cost: parseFloat(e.target.value) })}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    cost: parseFloat(e.target.value),
+                                })
+                            }
                             placeholder='Enter cost'
                             type='number'
                         />
@@ -227,7 +276,12 @@ export default function ProductAttribute() {
                         <input
                             type='checkbox'
                             checked={newValue.isPreSelected}
-                            onChange={(e) => setNewValue({ ...newValue, isPreSelected: e.target.checked })}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    isPreSelected: e.target.checked,
+                                })
+                            }
                             style={{ marginLeft: 8 }}
                         />
                     </Form.Item>
@@ -238,7 +292,12 @@ export default function ProductAttribute() {
                     >
                         <Input
                             value={newValue.displayOrder}
-                            onChange={(e) => setNewValue({ ...newValue, displayOrder: parseFloat(e.target.value) })}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    displayOrder: parseFloat(e.target.value),
+                                })
+                            }
                             placeholder='Enter display order'
                             type='number'
                         />
