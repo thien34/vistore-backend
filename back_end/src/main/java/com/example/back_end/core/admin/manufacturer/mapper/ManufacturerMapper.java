@@ -7,9 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(
-        componentModel = "spring"
-)
+@Mapper(componentModel = "spring")
 public interface ManufacturerMapper {
     @Mapping(target = "deleted", constant = "false")
     Manufacturer maptoManufacturer(ManufacturerRequest manufacturerRequest);

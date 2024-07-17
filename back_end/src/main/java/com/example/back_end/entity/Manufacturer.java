@@ -42,7 +42,6 @@ public class Manufacturer extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "picture_id")
-    @JsonIgnore
     private Picture picture;
 
     @Column(name = "page_size")

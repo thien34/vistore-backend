@@ -13,6 +13,5 @@ public interface ManufactureServices {
     PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
     ManufacturerResponse getManufacturer(Long manufacturerId);
     void deleteListManufacturer(List<Long> manufacturerIds);
-
     List<ManufacturerNameResponse> getAlManufacturersName();
 }

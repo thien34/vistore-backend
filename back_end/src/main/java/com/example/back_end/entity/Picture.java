@@ -20,7 +20,6 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "picture")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Picture extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

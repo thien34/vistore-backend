@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class ManufacturerNameResponse {
     private Long id;
