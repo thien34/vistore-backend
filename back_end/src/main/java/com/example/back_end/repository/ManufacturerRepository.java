@@ -9,13 +9,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
     @Query(value = "select mn from Manufacturer mn  where mn.deleted = false and (:name is null or mn.name like %:name%) and (:published is null or mn.published = :published) ")
     Page<Manufacturer> findManufacturer(@Param("name") String name, @Param("published") Boolean published, Pageable pageable);
-
 
     @Modifying
     @Transactional
