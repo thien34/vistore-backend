@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Form, Input, Button, Space, Modal, Table, Empty, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { PredefinedProductAttributeValueResponse } from '@/model/PredefinedProductAttributeValue.ts'
+import {
+    PredefinedProductAttributeValueRequest,
+    PredefinedProductAttributeValueResponse,
+} from '@/model/PredefinedProductAttributeValue.ts'
 import useProductAttributeViewModel from '@/pages/productAttribute/ProductAttribute.vm.ts'
 
 const pageSize = 5
@@ -9,25 +12,25 @@ const pageSize = 5
 export default function ProductAttribute() {
     const [form] = Form.useForm()
     const [formAdd] = Form.useForm()
-    const [values, setValues] = useState([])
+    const [values, setValues] = useState<PredefinedProductAttributeValueRequest[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [newValue, setNewValue] = useState({
+    const [newValue, setNewValue] = useState<PredefinedProductAttributeValueRequest>({
+        id: 1,
         name: '',
-        setISEdipriceAdjustment: 0,
+        priceAdjustment: 0,
         priceAdjustmentUsePercentage: false,
         weightAdjustment: 0,
         cost: 0,
         isPreSelected: false,
         displayOrder: 0,
-        id: 1,
     })
     const [loading, setLoading] = useState(false)
     const [current, setCurrent] = useState(1)
 
     const { onFinish } = useProductAttributeViewModel()
 
-    const getNewId = (arr) => {
+    const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
         const maxId = Math.max(...arr.map((item) => item.id))
         return arr.length === 0 ? 0 : maxId + 1
     }
@@ -59,30 +62,26 @@ export default function ProductAttribute() {
         }
     }
 
-    const handleRemoveValue = (value) => {
+    const handleRemoveValue = (value: PredefinedProductAttributeValueRequest) => {
         setValues(values.filter((v) => v.id !== value.id))
     }
 
-    const handleEditValue = (value) => {
+    const handleEditValue = (value: PredefinedProductAttributeValueRequest) => {
         setIsModalOpen(true)
         formAdd.setFieldsValue(value)
         setNewValue(value)
         setIsEdit(true)
     }
 
-    const handleFinish = async (formValues) => {
+    const handleFinish = async (formValues: { name: string; description: string }) => {
         setLoading(true)
         try {
-            // Simulated API call
-            // console.log('Submitting form:', formValues);
-            // console.log('Values:', values);
-            // message.success('Form submitted successfully');
             form.resetFields()
             setValues([])
 
-            const data: { name: string; description: string; values: PredefinedProductAttributeValueResponse } = {
-                name: formValues?.name,
-                description: formValues?.description,
+            const data = {
+                name: formValues.name,
+                description: formValues.description,
                 values: values,
             }
 
@@ -96,7 +95,7 @@ export default function ProductAttribute() {
         }
     }
 
-    const handlePageChange = (page) => {
+    const handlePageChange = (page: number) => {
         setCurrent(page)
     }
 
@@ -107,7 +106,7 @@ export default function ProductAttribute() {
             title: 'Price Adjustment Use Percentage',
             dataIndex: 'priceAdjustmentUsePercentage',
             key: 'priceAdjustmentUsePercentage',
-            render: (text) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? 'Yes' : 'No'),
         },
         { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment' },
         { title: 'Cost', dataIndex: 'cost', key: 'cost' },
@@ -115,7 +114,7 @@ export default function ProductAttribute() {
             title: 'Pre-selected',
             dataIndex: 'isPreSelected',
             key: 'isPreSelected',
-            render: (text) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? 'Yes' : 'No'),
         },
         { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder' },
         {
@@ -168,7 +167,7 @@ export default function ProductAttribute() {
                                     total: values.length,
                                     onChange: (page) => handlePageChange(page),
                                 }}
-                                rowKey='displayOrder'
+                                rowKey='id'
                             />
                         )}
                     </Space>
@@ -182,15 +181,15 @@ export default function ProductAttribute() {
 
             <Modal
                 title='Add Predefined Value'
-                visible={isModalOpen}
+                open={isModalOpen}
                 centered
-                onOk={handleAddValue}
+                onOk={formAdd.submit}
                 onCancel={() => {
                     setIsModalOpen(false)
                     setIsEdit(false)
                 }}
             >
-                <Form form={formAdd} layout='vertical'>
+                <Form form={formAdd} layout='vertical' onFinish={handleAddValue}>
                     <Form.Item
                         name='name'
                         label={<span style={{ fontWeight: 'bold' }}>Name</span>}
@@ -224,7 +223,7 @@ export default function ProductAttribute() {
                             type='number'
                         />
                     </Form.Item>
-                    <Form.Item label={<span style={{ fontWeight: 'bold' }}>Price adjustment.Use percentage</span>}>
+                    <Form.Item label={<span style={{ fontWeight: 'bold' }}>Price Adjustment Use Percentage</span>}>
                         <input
                             type='checkbox'
                             checked={newValue.priceAdjustmentUsePercentage}
@@ -276,7 +275,7 @@ export default function ProductAttribute() {
                             type='number'
                         />
                     </Form.Item>
-                    <Form.Item label={<span style={{ fontWeight: 'bold' }}>Is pre-selected</span>}>
+                    <Form.Item label={<span style={{ fontWeight: 'bold' }}>Is Pre-selected</span>}>
                         <input
                             type='checkbox'
                             checked={newValue.isPreSelected}

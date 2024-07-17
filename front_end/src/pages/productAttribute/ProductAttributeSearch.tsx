@@ -20,7 +20,8 @@ export default function ProductAttributeSearch({
     const [published, setPublished] = useState<boolean | undefined>(undefined)
 
     const handleSearch = () => {
-        onSearch({ name, published })
+        const payload: { name: string; published: boolean | undefined } = { name, published }
+        if (onSearch) onSearch(payload)
     }
 
     return (
@@ -36,18 +37,6 @@ export default function ProductAttributeSearch({
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <Select
-                            className='w-56'
-                            size='large'
-                            defaultValue={null}
-                            value={published}
-                            onChange={(value) => setPublished(value)}
-                            options={[
-                                { value: null, label: 'All' },
-                                { value: true, label: 'Published only' },
-                                { value: false, label: 'Unpublished only' },
-                            ]}
-                        />
                         <Button
                             size='large'
                             type='primary'
@@ -60,7 +49,7 @@ export default function ProductAttributeSearch({
                     </div>
                     <div className=''>
                         <Button
-                            disabled={selectedRowKeys.length === 0}
+                            disabled={selectedRowKeys?.length === 0}
                             onClick={handleDelete}
                             type='primary'
                             className='me-5'

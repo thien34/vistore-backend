@@ -27,13 +27,13 @@ function useProductAttributeViewModel() {
     const onFinish = async (values: ProductAttributeRequest) => {
         console.log(values)
         createProductAttribute(values, {
-            onSuccess: (values) => {
-                console.log("data tra ve thanh cong: ", values)
-                message.success(values.message)
+            onSuccess: (data: string) => {
+                console.log('data tra ve thanh cong: ', data)
+                message.success(data)
             },
-            onError: (values) => {
-                console.log("data tra ve loi: ", values)
-                message.error(values.message)
+            onError: (error: { message: string }) => {
+                console.log('data tra ve loi: ', error)
+                message.error(error.message)
             },
         })
     }
@@ -87,7 +87,7 @@ function useProductAttributeViewModel() {
         setFilter((prevFilter) => ({
             ...prevFilter,
             ...newFilter,
-            pageNo: 1,
+            pageNo: 0,
         }))
     }
 

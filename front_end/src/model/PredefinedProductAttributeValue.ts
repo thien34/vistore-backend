@@ -8,6 +8,7 @@ export type PredefinedProductAttributeValueRequest = {
     cost: number
     isPreSelected: boolean
     displayOrder: number
+    setIsEditPriceAdjustment: number
 }
 export type PredefinedProductAttributeValueResponse = {
     id: number

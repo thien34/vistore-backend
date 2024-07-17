@@ -4,6 +4,7 @@ import { useState } from 'react'
 import useProductAttributeViewModel from './ProductAttribute.vm'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
 import { EditOutlined } from '@ant-design/icons'
+import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue'
 
 export default function ProductAttributeManage() {
     const {
@@ -18,7 +19,7 @@ export default function ProductAttributeManage() {
         isLoading,
     } = useProductAttributeViewModel()
     const [isOpenList, setIsOpenList] = useState(false)
-    const [dataDetail, setDataDetail] = useState([])
+    const [dataDetail, setDataDetail] = useState<Array<PredefinedProductAttributeValueRequest>>([])
     const getProductAttributeColumns = (): TableColumnsType<ProductAttributeResponse> => [
         {
             width: '40%',
@@ -63,7 +64,7 @@ export default function ProductAttributeManage() {
         },
     ]
 
-    const setShowList = (record) => {
+    const setShowList = (record: ProductAttributeResponse) => {
         setIsOpenList(true)
         setDataDetail(record?.values)
     }
@@ -75,7 +76,7 @@ export default function ProductAttributeManage() {
             title: 'Price Adjustment Use Percentage',
             dataIndex: 'priceAdjustmentUsePercentage',
             key: 'priceAdjustmentUsePercentage',
-            render: (text) => (text ? 'Yes' : 'No'),
+            render: (text: string) => (text ? 'Yes' : 'No'),
         },
         { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment' },
         { title: 'Cost', dataIndex: 'cost', key: 'cost' },
@@ -83,7 +84,7 @@ export default function ProductAttributeManage() {
             title: 'Pre-selected',
             dataIndex: 'isPreSelected',
             key: 'isPreSelected',
-            render: (text) => (text ? 'Yes' : 'No'),
+            render: (text: string) => (text ? 'Yes' : 'No'),
         },
         { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder' },
     ]

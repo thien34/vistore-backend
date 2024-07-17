@@ -8,6 +8,7 @@ export type ProductAttributeRequest = {
 }
 
 export type ProductAttributeResponse = {
+    values: Array<PredefinedProductAttributeValueResponse>
     id: number
     name: string
     description: string
