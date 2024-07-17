@@ -9,6 +9,7 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.exception.StoreException;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
@@ -60,7 +60,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     }
 
     @Override
-    public PageResponse<?> getAll(String name, int pageNo, int pageSize) {
+    public PageResponse<?> getAllProductAttribute(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new StoreException(ErrorCode.INVALID_PAGE_NUMBER_OR_PAGE_SIZE);
         }
@@ -76,7 +76,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                     response.setValues(values);
                     return response;
                 })
-                .sorted(Comparator.comparing(ProductAttributeResponse::getId).reversed())
                 .toList();
 
         return PageResponse.builder()
@@ -91,7 +90,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Override
     public ProductAttributeResponse getProductAttributeById(Long id) {
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
-                .orElseThrow(() -> new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
         return ProductAttributeResponse.mapToResponse(productAttribute);
     }
 
@@ -118,6 +117,31 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
             throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED);
         }
         productAttributeRepository.deleteById(id);
+    }
+    @Override
+    public PageResponse<?> searchByNameName(String name, int page, int size) {
+        if (page < 0 || size <= 0) {
+            throw new StoreException(ErrorCode.INVALID_PAGE_NUMBER_OR_PAGE_SIZE);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
+        List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
+                .map(productAttribute -> {
+                    ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
+                    List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
+                            .map(PredefinedProductAttributeValueResponse::mapToResponse)
+                            .toList();
+                    response.setValues(values);
+                    return response;
+                })
+                .toList();
+        return PageResponse.builder()
+                .page(productAttributePage.getNumber())
+                .size(productAttributePage.getSize())
+                .totalPage(productAttributePage.getTotalPages())
+                .items(productAttributeResponseList)
+                .build();
     }
 
 }

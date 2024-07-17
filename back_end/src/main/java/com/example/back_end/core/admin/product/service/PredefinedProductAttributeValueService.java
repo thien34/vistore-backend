@@ -4,13 +4,12 @@ import com.example.back_end.core.admin.product.payload.request.PredefinedProduct
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 public interface PredefinedProductAttributeValueService {
     PredefinedProductAttributeValue createProductAttributeValue(PredefinedProductAttributeValueRequest request);
-    PageResponse<List<PredefinedProductAttributeValueResponse>> getAll(String name, int pageNo, int pageSize);
+    PageResponse<List<PredefinedProductAttributeValueResponse>> getAllPredefinedProductAttributeValue(String name, int pageNo, int pageSize);
     PredefinedProductAttributeValueResponse getPredefinedAttributeValueById(Long id);
     PredefinedProductAttributeValueResponse updatePredefinedAttributeValue(Long id, PredefinedProductAttributeValueRequest request);
     void deletePredefinedAttributeValue(Long id);
+
 }

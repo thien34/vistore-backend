@@ -185,8 +185,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(StoreException.class)
-    public ResponseEntity<ErrorResponse> handleStoreException(StoreException exception, WebRequest request) {
-        // Handle the StoreException here
+    public ResponseEntity<ErrorResponse> handleStoreException(StoreException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(new Date())
@@ -196,24 +195,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatusCode()).body(errorResponse);
     }
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(NOT_FOUND)
-    @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "404 Response", summary = "Handle exception when type mismatch occurs", value = """
+    @ResponseStatus(BAD_REQUEST)
+    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "404 Response", summary = "Handle exception when type mismatch occurs", value = """
             {
               "timestamp": "2024-07-14T11:23:14.801+00:00",
-              "status": 404,
+              "status": 400,
               "path": "/api/admin/product-attributes/3bjbjjbjk",
-              "error": "Not Found",
+              "error": "Bad Request",
               "message": "Resource not found due to type mismatch"
             }
             """))})})
     public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, WebRequest request) {
-
         return ErrorResponse.builder()
                 .timestamp(new Date())
-                .status(NOT_FOUND.value())
+                .status(BAD_REQUEST.value())
                 .path(request.getDescription(false).replace("uri=", ""))
-                .error("Not Found")
-                .message("Resource not found due to type mismatch")
+                .error("Bad Request")
+                .message(e.getMessage())
                 .build();
     }
 

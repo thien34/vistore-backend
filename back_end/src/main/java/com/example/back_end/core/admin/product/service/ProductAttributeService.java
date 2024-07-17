@@ -4,13 +4,13 @@ import com.example.back_end.core.admin.product.payload.request.ProductAttributeR
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.ProductAttribute;
-import org.springframework.stereotype.Service;
 
 public interface ProductAttributeService {
     ProductAttribute createProductAttribute(ProductAttributeRequest request);
-    PageResponse<?> getAll(String name, int pageNo, int pageSize);
+    PageResponse<?> getAllProductAttribute(String name, int pageNo, int pageSize);
     ProductAttributeResponse getProductAttributeById(Long id);
     ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request);
     void deleteProductAttribute(Long id);
+     PageResponse<?> searchByNameName(String name, int page, int size);
 
 }

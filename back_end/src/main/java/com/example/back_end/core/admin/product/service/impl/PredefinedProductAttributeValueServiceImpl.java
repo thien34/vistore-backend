@@ -19,8 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,7 +48,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
     }
 
     @Override
-    public PageResponse<List<PredefinedProductAttributeValueResponse>> getAll(
+    public PageResponse<List<PredefinedProductAttributeValueResponse>> getAllPredefinedProductAttributeValue(
             String name,
             int pageNo,
             int pageSize
@@ -66,7 +64,6 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
 
         List<PredefinedProductAttributeValueResponse> responseList = valuePage.stream()
                 .map(predefinedProductAttributeValueMapper::toDto)
-                .sorted(Comparator.comparing(PredefinedProductAttributeValueResponse::getId).reversed())
                 .toList();
 
         return PageResponse.<List<PredefinedProductAttributeValueResponse>>builder()
@@ -109,13 +106,10 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
     }
 
     @Override
-    @Transactional
     public void deletePredefinedAttributeValue(Long id) {
-
-        if (!predefinedProductAttributeValueRepository.existsById(id)) {
+        if (!predefinedProductAttributeValueRepository.existsById(id))
             throw new StoreException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED);
-        }
-        predefinedProductAttributeValueRepository.deleteById(id);
 
+        predefinedProductAttributeValueRepository.deleteById(id);
     }
 }

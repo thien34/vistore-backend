@@ -35,7 +35,7 @@ public class ProductAttribute extends Auditable {
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "productAttribute",cascade = CascadeType.REMOVE)
     private List<PredefinedProductAttributeValue> values;
 
 }
