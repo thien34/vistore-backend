@@ -3,12 +3,11 @@ package com.example.back_end.core.admin.manufacturer.controller;
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
-import com.example.back_end.core.admin.manufacturer.service.impl.ManufacturerServicesImpl;
+import com.example.back_end.core.admin.manufacturer.service.ManufactureServices;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +17,17 @@ import java.util.List;
 @RequestMapping("/admin/manufacturers")
 @Slf4j
 public class ManufactureController {
-    @Autowired
-    private ManufacturerServicesImpl manufacturerServices;
+    private final ManufactureServices manufacturerServices;
+
+    public ManufactureController(ManufactureServices manufacturerServices) {
+        this.manufacturerServices = manufacturerServices;
+    }
 
     @GetMapping()
     public ResponseData<?> getAllManufacturers(@RequestParam(value = "name", defaultValue = "") String name,
-                                  @RequestParam(value = "published", defaultValue = "") Boolean published,
-                                  @RequestParam(value = "page", defaultValue = "1") int page,
-                                  @RequestParam(value = "size", defaultValue = "10") int size) {
+                                               @RequestParam(value = "published", defaultValue = "") Boolean published,
+                                               @RequestParam(value = "page", defaultValue = "1") int page,
+                                               @RequestParam(value = "size", defaultValue = "6") int size) {
         try {
             PageResponse<?> response = manufacturerServices.getAll(name, published, page, size);
             return new ResponseData<>(HttpStatus.OK.value(), "Get Manufacturers successfully", response);
@@ -52,7 +54,7 @@ public class ManufactureController {
         log.info("Request to update the manufacturer with id: {}, {}", id, manufacturerRequest);
         try {
             manufacturerServices.updateManufacturer(id, manufacturerRequest);
-            return new ResponseData<>(HttpStatus.OK.value(), "Update manufacturer with id : "+id+" successfully");
+            return new ResponseData<>(HttpStatus.OK.value(), "Update manufacturer with id : " + id + " successfully");
         } catch (Exception e) {
             log.error("Error updating manufacturer ", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
@@ -69,6 +71,7 @@ public class ManufactureController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
     @GetMapping("/{manufacturerId}")
     public ResponseData<?> getManufacturerById(@PathVariable Long manufacturerId) {
         try {
