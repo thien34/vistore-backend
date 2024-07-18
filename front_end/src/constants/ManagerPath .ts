@@ -6,6 +6,10 @@ class ManagerPath {
     static readonly CATEGORY_UPDATE = '/admin/categories/:id/update'
     static readonly PICTURE = '/admin/picture'
     static readonly ORDER = '/admin/orders'
+    static readonly MANUFACTURE= '/admin/manufacturers'
+    static readonly MANUFACTURE_ADD = '/admin/manufacturers/add'
+    static readonly MANUFACTURE_UPDATE = '/admin/manufacturers/:id/update'
+
 }
 
 export default ManagerPath
