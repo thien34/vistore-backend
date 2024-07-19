@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -18,12 +18,22 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductAttributeRequest {
+public class PredefinedProductAttributeValueUpdateRequest {
+    Long id;
+
     @NotBlank(message = "Name must not be blank")
     @Size(max = 255, message = "Name must not exceed 255 characters")
     String name;
 
-    @Size(max = 1000, message = "Description must not exceed 1000 characters")
-    String description;
-    List<PredefinedProductAttributeValueUpdateRequest> values;
+    BigDecimal priceAdjustment;
+
+    Boolean priceAdjustmentUsePercentage;
+
+    BigDecimal weightAdjustment;
+
+    BigDecimal cost;
+
+    Boolean isPreSelected;
+
+    Integer displayOrder;
 }

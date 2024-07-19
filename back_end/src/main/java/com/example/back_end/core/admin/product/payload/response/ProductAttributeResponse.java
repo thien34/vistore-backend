@@ -19,7 +19,6 @@ public class ProductAttributeResponse {
         response.setName(productAttribute.getName());
         response.setDescription(productAttribute.getDescription());
 
-        // Map predefined values
         List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                 .map(PredefinedProductAttributeValueResponse::mapToResponse)
                 .toList();

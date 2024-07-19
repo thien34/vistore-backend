@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
+import com.example.back_end.core.admin.product.payload.request.PredefinedProductAttributeValueUpdateRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
@@ -16,6 +17,7 @@ import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductAttributeServiceImpl implements ProductAttributeService {
@@ -98,26 +105,73 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Transactional
     public ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request) {
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
-                .orElseThrow(() -> new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED));
-        if (productAttributeRepository
-                .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
-            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED);
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage()));
+
+        if (productAttributeRepository.existsByNameAndIdNot(request.getName(), id)) {
+            throw new ResourceNotFoundException(ErrorCode.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getMessage());
+        }
 
         productAttribute.setName(request.getName());
         productAttribute.setDescription(request.getDescription());
 
-        ProductAttribute updatedProductAttribute = productAttributeRepository.save(productAttribute);
-        return ProductAttributeResponse.mapToResponse(updatedProductAttribute);
-    }
+        List<PredefinedProductAttributeValue> existingValues = predefinedProductAttributeValueRepository.findByProductAttributeId(id);
 
+        Map<Long, PredefinedProductAttributeValue> existingValuesMap = existingValues.stream()
+                .collect(Collectors.toMap(PredefinedProductAttributeValue::getId, value -> value));
 
-    @Override
-    public void deleteProductAttribute(Long id) {
-        if (!productAttributeRepository.existsById(id)) {
-            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED);
+        List<PredefinedProductAttributeValue> updatedValues = new ArrayList<>();
+
+        for (PredefinedProductAttributeValueUpdateRequest predefinedRequest : request.getValues()) {
+            PredefinedProductAttributeValue value;
+            if (predefinedRequest.getId() != null && existingValuesMap.containsKey(predefinedRequest.getId())) {
+                value = existingValuesMap.get(predefinedRequest.getId());
+                value.setCost(predefinedRequest.getCost());
+                value.setDisplayOrder(predefinedRequest.getDisplayOrder());
+                value.setName(predefinedRequest.getName());
+                value.setPriceAdjustment(predefinedRequest.getPriceAdjustment());
+                value.setIsPreSelected(predefinedRequest.getIsPreSelected());
+                value.setWeightAdjustment(predefinedRequest.getWeightAdjustment());
+                value.setPriceAdjustmentUsePercentage(predefinedRequest.getPriceAdjustmentUsePercentage());
+            } else {
+                value = PredefinedProductAttributeValue.builder()
+                        .productAttribute(productAttribute)
+                        .cost(predefinedRequest.getCost())
+                        .displayOrder(predefinedRequest.getDisplayOrder())
+                        .name(predefinedRequest.getName())
+                        .priceAdjustment(predefinedRequest.getPriceAdjustment())
+                        .isPreSelected(predefinedRequest.getIsPreSelected())
+                        .weightAdjustment(predefinedRequest.getWeightAdjustment())
+                        .priceAdjustmentUsePercentage(predefinedRequest.getPriceAdjustmentUsePercentage())
+                        .build();
+            }
+            updatedValues.add(value);
         }
-        productAttributeRepository.deleteById(id);
+
+        List<Long> updatedValueIds = updatedValues.stream()
+                .map(PredefinedProductAttributeValue::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        List<PredefinedProductAttributeValue> valuesToRemove = existingValues.stream()
+                .filter(value -> !updatedValueIds.contains(value.getId()))
+                .toList();
+
+        predefinedProductAttributeValueRepository.deleteAll(valuesToRemove);
+
+        predefinedProductAttributeValueRepository.saveAll(updatedValues);
+
+        productAttribute.setValues(new ArrayList<>(updatedValues));
+        ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
+
+        return ProductAttributeResponse.mapToResponse(savedProductAttribute);
     }
+
+
+
+
+
+
+
     @Override
     public PageResponse<?> searchByNameName(String name, int page, int size) {
         if (page < 0 || size <= 0) {
@@ -142,6 +196,15 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .totalPage(productAttributePage.getTotalPages())
                 .items(productAttributeResponseList)
                 .build();
+    }
+
+    @Override
+    public void deleteProductAttribute(List<Long> ids) {
+        List<ProductAttribute> productAttributes = productAttributeRepository.findAllById(ids);
+
+        if (!productAttributes.isEmpty()) {
+            productAttributeRepository.deleteAllInBatch(productAttributes);
+        }
     }
 
 }

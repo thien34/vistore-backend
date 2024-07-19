@@ -26,7 +26,9 @@ public enum ErrorCode {
 
     USER_EXISTED(1006, "User existed", HttpStatus.BAD_REQUEST),
 
-    PRODUCT_ATTRIBUTE_NOT_EXISTED(1007, "Product attribute does not existed", HttpStatus.NOT_FOUND),
+    PRODUCT_ATTRIBUTE_NOT_EXISTED(1007, "Product attribute does not exist", HttpStatus.OK),
+
+    PRODUCT_ATTRIBUTE_ALREADY_EXISTS(1007, "Product attribute already exist,you can reuse it", HttpStatus.OK),
 
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED(1008, "Predefined product attribute value does not existed", HttpStatus.NOT_FOUND),
 

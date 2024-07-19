@@ -8,6 +8,7 @@ import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.SuccessCode;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,27 +78,13 @@ public class ProductAttributeController {
         try {
             ProductAttributeResponse updatedAttribute = productAttributeService.updateProductAttribute(id, dto);
             return ResponseData.<ProductAttributeResponse>builder()
-                    .status(SuccessCode.PRODUCT_ATTRIBUTE_UPDATED.getStatusCode().value())
+                    .status(HttpStatus.OK.value())
                     .message(SuccessCode.PRODUCT_ATTRIBUTE_UPDATED.getMessage())
                     .data(updatedAttribute)
                     .build();
         }catch (Exception e) {
             log.error("Error update product attributes", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseData<Void> delete(@PathVariable Long id) {
-        try {
-            productAttributeService.deleteProductAttribute(id);
-            return ResponseData.<Void>builder()
-                    .status(SuccessCode.PRODUCT_ATTRIBUTE_DELETED.getCode())
-                    .message(SuccessCode.PRODUCT_ATTRIBUTE_DELETED.getMessage())
-                    .build();
-        }catch (Exception e) {
-            log.error("Error delete product attributes", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+            return new ResponseError(HttpStatus.OK.value(), e.getMessage());
         }
     }
     @GetMapping("/search")
@@ -114,4 +103,19 @@ public class ProductAttributeController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+    @Operation(method = "DELETE", summary = "Delete product attributes",
+            description = "Send a request via this API to delete product attributes")
+    @DeleteMapping
+    public ResponseData<ResponseError> deleteProductAttributes(@RequestBody List<Long> ids) {
+        log.info("Request to delete product attributes with ids: {}", ids);
+        try {
+            productAttributeService.deleteProductAttribute(ids);
+            return new ResponseData<>(HttpStatus.OK.value(), "Delete product attributes success");
+        } catch (Exception e) {
+            log.error("Error deleting product attributes", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+
 }
