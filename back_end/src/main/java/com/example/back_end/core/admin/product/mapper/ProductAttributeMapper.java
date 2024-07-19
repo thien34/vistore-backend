@@ -5,6 +5,7 @@ import com.example.back_end.core.admin.product.payload.response.ProductAttribute
 import com.example.back_end.entity.ProductAttribute;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public interface ProductAttributeMapper {
     List<ProductAttribute> toEntities(List<ProductAttributeRequest> dtos);
 
     List<ProductAttributeResponse> toDtos(List<ProductAttribute> entities);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "values", ignore = true)
+    void updateEntityFromRequest(ProductAttributeRequest request, @MappingTarget ProductAttribute entity);
 
     default List<ProductAttributeResponse> toDtos(Page<ProductAttribute> page) {
         return toDtos(page.getContent());

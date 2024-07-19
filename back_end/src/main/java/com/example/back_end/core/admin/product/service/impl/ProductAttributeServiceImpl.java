@@ -109,59 +109,41 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
             throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getMessage());
         }
 
-        productAttribute.setName(request.getName());
-        productAttribute.setDescription(request.getDescription());
+        productAttributeMapper.updateEntityFromRequest(request, productAttribute);
 
-        List<PredefinedProductAttributeValue> existingValues = predefinedProductAttributeValueRepository.findByProductAttributeId(id);
-
-        Map<Long, PredefinedProductAttributeValue> existingValuesMap = existingValues.stream()
+        Map<Long, PredefinedProductAttributeValue> existingValuesMap = predefinedProductAttributeValueRepository.findByProductAttributeId(id)
+                .stream()
                 .collect(Collectors.toMap(PredefinedProductAttributeValue::getId, value -> value));
 
-        List<PredefinedProductAttributeValue> updatedValues = new ArrayList<>();
+        List<PredefinedProductAttributeValue> updatedValues = request.getValues().stream().map(predefinedRequest -> {
+            PredefinedProductAttributeValue value = existingValuesMap.getOrDefault(predefinedRequest.getId(),
+                    PredefinedProductAttributeValue.builder().productAttribute(productAttribute).build());
+            value.setCost(predefinedRequest.getCost());
+            value.setDisplayOrder(predefinedRequest.getDisplayOrder());
+            value.setName(predefinedRequest.getName());
+            value.setPriceAdjustment(predefinedRequest.getPriceAdjustment());
+            value.setIsPreSelected(predefinedRequest.getIsPreSelected());
+            value.setWeightAdjustment(predefinedRequest.getWeightAdjustment());
+            value.setPriceAdjustmentUsePercentage(predefinedRequest.getPriceAdjustmentUsePercentage());
+            return value;
+        }).toList();
 
-        for (PredefinedProductAttributeValueUpdateRequest predefinedRequest : request.getValues()) {
-            PredefinedProductAttributeValue value;
-            if (predefinedRequest.getId() != null && existingValuesMap.containsKey(predefinedRequest.getId())) {
-                value = existingValuesMap.get(predefinedRequest.getId());
-                value.setCost(predefinedRequest.getCost());
-                value.setDisplayOrder(predefinedRequest.getDisplayOrder());
-                value.setName(predefinedRequest.getName());
-                value.setPriceAdjustment(predefinedRequest.getPriceAdjustment());
-                value.setIsPreSelected(predefinedRequest.getIsPreSelected());
-                value.setWeightAdjustment(predefinedRequest.getWeightAdjustment());
-                value.setPriceAdjustmentUsePercentage(predefinedRequest.getPriceAdjustmentUsePercentage());
-            } else {
-                value = PredefinedProductAttributeValue.builder()
-                        .productAttribute(productAttribute)
-                        .cost(predefinedRequest.getCost())
-                        .displayOrder(predefinedRequest.getDisplayOrder())
-                        .name(predefinedRequest.getName())
-                        .priceAdjustment(predefinedRequest.getPriceAdjustment())
-                        .isPreSelected(predefinedRequest.getIsPreSelected())
-                        .weightAdjustment(predefinedRequest.getWeightAdjustment())
-                        .priceAdjustmentUsePercentage(predefinedRequest.getPriceAdjustmentUsePercentage())
-                        .build();
-            }
-            updatedValues.add(value);
-        }
+        predefinedProductAttributeValueRepository.saveAll(updatedValues);
 
         List<Long> updatedValueIds = updatedValues.stream()
                 .map(PredefinedProductAttributeValue::getId)
                 .filter(Objects::nonNull)
                 .toList();
 
-        List<PredefinedProductAttributeValue> valuesToRemove = existingValues.stream()
+        predefinedProductAttributeValueRepository.deleteAll(existingValuesMap.values().stream()
                 .filter(value -> !updatedValueIds.contains(value.getId()))
-                .toList();
-
-        predefinedProductAttributeValueRepository.deleteAll(valuesToRemove);
-
-        predefinedProductAttributeValueRepository.saveAll(updatedValues);
+                .toList());
 
         productAttribute.setValues(new ArrayList<>(updatedValues));
         ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
 
-        return ProductAttributeResponse.mapToResponse(savedProductAttribute);
+        return productAttributeMapper.toDto(savedProductAttribute);
+
     }
 
 
