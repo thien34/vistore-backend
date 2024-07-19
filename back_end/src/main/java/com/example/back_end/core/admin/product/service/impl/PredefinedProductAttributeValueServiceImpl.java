@@ -7,6 +7,10 @@ import com.example.back_end.core.admin.product.service.PredefinedProductAttribut
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.exception.AlreadyExistsException;
+import com.example.back_end.infrastructure.exception.DataIntegrityViolationException;
+import com.example.back_end.infrastructure.exception.ExistsByNameException;
+import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.exception.StoreException;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
@@ -36,11 +40,11 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
     ) {
 
         if (!productAttributeRepository.existsById(request.getProductAttribute()))
-            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED);
+            throw new DataIntegrityViolationException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage());
 
         if (predefinedProductAttributeValueRepository
                 .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
-            throw new StoreException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED);
+            throw new ExistsByNameException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED.getMessage());
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueMapper.toEntity(request);
         return predefinedProductAttributeValueRepository.save(value);
@@ -53,10 +57,6 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
             int pageNo,
             int pageSize
     ) {
-
-        if (pageNo < 0 || pageSize <= 0)
-            throw new StoreException(ErrorCode.INVALID_PAGE_NUMBER_OR_PAGE_SIZE);
-
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
 
         Page<PredefinedProductAttributeValue> valuePage =
@@ -93,10 +93,10 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
     ) {
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueRepository.findById(id)
-                .orElseThrow(() -> new StoreException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED));
+                .orElseThrow(() -> new NotExistsException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage()));
         if (productAttributeRepository
                 .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
-            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED);
+            throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         predefinedProductAttributeValueMapper.updateEntity(request, value);
 
         PredefinedProductAttributeValue updatedValue = predefinedProductAttributeValueRepository.save(value);
@@ -108,7 +108,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
     @Override
     public void deletePredefinedAttributeValue(Long id) {
         if (!predefinedProductAttributeValueRepository.existsById(id))
-            throw new StoreException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED);
+            throw new NotExistsException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage());
 
         predefinedProductAttributeValueRepository.deleteById(id);
     }

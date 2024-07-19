@@ -10,8 +10,9 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.ErrorCode;
-import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
-import com.example.back_end.infrastructure.exception.StoreException;
+import com.example.back_end.infrastructure.exception.AlreadyExistsException;
+import com.example.back_end.infrastructure.exception.ExistsByNameException;
+import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
@@ -45,7 +46,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
         if (productAttributeRepository
                 .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
-            throw new StoreException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED);
+            throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
         ProductAttribute productAttributeSave = productAttributeRepository.save(productAttribute);
         List<PredefinedProductAttributeValue> values = new ArrayList<>();
@@ -68,10 +69,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     public PageResponse<?> getAllProductAttribute(String name, int pageNo, int pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
-            throw new StoreException(ErrorCode.INVALID_PAGE_NUMBER_OR_PAGE_SIZE);
-        }
-
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
@@ -91,13 +88,14 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .totalPage(productAttributePage.getTotalPages())
                 .items(productAttributeResponseList)
                 .build();
+
     }
 
 
     @Override
     public ProductAttributeResponse getProductAttributeById(Long id) {
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
+                .orElseThrow(() -> new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
         return ProductAttributeResponse.mapToResponse(productAttribute);
     }
 
@@ -105,10 +103,10 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Transactional
     public ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request) {
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage()));
+                .orElseThrow(() -> new NotExistsException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage()));
 
         if (productAttributeRepository.existsByNameAndIdNot(request.getName(), id)) {
-            throw new ResourceNotFoundException(ErrorCode.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getMessage());
+            throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getMessage());
         }
 
         productAttribute.setName(request.getName());
@@ -174,9 +172,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     public PageResponse<?> searchByNameName(String name, int page, int size) {
-        if (page < 0 || size <= 0) {
-            throw new StoreException(ErrorCode.INVALID_PAGE_NUMBER_OR_PAGE_SIZE);
-        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);

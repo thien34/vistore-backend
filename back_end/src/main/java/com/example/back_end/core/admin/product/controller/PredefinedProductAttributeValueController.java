@@ -64,7 +64,7 @@ public class PredefinedProductAttributeValueController {
            try {
                PredefinedProductAttributeValue response = predefinedProductAttributeValueService.createProductAttributeValue(request);
                return ResponseData.<PredefinedProductAttributeValueResponse>builder()
-                       .status(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_CREATED.getStatusCode().value())
+                       .status(HttpStatus.OK.value())
                        .message(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_CREATED.getMessage())
                        .data(PredefinedProductAttributeValueResponse.mapToResponse(response))
                        .build();

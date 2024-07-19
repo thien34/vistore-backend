@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
@@ -209,6 +210,54 @@ public class GlobalExceptionHandler {
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error("Bad Request")
+                .message(e.getMessage())
+                .build();
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ApiResponses(value = {@ApiResponse(responseCode = "409", description = "Conflict", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "409 Response", summary = "Handle exception when data integrity is violated", value = """
+            {
+              "timestamp": "2024-07-14T11:23:14.801+00:00",
+              "status": 409,
+              "path": "/api/v1/...",
+              "error": "Conflict",
+              "message": "Data integrity violation occurred"
+            }
+            """))})})
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e, WebRequest request) {
+
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.CONFLICT.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .message("Data integrity violation: " + e.getMessage())
+                .build();
+    }
+    /**
+     * Handle IllegalArgumentException.
+     *
+     * @param e the exception
+     * @param request the web request
+     * @return the error response
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content(mediaType = "application/json", examples = @ExampleObject(name = "400 Response", summary = "Handle IllegalArgumentException", value = """
+            {
+              "timestamp": "2024-07-14T11:23:14.801+00:00",
+              "status": 400,
+              "path": "/api/v1/...",
+              "error": "Bad Request",
+              "message": "Invalid argument provided"
+            }
+            """))})})
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e, WebRequest request) {
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .error("Bad Request")
                 .message(e.getMessage())

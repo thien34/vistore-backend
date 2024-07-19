@@ -37,7 +37,7 @@ public class ProductAttributeController {
 
     @GetMapping
     public ResponseData<PageResponse<ProductAttributeResponse>> getAll(@RequestParam(value = "name", defaultValue = "") String name,
-                                                                       @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+                                                                       @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
                                                                        @RequestParam(value = "pageSize", defaultValue = "6") int pageSize
     ) {
             PageResponse<ProductAttributeResponse> response = (PageResponse<ProductAttributeResponse>) productAttributeService.getAllProductAttribute(name, pageNo, pageSize);
@@ -84,7 +84,7 @@ public class ProductAttributeController {
                     .build();
         }catch (Exception e) {
             log.error("Error update product attributes", e);
-            return new ResponseError(HttpStatus.OK.value(), e.getMessage());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
     @GetMapping("/search")
