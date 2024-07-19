@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Form, Input, Button, Space, Modal, Table, Empty, message } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
 import { useNavigate } from 'react-router-dom'
 import useProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.vm.ts'
@@ -22,15 +22,30 @@ export default function ProductAttribute() {
         weightAdjustment: 0,
         cost: 0,
         isPreSelected: false,
-        displayOrder: 0
+        displayOrder: 0,
     })
-
     const [isOpenConfirm, setOpenConfirm] = useState(false)
 
     const [loading, setLoading] = useState(false)
     const [current, setCurrent] = useState(1)
 
     const { onFinish } = useProductAttributeCreate()
+    const gradientStyleEdit = {
+        background: 'linear-gradient(to right, #4facfe, #00f2fe)',
+        border: 'none',
+        color: 'white',
+    }
+    const gradientStyleSave = {
+        background: 'linear-gradient(to right, #34C759, #8BC34A)',
+        border: 'none',
+        color: 'white',
+    }
+
+    const gradientStyleRemove = {
+        background: 'linear-gradient(to right, #ff6a6a, #ff0000)',
+        border: 'none',
+        color: 'white',
+    }
 
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
         const maxId = Math.max(...arr.map((item) => item.id))
@@ -126,10 +141,20 @@ export default function ProductAttribute() {
             key: 'action',
             render: (record: PredefinedProductAttributeValueRequest) => (
                 <Space size='middle'>
-                    <Button type='link' onClick={() => handleEditValue(record)}>
+                    <Button
+                        type='link'
+                        style={gradientStyleEdit}
+                        icon={<EditOutlined />}
+                        onClick={() => handleEditValue(record)}
+                    >
                         Edit
                     </Button>
-                    <Button type='link' onClick={() => handleRemoveValue(record)}>
+                    <Button
+                        type='link'
+                        style={gradientStyleRemove}
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleRemoveValue(record)}
+                    >
                         Remove
                     </Button>
                 </Space>
@@ -144,7 +169,7 @@ export default function ProductAttribute() {
                     onCancel={() => setOpenConfirm(false)}
                     footer={() => (
                         <div>
-                            <Button form='myForm' key='submit' type='primary' htmlType='submit'>
+                            <Button style={{ margin: 8 }} form='myForm' key='submit' type='primary' htmlType='submit'>
                                 Submit
                             </Button>
                             <Button type='default' onClick={() => setOpenConfirm(false)}>
@@ -192,7 +217,13 @@ export default function ProductAttribute() {
                         </Space>
                     </Form.Item>
                     <Form.Item>
-                        <Button type='primary' onClick={() => setOpenConfirm(true)} loading={loading}>
+                        <Button
+                            type='primary'
+                            style={gradientStyleSave}
+                            onClick={() => setOpenConfirm(true)}
+                            icon={<CheckCircleOutlined />}
+                            loading={loading}
+                        >
                             Save
                         </Button>
                     </Form.Item>

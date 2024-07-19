@@ -30,14 +30,19 @@ export default function ProductAttributeSearch({
         handleDelete()
         setIsOpenConfirm(false)
     }
+    const gradientStyleYellow = {
+        background: 'linear-gradient(to right, #d7b85c, #c0a04c, #a6883a)',
+        border: 'none',
+        color: 'white', // Adjust color for better contrast
+    }
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Modal
                 onCancel={() => setIsOpenConfirm(false)}
                 footer={() => (
-                    <div>
-                        <Button onClick={onDelete} className='bg-[#CC3300] border-[#374151] text-white'>
+                    <div className='mx-5'>
+                        <Button onClick={onDelete} className='mx-3 bg-[#CC3300] border-[#374151] text-white'>
                             Delete
                         </Button>
                         <Button type='default' onClick={() => setIsOpenConfirm(false)}>
@@ -47,7 +52,7 @@ export default function ProductAttributeSearch({
                 )}
                 open={isOpenConfirm}
             >
-                <div className={'py-10 font-bold text-[16px]'}>Do you want to delete Product Attribute?</div>
+                <div className={'py-5 font-bold text-[16px]'}>Do you want to delete Product Attribute?</div>
             </Modal>
             <div>
                 <h3 className='text-xl font-bold'>{AppActions.SEARCH}</h3>
@@ -82,7 +87,7 @@ export default function ProductAttributeSearch({
                             {AppActions.DELETE}
                         </Button>
                         <Link to='/admin/product-attributes/add'>
-                            <Button className='bg-[#475569] text-white' size='large'>
+                            <Button style={gradientStyleYellow} size='large'>
                                 {AppActions.ADD}
                             </Button>
                         </Link>

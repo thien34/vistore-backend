@@ -1,9 +1,9 @@
-import { Button, Modal, Table, TableColumnsType, Form, Input, InputNumber } from 'antd'
+import { Button, Modal, Table, TableColumnsType, Form, Input, InputNumber, Spin } from 'antd'
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeSearch.tsx'
 import { useEffect, useState } from 'react'
 import useProductAttributeViewModel from './ProductAttribute.vm'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
-import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { EditOutlined, EyeOutlined } from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue'
 import { Link } from 'react-router-dom'
 
@@ -106,13 +106,6 @@ export default function ProductAttributeManage() {
                             Update
                         </Button>
                     </Link>
-                    {/*<Button*/}
-                    {/*    onClick={() => setShowList(record)}*/}
-                    {/*    className='bg-[#CC3300] border-[#374151] text-white'*/}
-                    {/*    icon={<DeleteOutlined />}*/}
-                    {/*>*/}
-                    {/*    Delete*/}
-                    {/*</Button>*/}
                     <Button
                         onClick={() => setShowList(record)}
                         className='bg-[#374151] border-[#374151] text-white'
@@ -129,12 +122,6 @@ export default function ProductAttributeManage() {
         setIsOpenList(true)
         setDataDetail(record?.values)
     }
-
-    // const handleUpdate = (record: PredefinedProductAttributeValueRequest) => {
-    //     // Handle update logic here
-    //     console.log('Update:', record)
-    // }
-
     const handleDeleteValue = (record: PredefinedProductAttributeValueRequest) => {
         // Handle delete logic here
         console.log('Delete:', record)
@@ -161,32 +148,6 @@ export default function ProductAttributeManage() {
             editable: true,
         },
         { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder', editable: true },
-        // {
-        //     title: 'Action',
-        //     key: 'action',
-        //     render: (_, record) => {
-        //         const editable = isEditing(record)
-        //         return editable ? (
-        //             <span>
-        //                 <Typography.Link onClick={() => save(record.id)} style={{ marginRight: 8 }}>
-        //                     Save
-        //                 </Typography.Link>
-        //                 <Popconfirm title='Sure to cancel?' onConfirm={cancel}>
-        //                     <a>Cancel</a>
-        //                 </Popconfirm>
-        //             </span>
-        //         ) : (
-        //             <Space size='middle'>
-        //                 <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-        //                     Edit
-        //                 </Typography.Link>
-        //                 <Button type='link' onClick={() => handleDeleteValue(record)} icon={<DeleteOutlined />} danger>
-        //                     Delete
-        //                 </Button>
-        //             </Space>
-        //         )
-        //     },
-        // },
     ]
 
     const mergedColumnsList = columnsList.map((col: { editable: boolean; dataIndex: number; title: string }) => {
@@ -241,7 +202,26 @@ export default function ProductAttributeManage() {
                 selectedRowKeys={selectedRowKeys}
                 handleDelete={handleDelete}
             />
-            {isLoading && <p>Loading ...</p>}
+            {isLoading && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        zIndex: 9999,
+                    }}
+                >
+                    <Spin size='small'>
+                        <Spin size='large' tip='Loading...'></Spin>
+                    </Spin>
+                </div>
+            )}
             <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {listResponse && (
                     <Table
@@ -251,7 +231,7 @@ export default function ProductAttributeManage() {
                         columns={getProductAttributeColumns()}
                         dataSource={listResponse.items}
                         pagination={{
-                            current: filter.pageNo ?? 1,
+                            current: (filter.pageNo ?? 1) + 1,
                             pageSize: filter.pageSize ?? 6,
                             total: listResponse.totalPages * (filter.pageSize ?? 6),
                             onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),

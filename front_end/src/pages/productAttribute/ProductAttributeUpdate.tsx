@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Form, Input, Button, Space, Modal, Table, Empty, message } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import {
+    CheckCircleOutlined,
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleOutlined,
+    PlusOutlined,
+} from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
 import useProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.vm.ts'
 
@@ -80,6 +86,22 @@ export default function ProductAttributeUpdate() {
         setNewValue(value)
         setIsEdit(true)
     }
+    const gradientStyleEdit = {
+        background: 'linear-gradient(to right, #4facfe, #00f2fe)',
+        border: 'none',
+        color: 'white',
+    }
+    const gradientStyleSave = {
+        background: 'linear-gradient(to right, #34C759, #8BC34A)',
+        border: 'none',
+        color: 'white',
+    }
+
+    const gradientStyleRemove = {
+        background: 'linear-gradient(to right, #ff6a6a, #ff0000)',
+        border: 'none',
+        color: 'white',
+    }
 
     const handleFinish = async (formValues: { name: string; description: string }) => {
         setLoading(true)
@@ -131,10 +153,20 @@ export default function ProductAttributeUpdate() {
             key: 'action',
             render: (record: PredefinedProductAttributeValueRequest) => (
                 <Space size='middle'>
-                    <Button type='link' onClick={() => handleEditValue(record)}>
+                    <Button
+                        type='link'
+                        style={gradientStyleEdit}
+                        icon={<EditOutlined />}
+                        onClick={() => handleEditValue(record)}
+                    >
                         Edit
                     </Button>
-                    <Button type='link' onClick={() => handleRemoveValue(record)}>
+                    <Button
+                        type='link'
+                        style={gradientStyleRemove}
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleRemoveValue(record)}
+                    >
                         Remove
                     </Button>
                 </Space>
@@ -156,14 +188,19 @@ export default function ProductAttributeUpdate() {
                             <Button form='myform1' key='submit' type='primary' htmlType='submit'>
                                 Update
                             </Button>
-                            <Button type='default' onClick={() => setOpenConfirm(false)}>
+                            <Button type='default' key='cancel' onClick={() => setOpenConfirm(false)}>
                                 Cancel
                             </Button>
                         </div>
                     )}
                     open={isOpenConfirm}
+                    title={
+                        <span>
+                            <ExclamationCircleOutlined style={{ marginRight: 8 }} /> Confirm Action
+                        </span>
+                    }
                 >
-                    <div className={'py-10 font-bold text-[16px]'}>Do you want to update Product Attribute?</div>
+                    <p className='text-center'>Do you want to create Product Attribute?</p>
                 </Modal>
                 <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
                     <Form.Item
@@ -201,7 +238,12 @@ export default function ProductAttributeUpdate() {
                         </Space>
                     </Form.Item>
                     <Form.Item>
-                        <Button type='primary' onClick={() => setOpenConfirm(true)} loading={loading}>
+                        <Button
+                            style={gradientStyleSave}
+                            icon={<CheckCircleOutlined />}
+                            onClick={() => setOpenConfirm(true)}
+                            loading={loading}
+                        >
                             Save
                         </Button>
                     </Form.Item>

@@ -55,7 +55,7 @@ function useProductAttributeViewModel() {
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
-            pageNo: pagination.current,
+            pageNo: pagination.current - 1,
         }))
     }
 
