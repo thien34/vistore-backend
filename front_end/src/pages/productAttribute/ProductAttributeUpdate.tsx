@@ -1,15 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, Input, Button, Space, Modal, Table, Empty, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
-import { useNavigate } from 'react-router-dom'
-import useProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.vm.ts'
+import useProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.vm.ts'
 
 const pageSize = 5
 
-export default function ProductAttribute() {
+export default function ProductAttributeUpdate() {
     const [form] = Form.useForm()
-    const navigation = useNavigate()
     const [formAdd] = Form.useForm()
     const [values, setValues] = useState<PredefinedProductAttributeValueRequest[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -22,15 +20,23 @@ export default function ProductAttribute() {
         weightAdjustment: 0,
         cost: 0,
         isPreSelected: false,
-        displayOrder: 0
+        displayOrder: 0,
     })
-
     const [isOpenConfirm, setOpenConfirm] = useState(false)
-
     const [loading, setLoading] = useState(false)
     const [current, setCurrent] = useState(1)
+    const { productAttributeResponse, isLoading, onFinish } = useProductAttributeUpdate()
 
-    const { onFinish } = useProductAttributeCreate()
+    useEffect(() => {
+        console.log('productAttributeResponse: ', productAttributeResponse)
+        if (productAttributeResponse) {
+            form.setFieldsValue({
+                name: productAttributeResponse.name,
+                description: productAttributeResponse.description,
+            })
+            setValues(productAttributeResponse.values)
+        }
+    }, [form, productAttributeResponse])
 
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
         const maxId = Math.max(...arr.map((item) => item.id))
@@ -90,7 +96,6 @@ export default function ProductAttribute() {
 
             console.log('data: ', data)
             await onFinish(data)
-            navigation('/admin/product-attributes')
         } catch (error) {
             console.error('Error submitting form:', error)
             message.error('Failed to submit form')
@@ -137,15 +142,19 @@ export default function ProductAttribute() {
         },
     ]
 
+    if (isLoading && !productAttributeResponse) {
+        return <div>Loading...</div>
+    }
+
     return (
         <div>
-            <Form id='myForm' form={form} onFinish={handleFinish} layout='vertical'>
+            <Form id='myform1' form={form} onFinish={handleFinish} layout='vertical'>
                 <Modal
                     onCancel={() => setOpenConfirm(false)}
                     footer={() => (
                         <div>
-                            <Button form='myForm' key='submit' type='primary' htmlType='submit'>
-                                Submit
+                            <Button form='myform1' key='submit' type='primary' htmlType='submit'>
+                                Update
                             </Button>
                             <Button type='default' onClick={() => setOpenConfirm(false)}>
                                 Cancel
@@ -154,7 +163,7 @@ export default function ProductAttribute() {
                     )}
                     open={isOpenConfirm}
                 >
-                    <div className={'py-10 font-bold text-[16px]'}>Do you want to create Product Attribute?</div>
+                    <div className={'py-10 font-bold text-[16px]'}>Do you want to update Product Attribute?</div>
                 </Modal>
                 <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
                     <Form.Item

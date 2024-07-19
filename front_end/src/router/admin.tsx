@@ -7,6 +7,7 @@ import CategoryUpdate from '@/pages/category/CategoryUpdate'
 import Home from '@/pages/home'
 import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.tsx'
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
+import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 
 const routers = [
     {
@@ -26,7 +27,14 @@ const routers = [
         layout: 'main',
         element: <ProductAttributeCreate />,
         breadcrumbName: 'ProductAttribute',
-        pageType: 'product-attribute',
+        pageType: 'product-attribute-add',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_UPDATE,
+        layout: 'main',
+        element: <ProductAttributeUpdate />,
+        breadcrumbName: 'Update Category',
+        pageType: 'category',
     },
     {
         path: ManagerPath.PRODUCT_ATTRIBUTE,
@@ -61,7 +69,7 @@ const routers = [
 const routesAdmin = [
     {
         path: '/admin',
-        children: routers.map((item) => {
+        children: routers.map((item: { breadcrumbName: string; element: Element; path: string; layout: string }) => {
             let layout = <></>
             if (item.layout === 'main') layout = <LayoutMain />
             return {

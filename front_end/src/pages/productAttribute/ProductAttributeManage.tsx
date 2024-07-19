@@ -1,15 +1,34 @@
-import { Button, Modal, Table, TableColumnsType } from 'antd'
+import { Button, Modal, Table, TableColumnsType, Form, Input, InputNumber } from 'antd'
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeSearch.tsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useProductAttributeViewModel from './ProductAttribute.vm'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
-import { EditOutlined } from '@ant-design/icons'
+import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue'
+import { Link } from 'react-router-dom'
+
+const EditableCell = ({ editing, dataIndex, title, inputType, children, ...restProps }) => {
+    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />
+    return (
+        <td {...restProps}>
+            {editing ? (
+                <Form.Item
+                    name={dataIndex}
+                    style={{ margin: 0 }}
+                    rules={[{ required: true, message: `Please Input ${title}!` }]}
+                >
+                    {inputNode}
+                </Form.Item>
+            ) : (
+                children
+            )}
+        </td>
+    )
+}
 
 export default function ProductAttributeManage() {
     const {
         rowSelection,
-        // columns,
         handleTableChange,
         handleSearch,
         handleDelete,
@@ -18,48 +37,90 @@ export default function ProductAttributeManage() {
         listResponse,
         isLoading,
     } = useProductAttributeViewModel()
+
+    console.log('rowSelection: ', rowSelection)
+
+    useEffect(() => {
+        handleSearch()
+    }, [])
+
     const [isOpenList, setIsOpenList] = useState(false)
     const [dataDetail, setDataDetail] = useState<Array<PredefinedProductAttributeValueRequest>>([])
+    const [form] = Form.useForm()
+    const [editingKey, setEditingKey] = useState('')
+
+    const isEditing = (record: PredefinedProductAttributeValueRequest) => record.id === editingKey
+
+    const edit = (record: PredefinedProductAttributeValueRequest) => {
+        form.setFieldsValue({ ...record })
+        setEditingKey(record.id)
+    }
+
+    const cancel = () => {
+        setEditingKey('')
+    }
+
+    const save = async (key: React.Key) => {
+        try {
+            const row = await form.validateFields()
+            const newData = [...dataDetail]
+            const index = newData.findIndex((item) => key === item.id)
+
+            if (index > -1) {
+                const item = newData[index]
+                newData.splice(index, 1, { ...item, ...row })
+                setDataDetail(newData)
+                setEditingKey('')
+            } else {
+                newData.push(row)
+                setDataDetail(newData)
+                setEditingKey('')
+            }
+        } catch (errInfo) {
+            console.log('Validate Failed:', errInfo)
+        }
+    }
+
     const getProductAttributeColumns = (): TableColumnsType<ProductAttributeResponse> => [
         {
             width: '40%',
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            // render: (_, record) => getCategoryFullName(record),
-            // sorter: (a, b) => {
-            //     const aName = a.categoryParent ? `${a.categoryParent.name} >> ${a.name}` : a.name
-            //     const bName = b.categoryParent ? `${b.categoryParent.name} >> ${b.name}` : b.name
-            //     return aName.localeCompare(bName)
-            // },
         },
         {
             width: '50%',
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
-            // render: (published) => (published ? 'Yes' : 'No'),
         },
-        // {
-        //     width: '25%',
-        //     title: 'Display Order',
-        //     dataIndex: 'displayOrder',
-        //     key: 'displayOrder',
-        //     sorter: (a, b) => a.displayOrder - b.displayOrder,
-        // },
         {
             width: '10%',
             align: 'center',
             title: 'Action',
             key: 'action',
             render: (_, record) => (
-                <Button
-                    onClick={() => setShowList(record)}
-                    className='bg-[#374151] border-[#374151] text-white'
-                    icon={<EditOutlined />}
-                >
-                    Xem chi tiết
-                </Button>
+                <div className='flex gap-x-1.5'>
+                    <Link to={`/admin/product-attributes/${record?.id}`}>
+                        <Button onClick={() => setShowList(record)} type='primary' icon={<EditOutlined />}>
+                            Update
+                        </Button>
+                    </Link>
+                    {/*<Button*/}
+                    {/*    onClick={() => setShowList(record)}*/}
+                    {/*    className='bg-[#CC3300] border-[#374151] text-white'*/}
+                    {/*    icon={<DeleteOutlined />}*/}
+                    {/*>*/}
+                    {/*    Delete*/}
+                    {/*</Button>*/}
+                    <Button
+                        onClick={() => setShowList(record)}
+                        className='bg-[#374151] border-[#374151] text-white'
+                        icon={<EyeOutlined />}
+                    >
+                        View
+                    </Button>
+                </div>
             ),
         },
     ]
@@ -69,25 +130,86 @@ export default function ProductAttributeManage() {
         setDataDetail(record?.values)
     }
 
+    // const handleUpdate = (record: PredefinedProductAttributeValueRequest) => {
+    //     // Handle update logic here
+    //     console.log('Update:', record)
+    // }
+
+    const handleDeleteValue = (record: PredefinedProductAttributeValueRequest) => {
+        // Handle delete logic here
+        console.log('Delete:', record)
+        setDataDetail(dataDetail.filter((item) => item.id !== record.id))
+    }
+
     const columnsList = [
-        { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Price Adjustment', dataIndex: 'priceAdjustment', key: 'priceAdjustment' },
+        { title: 'Name', dataIndex: 'name', key: 'name', editable: true },
+        { title: 'Price Adjustment', dataIndex: 'priceAdjustment', key: 'priceAdjustment', editable: true },
         {
             title: 'Price Adjustment Use Percentage',
             dataIndex: 'priceAdjustmentUsePercentage',
             key: 'priceAdjustmentUsePercentage',
             render: (text: string) => (text ? 'Yes' : 'No'),
+            editable: true,
         },
-        { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment' },
-        { title: 'Cost', dataIndex: 'cost', key: 'cost' },
+        { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment', editable: true },
+        { title: 'Cost', dataIndex: 'cost', key: 'cost', editable: true },
         {
             title: 'Pre-selected',
             dataIndex: 'isPreSelected',
             key: 'isPreSelected',
             render: (text: string) => (text ? 'Yes' : 'No'),
+            editable: true,
         },
-        { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder' },
+        { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder', editable: true },
+        // {
+        //     title: 'Action',
+        //     key: 'action',
+        //     render: (_, record) => {
+        //         const editable = isEditing(record)
+        //         return editable ? (
+        //             <span>
+        //                 <Typography.Link onClick={() => save(record.id)} style={{ marginRight: 8 }}>
+        //                     Save
+        //                 </Typography.Link>
+        //                 <Popconfirm title='Sure to cancel?' onConfirm={cancel}>
+        //                     <a>Cancel</a>
+        //                 </Popconfirm>
+        //             </span>
+        //         ) : (
+        //             <Space size='middle'>
+        //                 <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+        //                     Edit
+        //                 </Typography.Link>
+        //                 <Button type='link' onClick={() => handleDeleteValue(record)} icon={<DeleteOutlined />} danger>
+        //                     Delete
+        //                 </Button>
+        //             </Space>
+        //         )
+        //     },
+        // },
     ]
+
+    const mergedColumnsList = columnsList.map((col: { editable: boolean; dataIndex: number; title: string }) => {
+        if (!col.editable) {
+            return col
+        }
+        return {
+            ...col,
+            onCell: (record: PredefinedProductAttributeValueRequest) => ({
+                record,
+                inputType:
+                    col.dataIndex === 'priceAdjustment' ||
+                    col.dataIndex === 'weightAdjustment' ||
+                    col.dataIndex === 'cost' ||
+                    col.dataIndex === 'displayOrder'
+                        ? 'number'
+                        : 'text',
+                dataIndex: col.dataIndex,
+                title: col.title,
+                editing: isEditing(record),
+            }),
+        }
+    })
 
     return (
         <>
@@ -100,20 +222,19 @@ export default function ProductAttributeManage() {
                 }}
                 open={isOpenList}
             >
-                <div>List Predefined Values</div>
-                <Table
-                    rowKey='id'
-                    bordered
-                    // rowSelection={rowSelection}
-                    columns={columnsList}
-                    dataSource={dataDetail}
-                    // pagination={{
-                    //     current: filter.pageNo ?? 1,
-                    //     pageSize: filter.pageSize ?? 6,
-                    //     // total: listResponse.totalPages * (filter.pageSize ?? 6),
-                    //     onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
-                    // }}
-                />
+                <div className={'py-5 text-[24px] font-bold'}>List Predefined Values</div>
+                <Form form={form} component={false}>
+                    <Table
+                        rowKey='id'
+                        bordered
+                        components={{
+                            body: { cell: EditableCell },
+                        }}
+                        columns={mergedColumnsList}
+                        dataSource={dataDetail}
+                        pagination={{ onChange: cancel }}
+                    />
+                </Form>
             </Modal>
             <ProductAttributeSearch
                 onSearch={handleSearch}

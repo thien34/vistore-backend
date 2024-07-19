@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Select } from 'antd'
+import { Button, Modal } from 'antd'
 import Input from 'antd/es/input/Input'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -17,15 +17,38 @@ export default function ProductAttributeSearch({
     handleDelete,
 }: Readonly<ProductAttributeSearchProps>) {
     const [name, setName] = useState<string>('')
-    const [published, setPublished] = useState<boolean | undefined>(undefined)
+    const [isOpenConfirm, setIsOpenConfirm] = useState(false)
 
     const handleSearch = () => {
-        const payload: { name: string; published: boolean | undefined } = { name, published }
-        if (onSearch) onSearch(payload)
+        const payload: { name: string } = { name }
+        if (onSearch) {
+            onSearch(payload)
+        }
+    }
+
+    const onDelete = () => {
+        handleDelete()
+        setIsOpenConfirm(false)
     }
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
+            <Modal
+                onCancel={() => setIsOpenConfirm(false)}
+                footer={() => (
+                    <div>
+                        <Button onClick={onDelete} className='bg-[#CC3300] border-[#374151] text-white'>
+                            Delete
+                        </Button>
+                        <Button type='default' onClick={() => setIsOpenConfirm(false)}>
+                            Cancel
+                        </Button>
+                    </div>
+                )}
+                open={isOpenConfirm}
+            >
+                <div className={'py-10 font-bold text-[16px]'}>Do you want to delete Product Attribute?</div>
+            </Modal>
             <div>
                 <h3 className='text-xl font-bold'>{AppActions.SEARCH}</h3>
                 <div className='flex px-5 pt-5 justify-between'>
@@ -50,7 +73,7 @@ export default function ProductAttributeSearch({
                     <div className=''>
                         <Button
                             disabled={selectedRowKeys?.length === 0}
-                            onClick={handleDelete}
+                            onClick={() => setIsOpenConfirm(true)}
                             type='primary'
                             className='me-5'
                             danger

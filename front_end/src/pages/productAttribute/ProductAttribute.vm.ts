@@ -5,9 +5,7 @@ import { RequestParams } from '@/utils/FetchUtils'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import ProductAttributeConfigs from './ProductAttributeConfigs'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
-import useCreateApi from '@/hooks/use-create-api.ts'
-import { ProductAttributeRequest, ProductAttributeResponse } from '@/model/ProductAttribute.ts'
-import { message } from 'antd'
+import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
 
 interface Search extends RequestParams {
     published?: boolean
@@ -16,32 +14,11 @@ interface Search extends RequestParams {
 function useProductAttributeViewModel() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<Search>({})
+
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
     )
-    const { mutate: createProductAttribute } = useCreateApi<ProductAttributeRequest, string>(
-        ProductAttributeConfigs.resourceUrl,
-    )
-
-    const onFinish = async (values: ProductAttributeRequest) => {
-        console.log(values)
-        createProductAttribute(values, {
-            onSuccess: (data: string) => {
-                console.log('data tra ve thanh cong: ', data)
-                message.success(data)
-            },
-            onError: (error: { message: string }) => {
-                console.log('data tra ve loi: ', error)
-                message.error(error.message)
-            },
-        })
-    }
-
-    // GET COLUMNS
-    // const columns = (setShowList) => {
-    //     <getProductAttributeColumns setShowList={setShowList} />
-    // }
 
     // HANDLE SELECT CHANGE
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -97,7 +74,6 @@ function useProductAttributeViewModel() {
         handleTableChange,
         handleSearch,
         handleDelete,
-        onFinish,
         selectedRowKeys,
         filter,
         listResponse,
