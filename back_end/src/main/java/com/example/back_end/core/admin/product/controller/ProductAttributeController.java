@@ -40,22 +40,24 @@ public class ProductAttributeController {
                                                                        @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
                                                                        @RequestParam(value = "pageSize", defaultValue = "6") int pageSize
     ) {
-            PageResponse<ProductAttributeResponse> response = (PageResponse<ProductAttributeResponse>) productAttributeService.getAllProductAttribute(name, pageNo, pageSize);
-            return ResponseData.<PageResponse<ProductAttributeResponse>>builder()
-                    .status(SuccessCode.PRODUCT_ATTRIBUTE_GET_ALL.getStatusCode().value())
-                    .message(SuccessCode.PRODUCT_ATTRIBUTE_GET_ALL.getMessage())
-                    .data(response)
-                    .build();
+        PageResponse<ProductAttributeResponse> response = (PageResponse<ProductAttributeResponse>) productAttributeService.getAllProductAttribute(name, pageNo, pageSize);
+
+        return ResponseData.<PageResponse<ProductAttributeResponse>>builder()
+                .status(SuccessCode.PRODUCT_ATTRIBUTE_GET_ALL.getStatusCode().value())
+                .message(SuccessCode.PRODUCT_ATTRIBUTE_GET_ALL.getMessage())
+                .data(response)
+                .build();
     }
 
     @GetMapping("/{id}")
     public ResponseData<ProductAttributeResponse> getProductAttributeById(@PathVariable Long id) {
-            ProductAttributeResponse attribute = productAttributeService.getProductAttributeById(id);
-            return ResponseData.<ProductAttributeResponse>builder()
-                    .status(SuccessCode.GET_PRODUCT_ATTRIBUTE_BY_ID.getStatusCode().value())
-                    .message(SuccessCode.GET_PRODUCT_ATTRIBUTE_BY_ID.getMessage())
-                    .data(attribute)
-                    .build();
+        ProductAttributeResponse attribute = productAttributeService.getProductAttributeById(id);
+
+        return ResponseData.<ProductAttributeResponse>builder()
+                .status(SuccessCode.GET_PRODUCT_ATTRIBUTE_BY_ID.getStatusCode().value())
+                .message(SuccessCode.GET_PRODUCT_ATTRIBUTE_BY_ID.getMessage())
+                .data(attribute)
+                .build();
     }
 
 
@@ -67,7 +69,7 @@ public class ProductAttributeController {
                     .message(SuccessCode.PRODUCT_ATTRIBUTE_CREATED.getMessage())
                     .data(productAttributeService.createProductAttribute(dto))
                     .build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error create product attributes", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
@@ -77,16 +79,18 @@ public class ProductAttributeController {
     public ResponseData<ProductAttributeResponse> updateProductAttribute(@PathVariable Long id, @Valid @RequestBody ProductAttributeRequest dto) {
         try {
             ProductAttributeResponse updatedAttribute = productAttributeService.updateProductAttribute(id, dto);
+
             return ResponseData.<ProductAttributeResponse>builder()
                     .status(HttpStatus.OK.value())
                     .message(SuccessCode.PRODUCT_ATTRIBUTE_UPDATED.getMessage())
                     .data(updatedAttribute)
                     .build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error update product attributes", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
     @GetMapping("/search")
     public ResponseData<PageResponse<?>> searchByNameName(
             @RequestParam String name,
@@ -94,6 +98,7 @@ public class ProductAttributeController {
             @RequestParam(defaultValue = "10") Integer size) {
         try {
             PageResponse<?> attributes = productAttributeService.searchByNameName(name, page, size);
+
             return ResponseData.<PageResponse<?>>builder()
                     .status(HttpStatus.OK.value())
                     .message("Product attributes search successfully")
@@ -103,8 +108,7 @@ public class ProductAttributeController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
-    @Operation(method = "DELETE", summary = "Delete product attributes",
-            description = "Send a request via this API to delete product attributes")
+
     @DeleteMapping
     public ResponseData<ResponseError> deleteProductAttributes(@RequestBody List<Long> ids) {
         log.info("Request to delete product attributes with ids: {}", ids);

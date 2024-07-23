@@ -9,21 +9,32 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PredefinedProductAttributeValueResponse {
+
     Long id;
+
     Long productAttribute;
+
     String name;
+
     BigDecimal priceAdjustment;
+
     Boolean priceAdjustmentUsePercentage;
+
     BigDecimal weightAdjustment;
+
     BigDecimal cost;
+
     Boolean isPreSelected;
+
     Integer displayOrder;
+
     public static PredefinedProductAttributeValueResponse mapToResponse(PredefinedProductAttributeValue value) {
         PredefinedProductAttributeValueResponse response = new PredefinedProductAttributeValueResponse();
         response.setId(value.getId());

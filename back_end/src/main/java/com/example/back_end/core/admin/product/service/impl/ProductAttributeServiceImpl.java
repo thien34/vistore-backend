@@ -1,7 +1,6 @@
 package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
-import com.example.back_end.core.admin.product.payload.request.PredefinedProductAttributeValueUpdateRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
@@ -37,40 +36,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductAttributeServiceImpl implements ProductAttributeService {
+
     ProductAttributeRepository productAttributeRepository;
-    ProductAttributeMapper productAttributeMapper;
     PredefinedProductAttributeValueRepository predefinedProductAttributeValueRepository;
+    ProductAttributeMapper productAttributeMapper;
 
     @Override
     @Transactional
     public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
-        if (productAttributeRepository
-                .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
+        String trimmedName = request.getName().trim().replaceAll("\\s+", " ");
+        if (productAttributeRepository.existsByName(trimmedName)) {
             throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
+        }
+
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
-        ProductAttribute productAttributeSave = productAttributeRepository.save(productAttribute);
-        List<PredefinedProductAttributeValue> values = new ArrayList<>();
-        request.getValues().forEach(predifend -> {
-            PredefinedProductAttributeValue predefinedProductAttributeValue = PredefinedProductAttributeValue.builder()
-                    .productAttribute(productAttributeSave)
-                    .cost(predifend.getCost())
-                    .displayOrder(predifend.getDisplayOrder())
-                    .name(predifend.getName())
-                    .priceAdjustment(predifend.getPriceAdjustment())
-                    .isPreSelected(predifend.getIsPreSelected())
-                    .weightAdjustment(predifend.getWeightAdjustment())
-                    .priceAdjustmentUsePercentage(predifend.getPriceAdjustmentUsePercentage())
-                    .build();
-            values.add(predefinedProductAttributeValue);
-        });
+        ProductAttribute savedProductAttribute  = productAttributeRepository.save(productAttribute);
+
+        List<PredefinedProductAttributeValue> values = request.getValues().stream()
+                .map(valueRequest -> PredefinedProductAttributeValue.builder()
+                        .productAttribute(savedProductAttribute)
+                        .cost(valueRequest.getCost())
+                        .displayOrder(valueRequest.getDisplayOrder())
+                        .name(valueRequest.getName())
+                        .priceAdjustment(valueRequest.getPriceAdjustment())
+                        .isPreSelected(valueRequest.getIsPreSelected())
+                        .weightAdjustment(valueRequest.getWeightAdjustment())
+                        .priceAdjustmentUsePercentage(valueRequest.getPriceAdjustmentUsePercentage())
+                        .build())
+                .toList();
+
         predefinedProductAttributeValueRepository.saveAll(values);
-        return productAttributeSave;
+
+        return savedProductAttribute;
     }
 
     @Override
     public PageResponse<?> getAllProductAttribute(String name, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
+
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
@@ -88,7 +92,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .totalPage(productAttributePage.getTotalPages())
                 .items(productAttributeResponseList)
                 .build();
-
     }
 
 
@@ -143,20 +146,14 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
 
         return productAttributeMapper.toDto(savedProductAttribute);
-
     }
-
-
-
-
-
 
 
     @Override
     public PageResponse<?> searchByNameName(String name, int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
+
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
@@ -167,6 +164,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                     return response;
                 })
                 .toList();
+
         return PageResponse.builder()
                 .page(productAttributePage.getNumber())
                 .size(productAttributePage.getSize())
@@ -183,5 +181,4 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
             productAttributeRepository.deleteAllInBatch(productAttributes);
         }
     }
-
 }

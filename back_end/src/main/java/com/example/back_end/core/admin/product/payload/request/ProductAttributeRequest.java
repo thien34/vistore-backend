@@ -19,11 +19,13 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductAttributeRequest {
+
     @NotBlank(message = "Name must not be blank")
     @Size(max = 255, message = "Name must not exceed 255 characters")
     String name;
 
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     String description;
+
     List<PredefinedProductAttributeValueUpdateRequest> values;
 }

@@ -185,16 +185,6 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(StoreException.class)
-    public ResponseEntity<ErrorResponse> handleStoreException(StoreException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
-                .status(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
-        return ResponseEntity.status(errorCode.getStatusCode()).body(errorResponse);
-    }
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(BAD_REQUEST)
     @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "404 Response", summary = "Handle exception when type mismatch occurs", value = """

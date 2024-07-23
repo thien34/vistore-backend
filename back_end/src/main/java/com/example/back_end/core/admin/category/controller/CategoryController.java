@@ -7,6 +7,7 @@ import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -67,7 +68,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseData<?> create(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseData<?> create(@RequestBody @Valid CategoryRequest categoryRequest) {
         log.info("Request add category, {}", categoryRequest);
         try {
             categoryService.createCategory(categoryRequest);
@@ -79,7 +80,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseData<?> update(@PathVariable Long id, @RequestBody CategoryRequest request) {
+    public ResponseData<?> update(@PathVariable Long id, @RequestBody @Valid CategoryRequest request) {
         log.info("Request to update category with id: {}, {}", id, request);
         try {
             categoryService.updateCategory(id, request);
