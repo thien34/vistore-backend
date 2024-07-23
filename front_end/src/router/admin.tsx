@@ -8,6 +8,7 @@ import Home from '@/pages/home'
 import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.tsx'
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
+import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
 
 const routers = [
     {
@@ -63,6 +64,27 @@ const routers = [
         element: <CategoryUpdate />,
         breadcrumbName: 'Update Category',
         pageType: 'category',
+    },
+    {
+        path: ManagerPath.MANUFACTURE,
+        layout: 'main',
+        element: <ManufactureManage />,
+        breadcrumbName: 'Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.MANUFACTURE_ADD,
+        layout: 'main',
+        element: <ManufactureCreate />,
+        breadcrumbName: 'Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.MANUFACTURE_UPDATE,
+        layout: 'main',
+        element: <ManufactureUpdate />,
+        breadcrumbName: 'Manufacture',
+        pageType: 'manufacture',
     },
 ]
 
