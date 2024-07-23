@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Form, Input, Button, Space, Modal, Table, Empty, message } from 'antd'
+import { useEffect } from 'react'
+import { Form, Input, Button, Space, Modal, Table, Empty } from 'antd'
 import {
     CheckCircleOutlined,
     DeleteOutlined,
@@ -11,28 +11,35 @@ import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProduc
 import useProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.vm.ts'
 
 const pageSize = 5
-
 export default function ProductAttributeUpdate() {
-    const [form] = Form.useForm()
-    const [formAdd] = Form.useForm()
-    const [values, setValues] = useState<PredefinedProductAttributeValueRequest[]>([])
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isEdit, setIsEdit] = useState(false)
-    const [newValue, setNewValue] = useState<PredefinedProductAttributeValueRequest>({
-        id: 1,
-        name: '',
-        priceAdjustment: 0,
-        priceAdjustmentUsePercentage: false,
-        weightAdjustment: 0,
-        cost: 0,
-        isPreSelected: false,
-        displayOrder: 0,
-    })
-    const [isOpenConfirm, setOpenConfirm] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [current, setCurrent] = useState(1)
-    const { productAttributeResponse, isLoading, onFinish } = useProductAttributeUpdate()
 
+    const {
+        productAttributeResponse,
+        isLoading,
+        current,
+        handlePageChange,
+        form,
+        formAdd,
+        values,
+        setValues,
+        newValue,
+        setNewValue,
+        isModalOpen,
+        setIsModalOpen,
+        setIsEdit,
+        loading,
+        setOpenConfirm,
+        isOpenConfirm,
+        gradientStyleEdit,
+        handleEditValue,
+        gradientStyleRemove,
+        handleRemoveValue,
+        handleFinish,
+        gradientStyleSave,
+        handleAddValue,
+        handleInputChange,
+        handleInputDisplayOrder,
+    } = useProductAttributeUpdate()
     useEffect(() => {
         console.log('productAttributeResponse: ', productAttributeResponse)
         if (productAttributeResponse) {
@@ -43,92 +50,6 @@ export default function ProductAttributeUpdate() {
             setValues(productAttributeResponse.values)
         }
     }, [form, productAttributeResponse])
-
-    const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
-        const maxId = Math.max(...arr.map((item) => item.id))
-        return arr.length === 0 ? 0 : maxId + 1
-    }
-
-    const handleAddValue = () => {
-        if (isEdit) {
-            formAdd.resetFields()
-            const index = values.findIndex((item) => item.id === newValue.id)
-            const newArr = values.filter((item) => item.id !== newValue.id)
-            newArr.splice(index, 0, newValue)
-            setValues(newArr)
-            setIsModalOpen(false)
-            setIsEdit(false)
-        } else {
-            formAdd.resetFields()
-            newValue.id = getNewId(values)
-            setValues([...values, newValue])
-            setNewValue({
-                id: getNewId(values),
-                name: '',
-                priceAdjustment: 0,
-                priceAdjustmentUsePercentage: false,
-                weightAdjustment: 0,
-                cost: 0,
-                isPreSelected: false,
-                displayOrder: 0,
-            })
-            setIsModalOpen(false)
-        }
-    }
-
-    const handleRemoveValue = (value: PredefinedProductAttributeValueRequest) => {
-        setValues(values.filter((v) => v.id !== value.id))
-    }
-
-    const handleEditValue = (value: PredefinedProductAttributeValueRequest) => {
-        setIsModalOpen(true)
-        formAdd.setFieldsValue(value)
-        setNewValue(value)
-        setIsEdit(true)
-    }
-    const gradientStyleEdit = {
-        background: 'linear-gradient(to right, #4facfe, #00f2fe)',
-        border: 'none',
-        color: 'white',
-    }
-    const gradientStyleSave = {
-        background: 'linear-gradient(to right, #34C759, #8BC34A)',
-        border: 'none',
-        color: 'white',
-    }
-
-    const gradientStyleRemove = {
-        background: 'linear-gradient(to right, #ff6a6a, #ff0000)',
-        border: 'none',
-        color: 'white',
-    }
-
-    const handleFinish = async (formValues: { name: string; description: string }) => {
-        setLoading(true)
-        setOpenConfirm(false)
-        try {
-            form.resetFields()
-            setValues([])
-
-            const data = {
-                name: formValues.name,
-                description: formValues.description,
-                values: values,
-            }
-
-            console.log('data: ', data)
-            await onFinish(data)
-        } catch (error) {
-            console.error('Error submitting form:', error)
-            message.error('Failed to submit form')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handlePageChange = (page: number) => {
-        setCurrent(page)
-    }
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -277,13 +198,8 @@ export default function ProductAttributeUpdate() {
                         label={<span style={{ fontWeight: 'bold' }}>Price Adjustment</span>}
                     >
                         <Input
-                            value={newValue.priceAdjustment}
-                            onChange={(e) =>
-                                setNewValue({
-                                    ...newValue,
-                                    priceAdjustment: parseFloat(e.target.value),
-                                })
-                            }
+                            value={newValue.priceAdjustment || 0}
+                            onChange={handleInputChange('priceAdjustment')}
                             placeholder='Enter price adjustment'
                             type='number'
                         />
@@ -306,26 +222,16 @@ export default function ProductAttributeUpdate() {
                         label={<span style={{ fontWeight: 'bold' }}>Weight Adjustment</span>}
                     >
                         <Input
-                            value={newValue.weightAdjustment}
-                            onChange={(e) =>
-                                setNewValue({
-                                    ...newValue,
-                                    weightAdjustment: parseFloat(e.target.value),
-                                })
-                            }
+                            value={newValue.weightAdjustment || 0}
+                            onChange={handleInputChange('weightAdjustment')}
                             placeholder='Enter weight adjustment'
                             type='number'
                         />
                     </Form.Item>
                     <Form.Item name='cost' label={<span style={{ fontWeight: 'bold' }}>Cost</span>}>
                         <Input
-                            value={newValue.cost}
-                            onChange={(e) =>
-                                setNewValue({
-                                    ...newValue,
-                                    cost: parseFloat(e.target.value),
-                                })
-                            }
+                            value={newValue.cost || 0}
+                            onChange={handleInputChange('cost')}
                             placeholder='Enter cost'
                             type='number'
                         />
@@ -345,13 +251,8 @@ export default function ProductAttributeUpdate() {
                     </Form.Item>
                     <Form.Item name='displayOrder' label={<span style={{ fontWeight: 'bold' }}>Display Order</span>}>
                         <Input
-                            value={newValue.displayOrder}
-                            onChange={(e) =>
-                                setNewValue({
-                                    ...newValue,
-                                    displayOrder: parseFloat(e.target.value),
-                                })
-                            }
+                            value={newValue.displayOrder || 0}
+                            onChange={handleInputDisplayOrder('displayOrder')}
                             placeholder='Enter display order'
                             type='number'
                         />

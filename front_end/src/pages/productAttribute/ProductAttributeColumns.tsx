@@ -1,7 +1,12 @@
 import { EditOutlined } from '@ant-design/icons'
 import { Button, TableColumnsType } from 'antd'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
-const getProductAttributeColumns = ({ setShowList }): TableColumnsType<ProductAttributeResponse> => [
+import { Dispatch } from 'react'
+const getProductAttributeColumns = ({
+    setShowList,
+}: {
+    setShowList: Dispatch<ProductAttributeResponse>
+}): TableColumnsType<ProductAttributeResponse> => [
     {
         width: '40%',
         title: 'Name',
@@ -25,7 +30,7 @@ const getProductAttributeColumns = ({ setShowList }): TableColumnsType<ProductAt
                 className='bg-[#374151] border-[#374151] text-white'
                 icon={<EditOutlined />}
             >
-                Xem chi tiết
+                See details
             </Button>
         ),
     },

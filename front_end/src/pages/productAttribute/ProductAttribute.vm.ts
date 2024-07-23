@@ -1,11 +1,13 @@
 import { TableRowSelection } from 'antd/es/table/interface'
 // import  {getProductAttributeColumns} from './ProductAttributeColumns'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { RequestParams } from '@/utils/FetchUtils'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import ProductAttributeConfigs from './ProductAttributeConfigs'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
+import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
+import { Form } from 'antd'
 
 interface Search extends RequestParams {
     published?: boolean
@@ -14,7 +16,19 @@ interface Search extends RequestParams {
 function useProductAttributeViewModel() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<Search>({})
+    const [isOpenList, setIsOpenList] = useState(false)
+    const [dataDetail, setDataDetail] = useState<Array<PredefinedProductAttributeValueRequest>>([])
+    const [form] = Form.useForm()
+    const [editingKey, setEditingKey] = useState('')
 
+    const isEditing = (record: PredefinedProductAttributeValueRequest) => record.id === Number(editingKey)
+    const cancel = () => {
+        setEditingKey('')
+    }
+    const setShowList = (record: ProductAttributeResponse) => {
+        setIsOpenList(true)
+        setDataDetail(record?.values)
+    }
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
@@ -70,7 +84,6 @@ function useProductAttributeViewModel() {
 
     return {
         rowSelection,
-        // columns,
         handleTableChange,
         handleSearch,
         handleDelete,
@@ -78,6 +91,14 @@ function useProductAttributeViewModel() {
         filter,
         listResponse,
         isLoading,
+        isOpenList,
+        setIsOpenList,
+        dataDetail,
+        setDataDetail,
+        form,
+        isEditing,
+        cancel,
+        setShowList,
     }
 }
 export default useProductAttributeViewModel
