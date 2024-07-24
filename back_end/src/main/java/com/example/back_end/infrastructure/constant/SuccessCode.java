@@ -21,7 +21,22 @@ public enum SuccessCode {
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_CREATED(2007, "Predefined product attribute value created successfully", HttpStatus.CREATED),
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_GET_ALL(2008, "Get all predefined product attribute value successfully", HttpStatus.OK),
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_UPDATED(2009, "Predefined product attribute value updated successfully", HttpStatus.OK),
-    PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_DELETED(2010, "Predefined product attribute value deleted successfully", HttpStatus.NO_CONTENT);
+    PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_DELETED(2010, "Predefined product attribute value deleted successfully", HttpStatus.NO_CONTENT),
+    SPECIFICATION_ATTRIBUTE_OPTION_CREATED(2011, "Specification attribute option value created successfully", HttpStatus.CREATED),
+    SPECIFICATION_ATTRIBUTE_OPTION_GET_ALL(2012, "Get all specification attribute option successfully", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_OPTION_UPDATED(2013, "Specification attribute option value updated successfully", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_OPTION_DELETED(2014, "Specification attribute option value deleted successfully", HttpStatus.NO_CONTENT),
+    GET_SPECIFICATION_ATTRIBUTE_OPTION_BY_ID(2015, "Get specification attribute option by id successfully ", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_CREATED(2016, "Specification attribute created successfully", HttpStatus.CREATED),
+    SPECIFICATION_ATTRIBUTE_GET_ALL(2017, "Get all specification attribute successfully", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_UPDATED(2018, "Specification attribute updated successfully", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_DELETED(2019, "Specification attribute deleted successfully", HttpStatus.NO_CONTENT),
+    GET_SPECIFICATION_ATTRIBUTE_BY_ID(2020, "Get specification attribute by id successfully ", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_GROUP_CREATED(2021, "Specification attribute group value created successfully", HttpStatus.CREATED),
+    SPECIFICATION_ATTRIBUTE_GROUP_GET_ALL(2022, "Get all specification attribute group successfully", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_GROUP_UPDATED(2023, "Specification attribute group value updated successfully", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_GROUP_DELETED(2024, "Specification attribute group value deleted successfully", HttpStatus.NO_CONTENT),
+    GET_SPECIFICATION_ATTRIBUTE_GROUP_BY_ID(2025, "Get specification attribute option by id successfully ", HttpStatus.OK),;
     int code;
     String message;
     HttpStatusCode statusCode;
