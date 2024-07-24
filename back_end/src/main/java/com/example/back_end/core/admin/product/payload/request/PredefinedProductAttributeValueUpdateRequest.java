@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PredefinedProductAttributeValueUpdateRequest {
+
     Long id;
 
     @NotBlank(message = "Name must not be blank")

@@ -11,7 +11,7 @@ import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.DataIntegrityViolationException;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
-import com.example.back_end.infrastructure.exception.StoreException;
+import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
@@ -23,22 +23,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PredefinedProductAttributeValueServiceImpl implements PredefinedProductAttributeValueService {
+
+    ProductAttributeRepository productAttributeRepository;
     PredefinedProductAttributeValueRepository predefinedProductAttributeValueRepository;
     PredefinedProductAttributeValueMapper predefinedProductAttributeValueMapper;
-    ProductAttributeRepository productAttributeRepository;
 
     @Override
     @Transactional
     public PredefinedProductAttributeValue createProductAttributeValue(
             PredefinedProductAttributeValueRequest request
     ) {
-
         if (!productAttributeRepository.existsById(request.getProductAttribute()))
             throw new DataIntegrityViolationException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage());
 
@@ -48,7 +49,6 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueMapper.toEntity(request);
         return predefinedProductAttributeValueRepository.save(value);
-
     }
 
     @Override
@@ -58,7 +58,6 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
             int pageSize
     ) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-
         Page<PredefinedProductAttributeValue> valuePage =
                 predefinedProductAttributeValueRepository.findByNameContaining(name, pageable);
 
@@ -72,17 +71,15 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
                 .totalPage(valuePage.getTotalPages())
                 .items(responseList)
                 .build();
-
     }
 
     @Override
     public PredefinedProductAttributeValueResponse getPredefinedAttributeValueById(Long id) {
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueRepository.findById(id)
-                .orElseThrow(() -> new StoreException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage()));
 
         return PredefinedProductAttributeValueResponse.mapToResponse(value);
-
     }
 
     @Override
@@ -94,15 +91,16 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueRepository.findById(id)
                 .orElseThrow(() -> new NotExistsException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage()));
-        if (productAttributeRepository
-                .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
-            throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
-        predefinedProductAttributeValueMapper.updateEntity(request, value);
 
+        if (productAttributeRepository
+                .existsByName(request.getName().trim().replaceAll("\\s+", " "))) {
+            throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
+        }
+
+        predefinedProductAttributeValueMapper.updateEntity(request, value);
         PredefinedProductAttributeValue updatedValue = predefinedProductAttributeValueRepository.save(value);
 
         return PredefinedProductAttributeValueResponse.mapToResponse(updatedValue);
-
     }
 
     @Override
