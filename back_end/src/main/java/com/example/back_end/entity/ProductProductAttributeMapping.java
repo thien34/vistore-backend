@@ -55,19 +55,4 @@ public class ProductProductAttributeMapping {
     @Column(name = "display_order")
     private Integer displayOrder;
 
-    @Column(name = "validation_min_length")
-    private Integer validationMinLength;
-
-    @Column(name = "validation_max_length")
-    private Integer validationMaxLength;
-
-    @Column(name = "validation_file_allowed_extensions", length = Integer.MAX_VALUE)
-    private String validationFileAllowedExtensions;
-
-    @Column(name = "validation_file_maximum_size")
-    private Integer validationFileMaximumSize;
-
-    @Column(name = "default_value", length = Integer.MAX_VALUE)
-    private String defaultValue;
-
 }
