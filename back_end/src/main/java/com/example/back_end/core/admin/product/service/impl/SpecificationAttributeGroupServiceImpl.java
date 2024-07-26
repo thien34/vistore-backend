@@ -4,10 +4,11 @@ import com.example.back_end.core.admin.product.mapper.SpecificationAttributeGrou
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeGroupRequest;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeGroupService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageListResponse;
 import com.example.back_end.entity.SpecificationAttributeGroup;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
+import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.repository.SpecificationAttributeGroupRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -30,25 +30,27 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
     SpecificationAttributeGroupMapper specificationAttributeGroupMapper;
 
     @Override
-    public PageResponse<?> getAllSpecificationAttributeGroup(String name, int pageNo, int pageSize) {
+    public PageListResponse<SpecificationAttributeGroupResponse> getAllSpecificationAttributeGroup(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-        Page<SpecificationAttributeGroup> specificationAttributeGroup = specificationAttributeGroupRepository.findByNameContaining(name, pageable);
 
-        List<SpecificationAttributeGroupResponse> productTagRespons = specificationAttributeGroup.stream()
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
+        Page<SpecificationAttributeGroup> specificationAttributeGroupPage = specificationAttributeGroupRepository.findByNameContaining(name, pageable);
+
+        List<SpecificationAttributeGroupResponse> specificationAttributeGroupResponses = specificationAttributeGroupPage.stream()
                 .map(specificationAttributeGroupMapper::toDto)
-                .sorted(Comparator.comparing(SpecificationAttributeGroupResponse::getId).reversed())
                 .toList();
 
-        return PageResponse.builder()
-                .page(specificationAttributeGroup.getNumber())
-                .size(specificationAttributeGroup.getSize())
-                .totalPage(specificationAttributeGroup.getTotalPages())
-                .items(productTagRespons)
+        return PageListResponse.<SpecificationAttributeGroupResponse>builder()
+                .page(specificationAttributeGroupPage.getNumber())
+                .size(specificationAttributeGroupPage.getSize())
+                .totalPage(specificationAttributeGroupPage.getTotalPages())
+                .datas(specificationAttributeGroupResponses)
                 .build();
     }
+
+
 
     @Override
     @Transactional
@@ -67,5 +69,22 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                 .name(group.getName())
                 .displayOrder(group.getDisplayOrder())
                 .build();
+    }
+
+    @Override
+    public SpecificationAttributeGroupResponse getSpecificationAttributeGroupById(Long id) {
+        SpecificationAttributeGroup group = specificationAttributeGroupRepository.findById(id)
+                .orElseThrow(() -> new NotExistsException(ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
+
+        return specificationAttributeGroupMapper.toDto(group);
+    }
+
+    @Override
+    public void deleteSpecificationAttributeGroup(List<Long> ids) {
+        List<SpecificationAttributeGroup> spec = specificationAttributeGroupRepository.findAllById(ids);
+
+        if (!spec.isEmpty()) {
+            specificationAttributeGroupRepository.deleteAllInBatch(spec);
+        }
     }
 }

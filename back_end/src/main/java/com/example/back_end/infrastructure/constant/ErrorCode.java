@@ -36,7 +36,7 @@ public enum ErrorCode {
 
     SPECIFICATION_ATTRIBUTE_EXISTED(1011, "Specification attribute existed", HttpStatus.OK),
 
-    SPECIFICATION_ATTRIBUTE_OPTION_NOT_EXISTED(1012, "Specification attribute option does not exist", HttpStatus.OK),
+    SPECIFICATION_ATTRIBUTE_OPTION_NOT_EXISTS(1012, "Specification attribute option does not exist", HttpStatus.OK),
 
     SPECIFICATION_ATTRIBUTE_OPTION_EXISTED(1013, "Specification attribute option existed", HttpStatus.OK),
 
@@ -50,7 +50,9 @@ public enum ErrorCode {
 
     PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED(1018, "The predefined product attribute name already exists, you can reuse it", HttpStatus.BAD_REQUEST),
 
-    PRODUCT_ATTRIBUTE_EXISTED(1019, "Product attribute already existed", HttpStatus.BAD_REQUEST);
+    PRODUCT_ATTRIBUTE_EXISTED(1019, "Product attribute already existed", HttpStatus.BAD_REQUEST),
+
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED(1020, "Product specification attribute mapping already existed", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

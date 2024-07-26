@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,6 +39,7 @@ public class ProductSpecificationAttributeMapping {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "specification_attribute_option_id")
+    @JsonBackReference
     private SpecificationAttributeOption specificationAttributeOption;
 
     @Column(name = "custom_value", length = Integer.MAX_VALUE)

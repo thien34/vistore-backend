@@ -6,7 +6,7 @@ import com.example.back_end.core.admin.product.payload.request.SpecificationAttr
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeOptionResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeUpdateResponse;
-import com.example.back_end.core.admin.product.service.SpecificationAttributesService;
+import com.example.back_end.core.admin.product.service.SpecificationAttributeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeGroup;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SpecificationAttributesServiceImpl implements SpecificationAttributesService {
+public class SpecificationAttributeServiceImpl implements SpecificationAttributeService {
     SpecificationAttributeRepository specificationAttributeRepository;
     SpecificationAttributeMapper specificationAttributeMapper;
     SpecificationAttributeGroupRepository specificationAttributeGroupRepository;
@@ -47,7 +47,7 @@ public class SpecificationAttributesServiceImpl implements SpecificationAttribut
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
         Page<SpecificationAttribute> specificationAttributePage = specificationAttributeRepository.findByNameContaining(name, pageable);
 
         List<SpecificationAttributeResponse> responseList = specificationAttributePage.getContent().stream()
@@ -150,7 +150,8 @@ public class SpecificationAttributesServiceImpl implements SpecificationAttribut
                                 option.getId(),
                                 option.getName(),
                                 option.getColorSquaresRgb(),
-                                option.getDisplayOrder()
+                                option.getDisplayOrder(),
+                                option.getProductSpecificationAttributeMappings()
                         ))
                         .toList())
                 .build();
@@ -169,6 +170,14 @@ public class SpecificationAttributesServiceImpl implements SpecificationAttribut
         SpecificationAttribute productAttribute = specificationAttributeRepository.findById(id)
                 .orElseThrow(() -> new NotExistsException(ErrorCode.SPECIFICATION_ATTRIBUTE_NOT_EXISTED.getMessage()));
         return SpecificationAttributeResponse.mapToResponse(productAttribute);
+    }
+    @Override
+    public List<SpecificationAttributeResponse> getSpecificationAttributesByGroupId(Long groupId) {
+        // Lấy danh sách thuộc tính theo nhóm
+        List<SpecificationAttribute> attributes = specificationAttributeRepository.findBySpecificationAttributeGroupId(groupId);
+        return attributes.stream()
+                .map(SpecificationAttributeResponse::mapToResponse)
+                .toList();
     }
 
 }

@@ -7,10 +7,11 @@ import com.example.back_end.core.admin.product.payload.response.SpecificationAtt
 import com.example.back_end.core.common.PageResponse;
 import java.util.List;
 
-public interface SpecificationAttributesService {
+public interface SpecificationAttributeService {
     PageResponse<?> getAllSpecificationAttribute(String name, int pageNo, int pageSize);
     SpecificationAttributeResponse createSpecificationAttribute(SpecificationAttributeRequest request);
     SpecificationAttributeUpdateResponse editSpecificationAttribute(Long id, SpecificationAttributeUpdateRequest request);
     void deleteSpecificationAttribute(List<Long> ids);
     SpecificationAttributeResponse getSpecificationAttributeById(Long id);
+    List<SpecificationAttributeResponse> getSpecificationAttributesByGroupId(Long groupId);
 }

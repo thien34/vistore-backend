@@ -57,7 +57,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
             int pageNo,
             int pageSize
     ) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
         Page<PredefinedProductAttributeValue> valuePage =
                 predefinedProductAttributeValueRepository.findByNameContaining(name, pageable);
 

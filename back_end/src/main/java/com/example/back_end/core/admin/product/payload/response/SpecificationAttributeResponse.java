@@ -1,13 +1,12 @@
 package com.example.back_end.core.admin.product.payload.response;
 
-import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.SpecificationAttribute;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -32,8 +31,10 @@ public class SpecificationAttributeResponse {
                         option.getId(),
                         option.getName(),
                         option.getColorSquaresRgb(),
-                        option.getDisplayOrder()
+                        option.getDisplayOrder(),
+                        option.getProductSpecificationAttributeMappings()
                 ))
+                .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getDisplayOrder).reversed())
                 .toList();
 
         response.setListOptions(optionResponses);

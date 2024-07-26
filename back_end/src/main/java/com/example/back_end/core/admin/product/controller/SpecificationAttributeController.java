@@ -2,15 +2,12 @@ package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeRequest;
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeUpdateRequest;
-import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
-import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeOptionResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeUpdateResponse;
-import com.example.back_end.core.admin.product.service.SpecificationAttributesService;
+import com.example.back_end.core.admin.product.service.SpecificationAttributeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
-import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.infrastructure.constant.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -37,7 +34,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class SpecificationAttributeController {
-    SpecificationAttributesService specificationAttributesService;
+    SpecificationAttributeService specificationAttributesService;
     @Operation(method = "POST", summary = "Add new specification attribute",
             description = "Send a request via this API to create new specification attribute")
     @PostMapping
@@ -106,6 +103,23 @@ public class SpecificationAttributeController {
             return new ResponseData<>(HttpStatus.OK.value(), "Delete specification attributes success");
         } catch (Exception e) {
             log.error("Error deleting specification attributes", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+    @Operation(method = "GET", summary = "Get specification attributes by group ID",
+            description = "Send a request via this API to get all specification attributes by their group ID")
+    @GetMapping("/group/{groupId}")
+    public ResponseData<List<SpecificationAttributeResponse>> getSpecificationAttributesByGroupId(
+            @PathVariable Long groupId) {
+        try {
+            List<SpecificationAttributeResponse> attributes = specificationAttributesService.getSpecificationAttributesByGroupId(groupId);
+            return ResponseData.<List<SpecificationAttributeResponse>>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Get specification attributes by group ID success")
+                    .data(attributes)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error getting specification attributes by group ID", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }

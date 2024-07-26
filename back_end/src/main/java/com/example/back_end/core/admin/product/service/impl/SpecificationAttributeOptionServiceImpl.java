@@ -16,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,19 +31,18 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
         Page<SpecificationAttributeOption> specificationAttributeOption = specificationAttributeOptionRepository.findByNameContaining(name, pageable);
 
-        List<SpecificationAttributeOptionResponse> productTagRespons = specificationAttributeOption.stream()
+        List<SpecificationAttributeOptionResponse> productSpecificationResponse = specificationAttributeOption.stream()
                 .map(specificationAttributeOptionMapper::toDto)
-                .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getId).reversed())
                 .toList();
 
         return PageResponse.builder()
                 .page(specificationAttributeOption.getNumber())
                 .size(specificationAttributeOption.getSize())
                 .totalPage(specificationAttributeOption.getTotalPages())
-                .items(productTagRespons)
+                .items(productSpecificationResponse)
                 .build();
     }
 
@@ -59,6 +56,15 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
                 .build();
         specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
         return specificationAttributeOptionMapper.toDto(specificationAttributeOption);
+    }
+
+    @Override
+    public void deleteSpecificationAttributeOption(List<Long> ids) {
+        List<SpecificationAttributeOption> spec = specificationAttributeOptionRepository.findAllById(ids);
+
+        if (!spec.isEmpty()) {
+            specificationAttributeOptionRepository.deleteAllInBatch(spec);
+        }
     }
 
 }
