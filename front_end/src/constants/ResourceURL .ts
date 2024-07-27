@@ -13,12 +13,12 @@ class ResourceURL {
     static readonly PICTURE = apiPath + '/picture'
     static readonly BRAND = apiPath + '/brands'
     static readonly ORDER = apiPath + '/orders'
+    static readonly MANUFACTURE = apiPath + '/manufactures'
 
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'
-    static readonly CLIENT_MANUFACTURE = apiPath +'/manufactures'
-
+    static readonly CLIENT_MANUFACTURE = apiPath + '/manufactures'
 
     // AUTHENTICATION
     static readonly LOGIN = apiPath + '/auth/login'
