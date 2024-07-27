@@ -24,7 +24,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @Entity
 @Table(name = "product_attribute_value_picture")
-public class ProductAttributeValuePicture extends Auditable {
+public class ProductAttributeValuePicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

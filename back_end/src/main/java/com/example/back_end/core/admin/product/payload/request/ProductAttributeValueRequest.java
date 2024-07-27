@@ -29,4 +29,6 @@ public class ProductAttributeValueRequest {
 
     private Integer displayOrder;
 
+    private Long pictureId;
+
 }

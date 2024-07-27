@@ -61,9 +61,4 @@ public class ProductAttributeValue extends Auditable {
     @Column(name = "display_order")
     private Integer displayOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "picture_id")
-    private Picture picture;
-
 }
