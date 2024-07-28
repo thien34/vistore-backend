@@ -68,7 +68,8 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         List<ProductAttributeValue> productAttributeValue = productAttributeValueRepository
                 .findAllByProductAttributeMapping(attributeMapping)
                 .orElseThrow(() -> new ResourceNotFoundException("Product attribute value with id not found: " + id));
-        List<ProductAttributeValueResponse> productAttributeValueResponses = productAttributeValueMapper.toDtos(productAttributeValue);
+        List<ProductAttributeValueResponse> productAttributeValueResponses = productAttributeValueMapper
+                .toDtos(productAttributeValue);
 
         return ProductProductAttributeMappingDetailResponse.builder()
                 .id(attributeMapping.getId())
@@ -131,10 +132,11 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     }
 
     private void getProductOrThrow(Long productId) {
-        productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
+        boolean exists = productRepository.existsById(productId);
+        if (!exists) {
+            throw new ResourceNotFoundException("Product with id not found: " + productId);
+        }
     }
-
     private ProductProductAttributeMapping getMappingOrThrow(Long id) {
         return productProductAttributeMappingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product product attribute mapping with id not found: " + id));
@@ -147,8 +149,10 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     }
 
     public void checkProductAttributeExits(Long productAttributeId, Long productId) {
-        ProductAttribute productAttribute = productAttributeRepository.findById(productAttributeId).orElseThrow(() -> new ResourceNotFoundException("Product attribute with id not found: " + productAttributeId));
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
+        ProductAttribute productAttribute = productAttributeRepository.findById(productAttributeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product attribute with id not found: " + productAttributeId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
 
         if (productProductAttributeMappingRepository.existsByProductAttributeAndProduct(productAttribute, product)) {
             throw new IllegalArgumentException("Product attribute already mapped");
