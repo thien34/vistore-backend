@@ -12,9 +12,11 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
+import com.example.back_end.entity.ProductAttributeValuePicture;
 import com.example.back_end.entity.ProductProductAttributeMapping;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.repository.ProductAttributeRepository;
+import com.example.back_end.repository.ProductAttributeValuePictureRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductProductAttributeMappingRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -39,6 +41,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     private final ProductAttributeValueRepository productAttributeValueRepository;
     private final ProductProductAttributeMappingRepository productProductAttributeMappingRepository;
     private final ProductProductAttributeMappingMapper productProductAttributeMappingMapper;
+    private final ProductAttributeValuePictureRepository productAttributeValuePictureRepository;
     private final ProductAttributeValueService productAttributeValueService;
     private final ProductAttributeValueMapper productAttributeValueMapper;
 
@@ -68,8 +71,19 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         List<ProductAttributeValue> productAttributeValue = productAttributeValueRepository
                 .findAllByProductAttributeMapping(attributeMapping)
                 .orElseThrow(() -> new ResourceNotFoundException("Product attribute value with id not found: " + id));
+
         List<ProductAttributeValueResponse> productAttributeValueResponses = productAttributeValueMapper
                 .toDtos(productAttributeValue);
+
+        productAttributeValueResponses.forEach(productAttributeValueResponse -> {
+            List<ProductAttributeValuePicture> productAttributeValuePictures = productAttributeValuePictureRepository
+                    .findAllByProductAttributeValueId(productAttributeValueResponse.getId());
+            List<String> imageUrls = productAttributeValuePictures.stream()
+                    .map(picture -> picture.getPicture().getLinkImg())
+                    .toList();
+
+            productAttributeValueResponse.setImageUrl(imageUrls);
+        });
 
         return ProductProductAttributeMappingDetailResponse.builder()
                 .id(attributeMapping.getId())
@@ -137,6 +151,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
             throw new ResourceNotFoundException("Product with id not found: " + productId);
         }
     }
+
     private ProductProductAttributeMapping getMappingOrThrow(Long id) {
         return productProductAttributeMappingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product product attribute mapping with id not found: " + id));
