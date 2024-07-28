@@ -9,6 +9,12 @@ import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCre
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
+import SpecificationAttributeGroupManage
+    from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
+import SpecificationAttributeManage from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
+import SpecificationAttributeGroupCreate
+    from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupCreate.tsx'
+import SpecificationAttributeCreate from '@/pages/specificationAttribute/SpecificationAttributeCreate.tsx'
 
 const routers = [
     {
@@ -85,6 +91,34 @@ const routers = [
         element: <ManufactureUpdate />,
         breadcrumbName: 'Manufacture',
         pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP,
+        layout: 'main',
+        element: <SpecificationAttributeGroupManage />,
+        breadcrumbName: 'Specification Attribute Group',
+        pageType: 'specification-attribute-group',
+    },
+    {
+        path: ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_ADD,
+        layout: 'main',
+        element: <SpecificationAttributeGroupCreate />,
+        breadcrumbName: 'Specification Attribute Group Add',
+        pageType: 'specification-attribute-group-add',
+    },
+    {
+        path: ManagerPath.SPECIFICATION_ATTRIBUTE,
+        layout: 'main',
+        element: <SpecificationAttributeManage />,
+        breadcrumbName: 'Specification Attribute',
+        pageType: 'specification-attribute',
+    },
+    {
+        path: ManagerPath.SPECIFICATION_ATTRIBUTE_ADD,
+        layout: 'main',
+        element: <SpecificationAttributeCreate />,
+        breadcrumbName: 'Specification Attribute Create',
+        pageType: 'specification-attribute-create',
     },
 ]
 
