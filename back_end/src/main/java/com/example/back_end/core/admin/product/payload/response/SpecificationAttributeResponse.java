@@ -32,7 +32,8 @@ public class SpecificationAttributeResponse {
                         option.getName(),
                         option.getColorSquaresRgb(),
                         option.getDisplayOrder(),
-                        option.getProductSpecificationAttributeMappings()
+                        option.getProductSpecificationAttributeMappings(),
+                        option.getSpecificationAttribute().getId()
                 ))
                 .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getDisplayOrder).reversed())
                 .toList();

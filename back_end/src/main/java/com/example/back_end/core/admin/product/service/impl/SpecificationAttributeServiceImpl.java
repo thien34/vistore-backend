@@ -65,11 +65,15 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
 
     @Override
     public SpecificationAttributeResponse createSpecificationAttribute(SpecificationAttributeRequest request) {
+        SpecificationAttributeGroup specificationAttributeGroup = null;
 
-        Optional<SpecificationAttributeGroup> specificationAttributeGroupOptional =
-                specificationAttributeGroupRepository.findByName(request.getSpecificationAttributeGroupName());
+        if (request.getSpecificationAttributeGroupId() != null) {
+            Optional<SpecificationAttributeGroup> specificationAttributeGroupOptional =
+                    specificationAttributeGroupRepository.findById(request.getSpecificationAttributeGroupId());
 
-        SpecificationAttributeGroup specificationAttributeGroup = specificationAttributeGroupOptional.orElse(null);
+            specificationAttributeGroup = specificationAttributeGroupOptional.orElse(null);
+        }
+
         Integer displayOrder = request.getDisplayOrder() != null ? request.getDisplayOrder() : 0;
 
         SpecificationAttribute specificationAttribute = SpecificationAttribute.builder()
@@ -79,9 +83,10 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                 .build();
 
         specificationAttribute = specificationAttributeRepository.save(specificationAttribute);
-        return specificationAttributeMapper.toDto(specificationAttribute);
 
+        return specificationAttributeMapper.toDto(specificationAttribute);
     }
+
 
     @Override
     @Transactional
@@ -151,7 +156,8 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                                 option.getName(),
                                 option.getColorSquaresRgb(),
                                 option.getDisplayOrder(),
-                                option.getProductSpecificationAttributeMappings()
+                                option.getProductSpecificationAttributeMappings(),
+                                option.getSpecificationAttribute().getId()
                         ))
                         .toList())
                 .build();

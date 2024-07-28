@@ -16,5 +16,5 @@ public class SpecificationAttributeOptionResponse {
     private String colorSquaresRgb;
     private Integer displayOrder;
     private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
-
+    private Long specificationAttributeId;
 }

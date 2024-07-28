@@ -4,7 +4,7 @@ import com.example.back_end.core.admin.product.mapper.SpecificationAttributeGrou
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeGroupRequest;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeGroupService;
-import com.example.back_end.core.common.PageListResponse;
+import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.SpecificationAttributeGroup;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
@@ -30,7 +30,7 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
     SpecificationAttributeGroupMapper specificationAttributeGroupMapper;
 
     @Override
-    public PageListResponse<SpecificationAttributeGroupResponse> getAllSpecificationAttributeGroup(String name, int pageNo, int pageSize) {
+    public PageResponse<?> getAllSpecificationAttributeGroup(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
@@ -42,11 +42,11 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                 .map(specificationAttributeGroupMapper::toDto)
                 .toList();
 
-        return PageListResponse.<SpecificationAttributeGroupResponse>builder()
+        return PageResponse.<SpecificationAttributeGroupResponse>builder()
                 .page(specificationAttributeGroupPage.getNumber())
                 .size(specificationAttributeGroupPage.getSize())
                 .totalPage(specificationAttributeGroupPage.getTotalPages())
-                .datas(specificationAttributeGroupResponses)
+                .data(specificationAttributeGroupResponses)
                 .build();
     }
 

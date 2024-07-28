@@ -5,8 +5,11 @@ import com.example.back_end.core.admin.product.payload.request.SpecificationAttr
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeOptionResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeOptionService;
 import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeOption;
+import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
+import com.example.back_end.repository.SpecificationAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +27,7 @@ import java.util.List;
 public class SpecificationAttributeOptionServiceImpl implements SpecificationAttributeOptionService {
     SpecificationAttributeOptionRepository specificationAttributeOptionRepository;
     SpecificationAttributeOptionMapper specificationAttributeOptionMapper;
+    SpecificationAttributeRepository specificationAttributeRepository;
 
 
     @Override
@@ -54,9 +58,17 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
                 .colorSquaresRgb(request.getColorSquaresRgb())
                 .displayOrder(request.getDisplayOrder() != null ? request.getDisplayOrder() : 0)
                 .build();
+
+        if (request.getSpecificationAttributeId() != null) {
+            SpecificationAttribute specificationAttribute = specificationAttributeRepository.findById(request.getSpecificationAttributeId())
+                    .orElseThrow(() -> new IllegalArgumentException(ErrorCode.SPECIFICATION_ATTRIBUTE_NOT_EXISTED.getMessage()));
+            specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
+        }
+
         specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
         return specificationAttributeOptionMapper.toDto(specificationAttributeOption);
     }
+
 
     @Override
     public void deleteSpecificationAttributeOption(List<Long> ids) {

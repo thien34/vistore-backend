@@ -7,6 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring" )
 public interface SpecificationAttributeOptionMapper {
-    @Mapping(target = "productSpecificationAttributeMappings", source = "productSpecificationAttributeMappings")
+    @Mapping(target = "specificationAttributeId", source = "specificationAttribute.id") // Ánh xạ ID
     SpecificationAttributeOptionResponse toDto(SpecificationAttributeOption specificationAttributeOption);
 }

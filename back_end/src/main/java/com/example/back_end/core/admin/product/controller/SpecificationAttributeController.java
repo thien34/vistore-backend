@@ -38,7 +38,7 @@ public class SpecificationAttributeController {
     @Operation(method = "POST", summary = "Add new specification attribute",
             description = "Send a request via this API to create new specification attribute")
     @PostMapping
-    public ResponseData<SpecificationAttributeResponse> createSpecificationAttributeOption(
+    public ResponseData<SpecificationAttributeResponse> createSpecificationAttribute(
             @Valid @RequestBody SpecificationAttributeRequest dto) {
         try {
             SpecificationAttributeResponse response = specificationAttributesService.createSpecificationAttribute(dto);
@@ -48,10 +48,11 @@ public class SpecificationAttributeController {
                     .data(response)
                     .build();
         } catch (Exception e) {
-            log.error("Error creating specification attribute options", e);
+            log.error("Error creating specification attribute", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
     @Operation(method = "GET", summary = "Get all specification attribute",
             description = "Send a request via this API to get all specification attribute")
     @GetMapping

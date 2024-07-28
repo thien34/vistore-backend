@@ -12,4 +12,5 @@ public class SpecificationAttributeOptionRequest {
     private String name;
     private String colorSquaresRgb;
     private Integer displayOrder;
+    private Long specificationAttributeId;
 }

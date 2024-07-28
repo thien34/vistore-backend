@@ -3,7 +3,7 @@ package com.example.back_end.core.admin.product.controller;
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeGroupRequest;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeGroupService;
-import com.example.back_end.core.common.PageListResponse;
+import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
 import com.example.back_end.infrastructure.constant.SuccessCode;
@@ -57,7 +57,7 @@ public class SpecificationAttributeGroupController {
                                   @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
                                   @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
         try {
-            PageListResponse<?> response = specificationAttributeGroupService.getAllSpecificationAttributeGroup(name, pageNo, pageSize);
+            PageResponse<?> response = specificationAttributeGroupService.getAllSpecificationAttributeGroup(name, pageNo, pageSize);
             return new ResponseData<>(HttpStatus.OK.value(), "Get specification attribute groups success", response);
         } catch (Exception e) {
             log.error("Error getting specification attribute group", e);

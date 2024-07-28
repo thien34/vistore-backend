@@ -13,7 +13,7 @@ public class SpecificationAttributeRequest {
     @Size(max = 255, message = "Name must not exceed 255 characters")
     private String name;
 
-    private String specificationAttributeGroupName;
+    private Long specificationAttributeGroupId;
 
     private Integer displayOrder;
 
