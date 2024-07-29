@@ -11,14 +11,15 @@ class ResourceURL {
     static readonly PREDEFINED_PRODUCT_ATTRIBUTE_VALUE = apiPath + '/predefined-product-attribute-values'
     static readonly CATEGORY = apiPath + '/categories'
     static readonly PICTURE = apiPath + '/picture'
+    static readonly PRODUCT_COMBINATIONS = apiPath + '/product-attribute-combinations'
+    static readonly PRODUCT_COMBINATIONS_BY_PRODUCT_ID = apiPath + '/product-attribute-combinations/product'
     static readonly BRAND = apiPath + '/brands'
     static readonly ORDER = apiPath + '/orders'
 
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'
-    static readonly CLIENT_MANUFACTURE = apiPath +'/manufactures'
-
+    static readonly CLIENT_MANUFACTURE = apiPath + '/manufactures'
 
     // AUTHENTICATION
     static readonly LOGIN = apiPath + '/auth/login'

@@ -9,6 +9,7 @@ import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCre
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
+import ProductAtbCombinations from '@/pages/product-attribute-combinations/ProductAtbCombinations'
 
 const routers = [
     {
@@ -83,6 +84,13 @@ const routers = [
         path: ManagerPath.MANUFACTURE_UPDATE,
         layout: 'main',
         element: <ManufactureUpdate />,
+        breadcrumbName: 'Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.Test,
+        layout: 'main',
+        element: <ProductAtbCombinations />,
         breadcrumbName: 'Manufacture',
         pageType: 'manufacture',
     },
