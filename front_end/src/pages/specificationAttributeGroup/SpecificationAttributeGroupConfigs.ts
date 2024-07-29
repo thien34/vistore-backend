@@ -5,6 +5,8 @@ import ResourceURL from '@/constants/ResourceURL .ts'
 export default class SpecificationAttributeGroupConfigs extends Configs {
     static readonly managerPath = ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP
     static readonly resourceUrl = ResourceURL.SPECIFICATION_ATTRIBUTE_GROUP
+    static readonly resourceGetUngroupedAttributes = ResourceURL.USEGETUNGROUPEDATTRIBUTES
+    static readonly resourceGetUngroupedAttributesKey = 'resourceGetUngroupedAttributes'
     static readonly resourceKey = 'specificationAttributeGroups'
     static readonly createTitle = 'Create Specification Attribute Group'
     static readonly updateTitle = 'Update Specification Attribute Group'
