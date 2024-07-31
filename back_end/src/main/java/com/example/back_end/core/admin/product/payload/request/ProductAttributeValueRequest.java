@@ -30,6 +30,6 @@ public class ProductAttributeValueRequest {
 
     private Integer displayOrder;
 
-    private List<Long> pictureId;
+    private List<ProductAttributeValuePictureRequest> productAttributeValuePictureRequests;
 
 }

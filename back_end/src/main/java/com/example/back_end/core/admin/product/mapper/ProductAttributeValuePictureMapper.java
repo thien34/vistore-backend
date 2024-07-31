@@ -5,11 +5,15 @@ import com.example.back_end.entity.ProductAttributeValuePicture;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ProductAttributeValuePictureMapper {
 
     @Mapping(source = "productAttributeValueId", target = "productAttributeValue.id")
     @Mapping(source = "pictureId", target = "picture.id")
     ProductAttributeValuePicture toEntity(ProductAttributeValuePictureRequest request);
+
+    List<ProductAttributeValuePicture> toEntity(List<ProductAttributeValuePictureRequest> request);
 
 }
