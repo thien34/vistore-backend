@@ -11,10 +11,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationAttributeOptionResponse {
+
     private Long id;
+
     private String name;
+
     private String colorSquaresRgb;
+
     private Integer displayOrder;
+
     private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
+
     private Long specificationAttributeId;
 }

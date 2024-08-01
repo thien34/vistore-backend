@@ -52,7 +52,9 @@ public enum ErrorCode {
 
     PRODUCT_ATTRIBUTE_EXISTED(1019, "Product attribute already existed", HttpStatus.BAD_REQUEST),
 
-    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED(1020, "Product specification attribute mapping already existed", HttpStatus.BAD_REQUEST);
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED(1020, "Product specification attribute mapping already existed", HttpStatus.BAD_REQUEST),
+
+    ID_SPECIFICATION_ATTRIBUTE_INVALID(1021,"Invalid specification attribute ID",HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

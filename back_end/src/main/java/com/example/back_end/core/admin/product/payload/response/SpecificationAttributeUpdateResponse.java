@@ -12,10 +12,16 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class SpecificationAttributeUpdateResponse {
+
     private Long id;
+
     private String name;
+
     private Long specificationAttributeGroupId;
+
     private String specificationAttributeGroupName;
+
     private Integer displayOrder;
+
     private List<SpecificationAttributeOptionResponse> listOptions;
 }

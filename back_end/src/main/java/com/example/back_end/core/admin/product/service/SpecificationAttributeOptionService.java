@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface SpecificationAttributeOptionService {
     PageResponse<?> getAllSpecificationAttributeOption(String name, int pageNo, int pageSize);
-    SpecificationAttributeOptionResponse createSpecificationAttributeOption(SpecificationAttributeOptionRequest request);
+    SpecificationAttributeOptionResponse createSpecificationAttributeOption(
+            SpecificationAttributeOptionRequest request);
     void deleteSpecificationAttributeOption(List<Long> ids);
 }

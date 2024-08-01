@@ -25,20 +25,23 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpecificationAttributeOptionServiceImpl implements SpecificationAttributeOptionService {
+
     SpecificationAttributeOptionRepository specificationAttributeOptionRepository;
     SpecificationAttributeOptionMapper specificationAttributeOptionMapper;
     SpecificationAttributeRepository specificationAttributeRepository;
 
-
     @Override
     public PageResponse<?> getAllSpecificationAttributeOption(String name, int pageNo, int pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
-        Page<SpecificationAttributeOption> specificationAttributeOption = specificationAttributeOptionRepository.findByNameContaining(name, pageable);
 
-        List<SpecificationAttributeOptionResponse> productSpecificationResponse = specificationAttributeOption.stream()
+        if (pageNo < 0 || pageSize <= 0)
+            throw new IllegalArgumentException("Invalid page number or page size");
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
+        Page<SpecificationAttributeOption> specificationAttributeOption =
+                specificationAttributeOptionRepository.findByNameContaining(name, pageable);
+
+        List<SpecificationAttributeOptionResponse> productSpecificationResponse =
+                specificationAttributeOption.stream()
                 .map(specificationAttributeOptionMapper::toDto)
                 .toList();
 
@@ -48,11 +51,15 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
                 .totalPage(specificationAttributeOption.getTotalPages())
                 .items(productSpecificationResponse)
                 .build();
+
     }
 
     @Override
     @Transactional
-    public SpecificationAttributeOptionResponse createSpecificationAttributeOption(SpecificationAttributeOptionRequest request) {
+    public SpecificationAttributeOptionResponse createSpecificationAttributeOption(
+            SpecificationAttributeOptionRequest request
+    ) {
+
         SpecificationAttributeOption specificationAttributeOption = SpecificationAttributeOption.builder()
                 .name(request.getName())
                 .colorSquaresRgb(request.getColorSquaresRgb())
@@ -60,18 +67,22 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
                 .build();
 
         if (request.getSpecificationAttributeId() != null) {
-            SpecificationAttribute specificationAttribute = specificationAttributeRepository.findById(request.getSpecificationAttributeId())
-                    .orElseThrow(() -> new IllegalArgumentException(ErrorCode.SPECIFICATION_ATTRIBUTE_NOT_EXISTED.getMessage()));
+            SpecificationAttribute specificationAttribute = specificationAttributeRepository
+                    .findById(request.getSpecificationAttributeId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            ErrorCode.SPECIFICATION_ATTRIBUTE_NOT_EXISTED.getMessage()));
             specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
         }
 
         specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
         return specificationAttributeOptionMapper.toDto(specificationAttributeOption);
+
     }
 
 
     @Override
     public void deleteSpecificationAttributeOption(List<Long> ids) {
+
         List<SpecificationAttributeOption> spec = specificationAttributeOptionRepository.findAllById(ids);
 
         if (!spec.isEmpty()) {
