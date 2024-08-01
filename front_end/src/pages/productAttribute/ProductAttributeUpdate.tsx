@@ -12,7 +12,6 @@ import useProductAttributeUpdate from '@/pages/productAttribute/ProductAttribute
 
 const pageSize = 5
 export default function ProductAttributeUpdate() {
-
     const {
         productAttributeResponse,
         isLoading,

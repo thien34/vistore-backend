@@ -1,20 +1,18 @@
-import AppActions from "@/constants/AppActions "
-import { ManufacturerResponse } from "@/model/Manufacturer"
-import { EditOutlined } from "@ant-design/icons"
-import { Button, TableColumnsType } from "antd"
-import { Link } from "react-router-dom"
- const getManufactureColumns = (): TableColumnsType<ManufacturerResponse> => [
+import AppActions from '@/constants/AppActions '
+import { ManufacturerResponse } from '@/model/Manufacturer'
+import { EditOutlined } from '@ant-design/icons'
+import { Button, TableColumnsType } from 'antd'
+import { Link } from 'react-router-dom'
+const getManufactureColumns = (): TableColumnsType<ManufacturerResponse> => [
     {
         width: '40%',
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: (_, record) => (
-            <span>{record.name}</span>
-        ) ,
+        render: (_, record) => <span>{record.name}</span>,
         sorter: (a, b) => {
             // Sort by 'name'
-            return a.name.localeCompare(b.name);
+            return a.name.localeCompare(b.name)
         },
     },
     {
@@ -38,11 +36,11 @@ import { Link } from "react-router-dom"
         key: 'action',
         render: (_, record) => (
             <Link to={`/admin/manufacturers/${record.id}/update`}>
-                <Button  className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
+                <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
                     {AppActions.EDIT}
                 </Button>
             </Link>
         ),
     },
 ]
-export default  getManufactureColumns 
+export default getManufactureColumns

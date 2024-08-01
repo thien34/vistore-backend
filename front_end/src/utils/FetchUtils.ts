@@ -99,7 +99,7 @@ class FetchUtils {
         requestParams?: BasicRequestParams,
         isAdmin?: boolean,
     ): Promise<O> {
-        const token = JSON.parse(localStorage.getItem(isAdmin ? 'admin-auth-store' : 'auth-store') || '{}').state
+        const token = JSON.parse(localStorage.getItem(isAdmin ? 'admin-auth-store' : 'auth-store') ?? '{}').state
             ?.jwtToken
 
         const response = await fetch(FetchUtils.concatParams(resourceUrl, requestParams), {
@@ -124,7 +124,7 @@ class FetchUtils {
      */
     static async postWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O> {
         const token = JSON.parse(
-            localStorage.getItem(isAdmin ? 'electro-admin-auth-store' : 'electro-auth-store') || '{}',
+            localStorage.getItem(isAdmin ? 'electro-admin-auth-store' : 'electro-auth-store') ?? '{}',
         ).state?.jwtToken
 
         const response = await fetch(resourceUrl, {
@@ -151,7 +151,7 @@ class FetchUtils {
      */
     static async putWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O> {
         const token = JSON.parse(
-            localStorage.getItem(isAdmin ? 'electro-admin-auth-store' : 'electro-auth-store') || '{}',
+            localStorage.getItem(isAdmin ? 'electro-admin-auth-store' : 'electro-auth-store') ?? '{}',
         ).state?.jwtToken
 
         const response = await fetch(resourceUrl, {
@@ -178,7 +178,7 @@ class FetchUtils {
      */
     static async deleteWithToken<T>(resourceUrl: string, entityIds: T[], isAdmin?: boolean) {
         const token = JSON.parse(
-            localStorage.getItem(isAdmin ? 'electro-admin-auth-store' : 'electro-auth-store') || '{}',
+            localStorage.getItem(isAdmin ? 'electro-admin-auth-store' : 'electro-auth-store') ?? '{}',
         ).state?.jwtToken
 
         const response = await fetch(resourceUrl, {
