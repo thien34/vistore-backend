@@ -19,7 +19,9 @@ public class SpecificationAttributeResponse {
     private Long specificationAttributeGroupId;
     private List<SpecificationAttributeOptionResponse> listOptions;
     public static SpecificationAttributeResponse mapToResponse(SpecificationAttribute specificationAttribute) {
+
         SpecificationAttributeResponse response = new SpecificationAttributeResponse();
+
         response.setId(specificationAttribute.getId());
         response.setName(specificationAttribute.getName());
         response.setDisplayOrder(specificationAttribute.getDisplayOrder());
@@ -35,12 +37,11 @@ public class SpecificationAttributeResponse {
                         option.getProductSpecificationAttributeMappings(),
                         option.getSpecificationAttribute().getId()
                 ))
-                .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getDisplayOrder).reversed())
+                .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getDisplayOrder, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .toList();
 
         response.setListOptions(optionResponses);
-
         return response;
-    }
 
+    }
 }

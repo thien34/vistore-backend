@@ -107,21 +107,22 @@ public class SpecificationAttributeController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
-    @Operation(method = "GET", summary = "Get specification attributes by group ID",
-            description = "Send a request via this API to get all specification attributes by their group ID")
-    @GetMapping("/group/{groupId}")
-    public ResponseData<List<SpecificationAttributeResponse>> getSpecificationAttributesByGroupId(
-            @PathVariable Long groupId) {
+    @Operation(method = "GET", summary = "Get all specification attribute no group or invalid",
+            description = "Send a request via this API to get all specification attribute no group")
+    @GetMapping("/no-group-or-invalid")
+    public ResponseData<?> getAllAttribute(@RequestParam(value = "name", defaultValue = "") String name,
+                                  @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+                                  @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
         try {
-            List<SpecificationAttributeResponse> attributes = specificationAttributesService.getSpecificationAttributesByGroupId(groupId);
-            return ResponseData.<List<SpecificationAttributeResponse>>builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Get specification attributes by group ID success")
-                    .data(attributes)
-                    .build();
+            PageResponse<?> response = specificationAttributesService.getAttributesWithNoGroupOrInvalidGroup(pageNo, pageSize);
+            return new ResponseData<>(HttpStatus.OK.value(), "Get specification attribute success no group", response);
         } catch (Exception e) {
-            log.error("Error getting specification attributes by group ID", e);
+            log.error("Error getting specification attribute no group", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
+
+
+
 }

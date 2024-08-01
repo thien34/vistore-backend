@@ -1,5 +1,6 @@
 package com.example.back_end.core.admin.product.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,25 +15,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductSpecificationAttributeMappingResponse {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ProductFakeResponse {
 
     Long id;
 
-    Long productId;
-
-    Long specificationAttributeOptionId;
-
-    String specificationAttributeOptionName;
-
-    String customValue;
-
-    boolean showOnProductPage;
-
-    int displayOrder;
-
-    String attributeType;
-
-    Long specificationAttributeId;
-
-    String specificationAttributeName;
+    String name;
 }

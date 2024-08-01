@@ -49,8 +49,11 @@ public class SpecificationAttributeOption extends Auditable {
     @Column(name = "display_order")
     private Integer displayOrder;
 
-    @OneToMany(mappedBy = "specificationAttributeOption", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @OneToMany(mappedBy = "specificationAttributeOption", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
 
+    public SpecificationAttributeOption(String name) {
+        this.name = name;
+    }
 }

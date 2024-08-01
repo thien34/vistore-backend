@@ -1,10 +1,13 @@
 package com.example.back_end.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +17,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -135,5 +139,9 @@ public class Product extends Auditable {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "product",cascade = CascadeType.REMOVE)
+    private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
 
 }

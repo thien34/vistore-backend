@@ -10,8 +10,9 @@ import java.util.List;
 public interface SpecificationAttributeService {
     PageResponse<?> getAllSpecificationAttribute(String name, int pageNo, int pageSize);
     SpecificationAttributeResponse createSpecificationAttribute(SpecificationAttributeRequest request);
-    SpecificationAttributeUpdateResponse editSpecificationAttribute(Long id, SpecificationAttributeUpdateRequest request);
+    SpecificationAttributeUpdateResponse editSpecificationAttribute(
+            Long id, SpecificationAttributeUpdateRequest request);
     void deleteSpecificationAttribute(List<Long> ids);
     SpecificationAttributeResponse getSpecificationAttributeById(Long id);
-    List<SpecificationAttributeResponse> getSpecificationAttributesByGroupId(Long groupId);
+    PageResponse<?> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize);
 }

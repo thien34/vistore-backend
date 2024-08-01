@@ -26,35 +26,48 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class SpecificationAttributeGroupServiceImpl implements SpecificationAttributeGroupService {
+
     SpecificationAttributeGroupRepository specificationAttributeGroupRepository;
     SpecificationAttributeGroupMapper specificationAttributeGroupMapper;
 
     @Override
-    public PageResponse<?> getAllSpecificationAttributeGroup(String name, int pageNo, int pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
+    public PageResponse<List<SpecificationAttributeGroupResponse>> getAllSpecificationAttributeGroup(
+            String name,
+            int pageNo,
+            int pageSize
+    ) {
+        if (pageNo < 0 || pageSize <= 0)
             throw new IllegalArgumentException("Invalid page number or page size");
-        }
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
-        Page<SpecificationAttributeGroup> specificationAttributeGroupPage = specificationAttributeGroupRepository.findByNameContaining(name, pageable);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").ascending());
+        Page<SpecificationAttributeGroup> specificationAttributeGroupPage = specificationAttributeGroupRepository
+                .findByNameContaining(name, pageable);
 
-        List<SpecificationAttributeGroupResponse> specificationAttributeGroupResponses = specificationAttributeGroupPage.stream()
+        List<SpecificationAttributeGroupResponse> specificationAttributeGroupResponses =
+                specificationAttributeGroupPage
+                        .getContent()
+                        .stream()
                 .map(specificationAttributeGroupMapper::toDto)
                 .toList();
 
-        return PageResponse.<SpecificationAttributeGroupResponse>builder()
+        return PageResponse.<List<SpecificationAttributeGroupResponse>>builder()
                 .page(specificationAttributeGroupPage.getNumber())
                 .size(specificationAttributeGroupPage.getSize())
                 .totalPage(specificationAttributeGroupPage.getTotalPages())
-                .data(specificationAttributeGroupResponses)
+                .items(specificationAttributeGroupResponses)
                 .build();
+
     }
+
 
 
 
     @Override
     @Transactional
-    public SpecificationAttributeGroupResponse createSpecificationAttributeGroup(SpecificationAttributeGroupRequest request) {
+    public SpecificationAttributeGroupResponse createSpecificationAttributeGroup(
+            SpecificationAttributeGroupRequest request
+    ) {
+
         if (specificationAttributeGroupRepository.existsByName(request.getName()))
             throw new ExistsByNameException(ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_EXISTED.getMessage());
 
@@ -69,22 +82,61 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                 .name(group.getName())
                 .displayOrder(group.getDisplayOrder())
                 .build();
+
     }
 
     @Override
     public SpecificationAttributeGroupResponse getSpecificationAttributeGroupById(Long id) {
+
         SpecificationAttributeGroup group = specificationAttributeGroupRepository.findById(id)
-                .orElseThrow(() -> new NotExistsException(ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
+                .orElseThrow(() -> new NotExistsException(
+                        ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
 
         return specificationAttributeGroupMapper.toDto(group);
+
     }
 
     @Override
     public void deleteSpecificationAttributeGroup(List<Long> ids) {
+
         List<SpecificationAttributeGroup> spec = specificationAttributeGroupRepository.findAllById(ids);
 
-        if (!spec.isEmpty()) {
+        if (!spec.isEmpty())
             specificationAttributeGroupRepository.deleteAllInBatch(spec);
-        }
+
     }
+
+    @Override
+    @Transactional
+    public SpecificationAttributeGroupResponse updateSpecificationAttributeGroup(
+            Long id,
+            SpecificationAttributeGroupRequest request
+    ) {
+
+        SpecificationAttributeGroup group = specificationAttributeGroupRepository.findById(id)
+                .orElseThrow(() -> new NotExistsException(
+                        ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
+
+        if (specificationAttributeGroupRepository.existsByNameAndIdNot(request.getName(), id)) {
+            throw new ExistsByNameException(ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_EXISTED.getMessage());
+        }
+
+        group.setName(request.getName());
+        group.setDisplayOrder(request.getDisplayOrder());
+        group = specificationAttributeGroupRepository.save(group);
+
+        return specificationAttributeGroupMapper.toDto(group);
+
+    }
+    @Override
+    public void deleteSpecificationAttributeGroupById(Long id) {
+
+        SpecificationAttributeGroup group = specificationAttributeGroupRepository.findById(id)
+                .orElseThrow(() -> new NotExistsException(
+                        ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
+
+        specificationAttributeGroupRepository.delete(group);
+
+    }
+
 }

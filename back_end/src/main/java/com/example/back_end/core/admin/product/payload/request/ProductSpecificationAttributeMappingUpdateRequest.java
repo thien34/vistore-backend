@@ -1,4 +1,4 @@
-package com.example.back_end.core.admin.product.payload.response;
+package com.example.back_end.core.admin.product.payload.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,25 +14,17 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductSpecificationAttributeMappingResponse {
-
-    Long id;
-
-    Long productId;
-
-    Long specificationAttributeOptionId;
-
-    String specificationAttributeOptionName;
+public class ProductSpecificationAttributeMappingUpdateRequest {
 
     String customValue;
 
-    boolean showOnProductPage;
+    Boolean showOnProductPage;
 
-    int displayOrder;
+    Integer displayOrder;
 
-    String attributeType;
+    Long specificationAttributeOptionId;
 
     Long specificationAttributeId;
 
-    String specificationAttributeName;
+    String attributeType;
 }

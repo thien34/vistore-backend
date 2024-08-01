@@ -1,7 +1,9 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingUpdateRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
+import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingUpdateResponse;
 import com.example.back_end.core.admin.product.service.ProductSpecificationAttributeMappingService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
@@ -85,4 +87,47 @@ public class ProductSpecificationAttributeMappingController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+    @Operation(method = "GET", summary = "Get product specification attribute mappings by product ID",
+            description = "Send a request via this API to get product specification attribute mappings by product ID")
+    @GetMapping("/by-product/{productId}")
+    public ResponseData<?> getByProductId(
+            @PathVariable Long productId,
+            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+        try {
+            PageResponse<?> response =
+                    productSpecificationAttributeMappingService.getProductSpecificationAttributeMappingsByProductId(productId, pageNo, pageSize);
+            return ResponseData.builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Get product specification attribute mappings by product ID success")
+                    .data(response)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error getting product specification attribute mappings by product ID", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+    @Operation(method = "PUT", summary = "Update product specification attribute mapping",
+            description = "Send a request via this API to update product specification attribute mapping")
+    @PutMapping("/{id}")
+    public ResponseData<ProductSpecificationAttributeMappingUpdateResponse> updateProductSpecificationAttributeMapping(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductSpecificationAttributeMappingUpdateRequest dto) {
+        try {
+            ProductSpecificationAttributeMappingUpdateResponse response =
+                    productSpecificationAttributeMappingService.updateProductSpecificationAttributeMapping(id, dto);
+            return ResponseData.<ProductSpecificationAttributeMappingUpdateResponse>builder()
+                    .status(HttpStatus.OK.value())
+                    .message(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATED.getMessage())
+                    .data(response)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error updating product specification attribute mapping", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+
+
+
 }

@@ -11,4 +11,7 @@ public interface SpecificationAttributeGroupService {
     SpecificationAttributeGroupResponse createSpecificationAttributeGroup(SpecificationAttributeGroupRequest request);
     SpecificationAttributeGroupResponse getSpecificationAttributeGroupById(Long id);
     void deleteSpecificationAttributeGroup(List<Long> ids);
+    SpecificationAttributeGroupResponse updateSpecificationAttributeGroup(
+            Long id, SpecificationAttributeGroupRequest request);
+    void deleteSpecificationAttributeGroupById(Long id);
 }

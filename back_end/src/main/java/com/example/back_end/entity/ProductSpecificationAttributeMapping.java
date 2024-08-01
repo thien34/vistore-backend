@@ -34,6 +34,7 @@ public class ProductSpecificationAttributeMapping {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,4 +52,5 @@ public class ProductSpecificationAttributeMapping {
     @Column(name = "display_order")
     private Integer displayOrder;
 
+    private String attributeType;
 }

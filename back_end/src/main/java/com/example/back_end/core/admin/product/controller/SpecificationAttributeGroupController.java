@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,6 +81,25 @@ public class SpecificationAttributeGroupController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+    @Operation(method = "PUT", summary = "Update specification attribute group",
+            description = "Send a request via this API to update an existing specification attribute group")
+    @PutMapping("/{id}")
+    public ResponseData<SpecificationAttributeGroupResponse> updateSpecificationAttributeGroup(
+            @PathVariable Long id,
+            @Valid @RequestBody SpecificationAttributeGroupRequest request) {
+        try {
+            SpecificationAttributeGroupResponse response = specificationAttributeGroupService.updateSpecificationAttributeGroup(id, request);
+            return ResponseData.<SpecificationAttributeGroupResponse>builder()
+                    .status(HttpStatus.OK.value())
+                    .message(SuccessCode.SPECIFICATION_ATTRIBUTE_UPDATED.getMessage())
+                    .data(response)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error updating specification attribute group", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
     @Operation(method = "DELETE", summary = "Delete specification attribute groups",
             description = "Send a request via this API to delete specification attribute groups")
     @DeleteMapping
@@ -90,6 +110,19 @@ public class SpecificationAttributeGroupController {
             return new ResponseData<>(HttpStatus.OK.value(), "Delete specification attribute groups success");
         } catch (Exception e) {
             log.error("Error deleting specification attribute groups", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+    @Operation(method = "DELETE", summary = "Delete specification attribute group by ID",
+            description = "Send a request via this API to delete a specification attribute group by ID")
+    @DeleteMapping("/{id}")
+    public ResponseData<?> deleteSpecificationAttributeGroupById(@PathVariable Long id) {
+        log.info("Request to delete specification attribute group with id: {}", id);
+        try {
+            specificationAttributeGroupService.deleteSpecificationAttributeGroupById(id);
+            return new ResponseData<>(HttpStatus.OK.value(), "Delete specification attribute group success");
+        } catch (Exception e) {
+            log.error("Error deleting specification attribute group", e);
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }

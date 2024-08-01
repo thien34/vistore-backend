@@ -14,25 +14,13 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductSpecificationAttributeMappingResponse {
+public class ProductSpecificationAttributeMappingUpdateResponse {
 
     Long id;
-
-    Long productId;
-
-    Long specificationAttributeOptionId;
-
-    String specificationAttributeOptionName;
 
     String customValue;
 
     boolean showOnProductPage;
 
     int displayOrder;
-
-    String attributeType;
-
-    Long specificationAttributeId;
-
-    String specificationAttributeName;
 }
