@@ -34,7 +34,7 @@ public class PredefinedProductAttributeValue extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_attribute_id", nullable = false)
+    @JoinColumn(name = "product_attribute_id")
     private ProductAttribute productAttribute;
 
     @Column(name = "name", length = Integer.MAX_VALUE)

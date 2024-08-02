@@ -7,7 +7,6 @@ import com.example.back_end.core.admin.manufacturer.service.ManufactureServices;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ManufactureController {
-
     private final ManufactureServices manufacturerServices;
 
     @GetMapping()
@@ -46,7 +44,7 @@ public class ManufactureController {
     }
 
     @PostMapping
-    public ResponseData<?> createManufacturer(@RequestBody @Valid ManufacturerRequest manufacturerRequest) {
+    public ResponseData<?> createManufacturer(@RequestBody ManufacturerRequest manufacturerRequest) {
         log.info("Request add new Manufacturer, {}", manufacturerRequest);
         try {
             manufacturerServices.createManufacturer(manufacturerRequest);
@@ -58,7 +56,7 @@ public class ManufactureController {
     }
 
     @PutMapping("/{id}")
-    public ResponseData<?> update(@PathVariable Long id, @RequestBody @Valid ManufacturerRequest manufacturerRequest) {
+    public ResponseData<?> update(@PathVariable Long id, @RequestBody ManufacturerRequest manufacturerRequest) {
         log.info("Request to update the manufacturer with id: {}, {}", id, manufacturerRequest);
         try {
             manufacturerServices.updateManufacturer(id, manufacturerRequest);

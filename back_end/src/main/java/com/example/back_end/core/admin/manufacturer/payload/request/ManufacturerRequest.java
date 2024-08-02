@@ -8,20 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ManufacturerRequest {
-
     @NotBlank(message = "Name cannot be blank")
     private String name;
-
     private String description;
-
     private Long pictureId;
-
     private Integer pageSize;
-
     private Boolean priceRangeFiltering;
-
     private Boolean published;
-
     private Integer displayOrder;
 
     public Picture getPicture() {
