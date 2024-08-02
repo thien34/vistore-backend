@@ -1,10 +1,10 @@
 package com.example.back_end.core.admin.manufacturer.service.impl;
 
+import com.example.back_end.core.admin.manufacturer.mapper.ManufacturerMapper;
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
 import com.example.back_end.core.admin.manufacturer.service.ManufactureServices;
-import com.example.back_end.core.admin.manufacturer.mapper.ManufacturerMapper;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Manufacturer;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
@@ -22,11 +22,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ManufacturerServicesImpl implements ManufactureServices {
+
     private final ManufacturerRepository manufacturerRepository;
     private final ManufacturerMapper manufacturerMapper;
 
-    @Transactional
     @Override
+    @Transactional
     public void createManufacturer(ManufacturerRequest manufacturerRequest) {
         Manufacturer manufacturer = manufacturerMapper.maptoManufacturer(manufacturerRequest);
         manufacturerRepository.save(manufacturer);
@@ -74,7 +75,6 @@ public class ManufacturerServicesImpl implements ManufactureServices {
     public void deleteListManufacturer(List<Long> manufacturerIds) {
         manufacturerRepository.deleteManufacturers(manufacturerIds);
     }
-
 
     @Override
     public List<ManufacturerNameResponse> getAlManufacturersName() {
