@@ -2,7 +2,9 @@ package com.example.back_end.core.admin.product.mapper;
 
 import com.example.back_end.core.admin.product.payload.request.PredefinedProductAttributeValueRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
+import com.example.back_end.core.admin.product.payload.response.ProductAttributeValueResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
+import com.example.back_end.entity.ProductAttributeValue;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -18,4 +20,5 @@ public interface PredefinedProductAttributeValueMapper {
 
     @Mapping(source = "productAttribute", target = "productAttribute.id")
     void updateEntity(PredefinedProductAttributeValueRequest request, @MappingTarget PredefinedProductAttributeValue entity);
+
 }

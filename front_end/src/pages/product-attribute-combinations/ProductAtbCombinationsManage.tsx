@@ -12,20 +12,6 @@ import useGetByIdApi from '@/hooks/use-get-by-id-api'
 import useProductAtbCombinationsViewModel from './ProductAtbCombinations.vm'
 
 type Props = {}
-// const dataSource = [
-//     {
-//         key: '1',
-//         name: 'Mike',
-//         age: 32,
-//         address: '10 Downing Street',
-//     },
-//     {
-//         key: '2',
-//         name: 'John',
-//         age: 42,
-//         address: '10 Downing Street',
-//     },
-// ]
 
 export default function ProductAtbCombinationsManage({}: Props) {
     const columns = [
@@ -123,12 +109,13 @@ export default function ProductAtbCombinationsManage({}: Props) {
         1,
     )
 
-    const { open, setOpen, handleDelete, handleEdit, selectedRecord } = useProductAtbCombinationsViewModel()
+    const { open, setOpen, handleDelete, handleEdit, selectedRecord, handleOpenModal } =
+        useProductAtbCombinationsViewModel()
     return (
         <div>
             <Table bordered dataSource={data} columns={columns} />
             <div className='bg-[#d4d2d2c0] h-24 flex  items-center  pl-5 rounded-lg'>
-                <Button type='primary' onClick={() => setOpen(true)}>
+                <Button type='primary' onClick={() => handleOpenModal()}>
                     Add combination
                 </Button>
             </div>

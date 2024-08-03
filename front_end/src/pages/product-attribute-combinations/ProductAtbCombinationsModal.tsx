@@ -1,8 +1,11 @@
-import { Button, FormProps, InputNumber, Modal, Radio, Select } from 'antd'
+import { Button, Card, FormProps, Image, InputNumber, Modal, Radio, Select, Typography } from 'antd'
 import { Checkbox, Form, Input } from 'antd'
 import { Dispatch, SetStateAction, useEffect } from 'react'
-import useProductAtbCombinationsViewModel from './ProductAtbCombinations.vm'
+import useProductAtbCombinationsViewModel, { ProductAtbMapping } from './ProductAtbCombinations.vm'
 import { ProductAttributeCombinationRequest } from '@/model/ProductAttributeCombination'
+import useGetByIdApi from '@/hooks/use-get-by-id-api'
+import ProductAtbCombinationsConfig from './ProductAtbCombinationsConfig'
+const { Text } = Typography
 
 type Props = {
     isModalOpen: boolean
@@ -13,11 +16,18 @@ type Props = {
 export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecord, setIsModalOpen }: Props) {
     const [form] = Form.useForm()
 
-    const { data, handleCreate, onFinishFailed, initialValues } = useProductAtbCombinationsViewModel()
+    const { handleCreate, onFinishFailed, initialValues, error } = useProductAtbCombinationsViewModel()
     const handleCancel = () => {
+        //   form.resetFields()
         setIsModalOpen(false)
-        form.resetFields()
     }
+
+    const { data } = useGetByIdApi<ProductAtbMapping[]>(
+        ProductAtbCombinationsConfig.resourceUrlByProductIdMapping,
+        ProductAtbCombinationsConfig.resourceUrlByProductIdMapping,
+        1,
+    )
+    console.log(`<<<<<  data2 >>>>>`, data)
     useEffect(() => {
         if (selectedRecord) {
             const attributes = JSON.parse(selectedRecord.attributesXml).attributes.reduce(
@@ -25,75 +35,95 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
                 {},
             )
             form.setFieldsValue({ ...selectedRecord, ...attributes })
+        } else {
+            form.resetFields() // Ensure form is reset if no record is selected
         }
     }, [selectedRecord, form])
     const renderFormItems = () => {
-        return data.map((item) => {
-            const fieldName = item.name.toLowerCase().replace(' ', '_')
-            switch (item.type) {
-                case 'select':
-                    initialValues[fieldName] = item.attributes[0]?.value
-                    return (
-                        <Form.Item
-                            key={item.name}
-                            label={item.name}
-                            name={item.name.toLowerCase().replace(' ', '_')}
-                            rules={
-                                item.isRequired
-                                    ? [{ required: true, message: `Please select a ${item.name.toLowerCase()}` }]
-                                    : []
-                            }
-                        >
-                            <Select>
-                                {item.attributes.map((attr) => (
-                                    <Select.Option key={attr.id} value={attr.value}>
-                                        {attr.value}
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    )
-                case 'radio':
-                    return (
-                        <Form.Item
-                            key={item.name}
-                            label={item.name}
-                            name={item.name.toLowerCase().replace(' ', '_')}
-                            rules={
-                                item.isRequired
-                                    ? [{ required: true, message: `Please select a ${item.name.toLowerCase()}` }]
-                                    : []
-                            }
-                        >
-                            <Radio.Group>
-                                {item.attributes.map((attr) => (
-                                    <Radio key={attr.id} value={attr.value}>
-                                        {attr.value}
-                                    </Radio>
-                                ))}
-                            </Radio.Group>
-                        </Form.Item>
-                    )
-                default:
-                    return null
-            }
-        })
+        return (
+            data &&
+            data.map((item) => {
+                const fieldName = item.attName.toLowerCase().replace(' ', '_')
+                switch (item.attributeControlTypeId) {
+                    case 'DROPDOWN':
+                        initialValues[fieldName] = item.productAttributeValueRequests[0]?.name
+                        return (
+                            <Form.Item
+                                key={item.attName}
+                                label={item.attName}
+                                name={item.attName.toLowerCase().replace(' ', '_')}
+                                rules={
+                                    item.isRequired
+                                        ? [{ required: true, message: `Please select a ${item.attName.toLowerCase()}` }]
+                                        : []
+                                }
+                            >
+                                {item.productAttributeValueRequests.length > 0 && (
+                                    <Select>
+                                        {item.productAttributeValueRequests.map((attr) => (
+                                            <Select.Option key={attr.id} value={attr.name}>
+                                                {attr.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        )
+                    case 'RADIO_BUTTON':
+                        return (
+                            <Form.Item
+                                key={item.attName}
+                                label={item.attName}
+                                name={item.attName.toLowerCase().replace(' ', '_')}
+                                rules={
+                                    item.isRequired
+                                        ? [{ required: true, message: `Please select a ${item.attName.toLowerCase()}` }]
+                                        : []
+                                }
+                            >
+                                {item.productAttributeValueRequests.length > 0 && (
+                                    <Radio.Group>
+                                        {item.productAttributeValueRequests.map((attr) => (
+                                            <Radio key={attr.id} value={attr.name}>
+                                                {attr.name}
+                                            </Radio>
+                                        ))}
+                                    </Radio.Group>
+                                )}
+                            </Form.Item>
+                        )
+                    default:
+                        return null
+                }
+            })
+        )
     }
 
-    const onFinish: FormProps<ProductAttributeCombinationRequest>['onFinish'] = (values) => {
-        handleCreate(values)
-        setIsModalOpen(false)
+    const onFinish: FormProps<ProductAttributeCombinationRequest>['onFinish'] = async (values) => {
+        try {
+            await handleCreate(values)
+
+            form.resetFields()
+            setIsModalOpen(false)
+        } catch (error) {}
     }
     return (
         <>
             <Modal
+                maskClosable={false}
                 closable={true}
                 width={750}
-                title='Basic Modal'
+                title='Select new combination and enter details below'
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={null}
             >
+                {error && (
+                    <Card title='' className='mb-10' size='small'>
+                        <Text type='danger'>{error}</Text>
+                    </Card>
+                )}
+
                 <Form
                     form={form}
                     name='basic'
@@ -142,7 +172,14 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
                     </Form.Item>
 
                     <Form.Item<ProductAttributeCombinationRequest> label='Pictures' name='pictureIds'>
-                        <Checkbox>Checkbox</Checkbox>
+                        <div className='flex items-center -mt-2'>
+                            <Checkbox></Checkbox>
+                            <Image
+                                className='ms-10'
+                                width={50}
+                                src='https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+                            />
+                        </div>
                     </Form.Item>
 
                     <div style={{ display: 'none' }}>

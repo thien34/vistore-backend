@@ -29,13 +29,10 @@ public class ProductAttributeCombinationController {
 
         log.info("Request add product combination, {}", request);
 
-        try {
-            productAttributeCombinationService.saveOrUpdateProductAttributeCombination(request);
-            return new ResponseData<>(HttpStatus.OK.value(), "Add product combination success");
-        } catch (Exception e) {
-            log.error("Error adding product combination ", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+
+        productAttributeCombinationService.saveOrUpdateProductAttributeCombination(request);
+        return new ResponseData<>(HttpStatus.OK.value(), "Add product combination success");
+
 
     }
 

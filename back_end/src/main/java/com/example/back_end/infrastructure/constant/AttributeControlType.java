@@ -1,16 +1,18 @@
 package com.example.back_end.infrastructure.constant;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public enum AttributeControlType {
 
-    DROPDOWN,
-    TEXT_FIELD,
-    TEXT_AREA,
-    DATE_PICKER,
-    FILE_UPLOAD,
-    CHECKBOX,
-    RADIO_BUTTON,
-    COLOR_PICKER,
-    IMAGE_UPLOAD,
-    MULTI_SELECT_OPTION,
-    LABEL
+    DROPDOWN("dropdown"),
+    RADIO_BUTTON("radio_button"),
+    COLOR_SQUARES("color_squares");
+
+    private String label;
 }
