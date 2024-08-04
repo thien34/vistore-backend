@@ -1,11 +1,12 @@
 package com.example.back_end.core.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Getter;
-
 import java.io.Serializable;
 
 @Getter
+@Builder
 public class ResponseData<T> implements Serializable {
 
     private final Integer status;

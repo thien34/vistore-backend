@@ -5,6 +5,9 @@ import CategoryManage from '@/pages/category/CategoryManage'
 import CategoryCreate from '@/pages/category/CategoryCreate'
 import CategoryUpdate from '@/pages/category/CategoryUpdate'
 import Home from '@/pages/home'
+import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.tsx'
+import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
+import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
 
 const routers = [
@@ -19,6 +22,27 @@ const routers = [
         element: <ProductTagManage />,
         breadcrumbName: 'ProductTag',
         pageType: 'product-tag',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_ADD,
+        layout: 'main',
+        element: <ProductAttributeCreate />,
+        breadcrumbName: 'ProductAttribute',
+        pageType: 'product-attribute-add',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_UPDATE,
+        layout: 'main',
+        element: <ProductAttributeUpdate />,
+        breadcrumbName: 'Update Category',
+        pageType: 'category',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE,
+        layout: 'main',
+        element: <ProductAttributeSearch />,
+        breadcrumbName: 'ProductAttribute',
+        pageType: 'product-attribute',
     },
     {
         path: ManagerPath.CATEGORY,
@@ -67,7 +91,7 @@ const routers = [
 const routesAdmin = [
     {
         path: '/admin',
-        children: routers.map((item) => {
+        children: routers.map((item: { breadcrumbName: string; element: Element; path: string; layout: string }) => {
             let layout = <></>
             if (item.layout === 'main') layout = <LayoutMain />
             return {
