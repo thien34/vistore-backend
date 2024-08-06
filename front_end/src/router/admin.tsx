@@ -9,12 +9,16 @@ import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCre
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
-import SpecificationAttributeGroupManage
-    from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
+import SpecificationAttributeGroupManage from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
 import SpecificationAttributeManage from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
-import SpecificationAttributeGroupCreate
-    from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupCreate.tsx'
+import SpecificationAttributeGroupCreate from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupCreate.tsx'
 import SpecificationAttributeCreate from '@/pages/specificationAttribute/SpecificationAttributeCreate.tsx'
+import SpecificationAttributeUpdate from '@/pages/specificationAttribute/SpecificationAttributeUpdate.tsx'
+import SpecificationAttributeGroupUpdate from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupUpdate.tsx'
+import ProductManage from '@/pages/product'
+import ProductUpdateSpecificationAttributeMapping from '@/pages/product/ProductUpdateSpecificationAttributeMapping.tsx'
+import ProductSpecificationAttributeMappingCreate from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingCreate.tsx'
+import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingUpdate.tsx'
 
 const routers = [
     {
@@ -104,7 +108,14 @@ const routers = [
         layout: 'main',
         element: <SpecificationAttributeGroupCreate />,
         breadcrumbName: 'Specification Attribute Group Add',
-        pageType: 'specification-attribute-group-add',
+        pageType: 'specification-attribute-group',
+    },
+    {
+        path: ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_UPDATE,
+        layout: 'main',
+        element: <SpecificationAttributeGroupUpdate />,
+        breadcrumbName: 'Specification Attribute Group Update',
+        pageType: 'specification-attribute-group',
     },
     {
         path: ManagerPath.SPECIFICATION_ATTRIBUTE,
@@ -114,11 +125,46 @@ const routers = [
         pageType: 'specification-attribute',
     },
     {
+        path: ManagerPath.SPECIFICATION_ATTRIBUTE_UPDATE,
+        layout: 'main',
+        element: <SpecificationAttributeUpdate />,
+        breadcrumbName: 'Specification Attribute Update',
+        pageType: 'specification-attribute',
+    },
+    {
         path: ManagerPath.SPECIFICATION_ATTRIBUTE_ADD,
         layout: 'main',
         element: <SpecificationAttributeCreate />,
         breadcrumbName: 'Specification Attribute Create',
-        pageType: 'specification-attribute-create',
+        pageType: 'specification-attribute',
+    },
+    {
+        path: ManagerPath.PRODUCT,
+        layout: 'main',
+        element: <ProductManage />,
+        breadcrumbName: 'Product Manage',
+        pageType: 'product',
+    },
+    {
+        path: ManagerPath.PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING,
+        layout: 'main',
+        element: <ProductUpdateSpecificationAttributeMapping />,
+        breadcrumbName: 'Product Update',
+        pageType: 'product',
+    },
+    {
+        path: ManagerPath.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_ADD,
+        layout: 'main',
+        element: <ProductSpecificationAttributeMappingCreate />,
+        breadcrumbName: 'Product Specification Attribute Mapping Create',
+        pageType: 'product_specification_attribute_mapping',
+    },
+    {
+        path: ManagerPath.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE,
+        layout: 'main',
+        element: <ProductSpecificationAttributeMappingUpdate />,
+        breadcrumbName: 'Product Specification Attribute Mapping Update',
+        pageType: 'product_specification_attribute_mapping',
     },
 ]
 

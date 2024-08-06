@@ -1,82 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Select, Spin, Modal, message } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
-import useCreateApi from '@/hooks/use-create-api';
-import { useNavigate } from 'react-router-dom';
-import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts';
-import useGetAllApi from '@/hooks/use-get-all-api.ts';
-import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts';
+import { Button, Form, Input, Select, Spin, message } from 'antd'
+import { SaveOutlined } from '@ant-design/icons'
+import useSpecificationAttributeCreateViewModel from '@/pages/specificationAttribute/SpecificationAttributeCreate.vm.ts'
 
-const { Item } = Form;
-const { Option } = Select;
+const { Item } = Form
+const { Option } = Select
 
-export default function SpecificationAttributeCreate() {
-    const [form] = Form.useForm();
-    const navigate = useNavigate();
-    const [groups, setGroups] = useState([]);
-    const [loadingGroups, setLoadingGroups] = useState(true);
-    const [shouldRedirect, setShouldRedirect] = useState(false);
-    const { mutate, isLoading: creating } = useCreateApi(SpecificationAttributeConfigs.resourceUrl);
+const SpecificationAttributeCreate = () => {
+    const [form] = Form.useForm()
+    const viewModel = useSpecificationAttributeCreateViewModel(form)
 
-    // Fetch groups data
-    const { data, error } = useGetAllApi(
-        SpecificationAttributeGroupConfigs.resourceUrl,
-        SpecificationAttributeGroupConfigs.resourceKey,
-    );
-
-    useEffect(() => {
-        if (data) {
-            setGroups(data.items);
-            setLoadingGroups(false);
-        }
-        if (error) {
-            message.error(`Error loading groups: ${error.message}`);
-            setLoadingGroups(false);
-        }
-    }, [data, error]);
-
-    // Form submit handler
-    const handleSubmit = (values) => {
-        const requestBody = {
-            name: values.name,
-            specificationAttributeGroupId: values.group,
-            displayOrder: Number(values.displayOrder),
-        };
-
-        mutate(requestBody, {
-            onSuccess: () => {
-                message.success('Created successfully');
-                if (shouldRedirect) {
-                    navigate('/admin/specification-attributes');
-                } else {
-                    form.resetFields();
-                }
-            },
-            onError: (error) => {
-                message.error(`Error creating attribute: ${error.message}`);
-            },
-        });
-    };
-
-    const showSaveConfirm = () => {
-        Modal.confirm({
-            title: 'Are you sure you want to save?',
-            content: 'Please confirm if you want to save the changes.',
-            onOk: () => {
-                setShouldRedirect(true);
-                form.submit();
-            },
-        });
-    };
+    const { groups, loadingGroups, handleSubmit, showSaveConfirm, creating, setShouldRedirect } = viewModel
 
     return (
-        <div style={{ padding: 24 }}>
-            {/* Buttons */}
+        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
                 <Button
                     type='primary'
                     icon={<SaveOutlined />}
-                    onClick={showSaveConfirm} // Show confirmation modal before saving
+                    onClick={showSaveConfirm}
                     loading={creating}
                     style={{ marginRight: 8 }}
                 >
@@ -85,9 +26,9 @@ export default function SpecificationAttributeCreate() {
                 <Button
                     icon={<SaveOutlined />}
                     onClick={() => {
-                        setShouldRedirect(false);
-                        form.submit();
-                    }} // Submit form and show success message without redirect
+                        setShouldRedirect(false)
+                        form.submit()
+                    }}
                     loading={creating}
                 >
                     Save and Continue Edit
@@ -99,9 +40,9 @@ export default function SpecificationAttributeCreate() {
                 form={form}
                 layout='vertical'
                 style={{ marginTop: 24 }}
-                onFinish={handleSubmit} // Save without redirect
+                onFinish={handleSubmit}
                 onFinishFailed={() => {
-                    message.error('Please fill in the required fields!');
+                    message.error('Please fill in the required fields!')
                 }}
             >
                 <Item
@@ -116,7 +57,7 @@ export default function SpecificationAttributeCreate() {
                         <Spin />
                     ) : (
                         <Select placeholder='Select a group'>
-                            {groups.map((group) => (
+                            {groups.map((group: { id: number; name: string }) => (
                                 <Option key={group.id} value={group.id}>
                                     {group.name}
                                 </Option>
@@ -129,5 +70,7 @@ export default function SpecificationAttributeCreate() {
                 </Item>
             </Form>
         </div>
-    );
+    )
 }
+
+export default SpecificationAttributeCreate

@@ -1,94 +1,41 @@
-import React, { useState } from 'react'
-import { Table, Button, Row, Col, Space, Modal } from 'antd'
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
-import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
-import useGetAllApi from '@/hooks/use-get-all-api.ts'
-import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
-import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
-import { TableRowSelection } from 'antd/es/table/interface'
-import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
-
+import { Table, Button, Row, Col, Space, Spin, Pagination } from 'antd'
+import { DeleteOutlined, EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
+import { Link, useNavigate } from 'react-router-dom'
+import useSpecificationAttributeGroupManageViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroup.vm.ts'
 const { Column } = Table
-const { confirm } = Modal
 
-export default function SpecificationAttributeGroupManage() {
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-
-    // Fetch grouped attributes
-    const { data, isLoading, error, refetch } = useGetAllApi(
-        SpecificationAttributeGroupConfigs.resourceUrl,
-        SpecificationAttributeGroupConfigs.resourceKey,
-    )
-
-    const { mutate: deleteApi } = useDeleteByIdsApi<number>(
-        SpecificationAttributeConfigs.resourceUrl,
-        SpecificationAttributeConfigs.resourceKey,
-    )
-
-    // Fetch ungrouped attributes
+const SpecificationAttributeGroupManage = () => {
+    const navigate = useNavigate()
     const {
-        data: ungroupedAttributesData,
-        isLoading: isLoadingUngrouped,
-        error: errorUngrouped,
-    } = useGetAllApi(
-        SpecificationAttributeGroupConfigs.resourceGetUngroupedAttributes,
-        SpecificationAttributeGroupConfigs.resourceGetUngroupedAttributesKey,
-    )
-
-    const handleEdit = (record) => {
-        console.log(`Edit attribute: ${record.name}`)
-    }
-
-    if (isLoading || isLoadingUngrouped) {
+        selectedRowKeys,
+        dataSource,
+        isLoading,
+        error,
+        handleEdit,
+        handleDelete,
+        handleReload,
+        onSelectChange,
+        isSpinning,
+        current,
+        onChange,
+        ungroupedAttributesData,
+    } = useSpecificationAttributeGroupManageViewModel()
+    console.log(ungroupedAttributesData)
+    if (isLoading) {
         return <div>Loading...</div>
     }
 
-    if (error || errorUngrouped) {
-        return <div>Error loading data: {error?.message || errorUngrouped?.message}</div>
+    if (error) {
+        return <div>Error loading data: {error}</div>
     }
 
-    // Combine ungrouped attributes into the data source
-    const ungroupedAttributes = ungroupedAttributesData?.items || []
-    const dataSource = [
-        {
-            id: 'ungrouped',
-            name: 'Default group (non-grouped specification attributes)',
-            displayOrder: 0,
-            specificationAttributes: ungroupedAttributes,
-        },
-        ...data?.items,
-    ]
-
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        setSelectedRowKeys(newSelectedRowKeys)
-    }
-
-    const handleDelete = () => {
-        confirm({
-            title: 'Are you sure you want to delete the selected attributes?',
-            content: 'This action cannot be undone.',
-            onOk: async () => {
-                deleteApi(selectedRowKeys as number[], {
-                    onSuccess: () => {
-                        refetch()
-                        setSelectedRowKeys([])
-                    },
-                })
-            },
-            onCancel() {
-                console.log('Cancel')
-            },
-        })
-    }
-
-    const rowSelection: TableRowSelection<SpecificationAttributeResponse> = {
+    const rowSelection = {
         selectedRowKeys,
         onChange: onSelectChange,
     }
 
     return (
-        <div>
+        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Row justify='space-between' align='middle' style={{ marginBottom: 16 }}>
                 <Col>
                     <h1>Specification attributes</h1>
@@ -96,15 +43,16 @@ export default function SpecificationAttributeGroupManage() {
                 <Col>
                     <Space>
                         <Link to='/admin/specification-attribute-groups/add'>
-                            <Button icon={<PlusOutlined />} className='bg-[#475569] text-white' size='middle'>
+                            <Button icon={<PlusOutlined />} className='text-white' type='primary' size='middle'>
                                 Add Group
                             </Button>
                         </Link>
                         <Link to='/admin/specification-attributes/add'>
-                            <Button icon={<PlusOutlined />} className='bg-[#475569] text-white' size='middle'>
+                            <Button icon={<PlusOutlined />} className='text-white' type='primary' size='middle'>
                                 Add Attribute
                             </Button>
                         </Link>
+                        <Button icon={<ReloadOutlined />} onClick={handleReload} size='middle'></Button>
                         <Button
                             type='primary'
                             danger
@@ -117,46 +65,75 @@ export default function SpecificationAttributeGroupManage() {
                     </Space>
                 </Col>
             </Row>
-            <Table
-                dataSource={dataSource}
-                expandable={{
-                    expandedRowRender: (record) => (
-                        <Table
-                            dataSource={record.specificationAttributes}
-                            pagination={{ pageSize: 6 }}
-                            rowKey='id'
-                            rowSelection={{
-                                type: 'checkbox',
-                                onChange: (newSelectedRowKeys) => {
-                                    setSelectedRowKeys((prevKeys) => [...prevKeys, ...newSelectedRowKeys])
-                                },
-                            }}
-                        >
-                            <Column title='Name' dataIndex='name' key='name' />
-                            <Column title='Display order' dataIndex='displayOrder' key='displayOrder' />
-                            <Column
-                                title='Edit'
-                                key='edit'
-                                render={(text, record) => (
-                                    <Button
-                                        type='primary'
-                                        icon={<EditOutlined />}
-                                        size='middle'
-                                        onClick={() => handleEdit(record)}
-                                    >
-                                        Edit
-                                    </Button>
-                                )}
-                            />
-                        </Table>
-                    ),
-                }}
-                rowKey='id'
-                pagination={{ pageSize: 6 }}
-            >
-                <Column title='Name' dataIndex='name' key='name' />
-                <Column title='Display order' dataIndex='displayOrder' key='displayOrder' />
-            </Table>
+            {isSpinning && (
+                <div className='fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-50 z-50'>
+                    <Spin size='large' />
+                </div>
+            )}
+            <div className='max-h-[500px]'>
+                <Table
+                    scroll={{ y: 400, x: 500 }}
+                    className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'
+                    dataSource={dataSource}
+                    expandable={{
+                        expandedRowRender: (record) => (
+                            <>
+                                <Table
+                                    dataSource={record.specificationAttributes}
+                                    rowKey='id'
+                                    rowSelection={rowSelection}
+                                    pagination={false}
+                                >
+                                    <Column title='Name' dataIndex='name' key='name' />
+                                    <Column
+                                        width='30%'
+                                        title='Display order'
+                                        dataIndex='displayOrder'
+                                        key='displayOrder'
+                                    />
+                                    <Column
+                                        width='20%'
+                                        title='Edit'
+                                        key='edit'
+                                        render={(text, record) => (
+                                            <Link to={`/admin/specification-attributes/${record?.id}/update`}>
+                                                <Button
+                                                    type='primary'
+                                                    icon={<EditOutlined />}
+                                                    size='middle'
+                                                    onClick={() => handleEdit(record)}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    />
+                                </Table>
+                                <Pagination
+                                    current={current}
+                                    onChange={onChange}
+                                    total={ungroupedAttributesData.totalPages * ungroupedAttributesData.size}
+                                />
+                            </>
+                        ),
+                    }}
+                    bordered
+                    rowKey='id'
+                    pagination={false}
+                >
+                    <Column
+                        title='Name'
+                        dataIndex='name'
+                        key='name'
+                        render={(text, record) => (
+                            <a onClick={() => navigate(`/admin/specification-attribute-groups/${record.id}`)}>{text}</a>
+                        )}
+                    />
+                    <Column title='Display order' dataIndex='displayOrder' key='displayOrder' />
+                </Table>
+            </div>
         </div>
     )
 }
+
+export default SpecificationAttributeGroupManage

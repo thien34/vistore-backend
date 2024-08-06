@@ -16,13 +16,14 @@ class ResourceURL {
     static readonly SPECIFICATION_ATTRIBUTE_GROUP = apiPath + '/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE = apiPath + '/specification-attributes'
     static readonly SPECIFICATION_ATTRIBUTE_OPTION = apiPath + '/specification-attribute-options'
-    static readonly USEGETUNGROUPEDATTRIBUTES = apiPath + '/specification-attributes/no-group-or-invalid'
-
+    static readonly USE_GET_UNGROUPED_ATTRIBUTES = apiPath + '/specification-attributes/no-group-or-invalid'
+    static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = apiPath + '/product-specification-attribute-mappings'
+    static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =
+        apiPath + '/product-specification-attribute-mappings/by-product'
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'
-    static readonly CLIENT_MANUFACTURE = apiPath +'/manufactures'
-
+    static readonly CLIENT_MANUFACTURE = apiPath + '/manufactures'
 
     // AUTHENTICATION
     static readonly LOGIN = apiPath + '/auth/login'

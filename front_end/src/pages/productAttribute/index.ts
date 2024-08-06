@@ -1,7 +1,4 @@
 // src/pages/ProductAttributes/index.ts
-import ProductAttributeManage from './ProductAttributeManage';
-import ProductAttributeForm from './ProductAttributeForm';
-import PredefinedValuesForm from './PredefinedValuesForm';
-import PredefinedValuesTable from './PredefinedValuesTable';
+import ProductAttributeManage from './ProductAttributeManage'
 
-export { ProductAttributeManage as default, ProductAttributeForm, PredefinedValuesForm, PredefinedValuesTable };
+export { ProductAttributeManage as default }
