@@ -9,6 +9,7 @@ import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCre
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
+import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
 
 const routers = [
     {
@@ -85,6 +86,13 @@ const routers = [
         element: <ManufactureUpdate />,
         breadcrumbName: 'Manufacture',
         pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.STOCKQUANTITYHISTORY,
+        layout: 'main',
+        element: <StockQuantityHistoryManage />,
+        breadcrumbName: 'StockQuantityHistory',
+        pageType: 'StockQuantityHistory',
     },
 ]
 
