@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.product.controller;
 
-import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductNameResponse;
 import com.example.back_end.core.admin.product.service.ProductService;
 import com.example.back_end.core.common.ResponseData;
@@ -20,6 +19,7 @@ import java.util.List;
 @Slf4j
 public class ProductController {
     private final ProductService productService;
+
     @GetMapping("/listname")
     public ResponseData<?> getAllManufacturersName() {
         try {
