@@ -25,5 +25,5 @@ public class ProductProductAttributeMappingDetailResponse {
 
     private Integer displayOrder;
 
-    private List<ProductAttributeValueResponse> productAttributeValueRequests;
+    private List<ProductAttributeValueResponse> productAttributeValueResponses;
 }

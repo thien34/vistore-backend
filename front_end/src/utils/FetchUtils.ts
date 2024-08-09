@@ -31,7 +31,7 @@ export interface ErrorMessage {
     description: string
 }
 
-type BasicRequestParams = Record<string, string | number | null | boolean>
+export type BasicRequestParams = Record<string, string | number | null | boolean>
 
 class FetchUtils {
     /**
@@ -44,7 +44,8 @@ class FetchUtils {
         if (!response.ok) {
             throw await response.json()
         }
-        return await response.json()
+        const responseData = await response.json()
+        return responseData.data as O
     }
 
     /**

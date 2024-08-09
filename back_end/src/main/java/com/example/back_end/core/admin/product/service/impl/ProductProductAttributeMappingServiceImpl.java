@@ -93,7 +93,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
                 .isRequired(attributeMapping.getIsRequired())
                 .attributeControlTypeId(attributeMapping.getAttributeControlTypeId().getLabel())
                 .displayOrder(attributeMapping.getDisplayOrder())
-                .productAttributeValueRequests(productAttributeValueResponses)
+                .productAttributeValueResponses(productAttributeValueResponses)
                 .build();
     }
 

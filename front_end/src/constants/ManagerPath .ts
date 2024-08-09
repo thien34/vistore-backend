@@ -10,9 +10,12 @@ class ManagerPath {
     static readonly CATEGORY_UPDATE = '/admin/categories/:id/update'
     static readonly PICTURE = '/admin/picture'
     static readonly ORDER = '/admin/orders'
-    static readonly MANUFACTURE= '/admin/manufacturers'
+    static readonly MANUFACTURE = '/admin/manufacturers'
     static readonly MANUFACTURE_ADD = '/admin/manufacturers/add'
     static readonly MANUFACTURE_UPDATE = '/admin/manufacturers/:id/update'
+    static readonly PRODUCT_ATTRIBUTE_MAPPING = '/admin/product-attribute-mapping'
+    static readonly PRODUCT_ATTRIBUTE_MAPPING_ADD = '/admin/product-attribute-mapping/add'
+    static readonly PRODUCT_ATTRIBUTE_MAPPING_UPDATE = '/admin/product-attribute-mapping'
 }
 
 export default ManagerPath

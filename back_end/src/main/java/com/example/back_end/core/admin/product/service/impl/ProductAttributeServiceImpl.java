@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.product.service.impl;
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
+import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
@@ -43,14 +44,14 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     @Transactional
-    public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
+    public void createProductAttribute(ProductAttributeRequest request) {
         String trimmedName = request.getName().trim().replaceAll("\\s+", " ");
         if (productAttributeRepository.existsByName(trimmedName)) {
             throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         }
 
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
-        ProductAttribute savedProductAttribute  = productAttributeRepository.save(productAttribute);
+        ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
 
         List<PredefinedProductAttributeValue> values = request.getValues().stream()
                 .map(valueRequest -> PredefinedProductAttributeValue.builder()
@@ -66,8 +67,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .toList();
 
         predefinedProductAttributeValueRepository.saveAll(values);
-
-        return savedProductAttribute;
     }
 
     @Override
@@ -180,5 +179,10 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         if (!productAttributes.isEmpty()) {
             productAttributeRepository.deleteAllInBatch(productAttributes);
         }
+    }
+
+    @Override
+    public List<ProductAttributeNameResponse> getAttributeName() {
+        return productAttributeRepository.findAllNameProductAttribute();
     }
 }

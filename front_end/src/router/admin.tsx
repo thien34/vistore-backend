@@ -9,6 +9,8 @@ import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCre
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
+import ProductAttributeMappingManage from '@/pages/product-attribute-mapping'
+import ProductAttributeMappingCreate from '@/pages/product-attribute-mapping/ProductAttributeMappingCreate'
 
 const routers = [
     {
@@ -76,14 +78,28 @@ const routers = [
         path: ManagerPath.MANUFACTURE_ADD,
         layout: 'main',
         element: <ManufactureCreate />,
-        breadcrumbName: 'Manufacture',
+        breadcrumbName: 'Add Manufacture',
         pageType: 'manufacture',
     },
     {
         path: ManagerPath.MANUFACTURE_UPDATE,
         layout: 'main',
         element: <ManufactureUpdate />,
+        breadcrumbName: 'Update Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_MAPPING,
+        layout: 'main',
+        element: <ProductAttributeMappingManage />,
         breadcrumbName: 'Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_MAPPING_ADD,
+        layout: 'main',
+        element: <ProductAttributeMappingCreate />,
+        breadcrumbName: 'Add Manufacture',
         pageType: 'manufacture',
     },
 ]
@@ -91,7 +107,7 @@ const routers = [
 const routesAdmin = [
     {
         path: '/admin',
-        children: routers.map((item: { breadcrumbName: string; element: Element; path: string; layout: string }) => {
+        children: routers.map((item) => {
             let layout = <></>
             if (item.layout === 'main') layout = <LayoutMain />
             return {
