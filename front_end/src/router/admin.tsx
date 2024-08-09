@@ -19,6 +19,7 @@ import ProductManage from '@/pages/product'
 import ProductUpdateSpecificationAttributeMapping from '@/pages/product/ProductUpdateSpecificationAttributeMapping.tsx'
 import ProductSpecificationAttributeMappingCreate from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingCreate.tsx'
 import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingUpdate.tsx'
+import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
 
 const routers = [
     {
@@ -95,6 +96,13 @@ const routers = [
         element: <ManufactureUpdate />,
         breadcrumbName: 'Manufacture',
         pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.STOCKQUANTITYHISTORY,
+        layout: 'main',
+        element: <StockQuantityHistoryManage />,
+        breadcrumbName: 'StockQuantityHistory',
+        pageType: 'StockQuantityHistory',
     },
     {
         path: ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP,

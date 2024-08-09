@@ -21,10 +21,12 @@ class ResourceURL {
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = apiPath + '/product-specification-attribute-mappings'
     static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =
         apiPath + '/product-specification-attribute-mappings/by-product'
+    static readonly STOCKQUANTITYHISTORY = apiPath + '/stockquantityhistory'
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'
     static readonly CLIENT_MANUFACTURE = apiPath + '/manufactures'
+    static readonly CLIENT_STOCKQUANTITYHISTORY = apiPath + '/stockquantityhistory'
 
     // AUTHENTICATION
     static readonly LOGIN = apiPath + '/auth/login'

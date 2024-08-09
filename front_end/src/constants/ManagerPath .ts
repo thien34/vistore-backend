@@ -4,6 +4,7 @@ class ManagerPath {
         '/admin/products/product-spec-attribute-mapping/productId/:id'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE =
         '/admin/products/product-spec-attribute-mapping/edit/:productId/:id'
+    static readonly PRODUCT_LISTNAME = '/admin/products/listname'
     static readonly PRODUCT_TAG = '/admin/product-tags'
     static readonly PRODUCT_ATTRIBUTE = '/admin/product-attributes'
     static readonly PRODUCT_ATTRIBUTE_ADD = '/admin/product-attributes/add'
@@ -17,6 +18,9 @@ class ManagerPath {
     static readonly MANUFACTURE = '/admin/manufacturers'
     static readonly MANUFACTURE_ADD = '/admin/manufacturers/add'
     static readonly MANUFACTURE_UPDATE = '/admin/manufacturers/:id/update'
+    static readonly STOCKQUANTITYHISTORY = '/admin/stockquantityhistory'
+    static readonly STOCKQUANTITYHISTORY_ADD = '/admin/stockquantityhistory/add'
+    static readonly STOCKQUANTITYHISTORY_UPDATE = '/admin/stockquantityhistory/:id/update'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP = '/admin/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_ADD = '/admin/specification-attribute-groups/add'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_UPDATE = '/admin/specification-attribute-groups/:id'
