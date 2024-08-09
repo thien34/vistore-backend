@@ -1,4 +1,4 @@
-import { Configs } from '@/types/Configs';
+import { Configs } from '@/types/Configs'
 import ManagerPath from '@/constants/ManagerPath .ts'
 import ResourceURL from '@/constants/ResourceURL .ts'
 

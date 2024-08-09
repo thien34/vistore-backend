@@ -34,7 +34,6 @@ const SpecificationAttributeCreate = () => {
                     Save and Continue Edit
                 </Button>
             </div>
-            {/* Form */}
             <h2>Attribute Info</h2>
             <Form
                 form={form}

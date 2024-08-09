@@ -12,7 +12,6 @@ const useSpecificationAttributeCreateViewModel = (form) => {
     const [shouldRedirect, setShouldRedirect] = useState(false)
     const navigate = useNavigate()
 
-    // API hooks
     const { mutate, isLoading: creating } = useCreateApi(SpecificationAttributeConfigs.resourceUrl)
     const { data, error } = useGetAllApi(
         SpecificationAttributeGroupConfigs.resourceUrl,
@@ -30,7 +29,6 @@ const useSpecificationAttributeCreateViewModel = (form) => {
         }
     }, [data, error])
 
-    // Form submit handler
     const handleSubmit = (values: { name: string; group: string; displayOrder: string }) => {
         const requestBody = {
             name: values.name,

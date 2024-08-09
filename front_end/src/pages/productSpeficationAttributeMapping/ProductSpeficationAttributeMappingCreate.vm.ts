@@ -18,8 +18,9 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
     const [customHtml, setCustomHtml] = useState('')
     const [selectedAttributeId, setSelectedAttributeId] = useState<number | null>(null)
     const [attributeOptions, setAttributeOptions] = useState<SpecificationAttributeOptionResponse[]>([])
-    const [attributes, setAttributes] = useState<SpecificationAttributeOptionResponse[]>([])
-
+    const [attributes, setAttributes] = useState<SpecificationAttributeResponse[]>([])
+    const [groupedAttributes, setGroupedAttributes] = useState<Map<string, SpecificationAttributeResponse[]>>()
+    const [isSpinning, setIsSpinning] = useState(false)
     const {
         data: listAttribute,
         isLoading,
@@ -32,6 +33,16 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
             const attrs = listAttribute.items as SpecificationAttributeResponse[]
             const filteredAttrs = attrs.filter((attr) => (attr.listOptions || []).length > 0)
             setAttributes(filteredAttrs)
+
+            const groups = new Map<string, SpecificationAttributeResponse[]>()
+            filteredAttrs.forEach((attr) => {
+                const groupName = attr.specificationAttributeGroupName || 'Ungrouped'
+                if (!groups.has(groupName)) {
+                    groups.set(groupName, [])
+                }
+                groups.get(groupName)!.push(attr)
+            })
+            setGroupedAttributes(groups)
 
             if (filteredAttrs.length > 0) {
                 const defaultAttributeId = filteredAttrs[0].id
@@ -71,12 +82,12 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                     attributeType === 'Option'
                         ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
                         : attributeType === 'CustomText'
-                            ? values.customText
-                            : attributeType === 'CustomHtml'
-                                ? customHtml
-                                : attributeType === 'HyperLink'
-                                    ? values.hyperlink
-                                    : ''
+                          ? values.customText
+                          : attributeType === 'CustomHtml'
+                            ? customHtml
+                            : attributeType === 'HyperLink'
+                              ? values.hyperlink
+                              : ''
 
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
@@ -110,12 +121,12 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                     attributeType === 'Option'
                         ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
                         : attributeType === 'CustomText'
-                            ? values.customText
-                            : attributeType === 'CustomHtml'
-                                ? customHtml
-                                : attributeType === 'HyperLink'
-                                    ? values.hyperlink
-                                    : ''
+                          ? values.customText
+                          : attributeType === 'CustomHtml'
+                            ? customHtml
+                            : attributeType === 'HyperLink'
+                              ? values.hyperlink
+                              : ''
 
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
@@ -140,7 +151,18 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                 console.log('Validate Failed:', info)
             })
     }
+    const handleReload = async () => {
 
+        setIsSpinning(true)
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+            await refetchAttributes()
+        } catch (error) {
+            console.error('Failed to reload data:', error)
+        } finally {
+            setIsSpinning(false)
+        }
+    }
     return {
         attributeType,
         setAttributeType,
@@ -152,13 +174,16 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
         setAttributeOptions,
         attributes,
         setAttributes,
+        groupedAttributes,
         listAttribute,
         isLoading,
         error,
         refetchAttributes,
+        handleReload,
         handleAttributeChange,
         handleSave,
         handleSaveAndContinue,
+        isSpinning,
     }
 }
 

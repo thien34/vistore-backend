@@ -1,11 +1,12 @@
-import { Form, Input, Select, Checkbox, Button, Typography } from 'antd'
+import { Form, Input, Select, Checkbox, Button, Typography, Spin } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react'
 import { ReloadOutlined } from '@ant-design/icons'
 import useProductSpecificationAttributeMappingCreateViewModel from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingCreate.vm.ts'
+import React from 'react'
 
 const { Title } = Typography
-const { Option } = Select
+const { Option, OptGroup } = Select
 
 const ProductSpecificationAttributeMappingCreate = () => {
     const [form] = Form.useForm()
@@ -21,24 +22,18 @@ const ProductSpecificationAttributeMappingCreate = () => {
         setCustomHtml,
         selectedAttributeId,
         attributeOptions,
-        attributes,
+        groupedAttributes,
         isLoading,
         error,
-        refetchAttributes,
+        handleReload,
         handleAttributeChange,
         handleSave,
         handleSaveAndContinue,
+        isSpinning,
     } = viewModel
-
-    const handleReload = () => {
-        refetchAttributes()
-    }
 
     if (isLoading) return <p>Loading...</p>
     if (error) return <p>Error fetching attributes: {error.message}</p>
-
-    // Filter attributes to only those with options
-    const filteredAttributes = attributes.filter((attr) => (attr.listOptions || []).length > 0)
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
@@ -80,16 +75,21 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     tooltip='Select the attribute'
                     rules={[{ required: true, message: 'Please select an attribute!' }]}
                 >
-                    <Select onChange={handleAttributeChange}>
-                        {filteredAttributes.length > 0 ? (
-                            filteredAttributes.map((attr) => (
-                                <Option key={attr.id} value={attr.id}>
-                                    {attr.name}
-                                </Option>
-                            ))
-                        ) : (
-                            <Option value=''>No attributes available</Option>
-                        )}
+                    <Select
+                        onChange={handleAttributeChange}
+                        dropdownStyle={{ maxHeight: 300, overflow: 'auto' }} // Thêm thuộc tính này để tạo thanh cuộn
+                    >
+                        {groupedAttributes &&
+                            Array.from(groupedAttributes.entries()).map(([groupName, attrs]) => (
+                                <OptGroup key={groupName} label={groupName}>
+                                    {attrs.map((attr) => (
+                                        <Option key={attr.id} value={attr.id}>
+                                            {attr.name}
+                                        </Option>
+                                    ))}
+                                </OptGroup>
+                            ))}
+                        {!groupedAttributes?.size && <Option value=''>No attributes available</Option>}
                     </Select>
                 </Form.Item>
 
@@ -100,7 +100,9 @@ const ProductSpecificationAttributeMappingCreate = () => {
                         tooltip='Select the attribute option'
                         rules={[{ required: true, message: 'Please select an attribute option!' }]}
                     >
-                        <Select>
+                        <Select
+                            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }} // Thêm thuộc tính này để tạo thanh cuộn
+                        >
                             {attributeOptions.length > 0 ? (
                                 attributeOptions.map((option) => (
                                     <Option key={option.id} value={option.id}>
@@ -175,6 +177,11 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     <Button style={{ margin: 10 }} onClick={handleReload} icon={<ReloadOutlined />}></Button>
                 </Form.Item>
             </Form>
+            {isSpinning && (
+                <div className='flex justify-center items-center h-full w-full fixed top-0 left-0 bg-[#fff] bg-opacity-50 z-10'>
+                    <Spin size='large' />
+                </div>
+            )}
         </div>
     )
 }
