@@ -8,11 +8,13 @@ import com.example.back_end.core.admin.product.payload.response.SpecificationAtt
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeUpdateResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeService;
 import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.entity.ProductSpecificationAttributeMapping;
 import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeGroup;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.NotExistsException;
+import com.example.back_end.repository.ProductSpecificationAttributeMappingRepository;
 import com.example.back_end.repository.SpecificationAttributeGroupRepository;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
 import com.example.back_end.repository.SpecificationAttributeRepository;
@@ -42,6 +44,7 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     SpecificationAttributeMapper specificationAttributeMapper;
     SpecificationAttributeGroupRepository specificationAttributeGroupRepository;
     SpecificationAttributeOptionRepository specificationAttributeOptionRepository;
+    ProductSpecificationAttributeMappingRepository productSpecificationAttributeMappingRepository;
 
     @Override
     public PageResponse<?> getAllSpecificationAttribute(String name, int pageNo, int pageSize) {
@@ -139,8 +142,8 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
 
         Map<Long, SpecificationAttributeOption> existingOptionsMap =
                 specificationAttributeOptionRepository.findBySpecificationAttributeId(id)
-                .stream()
-                .collect(Collectors.toMap(SpecificationAttributeOption::getId, option -> option));
+                        .stream()
+                        .collect(Collectors.toMap(SpecificationAttributeOption::getId, option -> option));
 
         SpecificationAttribute finalSpecificationAttribute = specificationAttribute;
 
@@ -150,6 +153,12 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
             option.setName(optionRequest.getName());
             option.setColorSquaresRgb(optionRequest.getColorSquaresRgb());
             option.setDisplayOrder(optionRequest.getDisplayOrder());
+            if (option.getProductSpecificationAttributeMappings() != null) {
+                option.getProductSpecificationAttributeMappings().forEach(mapping -> {
+                    mapping.setCustomValue(optionRequest.getName());
+                    productSpecificationAttributeMappingRepository.save(mapping);
+                });
+            }
             return option;
         }).toList();
 
@@ -188,6 +197,7 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                 .build();
 
     }
+
     @Override
     public void deleteSpecificationAttribute(List<Long> ids) {
 

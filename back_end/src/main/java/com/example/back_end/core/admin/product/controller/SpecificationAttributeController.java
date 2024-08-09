@@ -121,8 +121,4 @@ public class SpecificationAttributeController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
-
-
-
-
 }

@@ -11,6 +11,7 @@ import com.example.back_end.entity.ProductSpecificationAttributeMapping;
 import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.repository.ProductSpecificationAttributeMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
@@ -26,11 +27,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductSpecificationAttributeMappingServiceImpl implements ProductSpecificationAttributeMappingService {
+
     ProductSpecificationAttributeMappingRepository productSpecificationAttributeMappingRepository;
     ProductSpecificationAttributeMappingMapper productSpecificationAttributeMappingMapper;
     ProductRepository productRepository;
@@ -58,7 +61,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .items(responses)
                 .build();
     }
-
     @Override
     @Transactional
     public ProductSpecificationAttributeMappingResponse createProductSpecificationAttributeMapping(
@@ -67,7 +69,8 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         ProductSpecificationAttributeMapping mapping = productSpecificationAttributeMappingMapper.toEntity(request);
 
         mapping.setProduct(productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID")));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage())));
 
         SpecificationAttributeOption specificationAttributeOption;
 
@@ -80,7 +83,8 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
             if (request.getSpecificationAttributeId() != null) {
                 SpecificationAttribute specificationAttribute = specificationAttributeRepository
                         .findById(request.getSpecificationAttributeId())
-                        .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
 
                 specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
             }
@@ -115,9 +119,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         return productSpecificationAttributeMappingMapper.toDto(mapping);
 
     }
-
-
-
     @Override
     public ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id) {
 
@@ -125,12 +126,11 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 productSpecificationAttributeMappingRepository
                         .findById(id).orElseThrow(
                                 () -> new IllegalArgumentException(
-                                        ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED.getMessage()));
+                                        ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED.getMessage()));
 
         return productSpecificationAttributeMappingMapper.toDto(mapping);
 
     }
-
     @Override
     public void deleteProductSpecificationAttribute(List<Long> ids) {
 
@@ -141,7 +141,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
             productSpecificationAttributeMappingRepository.deleteAllInBatch(spec);
 
     }
-
     @Override
     public PageResponse<?> getProductSpecificationAttributeMappingsByProductId(
             Long productId, int pageNo, int pageSize) {
@@ -150,7 +149,8 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
             throw new IllegalArgumentException("Invalid page number or page size");
         }
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
+        Pageable pageable = PageRequest
+                .of(pageNo, pageSize, Sort.by("displayOrder").descending());
         Page<ProductSpecificationAttributeMapping> mappingPage =
                 productSpecificationAttributeMappingRepository.findByProductId(productId, pageable);
 
@@ -166,7 +166,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .build();
 
     }
-
     @Override
     @Transactional
     public ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(
@@ -174,58 +173,113 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
 
         ProductSpecificationAttributeMapping existingMapping =
                 productSpecificationAttributeMappingRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product specification attribute mapping not found"));
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_FOUND.getMessage()));
 
-        if (request.getShowOnProductPage() != null) {
-            existingMapping.setShowOnProductPage(request.getShowOnProductPage());
-        }
-        if (request.getDisplayOrder() != null) {
-            existingMapping.setDisplayOrder(request.getDisplayOrder());
-        }
+        Optional.ofNullable(request.getShowOnProductPage())
+                .ifPresent(existingMapping::setShowOnProductPage);
+
+        Optional.ofNullable(request.getDisplayOrder())
+                .ifPresent(existingMapping::setDisplayOrder);
 
         if (request.getSpecificationAttributeOptionId() == null) {
-            SpecificationAttributeOption specificationAttributeOption =
-                    new SpecificationAttributeOption(request.getCustomValue());
+            SpecificationAttributeOption existingOption = existingMapping.getSpecificationAttributeOption();
+            if (existingOption != null) {
+                boolean optionUpdated = false;
 
-            if (request.getDisplayOrder() != null) {
-                specificationAttributeOption.setDisplayOrder(request.getDisplayOrder());
-            }
-            if (request.getSpecificationAttributeId() != null) {
-                SpecificationAttribute specificationAttribute = specificationAttributeRepository
-                        .findById(request.getSpecificationAttributeId())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid specification attribute ID"));
-                specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
-            }
-            specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
+                if (request.getCustomValue() != null && !request.getCustomValue().equals(existingOption.getName())) {
+                    existingOption.setName(request.getCustomValue());
+                    optionUpdated = true;
+                }
 
-            existingMapping.setSpecificationAttributeOption(specificationAttributeOption);
-            existingMapping.setCustomValue(request.getCustomValue());
-            existingMapping.getSpecificationAttributeOption().setName(specificationAttributeOption.getName());
+                if (request.getDisplayOrder() != null &&
+                        !request.getDisplayOrder().equals(existingOption.getDisplayOrder())) {
+                    existingOption.setDisplayOrder(request.getDisplayOrder());
+                    optionUpdated = true;
+                }
+
+                if (request.getSpecificationAttributeId() != null &&
+                        !request.getSpecificationAttributeId().equals(existingOption.getSpecificationAttribute().getId())) {
+                    SpecificationAttribute specificationAttribute = specificationAttributeRepository
+                            .findById(request.getSpecificationAttributeId())
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
+                    existingOption.setSpecificationAttribute(specificationAttribute);
+                    optionUpdated = true;
+                }
+
+                if (optionUpdated) {
+                    specificationAttributeOptionRepository.save(existingOption);
+                }
+
+                existingMapping.setSpecificationAttributeOption(existingOption);
+                existingMapping.setCustomValue(existingOption.getName());
+            } else {
+                SpecificationAttributeOption specificationAttributeOption =
+                        new SpecificationAttributeOption(request.getCustomValue());
+
+                Optional.ofNullable(request.getDisplayOrder())
+                        .ifPresent(specificationAttributeOption::setDisplayOrder);
+
+                SpecificationAttributeOption finalSpecificationAttributeOption = specificationAttributeOption;
+                Optional.ofNullable(request.getSpecificationAttributeId())
+                        .ifPresent(specificationAttributeId -> {
+                            SpecificationAttribute specificationAttribute = specificationAttributeRepository
+                                    .findById(specificationAttributeId)
+                                    .orElseThrow(() -> new IllegalArgumentException(
+                                            ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
+                            finalSpecificationAttributeOption.setSpecificationAttribute(specificationAttribute);
+                        });
+
+                specificationAttributeOption = specificationAttributeOptionRepository
+                        .save(specificationAttributeOption);
+
+                existingMapping.setSpecificationAttributeOption(specificationAttributeOption);
+                existingMapping.setCustomValue(request.getCustomValue());
+            }
         } else {
             SpecificationAttributeOption specificationAttributeOption = specificationAttributeOptionRepository
                     .findById(request.getSpecificationAttributeOptionId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid specification attribute option ID"));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            ErrorCode.ID_SPECIFICATION_ATTRIBUTE_OPTION_INVALID.getMessage()));
 
-            if (request.getCustomValue() != null)
+            boolean optionUpdated = false;
+
+            if (request.getCustomValue() != null && !request.getCustomValue().equals(specificationAttributeOption.getName())) {
                 specificationAttributeOption.setName(request.getCustomValue());
+                optionUpdated = true;
+            }
 
-            if (request.getDisplayOrder() != null)
-                specificationAttributeOption.setDisplayOrder(request.getDisplayOrder());
+//            if (request.getDisplayOrder() != null && !request.getDisplayOrder().equals(specificationAttributeOption.getDisplayOrder())) {
+//                specificationAttributeOption.setDisplayOrder(request.getDisplayOrder());
+//                optionUpdated = true;
+//            }
 
-            if (request.getSpecificationAttributeId() != null) {
+            if (request.getSpecificationAttributeId() != null &&
+                    !request.getSpecificationAttributeId().equals(specificationAttributeOption.getSpecificationAttribute().getId())) {
                 SpecificationAttribute specificationAttribute = specificationAttributeRepository
                         .findById(request.getSpecificationAttributeId())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid specification attribute ID"));
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
                 specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
+                optionUpdated = true;
             }
-            specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
+
+            if (optionUpdated) {
+                specificationAttributeOptionRepository.save(specificationAttributeOption);
+            }
 
             existingMapping.setSpecificationAttributeOption(specificationAttributeOption);
-            existingMapping.getSpecificationAttributeOption().setName(specificationAttributeOption.getName());
+            existingMapping.setCustomValue(specificationAttributeOption.getName());
         }
 
-        if (request.getAttributeType() != null)
-            existingMapping.setAttributeType(request.getAttributeType());
+        Optional.ofNullable(request.getCustomValue())
+                .filter(value -> request.getSpecificationAttributeOptionId() == null)
+                .ifPresent(existingMapping::setCustomValue);
+
+        Optional.ofNullable(request.getAttributeType())
+                .ifPresent(existingMapping::setAttributeType);
 
         existingMapping = productSpecificationAttributeMappingRepository.save(existingMapping);
 
@@ -235,6 +289,15 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .showOnProductPage(existingMapping.getShowOnProductPage())
                 .displayOrder(existingMapping.getDisplayOrder())
                 .build();
+    }
+    @Override
+    public void deleteProductSpecificationAttributeMappingById(Long id) {
+
+        ProductSpecificationAttributeMapping mapping = productSpecificationAttributeMappingRepository.findById(id)
+                .orElseThrow(() -> new NotExistsException(
+                        ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED.getMessage()));
+
+        productSpecificationAttributeMappingRepository.delete(mapping);
 
     }
 

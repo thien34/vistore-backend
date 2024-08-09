@@ -18,6 +18,5 @@ public interface ProductSpecificationAttributeMappingService {
             Long productId, int pageNo, int pageSize);
     ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(
             Long id, ProductSpecificationAttributeMappingUpdateRequest request);
-
-
+    void deleteProductSpecificationAttributeMappingById(Long id);
 }

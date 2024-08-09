@@ -126,8 +126,19 @@ public class ProductSpecificationAttributeMappingController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+    @DeleteMapping("/{id}")
+    public ResponseData<Void> deleteProductSpecificationAttributeMapping(@PathVariable Long id) {
+        try {
+            productSpecificationAttributeMappingService.deleteProductSpecificationAttributeMappingById(id);
 
-
-
+            return ResponseData.<Void>builder()
+                    .status(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_DELETED.getStatusCode().value())
+                    .message(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_DELETED.getMessage())
+                    .build();
+        } catch (Exception e) {
+            log.error("Error delete delete product specification attribute mapping", e);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
 
 }

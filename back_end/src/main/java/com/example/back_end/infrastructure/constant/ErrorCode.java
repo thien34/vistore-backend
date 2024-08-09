@@ -42,6 +42,8 @@ public enum ErrorCode {
 
     PRODUCT_ATTRIBUTE_ALREADY_EXISTS(1014, "Product attribute already exist,you can reuse it", HttpStatus.OK),
 
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_FOUND(1014, "Product specification attribute mapping not found", HttpStatus.NOT_FOUND),
+
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED(1015, "Predefined product attribute value does not existed", HttpStatus.NOT_FOUND),
 
     FORBIDDEN(1016, "You do not have permission", HttpStatus.FORBIDDEN),
@@ -54,7 +56,11 @@ public enum ErrorCode {
 
     PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED(1020, "Product specification attribute mapping already existed", HttpStatus.BAD_REQUEST),
 
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED(1020, "Product specification attribute mapping does not exists", HttpStatus.BAD_REQUEST),
+
+    ID_SPECIFICATION_ATTRIBUTE_OPTION_INVALID(1021,"Invalid specification attribute option ID",HttpStatus.BAD_REQUEST),
     ID_SPECIFICATION_ATTRIBUTE_INVALID(1021,"Invalid specification attribute ID",HttpStatus.BAD_REQUEST);
+
 
     int code;
     String message;
