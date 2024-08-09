@@ -13,6 +13,7 @@ class ResourceURL {
     static readonly PICTURE = apiPath + '/picture'
     static readonly BRAND = apiPath + '/brands'
     static readonly ORDER = apiPath + '/orders'
+    static readonly MANUFACTURE = apiPath + '/manufactures'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP = apiPath + '/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE = apiPath + '/specification-attributes'
     static readonly SPECIFICATION_ATTRIBUTE_OPTION = apiPath + '/specification-attribute-options'
