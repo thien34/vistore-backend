@@ -20,6 +20,7 @@ import ProductUpdateSpecificationAttributeMapping from '@/pages/product/ProductU
 import ProductSpecificationAttributeMappingCreate from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingCreate.tsx'
 import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingUpdate.tsx'
 import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
+import ProductAtbCombinations from '@/pages/product-attribute-combinations/ProductAtbCombinations'
 
 const routers = [
     {
@@ -94,6 +95,13 @@ const routers = [
         path: ManagerPath.MANUFACTURE_UPDATE,
         layout: 'main',
         element: <ManufactureUpdate />,
+        breadcrumbName: 'Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.Test,
+        layout: 'main',
+        element: <ProductAtbCombinations />,
         breadcrumbName: 'Manufacture',
         pageType: 'manufacture',
     },
