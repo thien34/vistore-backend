@@ -7,8 +7,14 @@ interface StockQuantityHistorySearchProps {
     onSearch: (filter: { productId: string; }) => void
 }
 
-/// Declare ProductData Select
-const Productdata = [
+// Declare ProductData Select
+// const {
+//     data: ProductNameResponse,
+// }= useGetAllApi<ProductNameResponse>(ManagerPath.PRODUCT_LISTNAME,ResourceURL.PRODUCT)
+// const Productdata : ProductSelect [] = ProductNameResponse?.items || [];
+// const Productdata = ProductNameResponse || [];
+const Productdata =
+[
     { id: 1, name: 'Product 1' },
     { id: 2, name: 'Product 2' },
     { id: 3, name: 'Product 3' },
@@ -28,7 +34,7 @@ export default function StockQuantityHistorySearch({ onSearch }: Readonly<StockQ
                 <h3 className='text-xl font-bold'>{AppActions.SEARCH}</h3>
                 <div className='flex px-5 pt-5 justify-between'>
                     <div className='flex gap-4 flex-wrap'>
-                        <ProductSelect data={Productdata} onChange={handleChangeSelectProduct} />
+                        <ProductSelect data={Productdata} onChange={handleChangeSelectProduct}  />
                         <Button
                             size='large'
                             type='primary'

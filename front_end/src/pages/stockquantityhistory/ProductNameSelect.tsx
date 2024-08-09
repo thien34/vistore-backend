@@ -1,10 +1,9 @@
 import React from 'react';
 import { Select, Form } from 'antd';
 import { SelectProps } from 'antd/es/select';
-import SizeContext from 'antd/es/config-provider/SizeContext';
 
 const { Option } = Select;
-interface ProductSelect {
+export interface ProductSelect {
     id: number;
     name: string;
 }
