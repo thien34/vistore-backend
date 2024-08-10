@@ -19,6 +19,4 @@ public class ProductProductAttributeMappingResponse {
 
     private Integer displayOrder;
 
-
-
 }

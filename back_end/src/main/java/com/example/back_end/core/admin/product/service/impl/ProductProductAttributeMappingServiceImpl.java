@@ -12,9 +12,11 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
+import com.example.back_end.entity.ProductAttributeValuePicture;
 import com.example.back_end.entity.ProductProductAttributeMapping;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.repository.ProductAttributeRepository;
+import com.example.back_end.repository.ProductAttributeValuePictureRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductProductAttributeMappingRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -28,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     private final ProductAttributeValueRepository productAttributeValueRepository;
     private final ProductProductAttributeMappingRepository productProductAttributeMappingRepository;
     private final ProductProductAttributeMappingMapper productProductAttributeMappingMapper;
+    private final ProductAttributeValuePictureRepository productAttributeValuePictureRepository;
     private final ProductAttributeValueService productAttributeValueService;
     private final ProductAttributeValueMapper productAttributeValueMapper;
 
@@ -69,7 +71,19 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         List<ProductAttributeValue> productAttributeValue = productAttributeValueRepository
                 .findAllByProductAttributeMapping(attributeMapping)
                 .orElseThrow(() -> new ResourceNotFoundException("Product attribute value with id not found: " + id));
-        List<ProductAttributeValueResponse> productAttributeValueResponses = productAttributeValueMapper.toDtos(productAttributeValue);
+
+        List<ProductAttributeValueResponse> productAttributeValueResponses = productAttributeValueMapper
+                .toDtos(productAttributeValue);
+
+        productAttributeValueResponses.forEach(productAttributeValueResponse -> {
+            List<ProductAttributeValuePicture> productAttributeValuePictures = productAttributeValuePictureRepository
+                    .findAllByProductAttributeValueId(productAttributeValueResponse.getId());
+            List<String> imageUrls = productAttributeValuePictures.stream()
+                    .map(picture -> picture.getPicture().getLinkImg())
+                    .toList();
+
+            productAttributeValueResponse.setImageUrl(imageUrls);
+        });
 
         return ProductProductAttributeMappingDetailResponse.builder()
                 .id(attributeMapping.getId())
@@ -79,7 +93,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
                 .isRequired(attributeMapping.getIsRequired())
                 .attributeControlTypeId(attributeMapping.getAttributeControlTypeId().getLabel())
                 .displayOrder(attributeMapping.getDisplayOrder())
-                .productAttributeValueRequests(productAttributeValueResponses)
+                .productAttributeValueResponses(productAttributeValueResponses)
                 .build();
     }
 
@@ -155,8 +169,10 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     }
 
     private void getProductOrThrow(Long productId) {
-        productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
+        boolean exists = productRepository.existsById(productId);
+        if (!exists) {
+            throw new ResourceNotFoundException("Product with id not found: " + productId);
+        }
     }
 
     private ProductProductAttributeMapping getMappingOrThrow(Long id) {
@@ -171,8 +187,10 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     }
 
     public void checkProductAttributeExits(Long productAttributeId, Long productId) {
-        ProductAttribute productAttribute = productAttributeRepository.findById(productAttributeId).orElseThrow(() -> new ResourceNotFoundException("Product attribute with id not found: " + productAttributeId));
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
+        ProductAttribute productAttribute = productAttributeRepository.findById(productAttributeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product attribute with id not found: " + productAttributeId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
 
         if (productProductAttributeMappingRepository.existsByProductAttributeAndProduct(productAttribute, product)) {
             throw new IllegalArgumentException("Product attribute already mapped");

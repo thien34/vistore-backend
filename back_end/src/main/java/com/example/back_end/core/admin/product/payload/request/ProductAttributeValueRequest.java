@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,5 +29,7 @@ public class ProductAttributeValueRequest {
     private Boolean isPreSelected;
 
     private Integer displayOrder;
+
+    private List<ProductAttributeValuePictureRequest> productAttributeValuePictureRequests;
 
 }

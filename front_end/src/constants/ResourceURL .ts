@@ -16,7 +16,8 @@ class ResourceURL {
     static readonly PRODUCT_ATB_MAPPING_PRODUCT = apiPath + '/product-attribute-mapping/product'
     static readonly BRAND = apiPath + '/brands'
     static readonly ORDER = apiPath + '/orders'
-    static readonly MANUFACTURE = apiPath + '/manufactures'
+    static readonly MANUFACTURE = apiPath + '/manufacturers'
+    static readonly PRODUCT_ATTRIBUTE_MAPPING = apiPath + '/product-attribute-mapping'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP = apiPath + '/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE = apiPath + '/specification-attributes'
     static readonly SPECIFICATION_ATTRIBUTE_OPTION = apiPath + '/specification-attribute-options'
@@ -28,7 +29,7 @@ class ResourceURL {
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'
-    static readonly CLIENT_MANUFACTURE = apiPath + '/manufactures'
+    static readonly CLIENT_MANUFACTURE = apiPath + '/manufacturers'
     static readonly CLIENT_STOCKQUANTITYHISTORY = apiPath + '/stockquantityhistory'
 
     // AUTHENTICATION

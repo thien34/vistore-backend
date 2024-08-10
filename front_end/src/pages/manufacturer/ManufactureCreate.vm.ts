@@ -1,5 +1,4 @@
-
-import { ManufacturerRequest} from '@/model/Manufacturer'
+import { ManufacturerRequest } from '@/model/Manufacturer'
 import { Form, GetProp, UploadFile, UploadProps } from 'antd'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -21,7 +20,7 @@ function useManufactureCreateViewModel() {
     const { mutate: createManufactureApi } = useCreateApi<ManufacturerRequest, string>(ManufactureConfigs.resourceUrl)
 
     // INITIAL VALUES
-    const initialManufacture : ManufacturerRequest = {
+    const initialManufacture: ManufacturerRequest = {
         name: '',
         description: '',
         pictureId: null,

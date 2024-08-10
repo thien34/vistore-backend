@@ -1,4 +1,5 @@
 import AppActions from '@/constants/AppActions '
+import ManagerPath from '@/constants/ManagerPath '
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import Input from 'antd/es/input/Input'
@@ -65,7 +66,7 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                         >
                             {AppActions.DELETE}
                         </Button>
-                        <Link to='/admin/categories/add'>
+                        <Link to={ManagerPath.CATEGORY_ADD}>
                             <Button className='bg-[#475569] text-white' size='large'>
                                 {AppActions.ADD}
                             </Button>

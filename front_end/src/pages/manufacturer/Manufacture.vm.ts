@@ -1,11 +1,11 @@
-import useDeleteByIdsApi from "@/hooks/use-delete-by-ids-api"
-import { RequestParams } from "@/utils/FetchUtils"
-import { useState } from "react"
-import ManufactureConfigs from "./ManufactureConfigs"
-import getManufactureColumns from "./ManufactureColumns"
-import { ManufacturerResponse } from "@/model/Manufacturer"
-import { TableRowSelection } from "antd/es/table/interface"
-import useGetAllApi from "@/hooks/use-get-all-api"
+import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
+import { RequestParams } from '@/utils/FetchUtils'
+import { useState } from 'react'
+import ManufactureConfigs from './ManufactureConfigs'
+import getManufactureColumns from './ManufactureColumns'
+import { ManufacturerResponse } from '@/model/Manufacturer'
+import { TableRowSelection } from 'antd/es/table/interface'
+import useGetAllApi from '@/hooks/use-get-all-api'
 
 interface Search extends RequestParams {
     published?: boolean
@@ -15,7 +15,10 @@ interface Search extends RequestParams {
 export default function useManufactureViewModel() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<Search>({})
-    const { mutate: deleteApi } = useDeleteByIdsApi<number>(ManufactureConfigs.resourceUrl, ManufactureConfigs.resourceKey)
+    const { mutate: deleteApi } = useDeleteByIdsApi<number>(
+        ManufactureConfigs.resourceUrl,
+        ManufactureConfigs.resourceKey,
+    )
 
     // GET COLUMNS
     const columns = getManufactureColumns()
@@ -56,7 +59,7 @@ export default function useManufactureViewModel() {
     }
 
     // HANDLE SEARCH
-    const handleSearch = (newFilter : { name: string; published: boolean | undefined }) => {
+    const handleSearch = (newFilter: { name: string; published: boolean | undefined }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
             ...newFilter,

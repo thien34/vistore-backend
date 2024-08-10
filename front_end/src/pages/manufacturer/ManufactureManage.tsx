@@ -1,5 +1,5 @@
-import useManufactureViewModel from "./Manufacture.vm"
-import ManufactureSearch from "./ManufactureSearch"
+import useManufactureViewModel from './Manufacture.vm'
+import ManufactureSearch from './ManufactureSearch'
 import { Table } from 'antd'
 
 export default function ManufactureManage() {
@@ -17,7 +17,7 @@ export default function ManufactureManage() {
 
     return (
         <>
-            <ManufactureSearch search ={handleSearch} selectedRows={selectedRowKeys} handleDelete={handleDelete} />
+            <ManufactureSearch search={handleSearch} selectedRows={selectedRowKeys} handleDelete={handleDelete} />
             {isLoading && <p>Loading ...</p>}
             <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {listResponse && (

@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface ProductAttributeValueRepository extends JpaRepository<ProductAttributeValue, Long> {
 
     Optional<List<ProductAttributeValue>> findAllByProductAttributeMapping(ProductProductAttributeMapping productAttributeMapping);
+
     List<ProductAttributeValue> findByProductAttributeMappingId(Long productAttributeMappingId);
 
 }

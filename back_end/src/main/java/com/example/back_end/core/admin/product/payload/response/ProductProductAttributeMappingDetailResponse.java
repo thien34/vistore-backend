@@ -12,6 +12,7 @@ import java.util.List;
 public class ProductProductAttributeMappingDetailResponse {
 
     private Long id;
+
     private String attName;
 
     private Long productId;
@@ -26,7 +27,5 @@ public class ProductProductAttributeMappingDetailResponse {
 
     private Integer displayOrder;
 
-    private List<ProductAttributeValueResponse> productAttributeValueRequests;
-
-
+    private List<ProductAttributeValueResponse> productAttributeValueResponses;
 }

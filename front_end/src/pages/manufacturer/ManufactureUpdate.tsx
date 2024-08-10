@@ -1,8 +1,8 @@
-import { useEffect } from "react"
-import useManufactureCreateViewModel from "./ManufactureCreate.vm"
-import useManufactureUpdateViewModel from "./ManufactureUpdate.vm"
-import { PlusOutlined } from "@ant-design/icons"
-import { Button, Card, Checkbox, Col, Form, Image, Input, InputNumber, Row,  Upload } from 'antd'
+import { useEffect } from 'react'
+import useManufactureCreateViewModel from './ManufactureCreate.vm'
+import useManufactureUpdateViewModel from './ManufactureUpdate.vm'
+import { PlusOutlined } from '@ant-design/icons'
+import { Button, Card, Checkbox, Col, Form, Image, Input, InputNumber, Row, Upload } from 'antd'
 export default function ManufactureUpdate() {
     const {
         onFinish,
@@ -20,7 +20,7 @@ export default function ManufactureUpdate() {
         setPreviewImage,
     } = useManufactureUpdateViewModel()
 
-    const { form, layout} = useManufactureCreateViewModel()
+    const { form, layout } = useManufactureCreateViewModel()
 
     useEffect(() => {
         if (manufactureResponse) {

@@ -13,3 +13,8 @@ export type ProductAttributeResponse = {
     name: string
     description: string
 }
+
+export type ProductAttributeNameResponse = {
+    id: number
+    name: string
+}

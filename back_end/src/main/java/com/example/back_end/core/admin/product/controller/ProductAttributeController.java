@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
+import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
@@ -8,7 +9,6 @@ import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.core.common.ResponseError;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.SuccessCode;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductAttributeController {
+
     ProductAttributeService productAttributeService;
 
     @GetMapping
@@ -67,7 +68,6 @@ public class ProductAttributeController {
             return ResponseData.<ProductAttribute>builder()
                     .status(HttpStatus.OK.value())
                     .message(SuccessCode.PRODUCT_ATTRIBUTE_CREATED.getMessage())
-                    .data(productAttributeService.createProductAttribute(dto))
                     .build();
         } catch (Exception e) {
             log.error("Error create product attributes", e);
@@ -121,5 +121,14 @@ public class ProductAttributeController {
         }
     }
 
+    @GetMapping("/list-name")
+    public ResponseData<List<ProductAttributeNameResponse>> getAllNameProductAttributes() {
+        List<ProductAttributeNameResponse> names = productAttributeService.getAttributeName();
+        return ResponseData.<List<ProductAttributeNameResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get all product attribute names successfully")
+                .data(names)
+                .build();
+    }
 
 }

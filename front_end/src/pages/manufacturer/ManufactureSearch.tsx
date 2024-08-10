@@ -1,13 +1,13 @@
-import AppActions from "@/constants/AppActions "
-import { SearchOutlined } from "@ant-design/icons"
-import { Button, Select } from "antd"
+import AppActions from '@/constants/AppActions '
+import { SearchOutlined } from '@ant-design/icons'
+import { Button, Select } from 'antd'
 import Input from 'antd/es/input/Input'
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 //Declare Type Filter
-export  type Filter = {
-    name: string 
+export type Filter = {
+    name: string
     published: boolean | undefined
 }
 // Declare ManufactureSearchProperties
@@ -17,17 +17,20 @@ interface ManufactureSearchProperties {
     selectedRows: React.Key[]
 }
 //Declare Component ManufactureSearch
-export default function ManufactureSearch({ search, handleDelete, selectedRows }: Readonly<ManufactureSearchProperties>) {
-    
-    const [Manufacturename, setManufactureName] = useState<string>('')
+export default function ManufactureSearch({
+    search,
+    handleDelete,
+    selectedRows,
+}: Readonly<ManufactureSearchProperties>) {
+    const [manufactureName, setManufactureName] = useState<string>('')
 
     const [published, setPublished] = useState<boolean | undefined>(undefined)
 
     const handleSearchManufacture = () => {
         const filter: Filter = {
-            name: Manufacturename,
-            published: published
-        };
+            name: manufactureName,
+            published: published,
+        }
         // Call search with filter
         search(filter)
     }
@@ -42,7 +45,7 @@ export default function ManufactureSearch({ search, handleDelete, selectedRows }
                             className='w-56'
                             size='large'
                             placeholder='Manufacture name'
-                            value = {Manufacturename}
+                            value={manufactureName}
                             onChange={(e) => setManufactureName(e.target.value)}
                         />
                         <Select

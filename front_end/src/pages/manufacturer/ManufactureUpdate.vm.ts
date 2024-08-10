@@ -1,15 +1,15 @@
-import useUpdateApi from "@/hooks/use-update-api"
-import { ManufacturerRequest, ManufacturerResponse } from "@/model/Manufacturer"
-import { GetProp, UploadFile, UploadProps } from "antd"
-import { useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import ManufactureConfigs from "./ManufactureConfigs"
-import useGetByIdApi from "@/hooks/use-get-by-id-api"
-import { PictureResponse } from "@/model/Picture"
-import PictureConfigs from "../picture/PictureConfigs"
-import useUploadMultipleImagesApi from "@/hooks/use-upload-multiple-images-api"
+import useUpdateApi from '@/hooks/use-update-api'
+import { ManufacturerRequest, ManufacturerResponse } from '@/model/Manufacturer'
+import { GetProp, UploadFile, UploadProps } from 'antd'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import ManufactureConfigs from './ManufactureConfigs'
+import useGetByIdApi from '@/hooks/use-get-by-id-api'
+import { PictureResponse } from '@/model/Picture'
+import PictureConfigs from '../picture/PictureConfigs'
+import useUploadMultipleImagesApi from '@/hooks/use-upload-multiple-images-api'
 
-export default function useManufactureUpdateViewModel ()  {
+export default function useManufactureUpdateViewModel() {
     const navigation = useNavigate()
     type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
     const [fileList, setFileList] = useState<UploadFile[]>([])
