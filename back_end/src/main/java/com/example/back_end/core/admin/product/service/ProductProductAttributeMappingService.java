@@ -19,4 +19,5 @@ public interface ProductProductAttributeMappingService {
     void deleteProductProductAttributeMapping(Long id);
 
     List<ProductProductAttributeMappingDetailResponse> getProductProductAttributeMappingByproductId(Long productId);
+
 }

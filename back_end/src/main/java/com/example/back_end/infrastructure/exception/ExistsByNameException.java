@@ -1,6 +1,7 @@
 package com.example.back_end.infrastructure.exception;
 
 public class ExistsByNameException extends RuntimeException {
+
     public ExistsByNameException() {
         super();
     }
@@ -16,4 +17,5 @@ public class ExistsByNameException extends RuntimeException {
     public ExistsByNameException(Throwable cause) {
         super(cause);
     }
+
 }

@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SpecificationAttributeOptionRepository extends JpaRepository<SpecificationAttributeOption, Long> {
+
     Page<SpecificationAttributeOption> findByNameContaining(String name, Pageable pageable);
+
     List<SpecificationAttributeOption> findBySpecificationAttributeId(Long specificationAttributeId);
+
 }

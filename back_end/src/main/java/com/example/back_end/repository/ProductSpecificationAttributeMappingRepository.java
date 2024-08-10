@@ -8,9 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ProductSpecificationAttributeMappingRepository extends JpaRepository<ProductSpecificationAttributeMapping, Long> {
+
     @Query("SELECT p FROM ProductSpecificationAttributeMapping p WHERE p.customValue LIKE %:name%")
     Page<ProductSpecificationAttributeMapping> searchByCustomValueContaining(
             @Param("name") String name,
             Pageable pageable);
+
     Page<ProductSpecificationAttributeMapping> findByProductId(Long productId, Pageable pageable);
+
 }

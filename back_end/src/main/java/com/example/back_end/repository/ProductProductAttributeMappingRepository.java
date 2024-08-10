@@ -16,4 +16,5 @@ public interface ProductProductAttributeMappingRepository extends JpaRepository<
     Page<ProductProductAttributeMapping> findAllByProductId(Long productId, Pageable pageable);
 
     List<ProductProductAttributeMapping> findByProductId(Long productId);
+
 }

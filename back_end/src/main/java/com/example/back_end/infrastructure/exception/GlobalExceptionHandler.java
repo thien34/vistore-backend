@@ -22,6 +22,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Date;
 import java.util.List;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -164,7 +165,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.FORBIDDEN;
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 ErrorResponse.builder()
-                        .status(errorCode.getCode())
+                        .status(errorCode.getStatusCode().value())
                         .message(errorCode.getMessage())
                         .build()
         );
@@ -205,6 +206,7 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ApiResponses(value = {@ApiResponse(responseCode = "409", description = "Conflict", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "409 Response", summary = "Handle exception when data integrity is violated", value = """
@@ -226,10 +228,11 @@ public class GlobalExceptionHandler {
                 .message("Data integrity violation: " + e.getMessage())
                 .build();
     }
+
     /**
      * Handle IllegalArgumentException.
      *
-     * @param e the exception
+     * @param e       the exception
      * @param request the web request
      * @return the error response
      */
@@ -253,6 +256,7 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(CONFLICT)
     @ApiResponses(value = {@ApiResponse(responseCode = "409", description = "Conflict", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "409 Response", summary = "Handle exception when a resource already exists", value = """
@@ -273,6 +277,7 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
     @ExceptionHandler(NotExistsException.class)
     @ResponseStatus(NOT_FOUND)
     @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(mediaType = "application/json", examples = @ExampleObject(name = "404 Response", summary = "Handle exception when resource does not exist", value = """
@@ -293,7 +298,5 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
-
-
 
 }
