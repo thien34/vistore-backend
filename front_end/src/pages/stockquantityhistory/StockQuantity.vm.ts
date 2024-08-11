@@ -1,23 +1,24 @@
-import { StockQuantityHistoryResponse } from "@/model/StockQuantityHistory";
-import { RequestParams } from "@/utils/FetchUtils";
-import { useState } from "react";
-import StockQuantityHistoryConfigs from "./StockQuantityHistoryConfig";
-import useGetAllApi from "@/hooks/use-get-all-api";
-import getStockQuantityColumns from "./StockQuantityColumns";
+import { StockQuantityHistoryResponse } from '@/model/StockQuantityHistory'
+import { RequestParams } from '@/utils/FetchUtils'
+import { useState } from 'react'
+import StockQuantityHistoryConfigs from './StockQuantityHistoryConfig'
+import useGetAllApi from '@/hooks/use-get-all-api'
+import getStockQuantityColumns from './StockQuantityColumns'
 
 interface Search extends RequestParams {
     page?: number
 }
 
-export default function useStockQuanityHistoryViewModel(){
+export default function useStockQuanityHistoryViewModel() {
     const [filter, setFilter] = useState<Search>({})
     // GET COLUMNS
-    const columns = getStockQuantityColumns();
+    const columns = getStockQuantityColumns()
     // RETURN DATA
-    const {
-        data: listResponse,
-        isLoading,
-    } = useGetAllApi<StockQuantityHistoryResponse>(StockQuantityHistoryConfigs.resourceUrl,StockQuantityHistoryConfigs.resourceKey, filter)
+    const { data: listResponse, isLoading } = useGetAllApi<StockQuantityHistoryResponse>(
+        StockQuantityHistoryConfigs.resourceUrl,
+        StockQuantityHistoryConfigs.resourceKey,
+        filter,
+    )
 
     // HANDLE TABLE CHANGE
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
@@ -26,9 +27,9 @@ export default function useStockQuanityHistoryViewModel(){
             page: pagination.current,
         }))
     }
-    
+
     // HANDLE SEARCH
-    const handleSearch = (newFilter : { productId: string; }) => {
+    const handleSearch = (newFilter: { productId: string }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
             productId: newFilter.productId,

@@ -1,21 +1,15 @@
-import useStockQuanityHistoryViewModel from "./StockQuantity.vm";
+import useStockQuanityHistoryViewModel from './StockQuantity.vm'
 import { Table } from 'antd'
-import StockQuantityHistorySearch from "./StockQuantityHistorySearch";
+import StockQuantityHistorySearch from './StockQuantityHistorySearch'
 export default function StockQuantityHistoryManage() {
-   const {
-        columns,
-        filter,
-        handleTableChange,
-        handleSearch,
-        listResponse,
-        isLoading
-   } = useStockQuanityHistoryViewModel()
+    const { columns, filter, handleTableChange, handleSearch, listResponse, isLoading } =
+        useStockQuanityHistoryViewModel()
 
-   return(
-    <>
-        <StockQuantityHistorySearch onSearch={handleSearch} />
-        {isLoading && <p>Loading ...</p>}
-        <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
+    return (
+        <>
+            <StockQuantityHistorySearch onSearch={handleSearch} />
+            {isLoading && <p>Loading ...</p>}
+            <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {listResponse && (
                     <Table
                         rowKey='id'
@@ -31,6 +25,6 @@ export default function StockQuantityHistoryManage() {
                     />
                 )}
             </div>
-    </>
-   )
+        </>
+    )
 }

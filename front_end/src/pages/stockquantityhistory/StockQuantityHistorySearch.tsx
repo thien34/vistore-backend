@@ -1,10 +1,10 @@
-import AppActions from "@/constants/AppActions ";
-import { useState } from "react";
-import { ProductSelect } from "./ProductNameSelect";
-import { Button } from 'antd';
-import { SearchOutlined } from "@ant-design/icons";
+import AppActions from '@/constants/AppActions '
+import { useState } from 'react'
+import { ProductSelect } from './ProductNameSelect'
+import { Button } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
 interface StockQuantityHistorySearchProps {
-    onSearch: (filter: { productId: string; }) => void
+    onSearch: (filter: { productId: string }) => void
 }
 
 // Declare ProductData Select
@@ -13,12 +13,11 @@ interface StockQuantityHistorySearchProps {
 // }= useGetAllApi<ProductNameResponse>(ManagerPath.PRODUCT_LISTNAME,ResourceURL.PRODUCT)
 // const Productdata : ProductSelect [] = ProductNameResponse?.items || [];
 // const Productdata = ProductNameResponse || [];
-const Productdata =
-[
+const Productdata = [
     { id: 1, name: 'Product 1' },
     { id: 2, name: 'Product 2' },
     { id: 3, name: 'Product 3' },
-    { id: 4, name: 'Product 4' }
+    { id: 4, name: 'Product 4' },
 ]
 export default function StockQuantityHistorySearch({ onSearch }: Readonly<StockQuantityHistorySearchProps>) {
     const [productId, setProductId] = useState<string>('')
@@ -34,7 +33,7 @@ export default function StockQuantityHistorySearch({ onSearch }: Readonly<StockQ
                 <h3 className='text-xl font-bold'>{AppActions.SEARCH}</h3>
                 <div className='flex px-5 pt-5 justify-between'>
                     <div className='flex gap-4 flex-wrap'>
-                        <ProductSelect data={Productdata} onChange={handleChangeSelectProduct}  />
+                        <ProductSelect data={Productdata} onChange={handleChangeSelectProduct} />
                         <Button
                             size='large'
                             type='primary'

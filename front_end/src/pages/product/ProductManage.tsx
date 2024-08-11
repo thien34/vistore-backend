@@ -1,4 +1,3 @@
-import React from 'react'
 import { Table, Spin, Alert } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import useGetAllApi from '@/hooks/use-get-all-api'

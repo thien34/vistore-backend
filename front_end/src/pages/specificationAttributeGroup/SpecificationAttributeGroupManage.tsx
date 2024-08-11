@@ -78,7 +78,13 @@ const SpecificationAttributeGroupManage = () => {
                             <a onClick={() => navigate(`/admin/specification-attribute-groups/${record.id}`)}>{text}</a>
                         )}
                     />
-                    <Column align={'center'} width='20%' title='Display order' dataIndex='displayOrder' key='displayOrder' />
+                    <Column
+                        align={'center'}
+                        width='20%'
+                        title='Display order'
+                        dataIndex='displayOrder'
+                        key='displayOrder'
+                    />
                     <Column
                         width='10%'
                         title='View'
@@ -121,7 +127,12 @@ const SpecificationAttributeGroupManage = () => {
                         key='edit'
                         render={(text, record) => (
                             <Link to={`/admin/specification-attributes/${record?.id}/update`}>
-                                <Button type='primary' icon={<EditOutlined />} size='middle' onClick={() => handleEdit(record)}>
+                                <Button
+                                    type='primary'
+                                    icon={<EditOutlined />}
+                                    size='middle'
+                                    onClick={() => handleEdit(record)}
+                                >
                                     Edit
                                 </Button>
                             </Link>

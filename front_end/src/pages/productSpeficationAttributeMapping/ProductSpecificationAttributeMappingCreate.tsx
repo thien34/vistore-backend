@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react'
 import { ReloadOutlined } from '@ant-design/icons'
 import useProductSpecificationAttributeMappingCreateViewModel from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingCreate.vm.ts'
-import React from 'react'
 
 const { Title } = Typography
 const { Option, OptGroup } = Select

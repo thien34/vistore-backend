@@ -152,7 +152,6 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
             })
     }
     const handleReload = async () => {
-
         setIsSpinning(true)
         try {
             await new Promise((resolve) => setTimeout(resolve, 2000))

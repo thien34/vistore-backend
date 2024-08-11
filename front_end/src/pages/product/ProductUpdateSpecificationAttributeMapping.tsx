@@ -1,4 +1,3 @@
-import React from 'react'
 import { Table, Button, Pagination, Typography, Divider, Spin } from 'antd'
 import { EditOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'

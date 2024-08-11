@@ -122,7 +122,7 @@ const routers = [
         pageType: 'manufacture',
     },
     {
-        path: ManagerPath.STOCKQUANTITYHISTORY,
+        path: ManagerPath.STOCK_QUANTITY_HISTORY,
         layout: 'main',
         element: <StockQuantityHistoryManage />,
         breadcrumbName: 'StockQuantityHistory',

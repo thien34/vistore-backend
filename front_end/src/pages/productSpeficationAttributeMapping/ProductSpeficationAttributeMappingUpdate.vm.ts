@@ -181,7 +181,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     }
     const handleReload = async () => {
         setIsSpinning(true) // Show spinner
-        await new Promise((resolve) => setTimeout(resolve, 2000)) 
+        await new Promise((resolve) => setTimeout(resolve, 2000))
         refetchAttributes()
         setIsSpinning(false)
     }
