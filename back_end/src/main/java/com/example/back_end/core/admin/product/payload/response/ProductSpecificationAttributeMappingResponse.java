@@ -35,4 +35,5 @@ public class ProductSpecificationAttributeMappingResponse {
     Long specificationAttributeId;
 
     String specificationAttributeName;
+
 }

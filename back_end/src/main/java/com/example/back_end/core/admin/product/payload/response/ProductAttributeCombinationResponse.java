@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.product.payload.response;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,5 +26,7 @@ public class ProductAttributeCombinationResponse {
     private Integer minStockQuantity;
 
     private String pictureUrl;
+
     private String manufacturerPartNumber;
+
 }

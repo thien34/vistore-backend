@@ -27,4 +27,5 @@ public class ProductSpecificationAttributeMappingUpdateRequest {
     Long specificationAttributeId;
 
     String attributeType;
+
 }

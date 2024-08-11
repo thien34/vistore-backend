@@ -24,4 +24,5 @@ public class ManufacturerResponse {
     private Boolean deleted;
 
     private Integer displayOrder;
+
 }

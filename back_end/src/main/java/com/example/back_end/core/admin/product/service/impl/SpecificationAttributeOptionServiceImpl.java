@@ -31,7 +31,7 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
     SpecificationAttributeRepository specificationAttributeRepository;
 
     @Override
-    public PageResponse<?> getAllSpecificationAttributeOption(String name, int pageNo, int pageSize) {
+    public PageResponse<List<SpecificationAttributeOptionResponse>> getAllSpecificationAttributeOption(String name, int pageNo, int pageSize) {
 
         if (pageNo < 0 || pageSize <= 0)
             throw new IllegalArgumentException("Invalid page number or page size");
@@ -45,7 +45,7 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
                 .map(specificationAttributeOptionMapper::toDto)
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<SpecificationAttributeOptionResponse>>builder()
                 .page(specificationAttributeOption.getNumber())
                 .size(specificationAttributeOption.getSize())
                 .totalPage(specificationAttributeOption.getTotalPages())

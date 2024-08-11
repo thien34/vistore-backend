@@ -8,9 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationAttributeOptionRequest {
+
     private Long id;
+
     private String name;
+
     private String colorSquaresRgb;
+
     private Integer displayOrder;
+
     private Long specificationAttributeId;
+
 }

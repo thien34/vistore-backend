@@ -7,14 +7,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
+
     @Override
     public List<ProductNameResponse> getAllProductsName() {
-        return productRepository.findAll().stream().map(product -> new ProductNameResponse(product.getId(),product.getName())).collect(Collectors.toList());
+        return productRepository.findAll().stream()
+                .map(product -> new ProductNameResponse(product.getId(), product.getName()))
+                .toList();
     }
+
 }

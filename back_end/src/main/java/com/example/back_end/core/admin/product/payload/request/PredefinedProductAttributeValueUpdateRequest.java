@@ -37,4 +37,5 @@ public class PredefinedProductAttributeValueUpdateRequest {
     Boolean isPreSelected;
 
     Integer displayOrder;
+
 }

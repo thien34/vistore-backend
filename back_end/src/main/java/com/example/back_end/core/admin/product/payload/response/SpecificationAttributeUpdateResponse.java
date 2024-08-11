@@ -24,4 +24,5 @@ public class SpecificationAttributeUpdateResponse {
     private Integer displayOrder;
 
     private List<SpecificationAttributeOptionResponse> listOptions;
+
 }

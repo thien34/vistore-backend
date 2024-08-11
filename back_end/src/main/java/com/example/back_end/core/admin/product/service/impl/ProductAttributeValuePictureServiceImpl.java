@@ -36,4 +36,5 @@ public class ProductAttributeValuePictureServiceImpl implements ProductAttribute
 
         productAttributeValuePictureRepository.saveAll(productAttributeValuePictures);
     }
+
 }

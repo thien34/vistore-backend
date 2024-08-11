@@ -12,10 +12,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockQuantityHistoryResponse {
+
     private Long id;
+
     private Long productId;
+
     private Integer quantityAdjustment;
+
     private Integer stockQuantity;
+
     private String message;
+
     private LocalDateTime createdDate;
+
 }
+

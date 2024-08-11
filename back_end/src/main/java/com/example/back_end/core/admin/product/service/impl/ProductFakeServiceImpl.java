@@ -10,7 +10,6 @@ import com.example.back_end.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +19,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductFakeServiceImpl implements ProductFakeService {
 
     ProductRepository productRepository;
     ProductMapper productMapper;
+
     @Override
     public ProductFakeResponse createProductFake(ProductFakeRequest request) {
 
@@ -44,7 +43,7 @@ public class ProductFakeServiceImpl implements ProductFakeService {
     }
 
     @Override
-    public PageResponse<?> getAllProducts(int pageNo, int pageSize) {
+    public PageResponse<List<ProductFakeResponse>> getAllProducts(int pageNo, int pageSize) {
 
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
@@ -56,7 +55,7 @@ public class ProductFakeServiceImpl implements ProductFakeService {
                 .map(productMapper::toDto)
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<ProductFakeResponse>>builder()
                 .page(productPage.getNumber())
                 .size(productPage.getSize())
                 .totalPage(productPage.getTotalPages())

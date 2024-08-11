@@ -16,4 +16,5 @@ public class ProductTagRequest {
 
     @NotNull
     private Long productId;
+
 }

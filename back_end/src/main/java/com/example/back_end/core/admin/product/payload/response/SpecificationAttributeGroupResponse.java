@@ -20,4 +20,5 @@ public class SpecificationAttributeGroupResponse {
     private Integer displayOrder;
 
     private List<SpecificationAttributeResponse> specificationAttributes;
+
 }

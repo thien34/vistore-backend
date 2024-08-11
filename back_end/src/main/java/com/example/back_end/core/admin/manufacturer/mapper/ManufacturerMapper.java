@@ -17,4 +17,5 @@ public interface ManufacturerMapper {
     ManufacturerResponse maptoManufacturerResponse(Manufacturer manufacturer);
 
     void updateManufacturer(ManufacturerRequest manufacturerRequest, @MappingTarget Manufacturer manufacturer);
+
 }

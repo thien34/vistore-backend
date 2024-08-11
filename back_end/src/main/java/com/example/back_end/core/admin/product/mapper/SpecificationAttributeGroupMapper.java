@@ -6,11 +6,13 @@ import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeGroup;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
 import java.util.Comparator;
 import java.util.List;
 
-@Mapper(componentModel = "spring" )
+@Mapper(componentModel = "spring")
 public interface SpecificationAttributeGroupMapper {
+
     @Mapping(target = "specificationAttributes", expression = "java(mapSpecificationAttributes(specificationAttributeGroup.getSpecificationAttributes()))")
     SpecificationAttributeGroupResponse toDto(SpecificationAttributeGroup specificationAttributeGroup);
 
@@ -21,4 +23,5 @@ public interface SpecificationAttributeGroupMapper {
                 .sorted(Comparator.comparing(SpecificationAttributeResponse::getDisplayOrder).reversed())
                 .toList();
     }
+
 }

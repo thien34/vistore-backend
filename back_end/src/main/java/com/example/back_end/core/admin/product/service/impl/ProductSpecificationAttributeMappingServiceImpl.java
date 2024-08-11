@@ -12,8 +12,8 @@ import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.NotExistsException;
-import com.example.back_end.repository.ProductSpecificationAttributeMappingRepository;
 import com.example.back_end.repository.ProductRepository;
+import com.example.back_end.repository.ProductSpecificationAttributeMappingRepository;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
 import com.example.back_end.repository.SpecificationAttributeRepository;
 import lombok.AccessLevel;
@@ -41,7 +41,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
     SpecificationAttributeRepository specificationAttributeRepository;
 
     @Override
-    public PageResponse<?> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize) {
+    public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
@@ -54,13 +54,14 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 productSpecificationAttributeMappingMapper
                         .toDto(mappingPage.getContent());
 
-        return PageResponse.builder()
+        return PageResponse.<List<ProductSpecificationAttributeMappingResponse>>builder()
                 .page(mappingPage.getNumber())
                 .size(mappingPage.getSize())
                 .totalPage(mappingPage.getTotalPages())
                 .items(responses)
                 .build();
     }
+
     @Override
     @Transactional
     public ProductSpecificationAttributeMappingResponse createProductSpecificationAttributeMapping(
@@ -119,6 +120,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         return productSpecificationAttributeMappingMapper.toDto(mapping);
 
     }
+
     @Override
     public ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id) {
 
@@ -131,6 +133,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         return productSpecificationAttributeMappingMapper.toDto(mapping);
 
     }
+
     @Override
     public void deleteProductSpecificationAttribute(List<Long> ids) {
 
@@ -141,8 +144,9 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
             productSpecificationAttributeMappingRepository.deleteAllInBatch(spec);
 
     }
+
     @Override
-    public PageResponse<?> getProductSpecificationAttributeMappingsByProductId(
+    public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getProductSpecificationAttributeMappingsByProductId(
             Long productId, int pageNo, int pageSize) {
 
         if (pageNo < 0 || pageSize <= 0) {
@@ -158,7 +162,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 productSpecificationAttributeMappingMapper
                         .toDto(mappingPage.getContent());
 
-        return PageResponse.builder()
+        return PageResponse.<List<ProductSpecificationAttributeMappingResponse>>builder()
                 .page(mappingPage.getNumber())
                 .size(mappingPage.getSize())
                 .totalPage(mappingPage.getTotalPages())
@@ -166,6 +170,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .build();
 
     }
+
     @Override
     @Transactional
     public ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(
@@ -251,11 +256,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 optionUpdated = true;
             }
 
-//            if (request.getDisplayOrder() != null && !request.getDisplayOrder().equals(specificationAttributeOption.getDisplayOrder())) {
-//                specificationAttributeOption.setDisplayOrder(request.getDisplayOrder());
-//                optionUpdated = true;
-//            }
-
             if (request.getSpecificationAttributeId() != null &&
                     !request.getSpecificationAttributeId().equals(specificationAttributeOption.getSpecificationAttribute().getId())) {
                 SpecificationAttribute specificationAttribute = specificationAttributeRepository
@@ -290,6 +290,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .displayOrder(existingMapping.getDisplayOrder())
                 .build();
     }
+
     @Override
     public void deleteProductSpecificationAttributeMappingById(Long id) {
 
@@ -298,7 +299,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                         ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED.getMessage()));
 
         productSpecificationAttributeMappingRepository.delete(mapping);
-
     }
 
 }

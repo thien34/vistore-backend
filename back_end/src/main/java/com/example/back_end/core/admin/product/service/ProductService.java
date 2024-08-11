@@ -5,5 +5,7 @@ import com.example.back_end.core.admin.product.payload.response.ProductNameRespo
 import java.util.List;
 
 public interface ProductService {
+
     List<ProductNameResponse> getAllProductsName();
+
 }

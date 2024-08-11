@@ -13,11 +13,12 @@ public interface ManufactureServices {
 
     void updateManufacturer(Long manufacturerId, ManufacturerRequest manufacturerRequest);
 
-    PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
+    PageResponse<List<ManufacturerResponse>> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
 
     ManufacturerResponse getManufacturer(Long manufacturerId);
 
     void deleteListManufacturer(List<Long> manufacturerIds);
 
     List<ManufacturerNameResponse> getAlManufacturersName();
+
 }

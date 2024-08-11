@@ -12,4 +12,5 @@ public class PictureResponse {
         private String mimeType;
 
         private String linkImg;
+
 }

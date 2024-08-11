@@ -14,4 +14,5 @@ public class ManufacturerNameResponse {
     private Long id;
 
     private String manufacturerName;
+
 }

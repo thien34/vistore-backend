@@ -12,9 +12,6 @@ import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.repository.PictureRepository;
 import com.example.back_end.repository.ProductAttributeCombinationPictureRepository;
 import com.example.back_end.repository.ProductAttributeCombinationRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -131,6 +127,5 @@ public class ProductAttributeCombinationServiceImpl implements ProductAttributeC
         INVALID_ID_LIST("Invalid ID list provided");
         private final String message;
     }
-    
 
 }

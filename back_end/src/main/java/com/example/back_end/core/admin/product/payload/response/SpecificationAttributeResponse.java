@@ -12,12 +12,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationAttributeResponse {
+
     private Long id;
+
     private String name;
+
     private Integer displayOrder;
+
     private String specificationAttributeGroupName;
+
     private Long specificationAttributeGroupId;
+
     private List<SpecificationAttributeOptionResponse> listOptions;
+
     public static SpecificationAttributeResponse mapToResponse(SpecificationAttribute specificationAttribute) {
 
         SpecificationAttributeResponse response = new SpecificationAttributeResponse();
@@ -42,6 +49,6 @@ public class SpecificationAttributeResponse {
 
         response.setListOptions(optionResponses);
         return response;
-
     }
+
 }

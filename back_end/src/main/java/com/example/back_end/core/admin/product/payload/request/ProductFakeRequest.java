@@ -19,4 +19,5 @@ import lombok.experimental.FieldDefaults;
 public class ProductFakeRequest {
 
     String name;
+
 }

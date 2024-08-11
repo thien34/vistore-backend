@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
@@ -17,8 +19,11 @@ public interface CategoryMapper {
 
     CategoriesResponse toCategoriesResponse(Category category);
 
+    List<CategoriesResponse> toCategoriesResponseList(List<Category> categories);
+
     @Mapping(target = "deleted", constant = "false")
     Category mapToCategory(CategoryRequest request);
 
     void updateCategoryFromRequest(CategoryRequest request, @MappingTarget Category category);
+
 }

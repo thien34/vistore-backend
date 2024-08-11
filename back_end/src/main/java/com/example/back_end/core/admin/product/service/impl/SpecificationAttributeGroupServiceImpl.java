@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpecificationAttributeGroupServiceImpl implements SpecificationAttributeGroupService {
 
     SpecificationAttributeGroupRepository specificationAttributeGroupRepository;
@@ -34,8 +34,8 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
     public PageResponse<List<SpecificationAttributeGroupResponse>> getAllSpecificationAttributeGroup(
             String name,
             int pageNo,
-            int pageSize
-    ) {
+            int pageSize) {
+
         if (pageNo < 0 || pageSize <= 0)
             throw new IllegalArgumentException("Invalid page number or page size");
 
@@ -47,8 +47,8 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                 specificationAttributeGroupPage
                         .getContent()
                         .stream()
-                .map(specificationAttributeGroupMapper::toDto)
-                .toList();
+                        .map(specificationAttributeGroupMapper::toDto)
+                        .toList();
 
         return PageResponse.<List<SpecificationAttributeGroupResponse>>builder()
                 .page(specificationAttributeGroupPage.getNumber())
@@ -60,13 +60,10 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
     }
 
 
-
-
     @Override
     @Transactional
     public SpecificationAttributeGroupResponse createSpecificationAttributeGroup(
-            SpecificationAttributeGroupRequest request
-    ) {
+            SpecificationAttributeGroupRequest request) {
 
         if (specificationAttributeGroupRepository.existsByName(request.getName()))
             throw new ExistsByNameException(ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_EXISTED.getMessage());
@@ -82,7 +79,6 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                 .name(group.getName())
                 .displayOrder(group.getDisplayOrder())
                 .build();
-
     }
 
     @Override
@@ -93,7 +89,6 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                         ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
 
         return specificationAttributeGroupMapper.toDto(group);
-
     }
 
     @Override
@@ -103,15 +98,13 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
 
         if (!spec.isEmpty())
             specificationAttributeGroupRepository.deleteAllInBatch(spec);
-
     }
 
     @Override
     @Transactional
     public SpecificationAttributeGroupResponse updateSpecificationAttributeGroup(
             Long id,
-            SpecificationAttributeGroupRequest request
-    ) {
+            SpecificationAttributeGroupRequest request) {
 
         SpecificationAttributeGroup group = specificationAttributeGroupRepository.findById(id)
                 .orElseThrow(() -> new NotExistsException(
@@ -126,8 +119,8 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
         group = specificationAttributeGroupRepository.save(group);
 
         return specificationAttributeGroupMapper.toDto(group);
-
     }
+
     @Override
     public void deleteSpecificationAttributeGroupById(Long id) {
 
@@ -136,7 +129,6 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
                         ErrorCode.SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED.getMessage()));
 
         specificationAttributeGroupRepository.delete(group);
-
     }
 
 }

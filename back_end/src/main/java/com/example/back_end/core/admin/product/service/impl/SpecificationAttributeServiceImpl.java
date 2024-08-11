@@ -8,7 +8,6 @@ import com.example.back_end.core.admin.product.payload.response.SpecificationAtt
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeUpdateResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeService;
 import com.example.back_end.core.common.PageResponse;
-import com.example.back_end.entity.ProductSpecificationAttributeMapping;
 import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeGroup;
 import com.example.back_end.entity.SpecificationAttributeOption;
@@ -47,7 +46,7 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     ProductSpecificationAttributeMappingRepository productSpecificationAttributeMappingRepository;
 
     @Override
-    public PageResponse<?> getAllSpecificationAttribute(String name, int pageNo, int pageSize) {
+    public PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
@@ -59,7 +58,7 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                 .map(SpecificationAttributeResponse::mapToResponse)
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<SpecificationAttributeResponse>>builder()
                 .page(specificationAttributePage.getNumber())
                 .size(specificationAttributePage.getSize())
                 .totalPage(specificationAttributePage.getTotalPages())
@@ -68,7 +67,7 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     }
 
     @Override
-    public PageResponse<?> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize) {
+    public PageResponse<List<SpecificationAttributeResponse>> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize) {
 
         if (pageNo < 0 || pageSize <= 0)
             throw new IllegalArgumentException("Invalid page number or page size");
@@ -82,7 +81,7 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                 .map(specificationAttributeMapper::toDto)
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<SpecificationAttributeResponse>>builder()
                 .page(specificationAttributePage.getNumber())
                 .size(specificationAttributePage.getSize())
                 .totalPage(specificationAttributePage.getTotalPages())

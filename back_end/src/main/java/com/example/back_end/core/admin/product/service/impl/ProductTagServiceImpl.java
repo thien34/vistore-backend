@@ -13,7 +13,6 @@ import com.example.back_end.repository.ProductProductTagMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ProductTagRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +26,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ProductTagServiceImpl implements ProductTagService {
 
     private final ProductTagRepository productTagRepository;
@@ -44,7 +42,7 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     @Override
-    public PageResponse<?> getAll(String name, int pageNo, int pageSize) {
+    public PageResponse<List<ProductTagResponse>> getAll(String name, int pageNo, int pageSize) {
         if (pageNo < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
@@ -55,17 +53,16 @@ public class ProductTagServiceImpl implements ProductTagService {
         Page<ProductTag> productTagPage = productTagRepository.findByNameContaining(name, pageable);
 
         // Map to DTO responses
-        List<ProductTagResponse> productTagRespons = productTagPage.stream()
+        List<ProductTagResponse> productTagResponses = productTagPage.stream()
                 .map(productTagMapper::toDto)
                 .sorted(Comparator.comparing(ProductTagResponse::getId).reversed())
                 .toList();
 
-        // Build the page response
-        return PageResponse.builder()
+        return PageResponse.<List<ProductTagResponse>>builder()
                 .page(productTagPage.getNumber())
                 .size(productTagPage.getSize())
                 .totalPage(productTagPage.getTotalPages())
-                .items(productTagRespons)
+                .items(productTagResponses)
                 .build();
     }
 
@@ -126,4 +123,5 @@ public class ProductTagServiceImpl implements ProductTagService {
                 .totalPage(productTagPage.getTotalPages())
                 .items(response).build();
     }
+
 }

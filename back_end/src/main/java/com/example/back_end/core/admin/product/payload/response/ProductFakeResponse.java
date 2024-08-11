@@ -21,4 +21,5 @@ public class ProductFakeResponse {
     Long id;
 
     String name;
+
 }

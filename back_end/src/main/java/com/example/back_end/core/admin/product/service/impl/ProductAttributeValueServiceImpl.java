@@ -57,4 +57,5 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
 
         productAttributeValuePictureService.createProductAttributePictureValue(picturesMap);
     }
+
 }

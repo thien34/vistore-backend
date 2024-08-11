@@ -35,4 +35,5 @@ public interface ProductAttributeMapper {
     default List<ProductAttributeResponse> toDtos(Page<ProductAttribute> page) {
         return toDtos(page.getContent());
     }
+
 }

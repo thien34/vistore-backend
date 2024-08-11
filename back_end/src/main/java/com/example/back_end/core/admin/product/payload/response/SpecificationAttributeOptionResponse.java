@@ -23,4 +23,5 @@ public class SpecificationAttributeOptionResponse {
     private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
 
     private Long specificationAttributeId;
+
 }

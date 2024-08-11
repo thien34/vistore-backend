@@ -15,12 +15,14 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StockQuantityHistoryRequest {
+
     @NotNull(message = "Product invalid")
     private Long productId;
-    @NotNull(message = " Quanity Adjustment  invalid")
+
+    @NotNull(message = " Quantity Adjustment  invalid")
     private Integer quantityAdjustment;
 
-    @Min(value = 0, message = " Stock Quanity must be greater than or equal to 0")
+    @Min(value = 0, message = " Stock Quantity must be greater than or equal to 0")
     private Integer stockQuantity;
 
     @NotBlank(message = "Message can not blank")
@@ -35,4 +37,5 @@ public class StockQuantityHistoryRequest {
         product.setId(productId);
         return product;
     }
+
 }

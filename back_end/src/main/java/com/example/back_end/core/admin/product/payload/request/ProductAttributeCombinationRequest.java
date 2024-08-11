@@ -32,6 +32,7 @@ public class ProductAttributeCombinationRequest {
     private Long productId;
 
     private List<Long> pictureIds;
+
     private String manufacturerPartNumber;
 
 }

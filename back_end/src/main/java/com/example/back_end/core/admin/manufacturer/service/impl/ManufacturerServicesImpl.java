@@ -29,6 +29,7 @@ public class ManufacturerServicesImpl implements ManufactureServices {
     @Override
     @Transactional
     public void createManufacturer(ManufacturerRequest manufacturerRequest) {
+
         Manufacturer manufacturer = manufacturerMapper.maptoManufacturer(manufacturerRequest);
         manufacturerRepository.save(manufacturer);
     }
@@ -36,14 +37,19 @@ public class ManufacturerServicesImpl implements ManufactureServices {
     @Override
     @Transactional
     public void updateManufacturer(Long manufacturerId, ManufacturerRequest manufacturerRequest) {
-        Manufacturer manufacturer = manufacturerRepository.findById(manufacturerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Manufacturer with id not found: " + manufacturerId));
+
+        Manufacturer manufacturer = findManufacturerById(manufacturerId);
         manufacturerMapper.updateManufacturer(manufacturerRequest, manufacturer);
         manufacturerRepository.save(manufacturer);
     }
 
     @Override
-    public PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize) {
+    public PageResponse<List<ManufacturerResponse>> getAll(
+            String name,
+            Boolean published,
+            Integer pageNo,
+            Integer pageSize) {
+
         if (pageNo - 1 < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
@@ -56,7 +62,7 @@ public class ManufacturerServicesImpl implements ManufactureServices {
                 .map(manufacturerMapper::maptoManufacturerResponse)
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<ManufacturerResponse>>builder()
                 .page(manufacturerPage.getNumber())
                 .size(manufacturerPage.getSize())
                 .totalPage(manufacturerPage.getTotalPages())
@@ -66,8 +72,8 @@ public class ManufacturerServicesImpl implements ManufactureServices {
 
     @Override
     public ManufacturerResponse getManufacturer(Long manufacturerId) {
-        Manufacturer manufacturer = manufacturerRepository.findById(manufacturerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Manufacturer with id not found: " + manufacturerId));
+
+        Manufacturer manufacturer = findManufacturerById(manufacturerId);
         return manufacturerMapper.maptoManufacturerResponse(manufacturer);
     }
 
@@ -80,4 +86,10 @@ public class ManufacturerServicesImpl implements ManufactureServices {
     public List<ManufacturerNameResponse> getAlManufacturersName() {
         return manufacturerRepository.getManufacturerNameResponse();
     }
+
+    private Manufacturer findManufacturerById(Long manufacturerId) {
+        return manufacturerRepository.findById(manufacturerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Manufacturer with id not found: " + manufacturerId));
+    }
+
 }

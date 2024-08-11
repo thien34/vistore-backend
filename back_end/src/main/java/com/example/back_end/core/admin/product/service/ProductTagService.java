@@ -10,7 +10,7 @@ public interface ProductTagService {
 
     void createProductTag(ProductTagRequest request);
 
-    PageResponse<?> getAll(String name, int pageNo, int pageSize);
+    PageResponse<List<ProductTagResponse>> getAll(String name, int pageNo, int pageSize);
 
     ProductTagResponse getProductTag(Long id);
 

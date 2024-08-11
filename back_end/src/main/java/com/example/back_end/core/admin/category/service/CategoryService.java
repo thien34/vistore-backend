@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.category.service;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
+import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.common.PageResponse;
@@ -13,7 +14,7 @@ public interface CategoryService {
 
     void updateCategory(Long id, CategoryRequest request);
 
-    PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
+    PageResponse<List<CategoriesResponse>> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
 
     CategoryResponse getCategory(Long id);
 

@@ -48,4 +48,5 @@ public class PredefinedProductAttributeValueResponse {
         response.setProductAttribute(value.getProductAttribute().getId());
         return response;
     }
+
 }

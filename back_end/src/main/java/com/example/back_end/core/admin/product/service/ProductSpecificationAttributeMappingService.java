@@ -9,14 +9,22 @@ import com.example.back_end.core.common.PageResponse;
 import java.util.List;
 
 public interface ProductSpecificationAttributeMappingService {
-    PageResponse<?> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize);
+
+    PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize);
+
     ProductSpecificationAttributeMappingResponse createProductSpecificationAttributeMapping(
             ProductSpecificationAttributeMappingRequest request);
+
     ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id);
+
     void deleteProductSpecificationAttribute(List<Long> ids);
-    PageResponse<?> getProductSpecificationAttributeMappingsByProductId(
+
+    PageResponse<List<ProductSpecificationAttributeMappingResponse>> getProductSpecificationAttributeMappingsByProductId(
             Long productId, int pageNo, int pageSize);
+
     ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(
             Long id, ProductSpecificationAttributeMappingUpdateRequest request);
+
     void deleteProductSpecificationAttributeMappingById(Long id);
+
 }

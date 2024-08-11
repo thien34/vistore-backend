@@ -4,8 +4,12 @@ import com.example.back_end.core.admin.product.payload.request.ProductFakeReques
 import com.example.back_end.core.admin.product.payload.response.ProductFakeResponse;
 import com.example.back_end.core.common.PageResponse;
 
+import java.util.List;
 
 public interface ProductFakeService {
+
     ProductFakeResponse createProductFake(ProductFakeRequest request);
-     PageResponse<?> getAllProducts(int pageNo, int pageSize) ;
+
+    PageResponse<List<ProductFakeResponse>> getAllProducts(int pageNo, int pageSize);
+
 }

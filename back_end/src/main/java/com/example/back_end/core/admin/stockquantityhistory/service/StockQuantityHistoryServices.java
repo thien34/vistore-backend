@@ -5,13 +5,17 @@ import com.example.back_end.core.admin.stockquantityhistory.payload.response.Sto
 import com.example.back_end.core.common.PageResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface StockQuantityHistoryServices {
-    void createStockQuantityHistory(StockQuantityHistoryRequest stockQuanityHistoryRequest);
 
-    void updateStockQuantityHistory(Long stockQuanityHistoryId, StockQuantityHistoryRequest stockQuanityHistoryRequest);
+    void createStockQuantityHistory(StockQuantityHistoryRequest stockQuantityHistoryRequest);
 
-    PageResponse<?> getAllHistoryOfProduct(Long productId, Integer pageNo, Integer pageSize);
+    void updateStockQuantityHistory(Long stockQuantityHistoryId, StockQuantityHistoryRequest stockQuantityHistoryRequest);
 
-    StockQuantityHistoryResponse getStockQuanityHistory(Long stockQuantityHistoryId);
+    PageResponse<List<StockQuantityHistoryResponse>> getAllHistoryOfProduct(Long productId, Integer pageNo, Integer pageSize);
+
+    StockQuantityHistoryResponse getStockQuantityHistory(Long stockQuantityHistoryId);
+
 }

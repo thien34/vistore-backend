@@ -19,4 +19,5 @@ public interface ProductAttributeCombinationMapper {
     ProductAttributeCombinationResponse toDto(ProductAttributeCombination entity);
 
     void updateEntityFromRequest(@MappingTarget ProductAttributeCombination existingCombination, ProductAttributeCombinationRequest request);
+
 }

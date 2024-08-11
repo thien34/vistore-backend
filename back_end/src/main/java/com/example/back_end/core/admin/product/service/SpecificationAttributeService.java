@@ -5,14 +5,22 @@ import com.example.back_end.core.admin.product.payload.request.SpecificationAttr
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeUpdateResponse;
 import com.example.back_end.core.common.PageResponse;
+
 import java.util.List;
 
 public interface SpecificationAttributeService {
-    PageResponse<?> getAllSpecificationAttribute(String name, int pageNo, int pageSize);
+
+    PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(String name, int pageNo, int pageSize);
+
     SpecificationAttributeResponse createSpecificationAttribute(SpecificationAttributeRequest request);
+
     SpecificationAttributeUpdateResponse editSpecificationAttribute(
             Long id, SpecificationAttributeUpdateRequest request);
+
     void deleteSpecificationAttribute(List<Long> ids);
+
     SpecificationAttributeResponse getSpecificationAttributeById(Long id);
-    PageResponse<?> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize);
+
+    PageResponse<List<SpecificationAttributeResponse>> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize);
+
 }

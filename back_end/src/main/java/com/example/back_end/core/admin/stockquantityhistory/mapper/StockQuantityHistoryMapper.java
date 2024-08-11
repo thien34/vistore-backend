@@ -7,13 +7,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface StockQuantityHistoryMapper {
+
     @Mapping(source = "product.id", target = "productId")
-    StockQuantityHistoryResponse mapStockQuanityHistoryToStockQuanityHistoryResponse(StockQuantityHistory stockQuantityHistory);
+    StockQuantityHistoryResponse mapToDto(StockQuantityHistory stockQuantityHistory);
 
-    StockQuantityHistory mapStockQuantityHistory(StockQuantityHistoryRequest stockQuanityHistoryRequest);
+    List<StockQuantityHistoryResponse> mapToDtoList(List<StockQuantityHistory> stockQuantityHistories);
 
-    void updateStockQuantityHistory(StockQuantityHistoryRequest stockQuanityHistoryRequest, @MappingTarget StockQuantityHistory stockQuantityHistory);
+    StockQuantityHistory mapToEntity(StockQuantityHistoryRequest stockQuantityHistoryRequest);
+
+    void updateStockQuantityHistory(StockQuantityHistoryRequest stockQuantityHistoryRequest, @MappingTarget StockQuantityHistory stockQuantityHistory);
 
 }

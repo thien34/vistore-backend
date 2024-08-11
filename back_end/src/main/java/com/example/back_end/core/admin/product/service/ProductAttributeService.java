@@ -11,13 +11,13 @@ public interface ProductAttributeService {
 
     void createProductAttribute(ProductAttributeRequest request);
 
-    PageResponse<?> getAllProductAttribute(String name, int pageNo, int pageSize);
+    PageResponse<List<ProductAttributeResponse>> getAllProductAttribute(String name, int pageNo, int pageSize);
 
     ProductAttributeResponse getProductAttributeById(Long id);
 
     ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request);
 
-    PageResponse<?> searchByNameName(String name, int page, int size);
+    PageResponse<List<ProductAttributeResponse>> searchByNameName(String name, int page, int size);
 
     void deleteProductAttribute(List<Long> ids);
 

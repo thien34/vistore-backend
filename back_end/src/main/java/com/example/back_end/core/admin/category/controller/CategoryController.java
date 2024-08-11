@@ -1,15 +1,14 @@
 package com.example.back_end.core.admin.category.controller;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
+import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.core.common.ResponseError;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,80 +25,82 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/categories")
-@Slf4j
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @GetMapping()
-    public ResponseData<?> getAll(@RequestParam(value = "name", defaultValue = "") String name,
-                                  @RequestParam(value = "published", defaultValue = "") Boolean published,
-                                  @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
-                                  @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
-        try {
-            PageResponse<?> response = categoryService.getAll(name, published, pageNo, pageSize);
-            return new ResponseData<>(HttpStatus.OK.value(), "Get categories success", response);
-        } catch (Exception e) {
-            log.error("Error getting categories", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    public ResponseData<PageResponse<List<CategoriesResponse>>> getAllCategories(
+            @RequestParam(value = "name", defaultValue = "") String name,
+            @RequestParam(value = "published", required = false) Boolean published,
+            @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
+
+        PageResponse<List<CategoriesResponse>> response = categoryService
+                .getAll(name, published, pageNo, pageSize);
+
+        return ResponseData.<PageResponse<List<CategoriesResponse>>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get categories success")
+                .data(response)
+                .build();
     }
 
     @GetMapping("/name")
-    public ResponseData<?> getAllName() {
-        try {
-            List<CategoryNameResponse> response = categoryService.getCategoriesName();
-            return new ResponseData<>(HttpStatus.OK.value(), "Get categories name success", response);
-        } catch (Exception e) {
-            log.error("Error getting categories name", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    public ResponseData<List<CategoryNameResponse>> getAllNameCategories() {
+
+        List<CategoryNameResponse> response = categoryService.getCategoriesName();
+
+        return ResponseData.<List<CategoryNameResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get categories name success")
+                .data(response)
+                .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseData<?> getById(@PathVariable Long id) {
-        try {
-            CategoryResponse response = categoryService.getCategory(id);
-            return new ResponseData<>(HttpStatus.OK.value(), "Get category success", response);
-        } catch (Exception e) {
-            log.error("Error getting category", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    public ResponseData<CategoryResponse> getByIdCategory(@PathVariable Long id) {
+
+        CategoryResponse response = categoryService.getCategory(id);
+
+        return ResponseData.<CategoryResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get category success")
+                .data(response)
+                .build();
     }
 
     @PostMapping
-    public ResponseData<?> create(@RequestBody @Valid CategoryRequest categoryRequest) {
-        log.info("Request add category, {}", categoryRequest);
-        try {
-            categoryService.createCategory(categoryRequest);
-            return new ResponseData<>(HttpStatus.OK.value(), "Add product tag success");
-        } catch (Exception e) {
-            log.error("Error adding categories", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    public ResponseData<Void> createCategory(@RequestBody @Valid CategoryRequest categoryRequest) {
+
+        categoryService.createCategory(categoryRequest);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Add product tag success")
+                .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseData<?> update(@PathVariable Long id, @RequestBody @Valid CategoryRequest request) {
-        log.info("Request to update category with id: {}, {}", id, request);
-        try {
-            categoryService.updateCategory(id, request);
-            return new ResponseData<>(HttpStatus.OK.value(), "Update product tag success");
-        } catch (Exception e) {
-            log.error("Error updating product tag", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    public ResponseData<Void> updateCategoryById(@PathVariable Long id, @RequestBody @Valid CategoryRequest request) {
+
+        categoryService.updateCategory(id, request);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Update category success")
+                .build();
     }
 
     @DeleteMapping
-    public ResponseData<?> delete(@RequestBody List<Long> ids) {
-        log.info("Request to delete categories with ids: {}", ids);
-        try {
-            categoryService.deleteCategories(ids);
-            return new ResponseData<>(HttpStatus.OK.value(), "Delete product tags success");
-        } catch (Exception e) {
-            log.error("Error deleting product tags", e);
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+    public ResponseData<Void> deleteAllByCategoryIds(@RequestBody List<Long> ids) {
+
+        categoryService.deleteCategories(ids);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Delete categories success")
+                .build();
     }
+
 }

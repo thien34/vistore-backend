@@ -5,8 +5,10 @@ import com.example.back_end.entity.SpecificationAttributeOption;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring" )
+@Mapper(componentModel = "spring")
 public interface SpecificationAttributeOptionMapper {
-    @Mapping(target = "specificationAttributeId", source = "specificationAttribute.id") // Ánh xạ ID
+
+    @Mapping(target = "specificationAttributeId", source = "specificationAttribute.id")
     SpecificationAttributeOptionResponse toDto(SpecificationAttributeOption specificationAttributeOption);
+
 }

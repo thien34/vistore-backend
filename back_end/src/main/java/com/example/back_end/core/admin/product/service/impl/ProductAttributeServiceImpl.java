@@ -18,7 +18,6 @@ import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductAttributeServiceImpl implements ProductAttributeService {
@@ -45,6 +43,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Override
     @Transactional
     public void createProductAttribute(ProductAttributeRequest request) {
+
         String trimmedName = request.getName().trim().replaceAll("\\s+", " ");
         if (productAttributeRepository.existsByName(trimmedName)) {
             throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
@@ -70,22 +69,24 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     }
 
     @Override
-    public PageResponse<?> getAllProductAttribute(String name, int pageNo, int pageSize) {
+    public PageResponse<List<ProductAttributeResponse>> getAllProductAttribute(String name, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
 
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
+
                     List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                             .map(PredefinedProductAttributeValueResponse::mapToResponse)
                             .toList();
+
                     response.setValues(values);
                     return response;
                 })
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<ProductAttributeResponse>>builder()
                 .page(productAttributePage.getNumber())
                 .size(productAttributePage.getSize())
                 .totalPage(productAttributePage.getTotalPages())
@@ -96,8 +97,10 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     public ProductAttributeResponse getProductAttributeById(Long id) {
+
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
                 .orElseThrow(() -> new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
+
         return ProductAttributeResponse.mapToResponse(productAttribute);
     }
 
@@ -149,22 +152,24 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
 
     @Override
-    public PageResponse<?> searchByNameName(String name, int page, int size) {
+    public PageResponse<List<ProductAttributeResponse>> searchByNameName(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
 
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
+
                     List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                             .map(PredefinedProductAttributeValueResponse::mapToResponse)
                             .toList();
+
                     response.setValues(values);
                     return response;
                 })
                 .toList();
 
-        return PageResponse.builder()
+        return PageResponse.<List<ProductAttributeResponse>>builder()
                 .page(productAttributePage.getNumber())
                 .size(productAttributePage.getSize())
                 .totalPage(productAttributePage.getTotalPages())
@@ -185,4 +190,5 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     public List<ProductAttributeNameResponse> getAttributeName() {
         return productAttributeRepository.findAllNameProductAttribute();
     }
+
 }

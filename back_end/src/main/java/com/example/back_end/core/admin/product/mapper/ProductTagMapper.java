@@ -22,4 +22,5 @@ public interface ProductTagMapper {
         }
         return null;
     }
+
 }

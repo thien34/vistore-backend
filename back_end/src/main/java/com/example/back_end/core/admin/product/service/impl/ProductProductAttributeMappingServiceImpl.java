@@ -21,7 +21,6 @@ import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductProductAttributeMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ProductProductAttributeMappingServiceImpl implements ProductProductAttributeMappingService {
 
     private final ProductRepository productRepository;
@@ -46,7 +44,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     private final ProductAttributeValueMapper productAttributeValueMapper;
 
     @Override
-    public PageResponse<?> getProductProductAttributeMappings(Long productId, int pageNo, int pageSize) {
+    public PageResponse<List<ProductProductAttributeMappingResponse>> getProductProductAttributeMappings(Long productId, int pageNo, int pageSize) {
         validatePageRequest(pageNo, pageSize);
         getProductOrThrow(productId);
 
@@ -56,7 +54,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         List<ProductProductAttributeMappingResponse> responses = productProductAttributeMappingMapper
                 .toDtos(page.getContent());
 
-        return PageResponse.builder()
+        return PageResponse.<List<ProductProductAttributeMappingResponse>>builder()
                 .page(page.getNumber())
                 .size(page.getSize())
                 .totalPage(page.getTotalPages())
@@ -139,29 +137,6 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         productProductAttributeMappingRepository.deleteById(id);
     }
 
-    @Override
-    public List<ProductProductAttributeMappingDetailResponse> getProductProductAttributeMappingByproductId(Long productId) {
-
-        List<ProductProductAttributeMapping> mappings = productProductAttributeMappingRepository.findByProductId(productId);
-
-        return mappings.stream()
-                .map(mapping -> {
-                    ProductProductAttributeMappingDetailResponse response = ProductProductAttributeMappingDetailResponse.builder()
-                            .id(mapping.getId())
-                            .attName(mapping.getProductAttribute().getName())
-                            .productId(mapping.getProduct().getId())
-                            .productAttributeId(mapping.getProductAttribute().getId())
-                            .textPrompt(mapping.getTextPrompt())
-                            .isRequired(mapping.getIsRequired())
-                            .attributeControlTypeId(mapping.getAttributeControlTypeId() != null ? mapping.getAttributeControlTypeId().name() : null)
-                            .displayOrder(mapping.getDisplayOrder())
-                            .productAttributeValueRequests(fetchProductAttributeValues(mapping.getId()))
-                            .build();
-                    return response;
-                })
-                .collect(Collectors.toList());
-    }
-
     private void validatePageRequest(int pageNo, int pageSize) {
         if (pageNo < 1 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
@@ -187,6 +162,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     }
 
     public void checkProductAttributeExits(Long productAttributeId, Long productId) {
+
         ProductAttribute productAttribute = productAttributeRepository.findById(productAttributeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product attribute with id not found: " + productAttributeId));
         Product product = productRepository.findById(productId)
@@ -197,12 +173,32 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         }
     }
 
+    @Override
+    public List<ProductProductAttributeMappingDetailResponse> getProductProductAttributeMappingByproductId(Long productId) {
+
+        return productProductAttributeMappingRepository.findByProductId(productId).stream()
+                .map(mapping -> ProductProductAttributeMappingDetailResponse.builder()
+                        .id(mapping.getId())
+                        .attName(mapping.getProductAttribute().getName())
+                        .productId(mapping.getProduct().getId())
+                        .productAttributeId(mapping.getProductAttribute().getId())
+                        .textPrompt(mapping.getTextPrompt())
+                        .isRequired(mapping.getIsRequired())
+                        .attributeControlTypeId(mapping.getAttributeControlTypeId() != null ? mapping.getAttributeControlTypeId().name() : null)
+                        .displayOrder(mapping.getDisplayOrder())
+                        .productAttributeValueResponses(fetchProductAttributeValues(mapping.getId()))
+                        .build())
+                .toList();
+    }
+
 
     private List<ProductAttributeValueResponse> fetchProductAttributeValues(Long productAttributeMappingId) {
-        List<ProductAttributeValue> values = productAttributeValueRepository.findByProductAttributeMappingId(productAttributeMappingId);
+        List<ProductAttributeValue> values = productAttributeValueRepository
+                .findByProductAttributeMappingId(productAttributeMappingId);
 
         return values.stream()
                 .map(productAttributeValueMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
+
 }

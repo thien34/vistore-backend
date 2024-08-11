@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationAttributeGroupRequest {
+
     private String name;
+
     private Integer displayOrder;
+
 }

@@ -8,4 +8,5 @@ import org.mapstruct.Mapper;
 public interface ProductMapper {
 
     ProductFakeResponse toDto(Product product);
+
 }

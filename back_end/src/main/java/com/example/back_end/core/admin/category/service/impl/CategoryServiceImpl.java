@@ -12,7 +12,6 @@ import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.repository.CategoryRepository;
 import com.example.back_end.repository.PictureRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +23,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final PictureRepository pictureRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public void createCategory(CategoryRequest categoryRequest) {
+
         validateCategoryParent(categoryRequest.getCategoryParentId());
         validatePicture(categoryRequest.getPictureId());
 
@@ -44,6 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void updateCategory(Long id, CategoryRequest request) {
+
         Category category = categoryRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
@@ -56,21 +56,24 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PageResponse<?> getAll(String name, Boolean published, Integer pageNo, Integer pageSize) {
+    public PageResponse<List<CategoriesResponse>> getAll(
+            String name,
+            Boolean published,
+            Integer pageNo,
+            Integer pageSize)
+    {
         if (pageNo - 1 < 0 || pageSize <= 0) {
             throw new IllegalArgumentException("Invalid page number or page size");
         }
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
-        Page<Category> categoryPage = categoryRepository.
-                findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
+        Page<Category> categoryPage = categoryRepository
+                .findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
 
-        List<CategoriesResponse> categoriesResponses = categoryPage.getContent()
-                .stream()
-                .map(categoryMapper::toCategoriesResponse)
-                .toList();
+        List<CategoriesResponse> categoriesResponses = categoryMapper
+                .toCategoriesResponseList(categoryPage.getContent());
 
-        return PageResponse.builder()
+        return PageResponse.<List<CategoriesResponse>>builder()
                 .page(categoryPage.getNumber())
                 .size(categoryPage.getSize())
                 .totalPage(categoryPage.getTotalPages())
@@ -80,6 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse getCategory(Long id) {
+
         Category category = categoryRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
@@ -90,6 +94,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategories(List<Long> ids) {
+
         List<Category> categories = categoryRepository.findAllById(ids);
 
         if (categories.size() != ids.size()) {
@@ -115,4 +120,5 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResourceNotFoundException("Picture with id not found: " + pictureId);
         }
     }
+
 }

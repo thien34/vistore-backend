@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationAttributeUpdateRequest {
+
     @NotBlank
     @Size(max = 255, message = "Name must not exceed 255 characters")
     private String name;

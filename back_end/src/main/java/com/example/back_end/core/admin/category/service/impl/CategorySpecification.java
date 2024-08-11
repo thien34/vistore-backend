@@ -10,6 +10,7 @@ import java.util.List;
 public class CategorySpecification {
 
     public static Specification<Category> filterByNameAndPublished(String name, Boolean published) {
+
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (name != null && !name.isEmpty()) {
@@ -21,4 +22,5 @@ public class CategorySpecification {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
+
 }
