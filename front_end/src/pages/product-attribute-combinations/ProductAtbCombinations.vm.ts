@@ -10,7 +10,7 @@ export interface ProductAtbMapping {
     attName: string
     attributeControlTypeId: string
     isRequired: boolean
-    productAttributeValueRequests: ProductAtbMappingValue[]
+    productAttributeValueResponses: ProductAtbMappingValue[]
 }
 
 interface ProductAtbMappingValue {

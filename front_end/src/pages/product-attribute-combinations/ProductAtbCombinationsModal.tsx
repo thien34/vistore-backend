@@ -46,7 +46,7 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
                 const fieldName = item.attName.toLowerCase().replace(' ', '_')
                 switch (item.attributeControlTypeId) {
                     case 'DROPDOWN':
-                        initialValues[fieldName] = item.productAttributeValueRequests[0]?.name
+                        initialValues[fieldName] = item?.productAttributeValueResponses[0]?.name
                         return (
                             <Form.Item
                                 key={item.attName}
@@ -58,9 +58,9 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
                                         : []
                                 }
                             >
-                                {item.productAttributeValueRequests.length > 0 && (
+                                {item.productAttributeValueResponses.length > 0 && (
                                     <Select>
-                                        {item.productAttributeValueRequests.map((attr) => (
+                                        {item.productAttributeValueResponses.map((attr) => (
                                             <Select.Option key={attr.id} value={attr.name}>
                                                 {attr.name}
                                             </Select.Option>
