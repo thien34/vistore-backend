@@ -18,5 +18,4 @@ public interface PredefinedProductAttributeValueMapper {
 
     @Mapping(source = "productAttribute", target = "productAttribute.id")
     void updateEntity(PredefinedProductAttributeValueRequest request, @MappingTarget PredefinedProductAttributeValue entity);
-
 }

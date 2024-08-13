@@ -2,11 +2,13 @@ package com.example.back_end.infrastructure.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 @Getter
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true)
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION("Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 
@@ -32,18 +34,36 @@ public enum ErrorCode {
     PRODUCT_ATTRIBUTE_ALREADY_EXISTS("Product attribute already exist,you can reuse it", HttpStatus.OK),
 
 
-    PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED("Predefined product attribute value does not existed", HttpStatus.NOT_FOUND),
-    PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED("The predefined product attribute name already exists, you can reuse it", HttpStatus.BAD_REQUEST),
+    PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED(
+            "Predefined product attribute value does not existed",
+            HttpStatus.NOT_FOUND
+    ),
+    PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED(
+            "The predefined product attribute name already exists, you can reuse it",
+            HttpStatus.BAD_REQUEST
+    ),
 
     INVALID_PAGE_NUMBER_OR_PAGE_SIZE("Invalid page number or page size", HttpStatus.BAD_REQUEST),
 
     PRODUCT_ATTRIBUTE_EXISTED("Product attribute already existed", HttpStatus.BAD_REQUEST),
 
-    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_FOUND("Product specification attribute mapping not found", HttpStatus.NOT_FOUND),
-    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED("Product specification attribute mapping already existed", HttpStatus.BAD_REQUEST),
-    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED("Product specification attribute mapping does not exists", HttpStatus.BAD_REQUEST),
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_FOUND(
+            "Product specification attribute mapping not found",
+            HttpStatus.NOT_FOUND
+    ),
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_EXISTED(
+            "Product specification attribute mapping already existed",
+            HttpStatus.BAD_REQUEST
+    ),
+    PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED(
+            "Product specification attribute mapping does not exists",
+            HttpStatus.BAD_REQUEST
+    ),
 
-    ID_SPECIFICATION_ATTRIBUTE_OPTION_INVALID("Invalid specification attribute option ID", HttpStatus.BAD_REQUEST),
+    ID_SPECIFICATION_ATTRIBUTE_OPTION_INVALID(
+            "Invalid specification attribute option ID",
+            HttpStatus.BAD_REQUEST
+    ),
     ID_SPECIFICATION_ATTRIBUTE_INVALID("Invalid specification attribute ID", HttpStatus.BAD_REQUEST);
 
     String message;

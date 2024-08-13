@@ -25,8 +25,6 @@ function useProductAttributeCreate() {
         cost: 0,
         isPreSelected: false,
         displayOrder: 0,
-        productAttribute: null,
-        setIsEditPriceAdjustment: 0,
     })
     const [isOpenConfirm, setOpenConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -79,8 +77,6 @@ function useProductAttributeCreate() {
                 cost: 0,
                 isPreSelected: false,
                 displayOrder: 0,
-                productAttribute: null,
-                setIsEditPriceAdjustment: 0,
             })
             setIsModalOpen(false)
         }
@@ -116,7 +112,9 @@ function useProductAttributeCreate() {
 
             console.log('data: ', data)
             await onFinish(data)
-            navigate('/admin/product-attributes')
+
+            // Navigate with state to reload data
+            navigate('/admin/product-attributes', { state: { reload: true } })
         } catch (error) {
             console.error('Error submitting form:', error)
             message.error('Failed to submit form')

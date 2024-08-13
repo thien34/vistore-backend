@@ -78,7 +78,7 @@ export default function ProductAttribute() {
             <Form id='myForm' form={form} onFinish={handleFinish} layout='vertical'>
                 <Modal
                     onCancel={() => setOpenConfirm(false)}
-                    footer={
+                    footer={() => (
                         <div>
                             <Button style={{ margin: 8 }} form='myForm' key='submit' type='primary' htmlType='submit'>
                                 Submit
@@ -87,7 +87,7 @@ export default function ProductAttribute() {
                                 Cancel
                             </Button>
                         </div>
-                    }
+                    )}
                     open={isOpenConfirm}
                 >
                     <div className={'py-10 font-bold text-[16px]'}>Do you want to create Product Attribute?</div>

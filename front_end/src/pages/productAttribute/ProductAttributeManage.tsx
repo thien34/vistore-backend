@@ -28,7 +28,7 @@ export default function ProductAttributeManage() {
     } = useProductAttributeViewModel()
     useEffect(() => {
         handleSearch({ name: '', published: true })
-    }, [handleSearch])
+    }, [])
 
     const getProductAttributeColumns = (): TableColumnsType<ProductAttributeResponse> => [
         {
