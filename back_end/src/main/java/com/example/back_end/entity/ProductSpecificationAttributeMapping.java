@@ -52,5 +52,7 @@ public class ProductSpecificationAttributeMapping {
     @Column(name = "display_order")
     private Integer displayOrder;
 
-    private String attributeType;
+    @Column(name = "specification_attribute_info", columnDefinition = "jsonb")
+    private String specificationAttributeInfo;
+
 }

@@ -7,23 +7,21 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface ProductSpecificationAttributeMappingMapper {
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "specificationAttributeOption.id", target = "specificationAttributeOptionId")
     @Mapping(source = "specificationAttributeOption.name", target = "specificationAttributeOptionName")
-    @Mapping(target = "attributeType", source = "attributeType")
     @Mapping(target = "specificationAttributeId", source = "specificationAttributeOption.specificationAttribute.id")
     @Mapping(target = "specificationAttributeName", source = "specificationAttributeOption.specificationAttribute.name")
+    @Mapping(source = "specificationAttributeInfo", target = "specificationAttributeInfo") // Thêm dòng này
     ProductSpecificationAttributeMappingResponse toDto(ProductSpecificationAttributeMapping mapping);
 
     List<ProductSpecificationAttributeMappingResponse> toDto(List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "specificationAttributeOption", ignore = true)
-    @Mapping(target = "attributeType", source = "attributeType")
     ProductSpecificationAttributeMapping toEntity(ProductSpecificationAttributeMappingRequest productSpecificationAttributeMappingRequest);
-
 }
+

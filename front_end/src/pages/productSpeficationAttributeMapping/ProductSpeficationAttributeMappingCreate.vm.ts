@@ -15,7 +15,6 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
     navigate: NavigateFunction,
 ) => {
     const [attributeType, setAttributeType] = useState('Option')
-    const [customHtml, setCustomHtml] = useState('')
     const [selectedAttributeId, setSelectedAttributeId] = useState<number | null>(null)
     const [attributeOptions, setAttributeOptions] = useState<SpecificationAttributeOptionResponse[]>([])
     const [attributes, setAttributes] = useState<SpecificationAttributeResponse[]>([])
@@ -83,11 +82,7 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                         ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
                         : attributeType === 'CustomText'
                           ? values.customText
-                          : attributeType === 'CustomHtml'
-                            ? customHtml
-                            : attributeType === 'HyperLink'
-                              ? values.hyperlink
-                              : ''
+                          : ''
 
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
@@ -96,7 +91,6 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
                     specificationAttributeId: selectedAttributeId,
-                    attributeType: attributeType,
                 }
 
                 createMutation.mutate(payload, {
@@ -122,11 +116,7 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                         ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
                         : attributeType === 'CustomText'
                           ? values.customText
-                          : attributeType === 'CustomHtml'
-                            ? customHtml
-                            : attributeType === 'HyperLink'
-                              ? values.hyperlink
-                              : ''
+                          : ''
 
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
@@ -135,7 +125,6 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
                     specificationAttributeId: selectedAttributeId ?? undefined,
-                    attributeType: attributeType,
                 }
 
                 createMutation.mutate(payload, {
@@ -165,8 +154,6 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
     return {
         attributeType,
         setAttributeType,
-        customHtml,
-        setCustomHtml,
         selectedAttributeId,
         setSelectedAttributeId,
         attributeOptions,

@@ -17,8 +17,6 @@ const ProductSpecificationAttributeMappingCreate = () => {
     const {
         attributeType,
         setAttributeType,
-        customHtml,
-        setCustomHtml,
         selectedAttributeId,
         attributeOptions,
         groupedAttributes,
@@ -63,8 +61,6 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     <Select onChange={(value) => setAttributeType(value)}>
                         <Option value='Option'>Option</Option>
                         <Option value='CustomText'>Custom Text</Option>
-                        <Option value='CustomHtml'>Custom HTML Text</Option>
-                        <Option value='HyperLink'>HyperLink</Option>
                     </Select>
                 </Form.Item>
 
@@ -74,10 +70,7 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     tooltip='Select the attribute'
                     rules={[{ required: true, message: 'Please select an attribute!' }]}
                 >
-                    <Select
-                        onChange={handleAttributeChange}
-                        dropdownStyle={{ maxHeight: 300, overflow: 'auto' }} // Thêm thuộc tính này để tạo thanh cuộn
-                    >
+                    <Select onChange={handleAttributeChange} dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}>
                         {groupedAttributes &&
                             Array.from(groupedAttributes.entries()).map(([groupName, attrs]) => (
                                 <OptGroup key={groupName} label={groupName}>
@@ -99,9 +92,7 @@ const ProductSpecificationAttributeMappingCreate = () => {
                         tooltip='Select the attribute option'
                         rules={[{ required: true, message: 'Please select an attribute option!' }]}
                     >
-                        <Select
-                            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }} // Thêm thuộc tính này để tạo thanh cuộn
-                        >
+                        <Select dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}>
                             {attributeOptions.length > 0 ? (
                                 attributeOptions.map((option) => (
                                     <Option key={option.id} value={option.id}>
@@ -123,36 +114,6 @@ const ProductSpecificationAttributeMappingCreate = () => {
                         rules={[{ required: true, message: 'Please enter custom text!' }]}
                     >
                         <Input.TextArea rows={4} />
-                    </Form.Item>
-                )}
-
-                {attributeType === 'CustomHtml' && (
-                    <Form.Item
-                        label='Custom HTML Text'
-                        name='customHtml'
-                        tooltip='Enter custom HTML text'
-                        rules={[{ required: true, message: 'Please enter custom HTML text!' }]}
-                    >
-                        <Editor
-                            apiKey='bkjd3qy86up5pl6yvop38mueuvzz7gqxa85mnjox5oejos5g'
-                            value={customHtml}
-                            init={{
-                                plugins: 'link image code',
-                                toolbar: 'undo redo | link image | code',
-                            }}
-                            onEditorChange={(content) => setCustomHtml(content)}
-                        />
-                    </Form.Item>
-                )}
-
-                {attributeType === 'HyperLink' && (
-                    <Form.Item
-                        label='HyperLink URL'
-                        name='hyperlink'
-                        tooltip='Enter hyperlink URL'
-                        rules={[{ required: true, message: 'Please enter a hyperlink URL!' }]}
-                    >
-                        <Input />
                     </Form.Item>
                 )}
                 <Form.Item name='showOnProductPage' valuePropName='checked'>

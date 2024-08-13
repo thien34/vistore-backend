@@ -25,7 +25,6 @@ const ProductUpdateSpecificationAttributeMapping = () => {
             <Table dataSource={tableData} pagination={false} bordered>
                 <Table.Column title='Attribute' dataIndex='attributeName' key='attributeName' />
                 <Table.Column title='Value' dataIndex='optionName' key='optionName' />
-                <Table.Column title='Attribute Type' dataIndex='attributeType' key='attributeType' />
                 <Table.Column
                     title='Show on product page'
                     dataIndex='showOnProductPage'
