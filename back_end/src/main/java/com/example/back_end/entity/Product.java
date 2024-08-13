@@ -89,9 +89,6 @@ public class Product extends Auditable {
     @Column(name = "min_stock_quantity")
     private Integer minStockQuantity;
 
-    @Column(name = "order_minimum_quantity")
-    private Integer orderMinimumQuantity;
-
     @Column(name = "not_returnable")
     private Boolean notReturnable;
 

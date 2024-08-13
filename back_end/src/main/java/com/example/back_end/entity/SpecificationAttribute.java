@@ -44,6 +44,7 @@ public class SpecificationAttribute extends Auditable {
 
     @Column(name = "display_order")
     private Integer displayOrder;
+
     @OneToMany(mappedBy = "specificationAttribute", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<SpecificationAttributeOption> specificationAttributeOptions;
 

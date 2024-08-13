@@ -16,6 +16,7 @@ export default function useProductUpdateSpecificationAttributeMappingViewModel()
         ProductSpecificationAttributeMappingConfigs.resourceKey,
         Number(productId),
     )
+
     const handleReload = async () => {
         setIsSpinning(true)
         try {
@@ -34,14 +35,28 @@ export default function useProductUpdateSpecificationAttributeMappingViewModel()
 
     const dataSource = isSuccess && apiData && apiData.items ? apiData.items : []
 
-    const tableData = dataSource.map((mapping) => ({
-        key: mapping.id,
-        attributeName: mapping.specificationAttributeName,
-        optionName: mapping.customValue,
-        attributeType: mapping.attributeType,
-        showOnProductPage: mapping.showOnProductPage,
-        displayOrder: mapping.displayOrder,
-    }))
+    const tableData = dataSource.map((mapping) => {
+        let attributeName = mapping.specificationAttributeName
+        if (mapping.specificationAttributeOptionId === null && mapping.specificationAttributeInfo) {
+            // Nếu không có optionId, lấy tên từ JSON
+            try {
+                const info = JSON.parse(mapping.specificationAttributeInfo)
+                attributeName = info.name
+            } catch (e) {
+                console.error('Error parsing specificationAttributeInfo:', e)
+                attributeName = 'Unknown'
+            }
+        }
+
+        return {
+            key: mapping.id,
+            attributeName,
+            optionName: mapping.customValue,
+            showOnProductPage: mapping.showOnProductPage,
+            displayOrder: mapping.displayOrder,
+        }
+    })
+
     return {
         handleReload,
         tableData,

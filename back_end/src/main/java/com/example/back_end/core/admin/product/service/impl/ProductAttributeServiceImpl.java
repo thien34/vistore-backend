@@ -3,7 +3,6 @@ package com.example.back_end.core.admin.product.service.impl;
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
-import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
@@ -18,6 +17,7 @@ import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductAttributeServiceImpl implements ProductAttributeService {
@@ -42,15 +43,14 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     @Transactional
-    public void createProductAttribute(ProductAttributeRequest request) {
-
+    public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
         String trimmedName = request.getName().trim().replaceAll("\\s+", " ");
         if (productAttributeRepository.existsByName(trimmedName)) {
             throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         }
 
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
-        ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
+        ProductAttribute savedProductAttribute  = productAttributeRepository.save(productAttribute);
 
         List<PredefinedProductAttributeValue> values = request.getValues().stream()
                 .map(valueRequest -> PredefinedProductAttributeValue.builder()
@@ -66,6 +66,8 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .toList();
 
         predefinedProductAttributeValueRepository.saveAll(values);
+
+        return savedProductAttribute;
     }
 
     @Override
@@ -76,11 +78,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
-
                     List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                             .map(PredefinedProductAttributeValueResponse::mapToResponse)
                             .toList();
-
                     response.setValues(values);
                     return response;
                 })
@@ -97,10 +97,8 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     public ProductAttributeResponse getProductAttributeById(Long id) {
-
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
                 .orElseThrow(() -> new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
-
         return ProductAttributeResponse.mapToResponse(productAttribute);
     }
 
@@ -116,7 +114,8 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
         productAttributeMapper.updateEntityFromRequest(request, productAttribute);
 
-        Map<Long, PredefinedProductAttributeValue> existingValuesMap = predefinedProductAttributeValueRepository.findByProductAttributeId(id)
+        Map<Long, PredefinedProductAttributeValue> existingValuesMap = predefinedProductAttributeValueRepository
+                .findByProductAttributeId(id)
                 .stream()
                 .collect(Collectors.toMap(PredefinedProductAttributeValue::getId, value -> value));
 
@@ -159,11 +158,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
-
                     List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                             .map(PredefinedProductAttributeValueResponse::mapToResponse)
                             .toList();
-
                     response.setValues(values);
                     return response;
                 })
@@ -185,10 +182,4 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
             productAttributeRepository.deleteAllInBatch(productAttributes);
         }
     }
-
-    @Override
-    public List<ProductAttributeNameResponse> getAttributeName() {
-        return productAttributeRepository.findAllNameProductAttribute();
-    }
-
 }

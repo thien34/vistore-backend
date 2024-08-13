@@ -30,10 +30,10 @@ public class ProductSpecificationAttributeMappingResponse {
 
     int displayOrder;
 
-    String attributeType;
-
     Long specificationAttributeId;
 
     String specificationAttributeName;
+
+    String specificationAttributeInfo;
 
 }

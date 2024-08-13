@@ -1,6 +1,5 @@
 package com.example.back_end.infrastructure.constant;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +8,7 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(makeFinal = true)
 public enum SuccessCode {
     OPERATION_SUCCESSFUL("Operation completed successfully", HttpStatus.OK),
 
@@ -19,7 +18,7 @@ public enum SuccessCode {
     PRODUCT_ATTRIBUTE_DELETED("Product attribute deleted successfully", HttpStatus.NO_CONTENT),
     PRODUCT_ATTRIBUTE_SEARCH("Product attribute deleted successfully", HttpStatus.NO_CONTENT),
 
-    GET_PRODUCT_ATTRIBUTE_BY_ID("Get product attribute search by name successfully ", HttpStatus.OK),
+    GET_PRODUCT_ATTRIBUTE_BY_ID("Get product attribute successfully ", HttpStatus.OK),
 
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_CREATED("Predefined product attribute value created successfully", HttpStatus.CREATED),
     PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_GET_ALL("Get all predefined product attribute value successfully", HttpStatus.OK),

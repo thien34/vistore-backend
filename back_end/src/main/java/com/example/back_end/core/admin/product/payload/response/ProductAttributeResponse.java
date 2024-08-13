@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -28,10 +29,10 @@ public class ProductAttributeResponse {
 
         List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                 .map(PredefinedProductAttributeValueResponse::mapToResponse)
+                .sorted(Comparator.comparing(PredefinedProductAttributeValueResponse::getDisplayOrder, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
         response.setValues(values);
 
         return response;
     }
-
 }

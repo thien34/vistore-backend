@@ -6,15 +6,16 @@ import useGetAllApi from '@/hooks/use-get-all-api.ts'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api.ts'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingConfigs.ts'
-import { ProductSpecificationAttributeMappingRequest } from '@/model/ProductSpecificationAttributeMapping.ts'
+import {
+    ProductSpecificationAttributeMappingRequest,
+    ProductSpecificationAttributeMappingResponse,
+} from '@/model/ProductSpecificationAttributeMapping.ts'
 import { SpecificationAttributeOptionResponse } from '@/model/SpecificationAttributeOption.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
 import { message, Modal } from 'antd'
-
 const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     const [attributeType, setAttributeType] = useState('Option')
     const [isSpinning, setIsSpinning] = useState(false)
-    const [customHtml, setCustomHtml] = useState('')
     const [attributeOptions, setAttributeOptions] = useState<SpecificationAttributeOptionResponse[]>([])
     const [attributes, setAttributes] = useState<SpecificationAttributeResponse[]>([])
     const { productId, id } = useParams<{ productId: string; id: string }>()
@@ -36,7 +37,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
         data: existingMapping,
         isLoading: isLoadingMapping,
         error: errorMapping,
-    } = useGetByIdApi<ProductSpecificationAttributeMappingRequest>(
+    } = useGetByIdApi<ProductSpecificationAttributeMappingResponse>(
         ProductSpecificationAttributeMappingConfigs.resourceUrl,
         ProductSpecificationAttributeMappingConfigs.resourceKey,
         mappingId || 0,
@@ -59,13 +60,14 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     useEffect(() => {
         if (listAttribute?.items) {
             const attrs = listAttribute.items
-            setAttributes(attrs)
-            if (attrs.length > 0) {
-                const defaultAttributeId = attrs[0].id
-                setAttributeOptions(attrs[0].listOptions || [])
+            const filteredAttrs = attrs.filter((attr) => attr.listOptions.length > 0) // Filter attributes with no options
+            setAttributes(filteredAttrs)
+            if (filteredAttrs.length > 0) {
+                const defaultAttributeId = filteredAttrs[0].id
+                setAttributeOptions(filteredAttrs[0].listOptions || [])
                 form.setFieldsValue({
                     attribute: defaultAttributeId,
-                    attributeOption: attrs[0].listOptions?.[0]?.id,
+                    attributeOption: filteredAttrs[0].listOptions?.[0]?.id,
                 })
             }
         }
@@ -74,26 +76,44 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     useEffect(() => {
         if (existingMapping) {
             const {
-                attributeType,
                 specificationAttributeId,
                 specificationAttributeOptionId,
                 customValue,
                 showOnProductPage,
                 displayOrder,
+                specificationAttributeInfo,
             } = existingMapping
 
-            setAttributeType(attributeType)
+            const parsedInfo = specificationAttributeInfo ? JSON.parse(specificationAttributeInfo) : null
+
+            const type = specificationAttributeOptionId === null ? 'CustomText' : 'Option'
+            setAttributeType(type)
+
+            // Nếu specificationAttributeOptionId là null, sử dụng name từ specificationAttributeInfo
+            let attributeName = specificationAttributeOptionId === null ? (parsedInfo ? parsedInfo.name : '') : ''
+            if (specificationAttributeOptionId !== null) {
+                const selectedOption = attributes.find((attr) =>
+                    attr.listOptions.some((option) => option.id === specificationAttributeOptionId),
+                )
+                if (selectedOption) {
+                    attributeName = selectedOption.listOptions.find(
+                        (option) => option.id === specificationAttributeOptionId,
+                    ).name
+                }
+            }
+
+            // Đặt giá trị vào form
             form.setFieldsValue({
-                attribute: specificationAttributeId,
-                attributeOption: specificationAttributeOptionId,
-                customText: attributeType === 'CustomText' ? customValue : '',
-                hyperlink: attributeType === 'HyperLink' ? customValue : '',
-                customHtml: attributeType === 'CustomHtml' ? customValue : '',
+                attribute: specificationAttributeId || undefined,
+                attributeOption: specificationAttributeOptionId || undefined,
+                customText: type === 'CustomText' ? customValue : '',
                 showOnProductPage,
                 displayOrder,
-                attributeType,
+                attributeType: type,
+                attributeName, // Đặt attributeName
             })
 
+            // Cập nhật danh sách tùy chọn thuộc tính nếu có
             const selectedAttribute = attributes.find((attr) => attr.id === specificationAttributeId)
             if (selectedAttribute) {
                 setAttributeOptions(selectedAttribute.listOptions || [])
@@ -119,6 +139,9 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
 
     const handleAttributeTypeChange = (value: string) => {
         setAttributeType(value)
+        if (value === 'CustomText') {
+            form.setFieldsValue({ attributeOption: undefined })
+        }
     }
 
     const handleDelete = () => {
@@ -149,11 +172,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                         ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
                         : attributeType === 'CustomText'
                           ? values.customText
-                          : attributeType === 'CustomHtml'
-                            ? customHtml
-                            : attributeType === 'HyperLink'
-                              ? values.hyperlink
-                              : ''
+                          : ''
 
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
@@ -162,7 +181,6 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
                     specificationAttributeId: values.attribute,
-                    attributeType: attributeType,
                 }
 
                 updateMutation.mutate(payload, {
@@ -179,6 +197,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                 console.log('Validate Failed:', info)
             })
     }
+
     const handleReload = async () => {
         setIsSpinning(true) // Show spinner
         await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -189,8 +208,6 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     return {
         attributeType,
         setAttributeType,
-        customHtml,
-        setCustomHtml,
         attributeOptions,
         setAttributeOptions,
         attributes,

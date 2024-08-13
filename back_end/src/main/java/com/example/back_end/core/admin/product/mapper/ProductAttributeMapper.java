@@ -1,7 +1,6 @@
 package com.example.back_end.core.admin.product.mapper;
 
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
-import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.entity.ProductAttribute;
 import org.mapstruct.Mapper;
@@ -20,10 +19,6 @@ public interface ProductAttributeMapper {
     @Mapping(target = "values", source = "values")
     ProductAttributeResponse toDto(ProductAttribute entity);
 
-    ProductAttributeNameResponse toDtoName(ProductAttribute entity);
-
-    List<ProductAttributeNameResponse> toDtosName(List<ProductAttribute> entities);
-
     List<ProductAttribute> toEntities(List<ProductAttributeRequest> dtos);
 
     List<ProductAttributeResponse> toDtos(List<ProductAttribute> entities);
@@ -35,5 +30,4 @@ public interface ProductAttributeMapper {
     default List<ProductAttributeResponse> toDtos(Page<ProductAttribute> page) {
         return toDtos(page.getContent());
     }
-
 }

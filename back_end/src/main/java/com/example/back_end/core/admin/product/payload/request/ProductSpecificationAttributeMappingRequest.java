@@ -28,6 +28,4 @@ public class ProductSpecificationAttributeMappingRequest {
 
     Long specificationAttributeId;
 
-    String attributeType;
-
 }

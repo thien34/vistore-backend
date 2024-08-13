@@ -73,53 +73,42 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .orElseThrow(() -> new IllegalArgumentException(
                         ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage())));
 
-        SpecificationAttributeOption specificationAttributeOption;
+        SpecificationAttributeOption specificationAttributeOption = null;
 
-        if (request.getSpecificationAttributeOptionId() == null) {
-            specificationAttributeOption = new SpecificationAttributeOption(request.getCustomValue());
-
-            if (request.getDisplayOrder() != null) {
-                specificationAttributeOption.setDisplayOrder(request.getDisplayOrder());
-            }
-            if (request.getSpecificationAttributeId() != null) {
-                SpecificationAttribute specificationAttribute = specificationAttributeRepository
-                        .findById(request.getSpecificationAttributeId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
-
-                specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
-            }
-            specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
-        } else {
+        if (request.getSpecificationAttributeOptionId() != null) {
             specificationAttributeOption = specificationAttributeOptionRepository
                     .findById(request.getSpecificationAttributeOptionId())
                     .orElseThrow(() -> new IllegalArgumentException(
                             ErrorCode.SPECIFICATION_ATTRIBUTE_OPTION_NOT_EXISTS.getMessage()));
 
-            if (request.getDisplayOrder() != null) {
-                specificationAttributeOption.setDisplayOrder(request.getDisplayOrder());
-            }
-
-            if (request.getSpecificationAttributeId() != null) {
-                SpecificationAttribute specificationAttribute = specificationAttributeRepository
-                        .findById(request.getSpecificationAttributeId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
-
-                specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
-            }
-
+            mapping.setCustomValue(specificationAttributeOption.getName());
             specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
+
+        } else {
+            SpecificationAttribute specificationAttribute = specificationAttributeRepository
+                    .findById(request.getSpecificationAttributeId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
+
+            String jsonAttributeInfo = String.format(
+                    "{\"id\": %d, \"name\": \"%s\"}",
+                    specificationAttribute.getId(),
+                    specificationAttribute.getName()
+            );
+            mapping.setSpecificationAttributeInfo(jsonAttributeInfo);
+            mapping.setCustomValue(request.getCustomValue());
         }
         mapping.setSpecificationAttributeOption(specificationAttributeOption);
-
-        mapping.setAttributeType(request.getAttributeType());
 
         mapping = productSpecificationAttributeMappingRepository.save(mapping);
 
         return productSpecificationAttributeMappingMapper.toDto(mapping);
-
     }
+
+
+
+
+
 
     @Override
     public ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id) {
@@ -277,9 +266,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         Optional.ofNullable(request.getCustomValue())
                 .filter(value -> request.getSpecificationAttributeOptionId() == null)
                 .ifPresent(existingMapping::setCustomValue);
-
-        Optional.ofNullable(request.getAttributeType())
-                .ifPresent(existingMapping::setAttributeType);
 
         existingMapping = productSpecificationAttributeMappingRepository.save(existingMapping);
 
