@@ -12,7 +12,6 @@ import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.DataIntegrityViolationException;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
-import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
@@ -37,7 +36,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
 
     @Override
     @Transactional
-    public PredefinedProductAttributeValue createProductAttributeValue(
+    public void createProductAttributeValue(
             PredefinedProductAttributeValueRequest request
     ) {
         if (!productAttributeRepository.existsById(request.getProductAttribute()))
@@ -48,14 +47,12 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
             throw new ExistsByNameException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED.getMessage());
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueMapper.toEntity(request);
-        return predefinedProductAttributeValueRepository.save(value);
+        predefinedProductAttributeValueRepository.save(value);
     }
 
     @Override
     public PageResponse<List<PredefinedProductAttributeValueResponse>> getAllPredefinedProductAttributeValue(
-            String name,
-            int pageNo,
-            int pageSize
+            String name, int pageNo, int pageSize
     ) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
@@ -77,7 +74,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
     public PredefinedProductAttributeValueResponse getPredefinedAttributeValueById(Long id) {
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new NotExistsException(
                         ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage()));
 
         return PredefinedProductAttributeValueResponse.mapToResponse(value);
@@ -85,11 +82,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
 
     @Override
     @Transactional
-    public PredefinedProductAttributeValueResponse updatePredefinedAttributeValue(
-            Long id,
-            PredefinedProductAttributeValueRequest request
-    ) {
-
+    public void updatePredefinedAttributeValue(Long id, PredefinedProductAttributeValueRequest request) {
         PredefinedProductAttributeValue value = predefinedProductAttributeValueRepository.findById(id)
                 .orElseThrow(() -> new NotExistsException(
                         ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage()));
@@ -100,10 +93,9 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
         }
 
         predefinedProductAttributeValueMapper.updateEntity(request, value);
-        PredefinedProductAttributeValue updatedValue = predefinedProductAttributeValueRepository.save(value);
-
-        return PredefinedProductAttributeValueResponse.mapToResponse(updatedValue);
+        predefinedProductAttributeValueRepository.save(value);
     }
+
 
     @Override
     public void deletePredefinedAttributeValue(Long id) {

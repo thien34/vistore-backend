@@ -156,32 +156,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         return productAttributeMapper.toDto(savedProductAttribute);
     }
 
-
-    @Override
-    public PageResponse<List<ProductAttributeResponse>> searchByNameName(String name, int pageNo, int pageSize) {
-
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
-        Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
-
-        List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
-                .map(productAttribute -> {
-                    ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
-                    List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
-                            .map(PredefinedProductAttributeValueResponse::mapToResponse)
-                            .toList();
-                    response.setValues(values);
-                    return response;
-                })
-                .toList();
-
-        return PageResponse.<List<ProductAttributeResponse>>builder()
-                .page(productAttributePage.getNumber())
-                .size(productAttributePage.getSize())
-                .totalPage(productAttributePage.getTotalPages())
-                .items(productAttributeResponseList)
-                .build();
-    }
-
     @Override
     public void deleteProductAttribute(List<Long> ids) {
 

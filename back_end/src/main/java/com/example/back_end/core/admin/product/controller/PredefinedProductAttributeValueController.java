@@ -5,8 +5,6 @@ import com.example.back_end.core.admin.product.payload.response.PredefinedProduc
 import com.example.back_end.core.admin.product.service.PredefinedProductAttributeValueService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.entity.PredefinedProductAttributeValue;
-import com.example.back_end.infrastructure.constant.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,51 +37,53 @@ public class PredefinedProductAttributeValueController {
                 .getAllPredefinedProductAttributeValue(name, pageNo, pageSize);
 
         return ResponseData.<PageResponse<List<PredefinedProductAttributeValueResponse>>>builder()
-                .status(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_GET_ALL.getStatusCode().value())
-                .message(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_GET_ALL.getMessage())
+                .status(HttpStatus.OK.value())
+                .message("Get all predefined product attribute value successfully")
                 .data(response)
                 .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseData<PredefinedProductAttributeValueResponse> getPredefinedAttributeValueById(@PathVariable Long id) {
+    public ResponseData<PredefinedProductAttributeValueResponse> getPredefinedAttributeValueById(
+            @PathVariable Long id
+    ) {
 
         PredefinedProductAttributeValueResponse response = predefinedProductAttributeValueService
                 .getPredefinedAttributeValueById(id);
 
         return ResponseData.<PredefinedProductAttributeValueResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get predefined product attribute value by id successfully")
                 .data(response)
                 .build();
     }
 
     @PostMapping
-    public ResponseData<PredefinedProductAttributeValueResponse> createPredefinedProductAttributeValue(
+    public ResponseData<Void> createPredefinedProductAttributeValue(
             @Valid @RequestBody PredefinedProductAttributeValueRequest request) {
 
-        PredefinedProductAttributeValue response = predefinedProductAttributeValueService
-                .createProductAttributeValue(request);
+        predefinedProductAttributeValueService.createProductAttributeValue(request);
 
-        return ResponseData.<PredefinedProductAttributeValueResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_CREATED.getMessage())
-                .data(PredefinedProductAttributeValueResponse.mapToResponse(response))
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Predefined product attribute value created successfully")
                 .build();
     }
 
+
     @PutMapping("/{id}")
-    public ResponseData<PredefinedProductAttributeValueResponse> updatePredefinedProductAttributeValue(
+    public ResponseData<Void> updatePredefinedProductAttributeValue(
             @PathVariable Long id,
             @Valid @RequestBody PredefinedProductAttributeValueRequest request) {
 
-        PredefinedProductAttributeValueResponse response = predefinedProductAttributeValueService
-                .updatePredefinedAttributeValue(id, request);
+        predefinedProductAttributeValueService.updatePredefinedAttributeValue(id, request);
 
-        return ResponseData.<PredefinedProductAttributeValueResponse>builder()
-                .status(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_UPDATED.getStatusCode().value())
-                .message(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_UPDATED.getMessage())
-                .data(response)
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Predefined product attribute value updated successfully")
                 .build();
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseData<Void> deletePredefinedProductAttributeValue(@PathVariable Long id) {
@@ -91,8 +91,8 @@ public class PredefinedProductAttributeValueController {
         predefinedProductAttributeValueService.deletePredefinedAttributeValue(id);
 
         return ResponseData.<Void>builder()
-                .status(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_DELETED.getStatusCode().value())
-                .message(SuccessCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_DELETED.getMessage())
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Predefined product attribute value deleted successfully")
                 .build();
     }
 }
