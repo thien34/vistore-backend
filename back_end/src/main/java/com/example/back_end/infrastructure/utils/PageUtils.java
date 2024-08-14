@@ -12,9 +12,9 @@ public class PageUtils {
         ValidateUtils.validatePageable(pageNo, pageSize);
 
         if (sortType.equals("asc"))
-            return PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+            return PageRequest.of(pageNo - 1, pageSize, Sort.by(sortBy).ascending());
 
-        return PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
+        return PageRequest.of(pageNo - 1, pageSize, Sort.by(sortBy).descending());
     }
 
 }
