@@ -44,6 +44,7 @@ const ProductUpdateSpecificationAttributeMapping = () => {
                     )}
                 />
             </Table>
+
             {isSpinning && (
                 <div className='flex justify-center items-center h-full w-full fixed top-0 left-0 bg-[#fff] bg-opacity-50 z-10'>
                     <Spin size='large' />

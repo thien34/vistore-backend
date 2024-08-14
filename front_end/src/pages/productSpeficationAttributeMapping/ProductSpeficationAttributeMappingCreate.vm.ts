@@ -87,11 +87,14 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
                     specificationAttributeOptionId: values.attributeOption || null,
-                    customValue: customValue,
+                    customValue: JSON.stringify({
+                        custom_value: customValue,
+                        spec_attribute_id: selectedAttributeId,
+                    }),
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
-                    specificationAttributeId: selectedAttributeId,
                 }
+                console.log(payload)
 
                 createMutation.mutate(payload, {
                     onSuccess: () => {
@@ -121,10 +124,12 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                 const payload: ProductSpecificationAttributeMappingRequest = {
                     productId: Number(productId),
                     specificationAttributeOptionId: values.attributeOption || null,
-                    customValue: customValue,
+                    customValue: JSON.stringify({
+                        custom_value: customValue,
+                        spec_attribute_id: selectedAttributeId,
+                    }),
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
-                    specificationAttributeId: selectedAttributeId ?? undefined,
                 }
 
                 createMutation.mutate(payload, {
@@ -140,6 +145,7 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                 console.log('Validate Failed:', info)
             })
     }
+
     const handleReload = async () => {
         setIsSpinning(true)
         try {

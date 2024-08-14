@@ -43,7 +43,7 @@ public class ProductSpecificationAttributeMapping {
     @JsonBackReference
     private SpecificationAttributeOption specificationAttributeOption;
 
-    @Column(name = "custom_value", length = Integer.MAX_VALUE)
+    @Column(name = "custom_value", length = Integer.MAX_VALUE,columnDefinition = "jsonb")
     private String customValue;
 
     @Column(name = "show_on_product_page")
@@ -51,8 +51,5 @@ public class ProductSpecificationAttributeMapping {
 
     @Column(name = "display_order")
     private Integer displayOrder;
-
-    @Column(name = "specification_attribute_info", columnDefinition = "jsonb")
-    private String specificationAttributeInfo;
 
 }

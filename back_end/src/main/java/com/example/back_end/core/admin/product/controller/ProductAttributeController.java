@@ -85,7 +85,7 @@ public class ProductAttributeController {
     public ResponseData<PageResponse<List<ProductAttributeResponse>>> searchByNameName(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "6") Integer size) {
 
         PageResponse<List<ProductAttributeResponse>> attributes = productAttributeService.searchByNameName(name, page, size);
 
