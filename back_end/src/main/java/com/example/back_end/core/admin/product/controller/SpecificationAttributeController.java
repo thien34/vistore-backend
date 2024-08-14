@@ -51,7 +51,7 @@ public class SpecificationAttributeController {
     @GetMapping
     public ResponseData<PageResponse<List<SpecificationAttributeResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<SpecificationAttributeResponse>> response = specificationAttributesService
@@ -110,7 +110,7 @@ public class SpecificationAttributeController {
     @GetMapping("/no-group-or-invalid")
     public ResponseData<PageResponse<List<SpecificationAttributeResponse>>> getAllAttribute(
             @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<SpecificationAttributeResponse>> response = specificationAttributesService

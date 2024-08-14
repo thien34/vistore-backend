@@ -11,9 +11,7 @@ import ProductAtbCombinationsConfig from './ProductAtbCombinationsConfig'
 import useGetByIdApi from '@/hooks/use-get-by-id-api'
 import useProductAtbCombinationsViewModel from './ProductAtbCombinations.vm'
 
-type Props = {}
-
-export default function ProductAtbCombinationsManage({}: Props) {
+export default function ProductAtbCombinationsManage() {
     const columns = [
         {
             title: 'Attributes',

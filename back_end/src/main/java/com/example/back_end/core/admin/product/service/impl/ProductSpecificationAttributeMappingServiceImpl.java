@@ -11,7 +11,9 @@ import com.example.back_end.entity.ProductSpecificationAttributeMapping;
 import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.NotExistsException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ProductSpecificationAttributeMappingRepository;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
@@ -20,9 +22,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +42,13 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
 
     @Override
     public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
-        Page<ProductSpecificationAttributeMapping> mappingPage =
-                productSpecificationAttributeMappingRepository
-                        .searchByCustomValueContaining(name, pageable);
 
-        List<ProductSpecificationAttributeMappingResponse> responses =
-                productSpecificationAttributeMappingMapper
-                        .toDto(mappingPage.getContent());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
+        Page<ProductSpecificationAttributeMapping> mappingPage = productSpecificationAttributeMappingRepository
+                .searchByCustomValueContaining(name, pageable);
+
+        List<ProductSpecificationAttributeMappingResponse> responses = productSpecificationAttributeMappingMapper
+                .toDto(mappingPage.getContent());
 
         return PageResponse.<List<ProductSpecificationAttributeMappingResponse>>builder()
                 .page(mappingPage.getNumber())
@@ -105,11 +101,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         return productSpecificationAttributeMappingMapper.toDto(mapping);
     }
 
-
-
-
-
-
     @Override
     public ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id) {
 
@@ -120,7 +111,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                                         ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED.getMessage()));
 
         return productSpecificationAttributeMappingMapper.toDto(mapping);
-
     }
 
     @Override
@@ -131,19 +121,13 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
 
         if (!spec.isEmpty())
             productSpecificationAttributeMappingRepository.deleteAllInBatch(spec);
-
     }
 
     @Override
     public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getProductSpecificationAttributeMappingsByProductId(
             Long productId, int pageNo, int pageSize) {
 
-        if (pageNo < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
-
-        Pageable pageable = PageRequest
-                .of(pageNo, pageSize, Sort.by("displayOrder").descending());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<ProductSpecificationAttributeMapping> mappingPage =
                 productSpecificationAttributeMappingRepository.findByProductId(productId, pageable);
 
@@ -157,7 +141,6 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                 .totalPage(mappingPage.getTotalPages())
                 .items(responses)
                 .build();
-
     }
 
     @Override

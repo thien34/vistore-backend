@@ -16,6 +16,8 @@ public interface SpecificationAttributeGroupMapper {
     @Mapping(target = "specificationAttributes", expression = "java(mapSpecificationAttributes(specificationAttributeGroup.getSpecificationAttributes()))")
     SpecificationAttributeGroupResponse toDto(SpecificationAttributeGroup specificationAttributeGroup);
 
+    List<SpecificationAttributeGroupResponse> toDtoList(List<SpecificationAttributeGroup> specificationAttributeGroups);
+
     // Custom method to map specification attributes to their responses
     default List<SpecificationAttributeResponse> mapSpecificationAttributes(List<SpecificationAttribute> specificationAttributes) {
         return specificationAttributes.stream()

@@ -5,14 +5,15 @@ import com.example.back_end.core.admin.stockquantityhistory.payload.request.Stoc
 import com.example.back_end.core.admin.stockquantityhistory.payload.response.StockQuantityHistoryResponse;
 import com.example.back_end.core.admin.stockquantityhistory.service.StockQuantityHistoryServices;
 import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.validator.ValidateUtils;
 import com.example.back_end.entity.StockQuantityHistory;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.StockQuantityHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,12 +51,11 @@ public class StockQuantityHistoryServiceImpl implements StockQuantityHistoryServ
             Integer pageNo,
             Integer pageSize) {
 
-        if (pageNo - 1 < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
+        ValidateUtils.validatePageable(pageNo, pageSize);
 
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
-        Page<StockQuantityHistory> stockQuantityHistoryPage = stockQuantityHistoryRepository.findAll(productId, pageable);
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
+        Page<StockQuantityHistory> stockQuantityHistoryPage = stockQuantityHistoryRepository
+                .findAll(productId, pageable);
 
         List<StockQuantityHistoryResponse> stockQuantityHistories = stockQuantityHistoryMapper
                 .mapToDtoList(stockQuantityHistoryPage.getContent());

@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true)
 public enum SuccessCode {
+
+//    todo: xoa di
     OPERATION_SUCCESSFUL("Operation completed successfully", HttpStatus.OK),
 
     PRODUCT_ATTRIBUTE_CREATED("Product attribute created successfully", HttpStatus.CREATED),

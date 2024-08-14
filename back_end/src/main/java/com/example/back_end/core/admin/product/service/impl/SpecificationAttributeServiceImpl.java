@@ -12,7 +12,9 @@ import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeGroup;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.NotExistsException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ProductSpecificationAttributeMappingRepository;
 import com.example.back_end.repository.SpecificationAttributeGroupRepository;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
@@ -21,9 +23,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,10 +47,8 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
 
     @Override
     public PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(String name, int pageNo, int pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
+
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<SpecificationAttribute> specificationAttributePage = specificationAttributeRepository
                 .findByNameContaining(name, pageable);
 
@@ -69,17 +67,12 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     @Override
     public PageResponse<List<SpecificationAttributeResponse>> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize) {
 
-        if (pageNo < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Invalid page number or page size");
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
-
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<SpecificationAttribute> specificationAttributePage = specificationAttributeRepository
                 .findAttributesWithNoGroupOrInvalidGroup(pageable);
 
-        List<SpecificationAttributeResponse> responseList = specificationAttributePage.getContent().stream()
-                .map(specificationAttributeMapper::toDto)
-                .toList();
+        List<SpecificationAttributeResponse> responseList = specificationAttributeMapper
+                .toDtoList(specificationAttributePage.getContent());
 
         return PageResponse.<List<SpecificationAttributeResponse>>builder()
                 .page(specificationAttributePage.getNumber())
@@ -112,7 +105,6 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
         specificationAttribute = specificationAttributeRepository.save(specificationAttribute);
 
         return specificationAttributeMapper.toDto(specificationAttribute);
-
     }
 
     @Override
@@ -194,7 +186,6 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                         ))
                         .toList())
                 .build();
-
     }
 
     @Override
@@ -205,7 +196,6 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
         if (!spec.isEmpty()) {
             specificationAttributeRepository.deleteAllInBatch(spec);
         }
-
     }
 
     @Override
@@ -215,7 +205,6 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
                 .orElseThrow(() -> new NotExistsException(ErrorCode.SPECIFICATION_ATTRIBUTE_NOT_EXISTED.getMessage()));
 
         return SpecificationAttributeResponse.mapToResponse(productAttribute);
-
     }
 
 }

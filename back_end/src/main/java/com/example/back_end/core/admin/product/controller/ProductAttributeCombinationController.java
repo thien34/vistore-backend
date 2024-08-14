@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.product.controller;
 
-
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeCombinationRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeCombinationResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeCombinationService;
@@ -34,7 +33,6 @@ public class ProductAttributeCombinationController {
                 .message("Add product combination success")
                 .build();
     }
-
 
     @GetMapping("/product/{productId}")
     public ResponseData<List<ProductAttributeCombinationResponse>> findByProductId(

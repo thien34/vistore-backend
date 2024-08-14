@@ -7,20 +7,20 @@ import com.example.back_end.core.admin.product.service.PredefinedProductAttribut
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.DataIntegrityViolationException;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,13 +57,13 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
             int pageNo,
             int pageSize
     ) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
+
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<PredefinedProductAttributeValue> valuePage =
                 predefinedProductAttributeValueRepository.findByNameContaining(name, pageable);
 
-        List<PredefinedProductAttributeValueResponse> responseList = valuePage.stream()
-                .map(predefinedProductAttributeValueMapper::toDto)
-                .toList();
+        List<PredefinedProductAttributeValueResponse> responseList = predefinedProductAttributeValueMapper
+                .toListDto(valuePage.getContent());
 
         return PageResponse.<List<PredefinedProductAttributeValueResponse>>builder()
                 .page(valuePage.getNumber())

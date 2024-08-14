@@ -8,17 +8,18 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.constant.SortType;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.SpecificationAttributeOptionRepository;
 import com.example.back_end.repository.SpecificationAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -33,17 +34,12 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
     @Override
     public PageResponse<List<SpecificationAttributeOptionResponse>> getAllSpecificationAttributeOption(String name, int pageNo, int pageSize) {
 
-        if (pageNo < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Invalid page number or page size");
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("displayOrder").descending());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<SpecificationAttributeOption> specificationAttributeOption =
                 specificationAttributeOptionRepository.findByNameContaining(name, pageable);
 
-        List<SpecificationAttributeOptionResponse> productSpecificationResponse =
-                specificationAttributeOption.stream()
-                .map(specificationAttributeOptionMapper::toDto)
-                .toList();
+        List<SpecificationAttributeOptionResponse> productSpecificationResponse = specificationAttributeOptionMapper
+                .toDtoList(specificationAttributeOption.getContent());
 
         return PageResponse.<List<SpecificationAttributeOptionResponse>>builder()
                 .page(specificationAttributeOption.getNumber())
@@ -76,7 +72,6 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
 
         specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
         return specificationAttributeOptionMapper.toDto(specificationAttributeOption);
-
     }
 
 

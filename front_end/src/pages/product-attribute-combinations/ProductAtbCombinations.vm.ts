@@ -33,49 +33,6 @@ function useProductAtbCombinationsViewModel() {
         pictureIds: [],
     }
 
-    // const data: ProductAtbMapping[] = [
-    //     {
-    //         name: 'RAM',
-    //         type: 'select',
-    //         isRequired: true,
-    //         attributes: [
-    //             { id: 1, value: '8GB' },
-    //             { id: 2, value: '16GB' },
-    //             { id: 3, value: '32GB' },
-    //         ],
-    //     },
-    //     {
-    //         name: 'HDD',
-    //         type: 'radio',
-    //         isRequired: true,
-    //         attributes: [
-    //             { id: 4, value: '1TB' },
-    //             { id: 5, value: '2TB' },
-    //             { id: 6, value: '512GB SSD' },
-    //         ],
-    //     },
-    //     {
-    //         name: 'Color',
-    //         type: 'select',
-    //         isRequired: false,
-    //         attributes: [
-    //             { id: 7, value: 'Red' },
-    //             { id: 8, value: 'Blue' },
-    //             { id: 9, value: 'Green' },
-    //         ],
-    //     },
-    //     {
-    //         name: 'Processor',
-    //         type: 'radio',
-    //         isRequired: false,
-    //         attributes: [
-    //             { id: 10, value: 'Intel i5' },
-    //             { id: 11, value: 'Intel i7' },
-    //             { id: 12, value: 'AMD Ryzen 5' },
-    //         ],
-    //     },
-    // ]
-
     const queryClient = useQueryClient()
     const [open, setOpen] = useState(false)
     const [selectedRecord, setSelectedRecord] = useState<ProductAttributeCombinationRequest | null>(null)

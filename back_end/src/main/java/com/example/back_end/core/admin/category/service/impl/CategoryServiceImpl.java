@@ -8,14 +8,14 @@ import com.example.back_end.core.admin.category.payload.response.CategoryRespons
 import com.example.back_end.core.admin.category.service.CategoryService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Category;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.CategoryRepository;
 import com.example.back_end.repository.PictureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void updateCategory(Long id, CategoryRequest request) {
 
-        Category category = categoryRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
+        Category category = findCategoryById(id);
 
         validateCategoryParent(request.getCategoryParentId());
         validatePicture(request.getPictureId());
@@ -60,13 +58,9 @@ public class CategoryServiceImpl implements CategoryService {
             String name,
             Boolean published,
             Integer pageNo,
-            Integer pageSize)
-    {
-        if (pageNo - 1 < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
+            Integer pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<Category> categoryPage = categoryRepository
                 .findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
 
@@ -84,10 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategory(Long id) {
 
-        Category category = categoryRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + id));
-
+        Category category = findCategoryById(id);
         return categoryMapper.toDto(category);
     }
 
@@ -109,16 +100,21 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAllCategoriesName();
     }
 
-    public void validateCategoryParent(Long categoryParentId) {
+    private void validateCategoryParent(Long categoryParentId) {
         if (categoryParentId != null && !categoryRepository.existsById(categoryParentId)) {
             throw new ResourceNotFoundException("Category parent with id not found: " + categoryParentId);
         }
     }
 
-    public void validatePicture(Long pictureId) {
+    private void validatePicture(Long pictureId) {
         if (pictureId != null && !pictureRepository.existsById(pictureId)) {
             throw new ResourceNotFoundException("Picture with id not found: " + pictureId);
         }
+    }
+
+    private Category findCategoryById(Long idCategory) {
+        return categoryRepository.findById(idCategory)
+                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + idCategory));
     }
 
 }

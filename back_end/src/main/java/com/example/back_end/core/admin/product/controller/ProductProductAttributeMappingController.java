@@ -44,7 +44,8 @@ public class ProductProductAttributeMappingController {
             @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
 
-        PageResponse<List<ProductProductAttributeMappingResponse>> response = productAttributeService.getProductProductAttributeMappings(productId, pageNo, pageSize);
+        PageResponse<List<ProductProductAttributeMappingResponse>> response = productAttributeService
+                .getProductProductAttributeMappings(productId, pageNo, pageSize);
 
         return ResponseData.<PageResponse<List<ProductProductAttributeMappingResponse>>>builder()
                 .status(HttpStatus.OK.value())
@@ -92,6 +93,7 @@ public class ProductProductAttributeMappingController {
 
     @GetMapping("/product/{id}")
     public ResponseData<List<ProductProductAttributeMappingDetailResponse>> findProductProductAttributeMapping(@PathVariable Long id) {
+
         List<ProductProductAttributeMappingDetailResponse> responses = productAttributeService
                 .getProductProductAttributeMappingByproductId(id);
 

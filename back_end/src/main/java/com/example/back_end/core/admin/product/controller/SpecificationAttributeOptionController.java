@@ -49,7 +49,7 @@ public class SpecificationAttributeOptionController {
     @GetMapping
     public ResponseData<PageResponse<List<SpecificationAttributeOptionResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<SpecificationAttributeOptionResponse>> response = specificationAttributeOptionService

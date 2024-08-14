@@ -52,7 +52,7 @@ public class ProductSpecificationAttributeMappingController {
     @GetMapping
     public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<ProductSpecificationAttributeMappingResponse>> response = productSpecificationAttributeMappingService
@@ -98,7 +98,7 @@ public class ProductSpecificationAttributeMappingController {
     @GetMapping("/by-product/{productId}")
     public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingResponse>>> getByProductId(
             @PathVariable Long productId,
-            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<ProductSpecificationAttributeMappingResponse>> response = productSpecificationAttributeMappingService

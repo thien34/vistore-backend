@@ -7,13 +7,13 @@ import com.example.back_end.core.admin.manufacturer.payload.response.Manufacture
 import com.example.back_end.core.admin.manufacturer.service.ManufactureServices;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Manufacturer;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ManufacturerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,17 +50,11 @@ public class ManufacturerServicesImpl implements ManufactureServices {
             Integer pageNo,
             Integer pageSize) {
 
-        if (pageNo - 1 < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
-
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<Manufacturer> manufacturerPage = manufacturerRepository.findManufacturer(name, published, pageable);
 
-        List<ManufacturerResponse> manufacturerResponses = manufacturerPage.getContent()
-                .stream()
-                .map(manufacturerMapper::maptoManufacturerResponse)
-                .toList();
+        List<ManufacturerResponse> manufacturerResponses = manufacturerMapper
+                .maptoManufacturerResponseList(manufacturerPage.getContent());
 
         return PageResponse.<List<ManufacturerResponse>>builder()
                 .page(manufacturerPage.getNumber())

@@ -24,7 +24,7 @@ export default function ProductManage() {
 
     const dataSource = listResponse?.items || []
 
-    const handleRowClick = (record) => {
+    const handleRowClick = (record: ProductResponse) => {
         navigate(`/admin/products/product-spec-attribute-mapping/productId/${record.id}`)
     }
 

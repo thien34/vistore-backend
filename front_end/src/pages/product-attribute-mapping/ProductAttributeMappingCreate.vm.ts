@@ -62,7 +62,7 @@ function useProductAttributeMappingCreateViewModel() {
         const requestData: ProductProductAttributeMappingRequest = {
             ...values,
             productAttributeValueRequests: dataSource,
-            productId: 2,
+            productId: 1,
         }
         console.log(requestData)
 

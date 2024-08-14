@@ -1,5 +1,17 @@
-import { Button, Card, FormProps, Image, InputNumber, Modal, Radio, Select, Typography } from 'antd'
-import { Checkbox, Form, Input } from 'antd'
+import {
+    Button,
+    Card,
+    FormProps,
+    Image,
+    InputNumber,
+    Modal,
+    Radio,
+    Select,
+    Typography,
+    Checkbox,
+    Form,
+    Input,
+} from 'antd'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 import useProductAtbCombinationsViewModel, { ProductAtbMapping } from './ProductAtbCombinations.vm'
 import { ProductAttributeCombinationRequest } from '@/model/ProductAttributeCombination'
@@ -13,7 +25,7 @@ type Props = {
     selectedRecord: ProductAttributeCombinationRequest | null
 }
 
-export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecord, setIsModalOpen }: Props) {
+export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecord, setIsModalOpen }: Readonly<Props>) {
     const [form] = Form.useForm()
 
     const { handleCreate, onFinishFailed, initialValues, error } = useProductAtbCombinationsViewModel()
@@ -81,9 +93,9 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
                                         : []
                                 }
                             >
-                                {item.productAttributeValueRequests.length > 0 && (
+                                {item.productAttributeValueResponses.length > 0 && (
                                     <Radio.Group>
-                                        {item.productAttributeValueRequests.map((attr) => (
+                                        {item.productAttributeValueResponses.map((attr) => (
                                             <Radio key={attr.id} value={attr.name}>
                                                 {attr.name}
                                             </Radio>
@@ -102,99 +114,98 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
     const onFinish: FormProps<ProductAttributeCombinationRequest>['onFinish'] = async (values) => {
         try {
             await handleCreate(values)
-
             form.resetFields()
             setIsModalOpen(false)
-        } catch (error) {}
+        } catch (error) {
+            console.error(error)
+        }
     }
     return (
-        <>
-            <Modal
-                maskClosable={false}
-                closable={true}
-                width={750}
-                title='Select new combination and enter details below'
-                open={isModalOpen}
-                onCancel={handleCancel}
-                footer={null}
+        <Modal
+            maskClosable={false}
+            closable={true}
+            width={750}
+            title='Select new combination and enter details below'
+            open={isModalOpen}
+            onCancel={handleCancel}
+            footer={null}
+        >
+            {error && (
+                <Card title='' className='mb-10' size='small'>
+                    <Text type='danger'>{error}</Text>
+                </Card>
+            )}
+
+            <Form
+                form={form}
+                name='basic'
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                style={{ maxWidth: 600 }}
+                initialValues={initialValues}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                autoComplete='off'
             >
-                {error && (
-                    <Card title='' className='mb-10' size='small'>
-                        <Text type='danger'>{error}</Text>
-                    </Card>
-                )}
+                {renderFormItems()}
+                <Form.Item<ProductAttributeCombinationRequest> label='Stock quantity' name='stockQuantity'>
+                    <InputNumber min={1} max={10000} className='w-[100%]' />
+                </Form.Item>
 
-                <Form
-                    form={form}
-                    name='basic'
-                    labelCol={{ span: 8 }}
-                    wrapperCol={{ span: 16 }}
-                    style={{ maxWidth: 600 }}
-                    initialValues={initialValues}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete='off'
+                <Form.Item<ProductAttributeCombinationRequest> label='Minimum stock qty' name='minStockQuantity'>
+                    <InputNumber min={0} className='w-[100%]' />
+                </Form.Item>
+
+                <Form.Item<ProductAttributeCombinationRequest>
+                    label='Allow out of stock'
+                    valuePropName='checked'
+                    name='allowOutOfStockOrders'
                 >
-                    {renderFormItems()}
-                    <Form.Item<ProductAttributeCombinationRequest> label='Stock quantity' name='stockQuantity'>
-                        <InputNumber min={1} max={10000} className='w-[100%]' />
-                    </Form.Item>
+                    <Checkbox></Checkbox>
+                </Form.Item>
 
-                    <Form.Item<ProductAttributeCombinationRequest> label='Minimum stock qty' name='minStockQuantity'>
-                        <InputNumber min={0} className='w-[100%]' />
-                    </Form.Item>
+                <Form.Item<ProductAttributeCombinationRequest> label='SKU' name='sku'>
+                    <Input />
+                </Form.Item>
 
-                    <Form.Item<ProductAttributeCombinationRequest>
-                        label='Allow out of stock'
-                        valuePropName='checked'
-                        name='allowOutOfStockOrders'
-                    >
+                <Form.Item<ProductAttributeCombinationRequest>
+                    label='Manufacturer part number'
+                    name='manufacturerPartNumber'
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<ProductAttributeCombinationRequest> label='GTIN' name='gtin'>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<ProductAttributeCombinationRequest> label='Overridden price' name='overriddenPrice'>
+                    <InputNumber min={0} className='w-[100%]' />
+                </Form.Item>
+
+                <Form.Item<ProductAttributeCombinationRequest> label='Pictures' name='pictureIds'>
+                    <div className='flex items-center -mt-2'>
                         <Checkbox></Checkbox>
-                    </Form.Item>
-
-                    <Form.Item<ProductAttributeCombinationRequest> label='SKU' name='sku'>
-                        <Input />
-                    </Form.Item>
-
-                    <Form.Item<ProductAttributeCombinationRequest>
-                        label='Manufacturer part number'
-                        name='manufacturerPartNumber'
-                    >
-                        <Input />
-                    </Form.Item>
-
-                    <Form.Item<ProductAttributeCombinationRequest> label='GTIN' name='gtin'>
-                        <Input />
-                    </Form.Item>
-
-                    <Form.Item<ProductAttributeCombinationRequest> label='Overridden price' name='overriddenPrice'>
-                        <InputNumber min={0} className='w-[100%]' />
-                    </Form.Item>
-
-                    <Form.Item<ProductAttributeCombinationRequest> label='Pictures' name='pictureIds'>
-                        <div className='flex items-center -mt-2'>
-                            <Checkbox></Checkbox>
-                            <Image
-                                className='ms-10'
-                                width={50}
-                                src='https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
-                            />
-                        </div>
-                    </Form.Item>
-
-                    <div style={{ display: 'none' }}>
-                        <Form.Item<ProductAttributeCombinationRequest> label='Overridden price' name='id'>
-                            <InputNumber className='w-[100%]' />
-                        </Form.Item>
+                        <Image
+                            className='ms-10'
+                            width={50}
+                            src='https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+                        />
                     </div>
+                </Form.Item>
 
-                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                        <Button type='primary' htmlType='submit'>
-                            Submit
-                        </Button>
+                <div style={{ display: 'none' }}>
+                    <Form.Item<ProductAttributeCombinationRequest> label='Overridden price' name='id'>
+                        <InputNumber className='w-[100%]' />
                     </Form.Item>
-                </Form>
-            </Modal>
-        </>
+                </div>
+
+                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                    <Button type='primary' htmlType='submit'>
+                        Submit
+                    </Button>
+                </Form.Item>
+            </Form>
+        </Modal>
     )
 }

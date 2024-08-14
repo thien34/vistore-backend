@@ -3,15 +3,18 @@ package com.example.back_end.core.admin.product.service.impl;
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
+import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.ErrorCode;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
@@ -19,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +45,14 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Override
     @Transactional
     public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
+
         String trimmedName = request.getName().trim().replaceAll("\\s+", " ");
         if (productAttributeRepository.existsByName(trimmedName)) {
             throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         }
 
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
-        ProductAttribute savedProductAttribute  = productAttributeRepository.save(productAttribute);
+        ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
 
         List<PredefinedProductAttributeValue> values = request.getValues().stream()
                 .map(valueRequest -> PredefinedProductAttributeValue.builder()
@@ -72,16 +74,19 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     public PageResponse<List<ProductAttributeResponse>> getAllProductAttribute(String name, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
 
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
                 .map(productAttribute -> {
                     ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
+
                     List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                             .map(PredefinedProductAttributeValueResponse::mapToResponse)
                             .toList();
                     response.setValues(values);
+
                     return response;
                 })
                 .toList();
@@ -94,17 +99,19 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .build();
     }
 
-
     @Override
     public ProductAttributeResponse getProductAttributeById(Long id) {
+
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
                 .orElseThrow(() -> new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
+
         return ProductAttributeResponse.mapToResponse(productAttribute);
     }
 
     @Override
     @Transactional
     public ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request) {
+
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
                 .orElseThrow(() -> new NotExistsException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage()));
 
@@ -151,8 +158,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
 
     @Override
-    public PageResponse<List<ProductAttributeResponse>> searchByNameName(String name, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+    public PageResponse<List<ProductAttributeResponse>> searchByNameName(String name, int pageNo, int pageSize) {
+
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
 
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
@@ -176,10 +184,17 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Override
     public void deleteProductAttribute(List<Long> ids) {
+
         List<ProductAttribute> productAttributes = productAttributeRepository.findAllById(ids);
 
         if (!productAttributes.isEmpty()) {
             productAttributeRepository.deleteAllInBatch(productAttributes);
         }
     }
+
+    @Override
+    public List<ProductAttributeNameResponse> getAttributeName() {
+        return productAttributeRepository.findAllNameProductAttribute();
+    }
+
 }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true)
 public enum ErrorCode {
+
     UNCATEGORIZED_EXCEPTION("Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 
     //

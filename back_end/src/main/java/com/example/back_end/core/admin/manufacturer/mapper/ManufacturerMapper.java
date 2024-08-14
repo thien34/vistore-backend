@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ManufacturerMapper {
 
@@ -15,6 +17,8 @@ public interface ManufacturerMapper {
 
     @Mapping(source = "picture.id", target = "pictureId")
     ManufacturerResponse maptoManufacturerResponse(Manufacturer manufacturer);
+
+    List<ManufacturerResponse> maptoManufacturerResponseList(List<Manufacturer> manufacturers);
 
     void updateManufacturer(ManufacturerRequest manufacturerRequest, @MappingTarget Manufacturer manufacturer);
 

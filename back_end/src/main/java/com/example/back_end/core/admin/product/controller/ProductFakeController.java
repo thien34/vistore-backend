@@ -6,9 +6,7 @@ import com.example.back_end.core.admin.product.service.ProductFakeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +20,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/products")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ProductFakeController {
 
-    ProductFakeService productFakeService;
+    private final ProductFakeService productFakeService;
 
     @Operation(summary = "Create a new product",
             description = "Create a new product with the given details")
@@ -44,7 +41,7 @@ public class ProductFakeController {
     @GetMapping
     public ResponseData<PageResponse<List<ProductFakeResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<ProductFakeResponse>> response = productFakeService.getAllProducts(pageNo, pageSize);

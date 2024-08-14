@@ -8,20 +8,19 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductProductTagMapping;
 import com.example.back_end.entity.ProductTag;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ProductProductTagMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ProductTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -35,6 +34,7 @@ public class ProductTagServiceImpl implements ProductTagService {
 
     @Override
     public void createProductTag(ProductTagRequest request) {
+
         Product product = getProduct(request.getProductId());
         ProductTag productTag = saveProductTag(request);
 
@@ -43,20 +43,13 @@ public class ProductTagServiceImpl implements ProductTagService {
 
     @Override
     public PageResponse<List<ProductTagResponse>> getAll(String name, int pageNo, int pageSize) {
-        if (pageNo < 0 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
 
         // Fetch all matching items with pagination and sort by ID in descending order directly in the query
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<ProductTag> productTagPage = productTagRepository.findByNameContaining(name, pageable);
 
         // Map to DTO responses
-        List<ProductTagResponse> productTagResponses = productTagPage.stream()
-                .map(productTagMapper::toDto)
-                .sorted(Comparator.comparing(ProductTagResponse::getId).reversed())
-                .toList();
+        List<ProductTagResponse> productTagResponses = productTagMapper.toDtoList(productTagPage.getContent());
 
         return PageResponse.<List<ProductTagResponse>>builder()
                 .page(productTagPage.getNumber())
@@ -109,19 +102,6 @@ public class ProductTagServiceImpl implements ProductTagService {
                 .productTag(productTag)
                 .build();
         productProductTagMappingRepository.save(productTagMapping);
-    }
-
-    private PageResponse<?> convertToPageResponse(Page<ProductTag> productTagPage, Pageable pageable) {
-        List<ProductTagResponse> response = productTagPage.getContent()
-                .stream()
-                .map(productTagMapper::toDto)
-                .toList();
-
-        return PageResponse.builder()
-                .page(pageable.getPageNumber())
-                .size(pageable.getPageSize())
-                .totalPage(productTagPage.getTotalPages())
-                .items(response).build();
     }
 
 }

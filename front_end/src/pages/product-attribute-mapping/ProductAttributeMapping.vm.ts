@@ -10,7 +10,7 @@ interface Search extends RequestParams {
 }
 
 function useProductAttributeMappingViewModel() {
-    const [filter, setFilter] = useState<Search>({ productId: 2 })
+    const [filter, setFilter] = useState<Search>({ productId: 1 })
 
     // HANDLE TABLE CHANGE
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {

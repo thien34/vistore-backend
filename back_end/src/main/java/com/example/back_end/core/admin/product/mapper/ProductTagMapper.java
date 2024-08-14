@@ -6,6 +6,8 @@ import com.example.back_end.entity.ProductTag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ProductTagMapper {
 
@@ -13,6 +15,8 @@ public interface ProductTagMapper {
 
     @Mapping(target = "productId", expression = "java(getProductId(productTag))")
     ProductTagResponse toDto(ProductTag productTag);
+
+    List<ProductTagResponse> toDtoList(List<ProductTag> productTags);
 
     default Long getProductId(ProductTag productTag) {
         if (productTag.getProductProductTagMappings() != null

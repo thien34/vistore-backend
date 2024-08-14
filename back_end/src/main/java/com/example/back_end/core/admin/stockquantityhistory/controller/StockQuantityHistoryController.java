@@ -65,7 +65,8 @@ public class StockQuantityHistoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseData<StockQuantityHistoryResponse> getARecordOfStocKQuanityHistory(@PathVariable Long id) {
+    public ResponseData<StockQuantityHistoryResponse> getARecordOfStockQuantityHistory(@PathVariable Long id) {
+
         StockQuantityHistoryResponse response = stockQuantityHistoryServices.getStockQuantityHistory(id);
 
         return ResponseData.<StockQuantityHistoryResponse>builder()

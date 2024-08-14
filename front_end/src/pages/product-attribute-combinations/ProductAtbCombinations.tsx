@@ -1,7 +1,6 @@
 import { Tabs, type TabsProps } from 'antd'
 import ProductAtbCombinationsManage from './ProductAtbCombinationsManage'
 
-type Props = {}
 const onChange = (key: string) => {
     console.log(key)
 }
@@ -24,7 +23,7 @@ const items: TabsProps['items'] = [
     },
 ]
 
-export default function ProductAtbCombinations({}: Props) {
+export default function ProductAtbCombinations() {
     return (
         <div>
             <Tabs defaultActiveKey='1' items={items} onChange={onChange} />

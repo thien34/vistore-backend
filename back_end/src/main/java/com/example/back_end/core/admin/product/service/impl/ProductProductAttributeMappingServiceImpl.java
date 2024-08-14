@@ -14,7 +14,9 @@ import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.entity.ProductAttributeValuePicture;
 import com.example.back_end.entity.ProductProductAttributeMapping;
+import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValuePictureRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
@@ -22,9 +24,7 @@ import com.example.back_end.repository.ProductProductAttributeMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +45,10 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
 
     @Override
     public PageResponse<List<ProductProductAttributeMappingResponse>> getProductProductAttributeMappings(Long productId, int pageNo, int pageSize) {
-        validatePageRequest(pageNo, pageSize);
+
         getProductOrThrow(productId);
 
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<ProductProductAttributeMapping> page = productProductAttributeMappingRepository
                 .findAllByProductId(productId, pageable);
         List<ProductProductAttributeMappingResponse> responses = productProductAttributeMappingMapper
@@ -64,6 +64,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
 
     @Override
     public ProductProductAttributeMappingDetailResponse getProductProductAttributeMapping(Long id) {
+
         ProductProductAttributeMapping attributeMapping = getMappingOrThrow(id);
 
         List<ProductAttributeValue> productAttributeValue = productAttributeValueRepository
@@ -98,6 +99,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     @Override
     @Transactional
     public void addProductProductAttributeMapping(ProductProductAttributeMappingRequest request) {
+
         getProductOrThrow(request.getProductId());
         validateProductAttribute(request.getProductAttributeId());
         checkProductAttributeExits(request.getProductAttributeId(), request.getProductId());
@@ -117,6 +119,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
     @Override
     @Transactional
     public void updateProductProductAttributeMapping(Long id, ProductProductAttributeMappingRequest request) {
+
         getMappingOrThrow(id);
         getProductOrThrow(request.getProductId());
         validateProductAttribute(request.getProductAttributeId());
@@ -135,12 +138,6 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
             throw new ResourceNotFoundException("Product product attribute mapping with id not found: " + id);
         }
         productProductAttributeMappingRepository.deleteById(id);
-    }
-
-    private void validatePageRequest(int pageNo, int pageSize) {
-        if (pageNo < 1 || pageSize <= 0) {
-            throw new IllegalArgumentException("Invalid page number or page size");
-        }
     }
 
     private void getProductOrThrow(Long productId) {
@@ -190,7 +187,6 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
                         .build())
                 .toList();
     }
-
 
     private List<ProductAttributeValueResponse> fetchProductAttributeValues(Long productAttributeMappingId) {
         List<ProductAttributeValue> values = productAttributeValueRepository
