@@ -35,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String BAD_RQ = "Bad Request";
 
     /**
      * Handle exception when validate data
@@ -207,7 +208,7 @@ public class GlobalExceptionHandler {
                 .timestamp(new Date())
                 .status(BAD_REQUEST.value())
                 .path(request.getDescription(false).replace("uri=", ""))
-                .error("Bad Request")
+                .error(BAD_RQ)
                 .message(e.getMessage())
                 .build();
     }
@@ -258,7 +259,7 @@ public class GlobalExceptionHandler {
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(request.getDescription(false).replace("uri=", ""))
-                .error("Bad Request")
+                .error(BAD_RQ)
                 .message(e.getMessage())
                 .build();
     }
@@ -302,6 +303,33 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false).replace("uri=", ""))
                 .error(NOT_FOUND.getReasonPhrase())
                 .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(CustomJsonProcessingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "400 Response",
+                            summary = "Handle exception when JSON processing fails", value = """
+                            {
+                              "timestamp": "2024-07-24T07:19:51.110+00:00",
+                              "status": 400,
+                              "path": "/api/v1/...",
+                              "error": "Bad Request",
+                              "message": "There was an error processing the JSON data"
+                            }
+                            """))
+            })
+    })
+    public ErrorResponse handleCustomJsonProcessingException(CustomJsonProcessingException e, WebRequest request) {
+        log.error("JSON Processing Error: ", e);
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(BAD_RQ)
+                .message("There was an error processing the JSON data: " + e.getMessage())
                 .build();
     }
 

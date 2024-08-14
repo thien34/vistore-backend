@@ -32,7 +32,9 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
     SpecificationAttributeRepository specificationAttributeRepository;
 
     @Override
-    public PageResponse<List<SpecificationAttributeOptionResponse>> getAllSpecificationAttributeOption(String name, int pageNo, int pageSize) {
+    public PageResponse<List<SpecificationAttributeOptionResponse>> getAllSpecificationAttributeOption(
+            String name, int pageNo, int pageSize
+    ) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<SpecificationAttributeOption> specificationAttributeOption =
@@ -73,7 +75,6 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
         specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
         return specificationAttributeOptionMapper.toDto(specificationAttributeOption);
     }
-
 
     @Override
     public void deleteSpecificationAttributeOption(List<Long> ids) {

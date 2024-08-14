@@ -5,7 +5,6 @@ import com.example.back_end.core.admin.product.payload.response.SpecificationAtt
 import com.example.back_end.core.admin.product.service.SpecificationAttributeGroupService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.infrastructure.constant.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +38,8 @@ public class SpecificationAttributeGroupController {
                 .createSpecificationAttributeGroup(dto);
 
         return ResponseData.<SpecificationAttributeGroupResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message(SuccessCode.SPECIFICATION_ATTRIBUTE_CREATED.getMessage())
+                .status(HttpStatus.CREATED.value())
+                .message("Specification attribute created successfully")
                 .data(response)
                 .build();
     }
@@ -83,14 +82,15 @@ public class SpecificationAttributeGroupController {
     @PutMapping("/{id}")
     public ResponseData<SpecificationAttributeGroupResponse> updateSpecificationAttributeGroup(
             @PathVariable Long id,
-            @Valid @RequestBody SpecificationAttributeGroupRequest request) {
+            @Valid @RequestBody SpecificationAttributeGroupRequest request
+    ) {
 
         SpecificationAttributeGroupResponse response = specificationAttributeGroupService
                 .updateSpecificationAttributeGroup(id, request);
 
         return ResponseData.<SpecificationAttributeGroupResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message(SuccessCode.SPECIFICATION_ATTRIBUTE_UPDATED.getMessage())
+                .message("Specification attribute updated successfully")
                 .data(response)
                 .build();
     }
@@ -103,7 +103,7 @@ public class SpecificationAttributeGroupController {
         specificationAttributeGroupService.deleteSpecificationAttributeGroup(ids);
 
         return ResponseData.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.NO_CONTENT.value())
                 .message("Delete specification attribute groups success")
                 .build();
     }
@@ -116,7 +116,7 @@ public class SpecificationAttributeGroupController {
         specificationAttributeGroupService.deleteSpecificationAttributeGroupById(id);
 
         return ResponseData.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.NO_CONTENT.value())
                 .message("Delete specification attribute group success")
                 .build();
     }

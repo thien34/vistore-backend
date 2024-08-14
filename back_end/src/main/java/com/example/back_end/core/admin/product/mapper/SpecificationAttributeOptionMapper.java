@@ -13,6 +13,7 @@ public interface SpecificationAttributeOptionMapper {
     @Mapping(target = "specificationAttributeId", source = "specificationAttribute.id")
     SpecificationAttributeOptionResponse toDto(SpecificationAttributeOption specificationAttributeOption);
 
-    List<SpecificationAttributeOptionResponse> toDtoList(List<SpecificationAttributeOption> specificationAttributeOptions);
+    List<SpecificationAttributeOptionResponse> toDtoList(
+            List<SpecificationAttributeOption> specificationAttributeOptions);
 
 }

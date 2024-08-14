@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.payload.response;
 
 import com.example.back_end.entity.SpecificationAttribute;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SpecificationAttributeResponse {
 
     private Long id;
@@ -27,15 +29,20 @@ public class SpecificationAttributeResponse {
 
     public static SpecificationAttributeResponse mapToResponse(SpecificationAttribute specificationAttribute) {
 
-        SpecificationAttributeResponse response = new SpecificationAttributeResponse();
+        SpecificationAttributeResponse response = SpecificationAttributeResponse.builder()
+                .id(specificationAttribute.getId())
+                .name(specificationAttribute.getName())
+                .displayOrder(specificationAttribute.getDisplayOrder())
+                .specificationAttributeGroupId(specificationAttribute
+                        .getSpecificationAttributeGroup() != null ? specificationAttribute
+                        .getSpecificationAttributeGroup().getId() : null)
+                .specificationAttributeGroupName(specificationAttribute
+                        .getSpecificationAttributeGroup() != null ? specificationAttribute.
+                        getSpecificationAttributeGroup().getName() : null)
+                .build();
 
-        response.setId(specificationAttribute.getId());
-        response.setName(specificationAttribute.getName());
-        response.setDisplayOrder(specificationAttribute.getDisplayOrder());
-        response.setSpecificationAttributeGroupId(specificationAttribute.getSpecificationAttributeGroup() != null ? specificationAttribute.getSpecificationAttributeGroup().getId() : null);
-        response.setSpecificationAttributeGroupName(specificationAttribute.getSpecificationAttributeGroup() != null ? specificationAttribute.getSpecificationAttributeGroup().getName() : null);
-
-        List<SpecificationAttributeOptionResponse> optionResponses = specificationAttribute.getSpecificationAttributeOptions().stream()
+        List<SpecificationAttributeOptionResponse> optionResponses = specificationAttribute
+                .getSpecificationAttributeOptions().stream()
                 .map(option -> new SpecificationAttributeOptionResponse(
                         option.getId(),
                         option.getName(),
@@ -44,7 +51,8 @@ public class SpecificationAttributeResponse {
                         option.getProductSpecificationAttributeMappings(),
                         option.getSpecificationAttribute().getId()
                 ))
-                .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getDisplayOrder, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .sorted(Comparator.comparing(SpecificationAttributeOptionResponse::getDisplayOrder,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .toList();
 
         response.setListOptions(optionResponses);

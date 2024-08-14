@@ -7,7 +7,6 @@ import com.example.back_end.core.admin.product.payload.response.SpecificationAtt
 import com.example.back_end.core.admin.product.service.SpecificationAttributeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.infrastructure.constant.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +34,14 @@ public class SpecificationAttributeController {
             description = "Send a request via this API to create new specification attribute")
     @PostMapping
     public ResponseData<SpecificationAttributeResponse> createSpecificationAttribute(
-            @Valid @RequestBody SpecificationAttributeRequest dto) {
+            @Valid @RequestBody SpecificationAttributeRequest dto
+    ) {
 
         SpecificationAttributeResponse response = specificationAttributesService.createSpecificationAttribute(dto);
 
         return ResponseData.<SpecificationAttributeResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message(SuccessCode.SPECIFICATION_ATTRIBUTE_CREATED.getMessage())
+                .status(HttpStatus.CREATED.value())
+                .message("Specification attribute created successfully")
                 .data(response)
                 .build();
     }
@@ -70,8 +70,8 @@ public class SpecificationAttributeController {
         SpecificationAttributeResponse attribute = specificationAttributesService.getSpecificationAttributeById(id);
 
         return ResponseData.<SpecificationAttributeResponse>builder()
-                .status(SuccessCode.GET_SPECIFICATION_ATTRIBUTE_BY_ID.getStatusCode().value())
-                .message(SuccessCode.GET_SPECIFICATION_ATTRIBUTE_BY_ID.getMessage())
+                .status(HttpStatus.OK.value())
+                .message("Get specification attribute by id successfully")
                 .data(attribute)
                 .build();
     }
@@ -83,11 +83,12 @@ public class SpecificationAttributeController {
             @PathVariable Long id,
             @Valid @RequestBody SpecificationAttributeUpdateRequest request) {
 
-        SpecificationAttributeUpdateResponse response = specificationAttributesService.editSpecificationAttribute(id, request);
+        SpecificationAttributeUpdateResponse response = specificationAttributesService
+                .editSpecificationAttribute(id, request);
 
         return ResponseData.<SpecificationAttributeUpdateResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message(SuccessCode.SPECIFICATION_ATTRIBUTE_UPDATED.getMessage())
+                .message("Specification attribute updated successfully")
                 .data(response)
                 .build();
     }
@@ -100,7 +101,7 @@ public class SpecificationAttributeController {
         specificationAttributesService.deleteSpecificationAttribute(ids);
 
         return ResponseData.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.NO_CONTENT.value())
                 .message("Delete specification attributes success")
                 .build();
     }
@@ -108,8 +109,7 @@ public class SpecificationAttributeController {
     @Operation(method = "GET", summary = "Get all specification attribute no group or invalid",
             description = "Send a request via this API to get all specification attribute no group")
     @GetMapping("/no-group-or-invalid")
-    public ResponseData<PageResponse<List<SpecificationAttributeResponse>>> getAllAttribute(
-            @RequestParam(value = "name", defaultValue = "") String name,
+    public ResponseData<PageResponse<List<SpecificationAttributeResponse>>> getAllAttributeNoGroup(
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 

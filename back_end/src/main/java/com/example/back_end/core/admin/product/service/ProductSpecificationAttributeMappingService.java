@@ -5,16 +5,17 @@ import com.example.back_end.core.admin.product.payload.request.ProductSpecificat
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingUpdateResponse;
 import com.example.back_end.core.common.PageResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 
 public interface ProductSpecificationAttributeMappingService {
 
-    PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize);
+    PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(
+            String name, int pageNo, int pageSize
+    );
 
     ProductSpecificationAttributeMappingResponse createProductSpecificationAttributeMapping(
-            ProductSpecificationAttributeMappingRequest request) throws JsonProcessingException;
+            ProductSpecificationAttributeMappingRequest request);
 
     ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id);
 
@@ -24,7 +25,7 @@ public interface ProductSpecificationAttributeMappingService {
             Long productId, int pageNo, int pageSize);
 
     ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(
-            Long id, ProductSpecificationAttributeMappingUpdateRequest request) throws JsonProcessingException;
+            Long id, ProductSpecificationAttributeMappingUpdateRequest request);
 
     void deleteProductSpecificationAttributeMappingById(Long id);
 

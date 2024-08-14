@@ -3,7 +3,7 @@ package com.example.back_end.core.admin.product.service;
 import com.example.back_end.core.admin.product.payload.request.PredefinedProductAttributeValueRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
 import com.example.back_end.core.common.PageResponse;
-=
+
 import java.util.List;
 
 public interface PredefinedProductAttributeValueService {

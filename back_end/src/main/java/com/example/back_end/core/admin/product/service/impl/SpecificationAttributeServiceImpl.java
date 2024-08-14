@@ -46,7 +46,9 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     ProductSpecificationAttributeMappingRepository productSpecificationAttributeMappingRepository;
 
     @Override
-    public PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(String name, int pageNo, int pageSize) {
+    public PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(
+            String name, int pageNo, int pageSize
+    ) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<SpecificationAttribute> specificationAttributePage = specificationAttributeRepository
@@ -65,7 +67,9 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     }
 
     @Override
-    public PageResponse<List<SpecificationAttributeResponse>> getAttributesWithNoGroupOrInvalidGroup(int pageNo, int pageSize) {
+    public PageResponse<List<SpecificationAttributeResponse>> getAttributesWithNoGroupOrInvalidGroup(
+            int pageNo, int pageSize
+    ) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<SpecificationAttribute> specificationAttributePage = specificationAttributeRepository

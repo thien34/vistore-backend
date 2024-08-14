@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.product.mapper;
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.entity.ProductSpecificationAttributeMapping;
+import com.example.back_end.infrastructure.exception.CustomJsonProcessingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,24 +22,25 @@ public interface ProductSpecificationAttributeMappingMapper {
     @Mapping(target = "specificationAttributeName", expression = "java(getSpecificationAttributeName(mapping))")
     ProductSpecificationAttributeMappingResponse toDto(ProductSpecificationAttributeMapping mapping);
 
-    List<ProductSpecificationAttributeMappingResponse> toDto(List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
+    List<ProductSpecificationAttributeMappingResponse> toDto(
+            List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "specificationAttributeOption", ignore = true)
-    ProductSpecificationAttributeMapping toEntity(ProductSpecificationAttributeMappingRequest productSpecificationAttributeMappingRequest);
+    ProductSpecificationAttributeMapping toEntity(
+            ProductSpecificationAttributeMappingRequest productSpecificationAttributeMappingRequest);
 
     default Long getSpecificationAttributeId(ProductSpecificationAttributeMapping mapping) {
         if (mapping.getSpecificationAttributeOption() != null) {
             return mapping.getSpecificationAttributeOption().getSpecificationAttribute().getId();
         } else {
-            // Extract from customValue if no option
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode customValueNode = objectMapper.readTree(mapping.getCustomValue());
-                return customValueNode.has("spec_attribute_id") ? customValueNode.get("spec_attribute_id").asLong() : null;
+                return customValueNode.has("spec_attribute_id") ? customValueNode
+                        .get("spec_attribute_id").asLong() : null;
             } catch (JsonProcessingException e) {
-                // Handle JSON parsing exception
-                return null;
+                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
             }
         }
     }
@@ -51,10 +53,11 @@ public interface ProductSpecificationAttributeMappingMapper {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode customValueNode = objectMapper.readTree(mapping.getCustomValue());
-                return customValueNode.has("spec_attribute_name") ? customValueNode.get("spec_attribute_name").asText() : null;
+                return customValueNode.has("spec_attribute_name") ?
+                        customValueNode.get("spec_attribute_name").asText() :
+                        null;
             } catch (JsonProcessingException e) {
-                // Handle JSON parsing exception
-                return null;
+                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
             }
         }
     }
