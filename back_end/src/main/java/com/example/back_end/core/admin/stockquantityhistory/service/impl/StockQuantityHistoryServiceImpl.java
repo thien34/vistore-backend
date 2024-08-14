@@ -61,7 +61,7 @@ public class StockQuantityHistoryServiceImpl implements StockQuantityHistoryServ
                 .mapToDtoList(stockQuantityHistoryPage.getContent());
 
         return PageResponse.<List<StockQuantityHistoryResponse>>builder()
-                .page(stockQuantityHistoryPage.getNumber() + 1)
+                .page(stockQuantityHistoryPage.getNumber())
                 .size(stockQuantityHistoryPage.getSize())
                 .totalPage(stockQuantityHistoryPage.getTotalPages())
                 .items(stockQuantityHistories)
