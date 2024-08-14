@@ -24,6 +24,9 @@ public enum ErrorCode {
     PRODUCT_ATTRIBUTE_NOT_EXISTED("Product attribute does not exist", HttpStatus.OK),
 
     //
+    PRODUCT_ID_NOT_FOUND("Product ID not found", HttpStatus.BAD_REQUEST),
+
+    //
     SPECIFICATION_ATTRIBUTE_GROUP_NOT_EXISTED("Specification attribute group does not exist", HttpStatus.OK),
     SPECIFICATION_ATTRIBUTE_GROUP_EXISTED("Specification attribute group existed", HttpStatus.OK),
     SPECIFICATION_ATTRIBUTE_NOT_EXISTED("Specification attribute does not exist", HttpStatus.OK),

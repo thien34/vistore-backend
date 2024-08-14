@@ -24,6 +24,8 @@ public class ProductSpecificationAttributeMappingResponse {
 
     String specificationAttributeOptionName;
 
+    String customValueJson;
+
     String customValue;
 
     boolean showOnProductPage;
@@ -33,7 +35,4 @@ public class ProductSpecificationAttributeMappingResponse {
     Long specificationAttributeId;
 
     String specificationAttributeName;
-
-    String specificationAttributeInfo;
-
 }

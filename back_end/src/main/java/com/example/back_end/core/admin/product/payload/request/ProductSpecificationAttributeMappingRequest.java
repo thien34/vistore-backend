@@ -26,6 +26,4 @@ public class ProductSpecificationAttributeMappingRequest {
 
     Integer displayOrder;
 
-    Long specificationAttributeId;
-
 }

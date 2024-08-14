@@ -8,6 +8,7 @@ import com.example.back_end.core.admin.product.service.ProductSpecificationAttri
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.infrastructure.constant.SuccessCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ProductSpecificationAttributeMappingController {
             description = "Send a request via this API to create new product specification attribute mapping")
     @PostMapping
     public ResponseData<ProductSpecificationAttributeMappingResponse> createProductSpecificationAttributeMapping(
-            @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) {
+            @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) throws JsonProcessingException {
 
         ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingService
                 .createProductSpecificationAttributeMapping(dto);
@@ -102,7 +103,7 @@ public class ProductSpecificationAttributeMappingController {
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
         PageResponse<List<ProductSpecificationAttributeMappingResponse>> response = productSpecificationAttributeMappingService
-                .getProductSpecificationAttributeMappingsByProductId(productId, pageNo, pageSize);
+                .getProcSpecMappingsByProductId(productId, pageNo, pageSize);
 
         return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingResponse>>>builder()
                 .status(HttpStatus.OK.value())
@@ -116,7 +117,7 @@ public class ProductSpecificationAttributeMappingController {
     @PutMapping("/{id}")
     public ResponseData<ProductSpecificationAttributeMappingUpdateResponse> updateProductSpecificationAttributeMapping(
             @PathVariable Long id,
-            @Valid @RequestBody ProductSpecificationAttributeMappingUpdateRequest dto) {
+            @Valid @RequestBody ProductSpecificationAttributeMappingUpdateRequest dto) throws JsonProcessingException {
 
         ProductSpecificationAttributeMappingUpdateResponse response =
                 productSpecificationAttributeMappingService.updateProductSpecificationAttributeMapping(id, dto);
