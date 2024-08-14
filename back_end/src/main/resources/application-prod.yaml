@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: back_end
 
   datasource:
     url: jdbc:postgresql://localhost:5432/store_db
