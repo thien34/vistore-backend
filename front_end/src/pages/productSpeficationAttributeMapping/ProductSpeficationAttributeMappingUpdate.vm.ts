@@ -13,6 +13,7 @@ import {
 import { SpecificationAttributeOptionResponse } from '@/model/SpecificationAttributeOption.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
 import { message, Modal } from 'antd'
+
 const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     const [attributeType, setAttributeType] = useState('Option')
     const [isSpinning, setIsSpinning] = useState(false)
@@ -32,6 +33,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
         SpecificationAttributeConfigs.resourceKey,
     )
 
+    // Fetch existing mapping
     const mappingId = id ? parseInt(id, 10) : null
     const {
         data: existingMapping,
@@ -73,47 +75,57 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
         }
     }, [listAttribute, form])
 
+    useEffect(() => {}, [attributes])
+
+    useEffect(() => {}, [attributeOptions])
+
     useEffect(() => {
         if (existingMapping) {
             const {
                 specificationAttributeId,
                 specificationAttributeOptionId,
+                customValueJson,
                 customValue,
                 showOnProductPage,
                 displayOrder,
-                specificationAttributeInfo,
             } = existingMapping
-
-            const parsedInfo = specificationAttributeInfo ? JSON.parse(specificationAttributeInfo) : null
 
             const type = specificationAttributeOptionId === null ? 'CustomText' : 'Option'
             setAttributeType(type)
 
-            // Nếu specificationAttributeOptionId là null, sử dụng name từ specificationAttributeInfo
-            let attributeName = specificationAttributeOptionId === null ? (parsedInfo ? parsedInfo.name : '') : ''
-            if (specificationAttributeOptionId !== null) {
-                const selectedOption = attributes.find((attr) =>
-                    attr.listOptions.some((option) => option.id === specificationAttributeOptionId),
-                )
-                if (selectedOption) {
-                    attributeName = selectedOption.listOptions.find(
-                        (option) => option.id === specificationAttributeOptionId,
-                    ).name
+            let customText = ''
+            let specificationAttributeName = ''
+
+            if (type === 'CustomText') {
+                if (customValueJson) {
+                    try {
+                        // Try to parse customValueJson as JSON
+                        const parsedValue = JSON.parse(customValueJson)
+                        customText = parsedValue.custom_value || ''
+                        specificationAttributeName = parsedValue.spec_attribute_id
+                            ? existingMapping.specificationAttributeName || ''
+                            : ''
+                    } catch (error) {
+                        console.error('Error parsing customValueJson:', error)
+                        // If parsing fails, assume customValueJson is plain text
+                        customText = customValue || ''
+                    }
+                } else {
+                    // Use plain text if customValueJson is not provided
+                    customText = customValue || ''
                 }
             }
 
-            // Đặt giá trị vào form
             form.setFieldsValue({
                 attribute: specificationAttributeId || undefined,
                 attributeOption: specificationAttributeOptionId || undefined,
-                customText: type === 'CustomText' ? customValue : '',
+                customText,
+                specificationAttributeName,
                 showOnProductPage,
                 displayOrder,
                 attributeType: type,
-                attributeName, // Đặt attributeName
             })
 
-            // Cập nhật danh sách tùy chọn thuộc tính nếu có
             const selectedAttribute = attributes.find((attr) => attr.id === specificationAttributeId)
             if (selectedAttribute) {
                 setAttributeOptions(selectedAttribute.listOptions || [])
@@ -140,7 +152,9 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     const handleAttributeTypeChange = (value: string) => {
         setAttributeType(value)
         if (value === 'CustomText') {
-            form.setFieldsValue({ attributeOption: undefined })
+            form.setFieldsValue({ attributeOption: undefined, customText: '', specificationAttributeName: '' })
+        } else if (value === 'Option') {
+            form.setFieldsValue({ customText: '', specificationAttributeName: '' })
         }
     }
 
@@ -154,6 +168,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
             onOk: () => {
                 deleteApi.mutate(parseInt(id, 10), {
                     onSuccess: () => {
+                        message.success('Deleted successfully')
                         navigate(`/admin/products/product-spec-attribute-mapping/productId/${productId}`)
                     },
                     onError: () => {
@@ -167,11 +182,23 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
     const handleSave = (onSuccess: () => void) => {
         form.validateFields()
             .then((values) => {
+                const selectedAttributeId = existingMapping?.specificationAttributeId || values.attribute
+                if (!selectedAttributeId) {
+                    throw new Error('Selected attribute is missing')
+                }
+
                 const customValue =
                     attributeType === 'Option'
-                        ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
+                        ? JSON.stringify({
+                              customValue:
+                                  attributeOptions.find((option) => option.id === values.attributeOption)?.name || '',
+                              spec_attribute_id: selectedAttributeId,
+                          })
                         : attributeType === 'CustomText'
-                          ? values.customText
+                          ? JSON.stringify({
+                                custom_value: values.customText || '',
+                                spec_attribute_id: selectedAttributeId,
+                            })
                           : ''
 
                 const payload: ProductSpecificationAttributeMappingRequest = {
@@ -180,9 +207,21 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                     customValue: customValue,
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
-                    specificationAttributeId: values.attribute,
+                    specificationAttributeId: selectedAttributeId,
                 }
 
+                // Debug payload to check values
+                console.log('Payload for saving:', payload)
+
+                // Ensure important fields are not empty
+                if (!payload.specificationAttributeId) {
+                    throw new Error('Attribute ID is required')
+                }
+                if (!payload.productId) {
+                    throw new Error('Product ID is required')
+                }
+
+                // Send request to API
                 updateMutation.mutate(payload, {
                     onSuccess: () => {
                         message.success('Product specification attribute mapping updated successfully')
@@ -193,13 +232,14 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                     },
                 })
             })
-            .catch((info: string) => {
+            .catch((info) => {
                 console.log('Validate Failed:', info)
             })
     }
 
     const handleReload = async () => {
-        setIsSpinning(true) // Show spinner
+        console.log('Reloading attributes...')
+        setIsSpinning(true)
         await new Promise((resolve) => setTimeout(resolve, 2000))
         refetchAttributes()
         setIsSpinning(false)

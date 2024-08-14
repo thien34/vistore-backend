@@ -36,22 +36,26 @@ export default function useProductUpdateSpecificationAttributeMappingViewModel()
     const dataSource = isSuccess && apiData && apiData.items ? apiData.items : []
 
     const tableData = dataSource.map((mapping) => {
-        let attributeName = mapping.specificationAttributeName
-        if (mapping.specificationAttributeOptionId === null && mapping.specificationAttributeInfo) {
-            // Nếu không có optionId, lấy tên từ JSON
+        const attributeName = mapping.specificationAttributeName
+        let optionName = mapping.specificationAttributeOptionName
+
+        // If specificationAttributeOptionId is null, handle customValue
+        if (mapping.specificationAttributeOptionId === null && mapping.customValue) {
             try {
-                const info = JSON.parse(mapping.specificationAttributeInfo)
-                attributeName = info.name
+                const parsedValue = JSON.parse(mapping.customValue)
+                optionName = parsedValue.custom_value || mapping.customValue
             } catch (e) {
-                console.error('Error parsing specificationAttributeInfo:', e)
-                attributeName = 'Unknown'
+                console.error('Error parsing customValue:', e)
+                optionName = mapping.customValue // Fallback to raw customValue if parsing fails
             }
+        } else {
+            optionName = mapping.specificationAttributeOptionName || mapping.customValue
         }
 
         return {
             key: mapping.id,
             attributeName,
-            optionName: mapping.customValue,
+            optionName,
             showOnProductPage: mapping.showOnProductPage,
             displayOrder: mapping.displayOrder,
         }

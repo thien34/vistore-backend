@@ -11,149 +11,146 @@ const ProductSpecificationAttributeMappingUpdate = () => {
     const navigate = useNavigate()
     const { productId } = useParams<{ productId: string }>()
 
-    const viewModel = useProductSpecificationAttributeMappingUpdateViewModel(form)
-
     const {
         attributeType,
         attributeOptions,
         attributes,
-        isLoadingAttributes,
-        errorAttributes,
-        isLoadingMapping,
-        errorMapping,
         handleAttributeChange,
         handleAttributeTypeChange,
         handleDelete,
         handleSave,
+        isLoadingMapping,
         handleReload,
         isSpinning,
-    } = viewModel
-
-    if (isLoadingAttributes || isLoadingMapping) return <p>Loading...</p>
-    if (errorAttributes) return <p>Error fetching attributes: {errorAttributes.message}</p>
-    if (errorMapping) return <p>Error fetching mapping: {errorMapping.message}</p>
-
-    console.log('Current form values:', form.getFieldsValue())
+    } = useProductSpecificationAttributeMappingUpdateViewModel(form)
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
-            <Title level={4}>Update Product Specification Attribute Mapping</Title>
-            <Form
-                form={form}
-                layout='vertical'
-                initialValues={{
-                    attributeType: 'Option',
-                    showOnProductPage: true,
-                    displayOrder: 0,
-                    productId,
-                }}
-                style={{ marginTop: '16px' }}
-            >
-                <Form.Item name='productId' noStyle>
-                    <Input type='hidden' value={productId} />
-                </Form.Item>
+            <Spin spinning={isLoadingMapping || isSpinning}>
+                <Form form={form} layout='vertical'>
+                    <Title level={3}>Edit Product Specification Attribute Mapping</Title>
 
-                <Form.Item
-                    label='Attribute type'
-                    name='attributeType'
-                    tooltip='Select the attribute type'
-                    rules={[{ required: true, message: 'Please select an attribute type!' }]}
-                >
-                    <Select onChange={handleAttributeTypeChange} value={attributeType}>
-                        <Option value='Option'>Option</Option>
-                        <Option value='CustomText'>Custom Text</Option>
-                    </Select>
-                </Form.Item>
+                    {attributeType !== 'CustomText' && (
+                        <Form.Item
+                            name='attribute'
+                            label='Attribute'
+                            rules={[{ required: true, message: 'Please select an attribute' }]}
+                        >
+                            <Select disabled onChange={handleAttributeChange}>
+                                {attributes.map((attr) => (
+                                    <Option key={attr.id} value={attr.id}>
+                                        {attr.name}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    )}
 
-                <Form.Item
-                    label='Attribute'
-                    name='attribute'
-                    tooltip='Select the attribute'
-                    rules={[{ required: true, message: 'Please select an attribute!' }]}
-                >
-                    <Select onChange={handleAttributeChange} value={form.getFieldValue('attribute')}>
-                        {attributes.map((attr) => (
-                            <Option key={attr.id} value={attr.id}>
-                                {attr.name}
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
-
-                {attributeType === 'Option' && (
                     <Form.Item
-                        label='Attribute option'
-                        name='attributeOption'
-                        tooltip='Select the attribute option'
-                        rules={[
-                            { required: attributeType === 'Option', message: 'Please select an attribute option!' },
-                        ]}
+                        name='attributeType'
+                        label='Attribute Type'
+                        rules={[{ required: true, message: 'Please select an attribute type' }]}
                     >
-                        <Select disabled={attributeType !== 'Option'}>
-                            {attributeOptions.map((option) => (
-                                <Option key={option.id} value={option.id}>
-                                    <div dangerouslySetInnerHTML={{ __html: option.name }} />
-                                </Option>
-                            ))}
+                        <Select disabled onChange={handleAttributeTypeChange}>
+                            <Option value='Option'>Option</Option>
+                            <Option value='CustomText'>Custom Text</Option>
                         </Select>
                     </Form.Item>
-                )}
 
-                {attributeType === 'CustomText' && (
-                    <Form.Item
-                        label='Custom Text'
-                        name='customText'
-                        tooltip='Enter custom text'
-                        rules={[{ required: attributeType === 'CustomText', message: 'Please enter custom text!' }]}
-                    >
-                        <Input.TextArea
-                            rows={4}
-                            value={attributeType === 'CustomText' ? form.getFieldValue('customText') : ''}
-                        />
+                    {attributeType === 'Option' && (
+                        <Form.Item
+                            name='attributeOption'
+                            label='Attribute Option'
+                            rules={[{ required: true, message: 'Please select an attribute option' }]}
+                        >
+                            <Select>
+                                {attributeOptions.map((option) => (
+                                    <Option key={option.id} value={option.id}>
+                                        {option.name}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    )}
+
+                    {attributeType === 'CustomText' && (
+                        <>
+                            <Form.Item
+                                name='customText'
+                                label='Custom Text'
+                                rules={[{ required: true, message: 'Please enter custom text' }]}
+                            >
+                                <Input.TextArea />
+                            </Form.Item>
+                            <Form.Item
+                                name='specificationAttributeName'
+                                label='Specification Attribute Name'
+                                rules={[{ required: true, message: 'Please enter the specification attribute name' }]}
+                            >
+                                <Input disabled />
+                            </Form.Item>
+                        </>
+                    )}
+
+                    <Form.Item name='showOnProductPage' valuePropName='checked'>
+                        <Checkbox>Show on product page</Checkbox>
                     </Form.Item>
-                )}
 
-                <Form.Item name='showOnProductPage' valuePropName='checked'>
-                    <Checkbox disabled={attributeType !== 'CustomText' && attributeType !== 'Option'}>
-                        Show on product page
-                    </Checkbox>
-                </Form.Item>
-
-                <Form.Item
-                    label='Display order'
-                    name='displayOrder'
-                    tooltip='Set the display order'
-                    rules={[{ required: true, message: 'Please enter the display order!' }]}
-                >
-                    <Input type='number' />
-                </Form.Item>
-
-                <Form.Item>
-                    <Button
-                        type='primary'
-                        onClick={() =>
-                            handleSave(() =>
-                                navigate(`/admin/products/product-spec-attribute-mapping/productId/${productId}`),
-                            )
-                        }
+                    <Form.Item
+                        name='displayOrder'
+                        label='Display Order'
+                        rules={[{ required: true, message: 'Please enter a display order' }]}
                     >
-                        Save
-                    </Button>
-                    <Button type='default' style={{ margin: '10px' }} onClick={() => handleSave(() => {})}>
-                        Save and Continue Edit
-                    </Button>
-                    <Button danger icon={<DeleteOutlined />} onClick={handleDelete}>
-                        Delete
-                    </Button>
-                    <Button style={{ margin: 10 }} onClick={handleReload} icon={<ReloadOutlined />} />
-                </Form.Item>
-            </Form>
+                        <Input type='number' />
+                    </Form.Item>
 
-            {isSpinning && (
-                <div className='flex justify-center items-center h-full w-full fixed top-0 left-0 bg-[#fff] bg-opacity-50 z-10'>
-                    <Spin size='large' />
-                </div>
-            )}
+                    <Form.Item>
+                        <Button
+                            type='primary'
+                            onClick={() =>
+                                handleSave(() =>
+                                    navigate(`/admin/products/product-spec-attribute-mapping/productId/${productId}`),
+                                )
+                            }
+                        >
+                            Save
+                        </Button>
+                        <Button
+                            type='primary'
+                            onClick={() => handleSave(() => form.resetFields())}
+                            style={{ marginLeft: '10px' }}
+                        >
+                            Save and Continue Edit
+                        </Button>
+                        <Button
+                            type='default'
+                            onClick={() =>
+                                navigate(`/admin/products/product-spec-attribute-mapping/productId/${productId}`)
+                            }
+                            style={{ marginLeft: '10px' }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type='default'
+                            onClick={handleReload}
+                            icon={<ReloadOutlined />}
+                            style={{ marginLeft: '10px' }}
+                        >
+                            Reload Attributes
+                        </Button>
+                        <Button
+                            type='default'
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={handleDelete}
+                            style={{ marginLeft: '10px' }}
+                        >
+                            Delete
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Spin>
         </div>
     )
 }
