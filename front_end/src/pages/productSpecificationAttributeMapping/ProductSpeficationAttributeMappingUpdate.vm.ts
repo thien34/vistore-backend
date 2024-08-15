@@ -5,7 +5,7 @@ import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
 import useGetAllApi from '@/hooks/use-get-all-api.ts'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api.ts'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
-import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingConfigs.ts'
+import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
 import {
     ProductSpecificationAttributeMappingRequest,
     ProductSpecificationAttributeMappingResponse,

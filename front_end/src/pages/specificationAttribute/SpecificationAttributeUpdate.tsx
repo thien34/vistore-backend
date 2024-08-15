@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Form, Input, Select, Button, Row, Col, Table, Space, Modal, Checkbox, message } from 'antd'
+import { Form, Input, Select, Button, Row, Col, Table, Space, Modal, Checkbox, message, InputNumber } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { SketchPicker } from 'react-color'
@@ -12,6 +12,7 @@ import useUpdateApi from '@/hooks/use-update-api.ts'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { SpecificationAttributeGroupResponse } from '@/model/SpecificationAttributeGroup'
+import Title from 'antd/es/typography/Title'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -326,8 +327,19 @@ function SpecificationAttributeUpdate() {
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Row justify='space-between' align='middle' style={{ marginBottom: '20px' }}>
-                <Col>
-                    <h1>Edit specification attribute details - {editData?.name || 'New Attribute'}</h1>
+                <Col style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <Title
+                        level={4}
+                        style={{
+                            margin: 0,
+                            color: 'green',
+                            fontWeight: '500',
+                            fontSize: '18px',
+                            lineHeight: '1.5',
+                        }}
+                    >
+                        Edit specification attribute details - {editData?.name || 'New Attribute'}
+                    </Title>
                 </Col>
                 <Col>
                     <Button type='primary' style={{ marginRight: '10px' }} onClick={handleSave}>
@@ -342,11 +354,19 @@ function SpecificationAttributeUpdate() {
                 </Col>
             </Row>
             <Form form={form} layout='vertical' style={{ marginBottom: '20px' }}>
-                <Form.Item label='Name' name='name' rules={[{ required: true, message: 'Please input the name!' }]}>
-                    <Input />
+                <Form.Item
+                    name='name'
+                    label='Name'
+                    tooltip='Set the name'
+                    rules={[
+                        { required: true, message: 'Please input the group name!' },
+                        { max: 100, message: 'Name cannot exceed 100 characters!' },
+                    ]}
+                >
+                    <Input style={{ maxWidth: 800 }} maxLength={101} />
                 </Form.Item>
                 <Form.Item label='Group' name='group'>
-                    <Select defaultValue='none'>
+                    <Select style={{ maxWidth: 800 }} defaultValue='none'>
                         <Option value='none'>None</Option>
                         {groups.map((group) => (
                             <Option key={group.id} value={group.id}>
@@ -355,8 +375,21 @@ function SpecificationAttributeUpdate() {
                         ))}
                     </Select>
                 </Form.Item>
-                <Form.Item label='Display order' name='displayOrder'>
-                    <Input type='number' />
+                <Form.Item
+                    label='Display order'
+                    name='displayOrder'
+                    tooltip='Set the display order'
+                    rules={[
+                        { required: true, message: 'Please enter the display order!' },
+                        {
+                            type: 'number',
+                            min: 0,
+                            max: 2000000,
+                            message: 'Display order must be between 0 and 2,000,000!',
+                        },
+                    ]}
+                >
+                    <InputNumber defaultValue={0} type='number' />
                 </Form.Item>
             </Form>
             <h2>Options</h2>
@@ -375,11 +408,15 @@ function SpecificationAttributeUpdate() {
             >
                 <Form form={modalForm} layout='vertical'>
                     <Form.Item
-                        label='Name'
                         name='optionName'
-                        rules={[{ required: true, message: 'Please input the name!' }]}
+                        label='Name'
+                        tooltip='Set the name'
+                        rules={[
+                            { required: true, message: 'Please input the option name!' },
+                            { max: 100, message: 'Name cannot exceed 100 characters!' },
+                        ]}
                     >
-                        <Input />
+                        <Input maxLength={101} />
                     </Form.Item>
                     <Form.Item label='Specify color'>
                         <Checkbox onChange={handleColorCheckChange} checked={isColorPickerVisible}>
@@ -394,8 +431,21 @@ function SpecificationAttributeUpdate() {
                             </div>
                         )}
                     </Form.Item>
-                    <Form.Item label='Display order' name='optionDisplayOrder'>
-                        <Input type='number' />
+                    <Form.Item
+                        label='Display order'
+                        name='optionDisplayOrder'
+                        tooltip='Set the display order'
+                        rules={[
+                            { required: true, message: 'Please enter the display order!' },
+                            {
+                                type: 'number',
+                                min: 0,
+                                max: 2000000,
+                                message: 'Display order must be between 0 and 2,000,000!',
+                            },
+                        ]}
+                    >
+                        <InputNumber defaultValue={0} type='number' />
                     </Form.Item>
                 </Form>
             </Modal>

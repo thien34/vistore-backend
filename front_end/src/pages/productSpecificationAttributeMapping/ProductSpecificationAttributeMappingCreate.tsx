@@ -1,8 +1,7 @@
-import { Form, Input, Select, Checkbox, Button, Typography, Spin } from 'antd'
+import { Form, Input, Select, Checkbox, Button, Typography, Spin, InputNumber } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Editor } from '@tinymce/tinymce-react'
 import { ReloadOutlined } from '@ant-design/icons'
-import useProductSpecificationAttributeMappingCreateViewModel from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingCreate.vm.ts'
+import useProductSpecificationAttributeMappingCreateViewModel from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingCreate.vm'
 
 const { Title } = Typography
 const { Option, OptGroup } = Select
@@ -111,9 +110,22 @@ const ProductSpecificationAttributeMappingCreate = () => {
                         label='Custom Text'
                         name='customText'
                         tooltip='Enter custom text'
-                        rules={[{ required: true, message: 'Please enter custom text!' }]}
+                        rules={[
+                            { required: true, message: 'Please enter custom text!' },
+                            { max: 500, message: 'Custom text cannot exceed 500 characters!' },
+                        ]}
                     >
-                        <Input.TextArea rows={4} />
+                        <Input.TextArea
+                            rows={4}
+                            maxLength={500}
+                            style={{
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                wordBreak: 'break-word',
+                                overflow: 'hidden',
+                                whiteSpace: 'pre-wrap',
+                            }}
+                        />
                     </Form.Item>
                 )}
                 <Form.Item name='showOnProductPage' valuePropName='checked'>
@@ -123,10 +135,19 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     label='Display order'
                     name='displayOrder'
                     tooltip='Set the display order'
-                    rules={[{ required: true, message: 'Please enter the display order!' }]}
+                    rules={[
+                        { required: true, message: 'Please enter the display order!' },
+                        {
+                            type: 'number',
+                            min: 0,
+                            max: 2000000,
+                            message: 'Display order must be between 0 and 2,000,000!',
+                        },
+                    ]}
                 >
-                    <Input type='number' />
+                    <InputNumber defaultValue={0} type='number' />
                 </Form.Item>
+
                 <Form.Item>
                     <Button type='primary' onClick={handleSave}>
                         Save

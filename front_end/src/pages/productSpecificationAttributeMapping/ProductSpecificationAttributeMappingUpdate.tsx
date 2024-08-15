@@ -1,7 +1,7 @@
-import { Form, Input, Select, Checkbox, Button, Typography, Spin } from 'antd'
+import { Form, Input, Select, Checkbox, Button, Typography, Spin, InputNumber } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
-import useProductSpecificationAttributeMappingUpdateViewModel from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingUpdate.vm.ts'
+import useProductSpecificationAttributeMappingUpdateViewModel from '@/pages/productSpecificationAttributeMapping/ProductSpeficationAttributeMappingUpdate.vm'
 
 const { Title } = Typography
 const { Option } = Select
@@ -80,7 +80,17 @@ const ProductSpecificationAttributeMappingUpdate = () => {
                                 label='Custom Text'
                                 rules={[{ required: true, message: 'Please enter custom text' }]}
                             >
-                                <Input.TextArea />
+                                <Input.TextArea
+                                    rows={4}
+                                    maxLength={500}
+                                    style={{
+                                        width: '100%',
+                                        boxSizing: 'border-box',
+                                        overflow: 'hidden',
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-wrap',
+                                    }}
+                                />
                             </Form.Item>
                             <Form.Item
                                 name='specificationAttributeName'
@@ -97,11 +107,20 @@ const ProductSpecificationAttributeMappingUpdate = () => {
                     </Form.Item>
 
                     <Form.Item
+                        label='Display order'
                         name='displayOrder'
-                        label='Display Order'
-                        rules={[{ required: true, message: 'Please enter a display order' }]}
+                        tooltip='Set the display order'
+                        rules={[
+                            { required: true, message: 'Please enter the display order!' },
+                            {
+                                type: 'number',
+                                min: 0,
+                                max: 2000000,
+                                message: 'Display order must be between 0 and 2,000,000!',
+                            },
+                        ]}
                     >
-                        <Input type='number' />
+                        <InputNumber type='number' />
                     </Form.Item>
 
                     <Form.Item>

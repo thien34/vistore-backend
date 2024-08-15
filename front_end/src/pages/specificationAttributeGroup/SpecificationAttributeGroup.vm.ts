@@ -39,7 +39,7 @@ const useSpecificationAttributeGroupManageViewModel = () => {
         SpecificationAttributeGroupConfigs.resourceGetUngroupedAttributes,
         SpecificationAttributeGroupConfigs.resourceGetUngroupedAttributesKey,
         {
-            pageNo: current - 1,
+            pageNo: current,
         },
     )
 
@@ -52,6 +52,7 @@ const useSpecificationAttributeGroupManageViewModel = () => {
             refetchGrouped()
             refetchUngrouped()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, isLoadingUngrouped])
 
     if (isLoading || isLoadingUngrouped) {
@@ -118,7 +119,7 @@ const useSpecificationAttributeGroupManageViewModel = () => {
         })
     }
 
-    const showModal = (record) => {
+    const showModal = (record: SpecificationAttributeResponse) => {
         setModalData(record.specificationAttributes)
         setIsModalVisible(true)
     }

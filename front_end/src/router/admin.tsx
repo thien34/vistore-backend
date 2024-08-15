@@ -19,8 +19,8 @@ import SpecificationAttributeUpdate from '@/pages/specificationAttribute/Specifi
 import SpecificationAttributeGroupUpdate from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupUpdate.tsx'
 import ProductManage from '@/pages/product'
 import ProductUpdateSpecificationAttributeMapping from '@/pages/product/ProductUpdateSpecificationAttributeMapping.tsx'
-import ProductSpecificationAttributeMappingCreate from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingCreate.tsx'
-import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpeficationAttributeMapping/ProductSpeficationAttributeMappingUpdate.tsx'
+import ProductSpecificationAttributeMappingCreate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingCreate'
+import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingUpdate'
 import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
 import ProductAtbCombinations from '@/pages/product-attribute-combinations/ProductAtbCombinations'
 
