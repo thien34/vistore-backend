@@ -19,7 +19,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/list-name")
-    public ResponseData<List<ProductNameResponse>> getAllManufacturersName() {
+    public ResponseData<List<ProductNameResponse>> getAllProductsName() {
 
         List<ProductNameResponse> response = productService.getAllProductsName();
 
