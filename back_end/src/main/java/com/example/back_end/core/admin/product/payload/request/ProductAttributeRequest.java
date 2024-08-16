@@ -28,4 +28,5 @@ public class ProductAttributeRequest {
     String description;
 
     List<PredefinedProductAttributeValueUpdateRequest> values;
+
 }

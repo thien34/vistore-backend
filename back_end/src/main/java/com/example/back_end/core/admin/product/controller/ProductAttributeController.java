@@ -7,7 +7,6 @@ import com.example.back_end.core.admin.product.service.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.entity.ProductAttribute;
-import com.example.back_end.infrastructure.constant.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,7 +40,7 @@ public class ProductAttributeController {
 
         return ResponseData.<PageResponse<List<ProductAttributeResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message(SuccessCode.PRODUCT_ATTRIBUTE_GET_ALL.getMessage())
+                .message("Get all product attribute successfully")
                 .data(response)
                 .build();
     }
@@ -53,7 +52,7 @@ public class ProductAttributeController {
 
         return ResponseData.<ProductAttributeResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message(SuccessCode.GET_PRODUCT_ATTRIBUTE_BY_ID.getMessage())
+                .message("Get product attribute successfully ")
                 .data(attribute)
                 .build();
     }
@@ -63,7 +62,7 @@ public class ProductAttributeController {
 
         return ResponseData.<ProductAttribute>builder()
                 .status(HttpStatus.CREATED.value())
-                .message(SuccessCode.PRODUCT_ATTRIBUTE_CREATED.getMessage())
+                .message("Product attribute created successfully")
                 .data(productAttributeService.createProductAttribute(dto))
                 .build();
     }
@@ -75,25 +74,10 @@ public class ProductAttributeController {
 
         return ResponseData.<ProductAttributeResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message(SuccessCode.PRODUCT_ATTRIBUTE_UPDATED.getMessage())
+                .message("Product attribute updated successfully")
                 .data(updatedAttribute)
                 .build();
 
-    }
-
-    @GetMapping("/search")
-    public ResponseData<PageResponse<List<ProductAttributeResponse>>> searchByNameName(
-            @RequestParam String name,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "6") Integer size) {
-
-        PageResponse<List<ProductAttributeResponse>> attributes = productAttributeService.searchByNameName(name, page, size);
-
-        return ResponseData.<PageResponse<List<ProductAttributeResponse>>>builder()
-                .status(HttpStatus.OK.value())
-                .message("Product attributes search successfully")
-                .data(attributes)
-                .build();
     }
 
     @DeleteMapping

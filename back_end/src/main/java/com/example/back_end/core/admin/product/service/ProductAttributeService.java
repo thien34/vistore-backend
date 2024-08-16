@@ -18,8 +18,6 @@ public interface ProductAttributeService {
 
     ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest request);
 
-    PageResponse<List<ProductAttributeResponse>> searchByNameName(String name, int page, int size);
-
     void deleteProductAttribute(List<Long> ids);
 
     List<ProductAttributeNameResponse> getAttributeName();

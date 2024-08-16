@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface SpecificationAttributeService {
 
-    PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(String name, int pageNo, int pageSize);
+    PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(
+            String name, int pageNo, int pageSize
+    );
 
     SpecificationAttributeResponse createSpecificationAttribute(SpecificationAttributeRequest request);
 

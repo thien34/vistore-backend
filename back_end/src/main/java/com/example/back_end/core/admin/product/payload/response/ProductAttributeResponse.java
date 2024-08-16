@@ -29,7 +29,8 @@ public class ProductAttributeResponse {
 
         List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
                 .map(PredefinedProductAttributeValueResponse::mapToResponse)
-                .sorted(Comparator.comparing(PredefinedProductAttributeValueResponse::getDisplayOrder, Comparator.nullsLast(Comparator.naturalOrder())))
+                .sorted(Comparator.comparing(PredefinedProductAttributeValueResponse::getDisplayOrder,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
         response.setValues(values);
 

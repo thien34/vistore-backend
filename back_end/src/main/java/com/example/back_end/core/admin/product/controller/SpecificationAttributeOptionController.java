@@ -5,7 +5,6 @@ import com.example.back_end.core.admin.product.payload.response.SpecificationAtt
 import com.example.back_end.core.admin.product.service.SpecificationAttributeOptionService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.infrastructure.constant.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +30,15 @@ public class SpecificationAttributeOptionController {
             description = "Send a request via this API to create new specification attribute option")
     @PostMapping
     public ResponseData<SpecificationAttributeOptionResponse> createSpecificationAttributeOption(
-            @Valid @RequestBody SpecificationAttributeOptionRequest dto) {
+            @Valid @RequestBody SpecificationAttributeOptionRequest dto
+    ) {
 
         SpecificationAttributeOptionResponse response =
                 specificationAttributeOptionService.createSpecificationAttributeOption(dto);
 
         return ResponseData.<SpecificationAttributeOptionResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message(SuccessCode.SPECIFICATION_ATTRIBUTE_CREATED.getMessage())
+                .status(HttpStatus.CREATED.value())
+                .message("Specification attribute created successfully")
                 .data(response)
                 .build();
 

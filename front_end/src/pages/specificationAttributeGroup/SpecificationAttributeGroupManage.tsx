@@ -90,7 +90,7 @@ const SpecificationAttributeGroupManage = () => {
                         title='View'
                         key='view'
                         align={'center'}
-                        render={(text, record) => (
+                        render={(record) => (
                             <Button type='primary' onClick={() => showModal(record)}>
                                 View
                             </Button>
@@ -125,7 +125,7 @@ const SpecificationAttributeGroupManage = () => {
                         width='20%'
                         title='Edit'
                         key='edit'
-                        render={(text, record) => (
+                        render={(record) => (
                             <Link to={`/admin/specification-attributes/${record?.id}/update`}>
                                 <Button
                                     type='primary'

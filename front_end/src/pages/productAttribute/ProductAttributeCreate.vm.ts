@@ -47,7 +47,7 @@ function useProductAttributeCreate() {
     }
 
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
-        const maxId = Math.max(...arr.map((item) => item.id))
+        const maxId = Math.max(...arr.map((item) => item.id ?? 0))
         return arr.length === 0 ? 0 : maxId + 1
     }
 
@@ -109,10 +109,7 @@ function useProductAttributeCreate() {
                 description: formValues.description,
                 values: values,
             }
-
-            console.log('data: ', data)
             await onFinish(data)
-
             // Navigate with state to reload data
             navigate('/admin/product-attributes', { state: { reload: true } })
         } catch (error) {

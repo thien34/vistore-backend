@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface SpecificationAttributeGroupService {
 
-    PageResponse<List<SpecificationAttributeGroupResponse>> getAllSpecificationAttributeGroup(String name, int pageNo, int pageSize);
+    PageResponse<List<SpecificationAttributeGroupResponse>> getAllSpecificationAttributeGroup(
+            String name, int pageNo, int pageSize
+    );
 
     SpecificationAttributeGroupResponse createSpecificationAttributeGroup(SpecificationAttributeGroupRequest request);
 

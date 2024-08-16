@@ -40,9 +40,9 @@ public class ProductFakeController {
             description = "Send a request via this API to get all product ")
     @GetMapping
     public ResponseData<PageResponse<List<ProductFakeResponse>>> getAll(
-            @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize
+    ) {
 
         PageResponse<List<ProductFakeResponse>> response = productFakeService.getAllProducts(pageNo, pageSize);
 

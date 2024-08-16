@@ -3,7 +3,7 @@ import { CheckCircleOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from 
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
 import useProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.vm.ts'
 
-const pageSize = 5
+const pageSize = 6
 
 export default function ProductAttribute() {
     const {

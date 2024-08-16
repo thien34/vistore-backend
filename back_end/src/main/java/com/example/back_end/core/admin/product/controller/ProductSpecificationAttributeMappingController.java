@@ -7,8 +7,6 @@ import com.example.back_end.core.admin.product.payload.response.ProductSpecifica
 import com.example.back_end.core.admin.product.service.ProductSpecificationAttributeMappingService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.infrastructure.constant.SuccessCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +34,14 @@ public class ProductSpecificationAttributeMappingController {
             description = "Send a request via this API to create new product specification attribute mapping")
     @PostMapping
     public ResponseData<ProductSpecificationAttributeMappingResponse> createProductSpecificationAttributeMapping(
-            @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) throws JsonProcessingException {
+            @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) {
 
         ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingService
                 .createProductSpecificationAttributeMapping(dto);
 
         return ResponseData.<ProductSpecificationAttributeMappingResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_CREATED.getMessage())
+                .status(HttpStatus.CREATED.value())
+                .message("Product specification attribute mapping created successfully")
                 .data(response)
                 .build();
     }
@@ -56,8 +54,9 @@ public class ProductSpecificationAttributeMappingController {
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
-        PageResponse<List<ProductSpecificationAttributeMappingResponse>> response = productSpecificationAttributeMappingService
-                .getAllProductSpecificationAttributeMapping(name, pageNo, pageSize);
+        PageResponse<List<ProductSpecificationAttributeMappingResponse>> response =
+                productSpecificationAttributeMappingService
+                        .getAllProductSpecificationAttributeMapping(name, pageNo, pageSize);
 
         return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingResponse>>>builder()
                 .status(HttpStatus.OK.value())
@@ -89,7 +88,7 @@ public class ProductSpecificationAttributeMappingController {
         productSpecificationAttributeMappingService.deleteProductSpecificationAttribute(ids);
 
         return ResponseData.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.NO_CONTENT.value())
                 .message("Delete product specification attribute mappings success")
                 .build();
     }
@@ -102,8 +101,9 @@ public class ProductSpecificationAttributeMappingController {
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
-        PageResponse<List<ProductSpecificationAttributeMappingResponse>> response = productSpecificationAttributeMappingService
-                .getProcSpecMappingsByProductId(productId, pageNo, pageSize);
+        PageResponse<List<ProductSpecificationAttributeMappingResponse>> response =
+                productSpecificationAttributeMappingService
+                        .getProcSpecMappingsByProductId(productId, pageNo, pageSize);
 
         return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingResponse>>>builder()
                 .status(HttpStatus.OK.value())
@@ -117,14 +117,14 @@ public class ProductSpecificationAttributeMappingController {
     @PutMapping("/{id}")
     public ResponseData<ProductSpecificationAttributeMappingUpdateResponse> updateProductSpecificationAttributeMapping(
             @PathVariable Long id,
-            @Valid @RequestBody ProductSpecificationAttributeMappingUpdateRequest dto) throws JsonProcessingException {
+            @Valid @RequestBody ProductSpecificationAttributeMappingUpdateRequest dto) {
 
         ProductSpecificationAttributeMappingUpdateResponse response =
                 productSpecificationAttributeMappingService.updateProductSpecificationAttributeMapping(id, dto);
 
         return ResponseData.<ProductSpecificationAttributeMappingUpdateResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATED.getMessage())
+                .message("Product specification attribute mapping updated successfully")
                 .data(response)
                 .build();
     }
@@ -135,8 +135,8 @@ public class ProductSpecificationAttributeMappingController {
         productSpecificationAttributeMappingService.deleteProductSpecificationAttributeMappingById(id);
 
         return ResponseData.<Void>builder()
-                .status(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_DELETED.getStatusCode().value())
-                .message(SuccessCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_DELETED.getMessage())
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Product specification attribute mapping deleted successfully")
                 .build();
     }
 

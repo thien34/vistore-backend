@@ -21,5 +21,9 @@ public interface PredefinedProductAttributeValueMapper {
     List<PredefinedProductAttributeValueResponse> toListDto(List<PredefinedProductAttributeValue> entities);
 
     @Mapping(source = "productAttribute", target = "productAttribute.id")
-    void updateEntity(PredefinedProductAttributeValueRequest request, @MappingTarget PredefinedProductAttributeValue entity);
+    void updateEntity(
+            PredefinedProductAttributeValueRequest request,
+            @MappingTarget PredefinedProductAttributeValue entity
+    );
+
 }

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
-import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpeficationAttributeMapping/ProductSpecificationAttributeMappingConfigs.ts'
+import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
 import { useState } from 'react'
 
 export default function useProductUpdateSpecificationAttributeMappingViewModel() {

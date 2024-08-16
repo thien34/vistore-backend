@@ -1,6 +1,8 @@
-import { Button, Form, Input, Select, Spin, message } from 'antd'
+import { Button, Form, Input, InputNumber, Select, Space, Spin, message } from 'antd'
 import { SaveOutlined } from '@ant-design/icons'
 import useSpecificationAttributeCreateViewModel from '@/pages/specificationAttribute/SpecificationAttributeCreate.vm.ts'
+import Title from 'antd/es/typography/Title'
+import Alert from 'antd/es/alert/Alert'
 
 const { Item } = Form
 const { Option } = Select
@@ -12,7 +14,7 @@ const SpecificationAttributeCreate = () => {
     const { groups, loadingGroups, handleSubmit, showSaveConfirm, creating, setShouldRedirect } = viewModel
 
     return (
-        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
+        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40' style={{ maxWidth: 900, margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
                 <Button
                     type='primary'
@@ -34,7 +36,12 @@ const SpecificationAttributeCreate = () => {
                     Save and Continue Edit
                 </Button>
             </div>
-            <h2>Attribute Info</h2>
+            <Alert
+                message={<span> Create Specification Attribute</span>}
+                type='info'
+                showIcon
+                style={{ marginBottom: 20 }}
+            />
             <Form
                 form={form}
                 layout='vertical'
@@ -44,13 +51,17 @@ const SpecificationAttributeCreate = () => {
                     message.error('Please fill in the required fields!')
                 }}
             >
-                <Item
+                <Form.Item
                     name='name'
                     label='Name'
-                    rules={[{ required: true, message: 'Please input the attribute name!' }]}
+                    tooltip='Set the name'
+                    rules={[
+                        { required: true, message: 'Please input the attribute name!' },
+                        { max: 100, message: 'Name cannot exceed 100 characters!' },
+                    ]}
                 >
-                    <Input />
-                </Item>
+                    <Input maxLength={101} />
+                </Form.Item>
                 <Item name='group' label='Group'>
                     {loadingGroups ? (
                         <Spin />
@@ -64,9 +75,22 @@ const SpecificationAttributeCreate = () => {
                         </Select>
                     )}
                 </Item>
-                <Item name='displayOrder' label='Display Order' initialValue={0}>
-                    <Input type='number' />
-                </Item>
+                <Form.Item
+                    label='Display order'
+                    name='displayOrder'
+                    tooltip='Set the display order'
+                    rules={[
+                        { required: true, message: 'Please enter the display order!' },
+                        {
+                            type: 'number',
+                            min: 0,
+                            max: 2000000,
+                            message: 'Display order must be between 0 and 2,000,000!',
+                        },
+                    ]}
+                >
+                    <InputNumber defaultValue={0} type='number' />
+                </Form.Item>
             </Form>
         </div>
     )

@@ -6,7 +6,10 @@ function SpecificationAttributeGroupUpdate() {
         useSpecificationAttributeGroupUpdateViewModel()
 
     return (
-        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
+        <div
+            className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'
+            style={{ maxWidth: 900, margin: '0 auto', marginTop: 30 }}
+        >
             <Form
                 form={form}
                 layout='vertical'
@@ -14,15 +17,32 @@ function SpecificationAttributeGroupUpdate() {
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
             >
-                <Form.Item label='Name' name='name' rules={[{ required: true, message: 'Please input the name!' }]}>
-                    <Input />
+                <Form.Item
+                    name='name'
+                    label='Name'
+                    tooltip='Set the name'
+                    rules={[
+                        { required: true, message: 'Please input the group name!' },
+                        { max: 100, message: 'Name cannot exceed 100 characters!' },
+                    ]}
+                >
+                    <Input maxLength={101} />
                 </Form.Item>
                 <Form.Item
                     label='Display order'
                     name='displayOrder'
-                    rules={[{ required: true, message: 'Please input the display order!' }]}
+                    tooltip='Set the display order'
+                    rules={[
+                        { required: true, message: 'Please enter the display order!' },
+                        {
+                            type: 'number',
+                            min: 0,
+                            max: 2000000,
+                            message: 'Display order must be between 0 and 2,000,000!',
+                        },
+                    ]}
                 >
-                    <InputNumber min={0} />
+                    <InputNumber defaultValue={0} type='number' />
                 </Form.Item>
                 <div
                     style={{

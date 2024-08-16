@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.product.payload.response;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class PredefinedProductAttributeValueResponse {
 
     Long id;
@@ -36,17 +38,17 @@ public class PredefinedProductAttributeValueResponse {
     Integer displayOrder;
 
     public static PredefinedProductAttributeValueResponse mapToResponse(PredefinedProductAttributeValue value) {
-        PredefinedProductAttributeValueResponse response = new PredefinedProductAttributeValueResponse();
-        response.setId(value.getId());
-        response.setName(value.getName());
-        response.setPriceAdjustment(value.getPriceAdjustment());
-        response.setPriceAdjustmentUsePercentage(value.getPriceAdjustmentUsePercentage());
-        response.setWeightAdjustment(value.getWeightAdjustment());
-        response.setCost(value.getCost());
-        response.setIsPreSelected(value.getIsPreSelected());
-        response.setDisplayOrder(value.getDisplayOrder());
-        response.setProductAttribute(value.getProductAttribute().getId());
-        return response;
+        return PredefinedProductAttributeValueResponse.builder()
+                .id(value.getId())
+                .name(value.getName())
+                .priceAdjustment(value.getPriceAdjustment())
+                .priceAdjustmentUsePercentage(value.getPriceAdjustmentUsePercentage())
+                .weightAdjustment(value.getWeightAdjustment())
+                .cost(value.getCost())
+                .isPreSelected(value.getIsPreSelected())
+                .displayOrder(value.getDisplayOrder())
+                .productAttribute(value.getProductAttribute().getId())
+                .build();
     }
 
 }

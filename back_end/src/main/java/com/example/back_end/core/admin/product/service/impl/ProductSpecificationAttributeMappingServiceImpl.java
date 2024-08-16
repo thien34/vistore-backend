@@ -12,6 +12,7 @@ import com.example.back_end.entity.SpecificationAttribute;
 import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.constant.SortType;
+import com.example.back_end.infrastructure.exception.CustomJsonProcessingException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ProductRepository;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,13 +36,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductSpecificationAttributeMappingServiceImpl implements ProductSpecificationAttributeMappingService {
 
-    private static final String SPEC_ATTRIBUTE_ID = "spec_attribute_id";
-    private static final String CUSTOM_VALUE = "custom_value";
+    static final String SPEC_ATTRIBUTE_ID = "spec_attribute_id";
+    static final String CUSTOM_VALUE = "custom_value";
+
     ProductSpecificationAttributeMappingRepository productSpecificationAttributeMappingRepository;
     ProductSpecificationAttributeMappingMapper productSpecificationAttributeMappingMapper;
     ProductRepository productRepository;
@@ -48,7 +52,9 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
     SpecificationAttributeRepository specificationAttributeRepository;
 
     @Override
-    public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(String name, int pageNo, int pageSize) {
+    public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getAllProductSpecificationAttributeMapping(
+            String name, int pageNo, int pageSize
+    ) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<ProductSpecificationAttributeMapping> mappingPage = productSpecificationAttributeMappingRepository
@@ -68,111 +74,136 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
     @Override
     @Transactional
     public ProductSpecificationAttributeMappingResponse createProductSpecificationAttributeMapping(
-            ProductSpecificationAttributeMappingRequest request) throws JsonProcessingException {
+            ProductSpecificationAttributeMappingRequest request) {
         ProductSpecificationAttributeMapping mapping = productSpecificationAttributeMappingMapper.toEntity(request);
 
-        mapping.setProduct(productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        ErrorCode.PRODUCT_ID_NOT_FOUND.getMessage())));
-
-        SpecificationAttributeOption specificationAttributeOption = null;
-        Long specificationAttributeId = null;
-        String customValue = null;
-
-        if (request.getSpecificationAttributeOptionId() != null) {
-            specificationAttributeOption = specificationAttributeOptionRepository
-                    .findById(request.getSpecificationAttributeOptionId())
+        try {
+            mapping.setProduct(productRepository.findById(request.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException(
-                            ErrorCode.SPECIFICATION_ATTRIBUTE_OPTION_NOT_EXISTS.getMessage()));
+                            ErrorCode.PRODUCT_ID_NOT_FOUND.getMessage())));
 
-            // Lưu tên của SpecificationAttributeOption vào customValue
-            customValue = specificationAttributeOption.getName();
-            mapping.setCustomValue(customValue);
-            specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
+            SpecificationAttributeOption specificationAttributeOption = null;
+            Long specificationAttributeId;
+            String customValue;
 
-            // Cập nhật id của specificationAttribute
-            specificationAttributeId = specificationAttributeOption.getSpecificationAttribute().getId();
-
-        } else {
-            // Trích xuất specificationAttributeId từ customValueJson
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode customValueNode = objectMapper.readTree(request.getCustomValue());
-            specificationAttributeId = customValueNode.has(SPEC_ATTRIBUTE_ID)
-                    ? customValueNode.get(SPEC_ATTRIBUTE_ID).asLong()
-                    : null;
-
-            if (specificationAttributeId != null) {
-                specificationAttributeRepository
-                        .findById(specificationAttributeId)
+            if (request.getSpecificationAttributeOptionId() != null) {
+                specificationAttributeOption = specificationAttributeOptionRepository
+                        .findById(request.getSpecificationAttributeOptionId())
                         .orElseThrow(() -> new IllegalArgumentException(
-                                ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
+                                ErrorCode.SPECIFICATION_ATTRIBUTE_OPTION_NOT_EXISTS.getMessage()));
 
-                mapping.setCustomValue(request.getCustomValue());
+                // Save the name of SpecificationAttributeOption to customValue
+                customValue = specificationAttributeOption.getName();
+                mapping.setCustomValue(customValue);
+                specificationAttributeOption = specificationAttributeOptionRepository
+                        .save(specificationAttributeOption);
+
+                // Update the id of specificationAttribute
+                specificationAttributeId = specificationAttributeOption.getSpecificationAttribute().getId();
+
+            } else {
+                //Extract specificationAttributeId from customValueJson
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode customValueNode = objectMapper.readTree(request.getCustomValue());
+                specificationAttributeId = customValueNode.has(SPEC_ATTRIBUTE_ID)
+                        ? customValueNode.get(SPEC_ATTRIBUTE_ID).asLong()
+                        : null;
+
+                if (specificationAttributeId != null) {
+                    specificationAttributeRepository
+                            .findById(specificationAttributeId)
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    ErrorCode.ID_SPECIFICATION_ATTRIBUTE_INVALID.getMessage()));
+                    mapping.setCustomValue(request.getCustomValue());
+                }
             }
+
+            // Set specificationAttributeId
+            mapping.setSpecificationAttributeOption(specificationAttributeOption);
+
+            mapping = productSpecificationAttributeMappingRepository.save(mapping);
+
+            // Get the name of the SpecificationAttribute if available
+            String specificationAttributeName = null;
+            if (specificationAttributeId != null) {
+                SpecificationAttribute specAttribute = specificationAttributeRepository
+                        .findById(specificationAttributeId).orElse(null);
+                specificationAttributeName = specAttribute != null ? specAttribute.getName() : null;
+            }
+
+            // Create a response and assign a name to it
+            ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper
+                    .toDto(mapping);
+            response.setSpecificationAttributeId(specificationAttributeId);
+            response.setSpecificationAttributeName(specificationAttributeName);
+
+            //Set customValue to return
+            if (request.getCustomValue() != null) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode customValueNode = objectMapper.readTree(request.getCustomValue());
+                response.setCustomValue(customValueNode.has(CUSTOM_VALUE) ? customValueNode
+                        .get(CUSTOM_VALUE).asText() : null);
+            }
+
+            // Set up customValueJson
+            response.setCustomValueJson(request.getCustomValue());
+
+            return response;
+        } catch (JsonProcessingException e) {
+            log.error("Error processing JSON data: ", e);
+            // Handle JSON processing exception
+            throw new CustomJsonProcessingException("Failed to process JSON data", e);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid argument: ", e);
+            // Handle argument exceptions
+            throw new IllegalArgumentException("Invalid input provided", e);
         }
-
-        // Thiết lập specificationAttributeId
-        mapping.setSpecificationAttributeOption(specificationAttributeOption);
-
-        mapping = productSpecificationAttributeMappingRepository.save(mapping);
-
-        // Lấy tên của SpecificationAttribute nếu có
-        String specificationAttributeName = null;
-        if (specificationAttributeId != null) {
-            SpecificationAttribute specAttribute = specificationAttributeRepository.findById(specificationAttributeId).orElse(null);
-            specificationAttributeName = specAttribute != null ? specAttribute.getName() : null;
-        }
-
-        // Tạo phản hồi và gán tên vào nó
-        ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper.toDto(mapping);
-        response.setSpecificationAttributeId(specificationAttributeId);
-        response.setSpecificationAttributeName(specificationAttributeName);
-
-        // Thiết lập customValue để trả về
-        if (request.getCustomValue() != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode customValueNode = objectMapper.readTree(request.getCustomValue());
-            response.setCustomValue(customValueNode.has(CUSTOM_VALUE) ? customValueNode.get(CUSTOM_VALUE).asText() : null);
-        }
-
-        // Thiết lập customValueJson
-        response.setCustomValueJson(request.getCustomValue());
-
-        return response;
     }
-
 
     @Override
     public ProductSpecificationAttributeMappingResponse getProductSpecificationAttributeMappingById(Long id) {
-        ProductSpecificationAttributeMapping mapping =
-                productSpecificationAttributeMappingRepository
-                        .findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED.getMessage()));
+        ProductSpecificationAttributeMapping mapping = productSpecificationAttributeMappingRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        ErrorCode.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_NOT_EXISTED.getMessage()));
 
-        ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper.toDto(mapping);
+        ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper
+                .toDto(mapping);
 
         if (mapping.getCustomValue() != null) {
             response.setCustomValueJson(mapping.getCustomValue());
 
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode customValueNode = objectMapper.readTree(mapping.getCustomValue());
-                response.setCustomValue(customValueNode.has(CUSTOM_VALUE) ? customValueNode.get(CUSTOM_VALUE).asText() : null);
+            JsonNode customValueNode = parseCustomValue(mapping.getCustomValue());
 
-                Long specAttributeId = customValueNode.has(SPEC_ATTRIBUTE_ID) ? customValueNode.get(SPEC_ATTRIBUTE_ID).asLong() : null;
-                if (specAttributeId != null) {
-                    SpecificationAttribute specAttribute = specificationAttributeRepository.findById(specAttributeId).orElse(null);
-                    response.setSpecificationAttributeName(specAttribute != null ? specAttribute.getName() : null);
-                }
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            response.setCustomValue(customValueNode.has(CUSTOM_VALUE) ? customValueNode
+                    .get(CUSTOM_VALUE).asText() : customValueNode.asText());
+
+            Long specAttributeId = customValueNode.has(SPEC_ATTRIBUTE_ID) ? customValueNode
+                    .get(SPEC_ATTRIBUTE_ID).asLong() : null;
+            if (specAttributeId != null) {
+                SpecificationAttribute specAttribute = specificationAttributeRepository
+                        .findById(specAttributeId).orElse(null);
+                response.setSpecificationAttributeName(specAttribute != null ? specAttribute.getName() : null);
             }
         }
 
         return response;
     }
 
+    // Method to handle customValue
+    private JsonNode parseCustomValue(String customValue) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode customValueNode;
+
+        try {
+            customValueNode = objectMapper.readTree(customValue);
+        } catch (JsonProcessingException e) {
+            // If not JSON, treat customValue as a simple value
+            customValueNode = objectMapper.createObjectNode().put("value", customValue);
+        }
+
+        return customValueNode;
+    }
 
     @Override
     public void deleteProductSpecificationAttribute(List<Long> ids) {
@@ -194,9 +225,10 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
 
         List<ProductSpecificationAttributeMappingResponse> responses = mappingPage.getContent().stream()
                 .map(mapping -> {
-                    ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper.toDto(mapping);
+                    ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper
+                            .toDto(mapping);
 
-                    // Nếu `specificationAttributeId` có giá trị, lấy tên từ `SpecificationAttribute`
+                    //If `specificationAttributeId` has a value, get the name from `SpecificationAttribute`
                     if (mapping.getSpecificationAttributeOption() != null) {
                         SpecificationAttributeOption option = mapping.getSpecificationAttributeOption();
                         SpecificationAttribute attribute = option.getSpecificationAttribute();
@@ -212,12 +244,12 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                                     : null;
 
                             if (specAttributeId != null) {
-                                SpecificationAttribute attribute = specificationAttributeRepository.findById(specAttributeId).orElse(null);
+                                SpecificationAttribute attribute = specificationAttributeRepository
+                                        .findById(specAttributeId).orElse(null);
                                 response.setSpecificationAttributeName(attribute != null ? attribute.getName() : null);
                             }
                         } catch (JsonProcessingException e) {
-                            // Handle exception
-                            e.printStackTrace();
+                            throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
                         }
                     }
 
@@ -236,7 +268,7 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
     @Override
     @Transactional
     public ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(
-            Long id, ProductSpecificationAttributeMappingUpdateRequest request) throws JsonProcessingException {
+            Long id, ProductSpecificationAttributeMappingUpdateRequest request) {
 
         // Retrieve the existing mapping
         ProductSpecificationAttributeMapping existingMapping =
@@ -261,7 +293,8 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
                             .orElseThrow(() -> new IllegalArgumentException(
                                     ErrorCode.ID_SPECIFICATION_ATTRIBUTE_OPTION_INVALID.getMessage()));
 
-            if (!request.getSpecificationAttributeId().equals(specificationAttributeOption.getSpecificationAttribute().getId())) {
+            if (!request.getSpecificationAttributeId().equals(specificationAttributeOption
+                    .getSpecificationAttribute().getId())) {
                 specificationAttributeOption.setSpecificationAttribute(specificationAttribute);
                 specificationAttributeOptionRepository.save(specificationAttributeOption);
             }
@@ -276,25 +309,30 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
         if (request.getCustomValue() != null) {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, String> customValueMap;
+            try {
+                // Decode existing customValue if it's serialized
+                String existingCustomValue = existingMapping.getCustomValue();
+                if (existingCustomValue != null && existingCustomValue.startsWith("{")) {
+                    customValueMap = objectMapper.readValue(existingCustomValue, Map.class);
+                } else {
+                    customValueMap = new HashMap<>();
+                }
 
-            // Decode existing customValue if it's serialized
-            String existingCustomValue = existingMapping.getCustomValue();
-            if (existingCustomValue != null && existingCustomValue.startsWith("{")) {
-                customValueMap = objectMapper.readValue(existingCustomValue, Map.class);
-            } else {
-                customValueMap = new HashMap<>();
+                // Decode customValue from request
+                Map<String, String> requestCustomValueMap = objectMapper.readValue(request.getCustomValue(), Map.class);
+
+                // Update customValueMap from requestCustomValueMap
+                customValueMap.putAll(requestCustomValueMap);
+                customValueMap.put("specificationAttributeName", specificationAttribute.getName());
+
+                // Serialize back to JSON
+                String jsonCustomValue = objectMapper.writeValueAsString(customValueMap);
+                existingMapping.setCustomValue(jsonCustomValue);
+            } catch (JsonProcessingException e) {
+                log.error("Error processing JSON data: ", e);
+                // Optionally, set a default value or rethrow a custom exception
+                existingMapping.setCustomValue("{}");
             }
-
-            // Decode customValue from request
-            Map<String, String> requestCustomValueMap = objectMapper.readValue(request.getCustomValue(), Map.class);
-
-            // Update customValueMap from requestCustomValueMap
-            customValueMap.putAll(requestCustomValueMap);
-            customValueMap.put("specificationAttributeName", specificationAttribute.getName());
-
-            // Serialize back to JSON
-            String jsonCustomValue = objectMapper.writeValueAsString(customValueMap);
-            existingMapping.setCustomValue(jsonCustomValue);
         }
 
         if (request.getShowOnProductPage() != null) {

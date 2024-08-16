@@ -1,5 +1,4 @@
 import { TableRowSelection } from 'antd/es/table/interface'
-// import  {getProductAttributeColumns} from './ProductAttributeColumns'
 import React, { useState } from 'react'
 import { RequestParams } from '@/utils/FetchUtils'
 import useGetAllApi from '@/hooks/use-get-all-api'
@@ -69,7 +68,7 @@ function useProductAttributeViewModel() {
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
-            pageNo: pagination.current - 1,
+            pageNo: pagination.current,
         }))
     }
 
@@ -78,7 +77,7 @@ function useProductAttributeViewModel() {
         setFilter((prevFilter) => ({
             ...prevFilter,
             ...newFilter,
-            pageNo: 0,
+            pageNo: 1,
         }))
     }
 

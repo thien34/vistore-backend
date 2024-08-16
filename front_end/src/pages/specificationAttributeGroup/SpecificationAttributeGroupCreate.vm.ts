@@ -6,9 +6,7 @@ import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGr
 const useSpecificationAttributeGroupCreateViewModel = () => {
     const [form] = Form.useForm()
     const navigate = useNavigate()
-    const { mutate: createSpecificationAttributeGroup, isLoading } = useCreateApi(
-        SpecificationAttributeGroupConfigs.resourceUrl,
-    )
+    const { mutate: createSpecificationAttributeGroup } = useCreateApi(SpecificationAttributeGroupConfigs.resourceUrl)
 
     const handleSave = (shouldRedirect: boolean) => {
         form.validateFields()
@@ -44,7 +42,6 @@ const useSpecificationAttributeGroupCreateViewModel = () => {
 
     return {
         form,
-        isLoading,
         showSaveConfirm,
         handleSave,
     }
