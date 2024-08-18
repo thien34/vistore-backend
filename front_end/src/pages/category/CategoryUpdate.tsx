@@ -5,6 +5,8 @@ import useCategoryUpdateViewModel from './CategoryUpdate.vm'
 import useCategoryCreateViewModel from './CategoryCreate.vm'
 
 export default function CategoryUpdate() {
+    const { form, layout, data, getCategoryFullName } = useCategoryCreateViewModel()
+
     const {
         onFinish,
         categoryResponse,
@@ -20,8 +22,6 @@ export default function CategoryUpdate() {
         previewImage,
         setPreviewImage,
     } = useCategoryUpdateViewModel()
-
-    const { form, layout, data, getCategoryFullName } = useCategoryCreateViewModel()
 
     useEffect(() => {
         if (categoryResponse) {

@@ -21,7 +21,7 @@ import ProductManage from '@/pages/product'
 import ProductUpdateSpecificationAttributeMapping from '@/pages/product/ProductUpdateSpecificationAttributeMapping.tsx'
 import ProductSpecificationAttributeMappingCreate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingCreate'
 import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingUpdate'
-import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
+import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
 import ProductAtbCombinations from '@/pages/product-attribute-combinations/ProductAtbCombinations'
 
 const routers = [

@@ -1,6 +1,6 @@
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
 import { RequestParams } from '@/utils/FetchUtils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ManufactureConfigs from './ManufactureConfigs'
 import getManufactureColumns from './ManufactureColumns'
 import { ManufacturerResponse } from '@/model/Manufacturer'
@@ -19,6 +19,11 @@ export default function useManufactureViewModel() {
         ManufactureConfigs.resourceUrl,
         ManufactureConfigs.resourceKey,
     )
+
+    // SET TITLE
+    useEffect(() => {
+        document.title = 'Manufacturers - Vítore'
+    }, [])
 
     // GET COLUMNS
     const columns = getManufactureColumns()

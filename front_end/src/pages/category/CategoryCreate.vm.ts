@@ -1,7 +1,7 @@
 import useCreateApi from '@/hooks/use-create-api'
 import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
 import { Form, GetProp, UploadFile, UploadProps } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CategoryConfigs from './CategoryConfigs'
 import useGetAllApi from '@/hooks/use-get-all-api'
@@ -20,6 +20,11 @@ function useCategoryCreateViewModel() {
         labelCol: { span: 8 },
         wrapperCol: { span: 16 },
     }
+
+    // SET TITLE
+    useEffect(() => {
+        document.title = 'Add a new category - Vítore'
+    }, [])
 
     interface Search extends RequestParams {
         published?: boolean

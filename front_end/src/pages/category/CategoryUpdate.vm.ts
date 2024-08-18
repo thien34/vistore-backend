@@ -7,7 +7,7 @@ import { PictureResponse } from '@/model/Picture'
 import PictureConfigs from '../picture/PictureConfigs'
 import useUploadMultipleImagesApi from '@/hooks/use-upload-multiple-images-api'
 import { GetProp, UploadFile, UploadProps } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function useCategoryUpdateViewModel() {
     const navigation = useNavigate()
@@ -15,6 +15,11 @@ function useCategoryUpdateViewModel() {
     const [fileList, setFileList] = useState<UploadFile[]>([])
     const [previewOpen, setPreviewOpen] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
+
+    // SET TITLE
+    useEffect(() => {
+        document.title = 'Edit category details - Vítore'
+    }, [])
 
     const { id } = useParams<{ id: string }>()
 

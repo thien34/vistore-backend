@@ -1,7 +1,7 @@
 import { TableRowSelection } from 'antd/es/table/interface'
 import getCategoryColumns from './CategoryColumns'
 import { CategoriesResponse } from '@/model/Category'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RequestParams } from '@/utils/FetchUtils'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import CategoryConfigs from './CategoryConfigs'
@@ -15,6 +15,11 @@ function useCategoryViewModel() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<Search>({})
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(CategoryConfigs.resourceUrl, CategoryConfigs.resourceKey)
+
+    // SET TITLE
+    useEffect(() => {
+        document.title = 'Categories - Vítore'
+    }, [])
 
     // GET COLUMNS
     const columns = getCategoryColumns()

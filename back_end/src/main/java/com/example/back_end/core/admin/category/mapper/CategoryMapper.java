@@ -7,6 +7,7 @@ import com.example.back_end.entity.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 import java.util.List;
 
@@ -22,8 +23,14 @@ public interface CategoryMapper {
     List<CategoriesResponse> toCategoriesResponseList(List<Category> categories);
 
     @Mapping(target = "deleted", constant = "false")
+    @Mapping(target = "name", source = "name", qualifiedByName = "trimName")
     Category mapToCategory(CategoryRequest request);
 
     void updateCategoryFromRequest(CategoryRequest request, @MappingTarget Category category);
+
+    @Named("trimName")
+    default String trimName(String name) {
+        return name != null ? name.trim() : null;
+    }
 
 }
