@@ -169,7 +169,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                 deleteApi.mutate(parseInt(id, 10), {
                     onSuccess: () => {
                         message.success('Deleted successfully')
-                        navigate(`/admin/products/product-spec-attribute-mapping/productId/${productId}`)
+                        navigate(`/admin/products/product-spec-attributes/productId/${productId}`)
                     },
                     onError: () => {
                         message.error('Delete failed!')

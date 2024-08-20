@@ -99,7 +99,7 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                 createMutation.mutate(payload, {
                     onSuccess: () => {
                         message.success('Product specification created successfully')
-                        navigate(`/admin/products/product-spec-attribute-mapping/productId/${productId}`)
+                        navigate(`/admin/products/product-spec-attributes/productId/${productId}`)
                     },
                     onError: (error) => {
                         message.error(`Error creating mapping: ${error.message}`)
