@@ -5,7 +5,6 @@ import CategoryManage from '@/pages/category/CategoryManage'
 import CategoryCreate from '@/pages/category/CategoryCreate'
 import CategoryUpdate from '@/pages/category/CategoryUpdate'
 import Home from '@/pages/home'
-import ProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.tsx'
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
@@ -23,6 +22,7 @@ import ProductSpecificationAttributeMappingCreate from '@/pages/productSpecifica
 import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingUpdate'
 import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
 import ProductAtbCombinations from '@/pages/product-attribute-combinations/ProductAtbCombinations'
+import ProductAttribute from '@/pages/productAttribute/ProductAttributeCreate'
 
 const routers = [
     {
@@ -40,7 +40,7 @@ const routers = [
     {
         path: ManagerPath.PRODUCT_ATTRIBUTE_ADD,
         layout: 'main',
-        element: <ProductAttributeCreate />,
+        element: <ProductAttribute />,
         breadcrumbName: 'ProductAttribute',
         pageType: 'product-attribute-add',
     },

@@ -48,7 +48,7 @@ export default function ProductAttributeUpdate() {
             })
             setValues(productAttributeResponse.values)
         }
-    }, [form, productAttributeResponse])
+    }, [form, productAttributeResponse, setValues])
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },

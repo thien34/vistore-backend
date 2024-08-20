@@ -25,6 +25,8 @@ function useProductAttributeCreate() {
         cost: 0,
         isPreSelected: false,
         displayOrder: 0,
+        productAttribute: 0,
+        setIsEditPriceAdjustment: 0,
     })
     const [isOpenConfirm, setOpenConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -77,6 +79,8 @@ function useProductAttributeCreate() {
                 cost: 0,
                 isPreSelected: false,
                 displayOrder: 0,
+                productAttribute: 0,
+                setIsEditPriceAdjustment: 0,
             })
             setIsModalOpen(false)
         }
