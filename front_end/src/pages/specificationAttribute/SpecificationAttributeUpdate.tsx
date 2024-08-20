@@ -1,8 +1,21 @@
 import { useState, useEffect } from 'react'
-import { Form, Input, Select, Button, Row, Col, Table, Space, Modal, Checkbox, message, InputNumber } from 'antd'
+import {
+    Form,
+    Input,
+    Select,
+    Button,
+    Row,
+    Col,
+    Table,
+    Space,
+    Modal,
+    Checkbox,
+    message,
+    InputNumber,
+    ColorPicker,
+} from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { SketchPicker } from 'react-color'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
@@ -13,6 +26,7 @@ import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { SpecificationAttributeGroupResponse } from '@/model/SpecificationAttributeGroup'
 import Title from 'antd/es/typography/Title'
+import { AggregationColor } from 'antd/es/color-picker/color'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -201,8 +215,8 @@ function SpecificationAttributeUpdate() {
         handleCancel()
     }
 
-    const handleColorChange = (color: { hex: string }) => {
-        setColor(color.hex)
+    const handleColorChange = (_value: AggregationColor, hex: string) => {
+        setColor(hex)
     }
 
     const handleColorCheckChange = (e: CheckboxChangeEvent) => {
@@ -424,7 +438,7 @@ function SpecificationAttributeUpdate() {
                         </Checkbox>
                         {isColorPickerVisible && (
                             <div style={{ marginTop: '10px' }}>
-                                <SketchPicker color={color} onChange={handleColorChange} />
+                                <ColorPicker value={color} onChange={handleColorChange} />
                                 <div style={{ marginTop: '10px' }}>
                                     <strong>Selected Color:</strong> {formatColorHex(color)}
                                 </div>
