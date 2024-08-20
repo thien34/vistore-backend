@@ -40,3 +40,8 @@ export type CategoryRequest = {
     displayOrder: number
     priceRangeFiltering: boolean
 }
+
+export type CategoryNameResponse = {
+    id: number
+    name: string
+}

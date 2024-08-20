@@ -5,7 +5,11 @@ import useAuth from './providers/useAuth'
 function App() {
     const { user } = useAuth()
     const routers = user ? routersPrivate : routersPublic
-    return <RouterProvider router={routers} />
+    return (
+        <>
+            <RouterProvider router={routers} />
+        </>
+    )
 }
 
 export default App

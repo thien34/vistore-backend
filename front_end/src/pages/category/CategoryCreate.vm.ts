@@ -1,12 +1,11 @@
 import useCreateApi from '@/hooks/use-create-api'
-import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
+import { CategoriesResponse, CategoryNameResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
 import { Form, GetProp, UploadFile, UploadProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CategoryConfigs from './CategoryConfigs'
-import useGetAllApi from '@/hooks/use-get-all-api'
-import { RequestParams } from '@/utils/FetchUtils'
 import useUploadMultipleImagesApi from '@/hooks/use-upload-multiple-images-api'
+import useGetApi from '@/hooks/use-get-api'
 
 function useCategoryCreateViewModel() {
     const [form] = Form.useForm()
@@ -15,7 +14,6 @@ function useCategoryCreateViewModel() {
     const [previewImage, setPreviewImage] = useState('')
     const navigation = useNavigate()
     const [fileList, setFileList] = useState<UploadFile[]>([])
-    const [filter] = useState<Search>({})
     const layout = {
         labelCol: { span: 8 },
         wrapperCol: { span: 16 },
@@ -26,11 +24,10 @@ function useCategoryCreateViewModel() {
         document.title = 'Add a new category - Vítore'
     }, [])
 
-    interface Search extends RequestParams {
-        published?: boolean
-    }
-
-    const { data } = useGetAllApi<CategoriesResponse>(CategoryConfigs.resourceUrl, CategoryConfigs.resourceKey, filter)
+    const data = useGetApi<CategoryNameResponse[]>(
+        `${CategoryConfigs.resourceUrl}/list-name`,
+        CategoryConfigs.resourceKey,
+    ).data
     const { mutateAsync: createPictures, isPending } = useUploadMultipleImagesApi()
     const { mutate: createCategoryApi } = useCreateApi<CategoryRequest, string>(CategoryConfigs.resourceUrl)
 

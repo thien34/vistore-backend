@@ -46,8 +46,8 @@ public class CategoryController {
                 .build();
     }
 
-    @GetMapping("/name")
-    public ResponseData<List<CategoryNameResponse>> getAllNameCategories() {
+    @GetMapping("/list-name")
+    public ResponseData<List<CategoryNameResponse>> getAllNameCategories() {    
 
         List<CategoryNameResponse> response = categoryService.getCategoriesName();
 
