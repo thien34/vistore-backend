@@ -67,6 +67,15 @@ public class SpecificationAttributeServiceImpl implements SpecificationAttribute
     }
 
     @Override
+    public List<SpecificationAttributeResponse> getAllSpecificationAttributeName() {
+        List<SpecificationAttribute> specificationAttributes = specificationAttributeRepository.findAll();
+
+        return specificationAttributes.stream()
+                .map(SpecificationAttributeResponse::mapToResponse)
+                .toList();
+    }
+
+    @Override
     public PageResponse<List<SpecificationAttributeResponse>> getAttributesWithNoGroupOrInvalidGroup(
             int pageNo, int pageSize
     ) {

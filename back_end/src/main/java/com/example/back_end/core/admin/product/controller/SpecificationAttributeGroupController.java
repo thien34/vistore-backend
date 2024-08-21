@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeGroupRequest;
+import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupNameResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeGroupService;
 import com.example.back_end.core.common.PageResponse;
@@ -118,6 +119,17 @@ public class SpecificationAttributeGroupController {
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
                 .message("Delete specification attribute group success")
+                .build();
+    }
+    @GetMapping("/list-name")
+    public ResponseData<List<SpecificationAttributeGroupNameResponse>> getAllGroupName() {
+
+        List<SpecificationAttributeGroupNameResponse> response = specificationAttributeGroupService.getAllGroupName();
+
+        return ResponseData.<List<SpecificationAttributeGroupNameResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get all groups name successfully")
+                .data(response)
                 .build();
     }
 

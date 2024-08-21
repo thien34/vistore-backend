@@ -13,6 +13,7 @@ public interface SpecificationAttributeService {
     PageResponse<List<SpecificationAttributeResponse>> getAllSpecificationAttribute(
             String name, int pageNo, int pageSize
     );
+    List<SpecificationAttributeResponse> getAllSpecificationAttributeName();
 
     SpecificationAttributeResponse createSpecificationAttribute(SpecificationAttributeRequest request);
 

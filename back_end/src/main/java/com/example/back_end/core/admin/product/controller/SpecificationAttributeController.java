@@ -123,4 +123,16 @@ public class SpecificationAttributeController {
                 .build();
     }
 
+    @GetMapping("/list-name")
+    public ResponseData<List<SpecificationAttributeResponse>> getAllSpecName() {
+
+        List<SpecificationAttributeResponse> response = specificationAttributesService.getAllSpecificationAttributeName();
+
+        return ResponseData.<List<SpecificationAttributeResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get all specification attribute name successfully")
+                .data(response)
+                .build();
+    }
+
 }
