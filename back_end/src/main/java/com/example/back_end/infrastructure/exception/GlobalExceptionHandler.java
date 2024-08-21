@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
              }
             """))})})
     public ErrorResponse handleValidationException(Exception e, WebRequest request) {
-        log.error(String.valueOf(e));
+        log.error("Validation Exception: ", e);
         ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(BAD_REQUEST.value())
@@ -74,7 +74,6 @@ public class GlobalExceptionHandler {
         } else {
             builder.error("Invalid Data").message(message);
         }
-
         return builder.build();
     }
 
@@ -97,7 +96,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
-
+        log.error("Resource Not Found Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(NOT_FOUND.value())
@@ -126,7 +125,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleDuplicateKeyException(InvalidDataException e, WebRequest request) {
-
+        log.error("Duplicate Key Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(CONFLICT.value())
@@ -155,7 +154,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleException(Exception e, WebRequest request) {
-
+        log.error("Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(INTERNAL_SERVER_ERROR.value())
@@ -176,12 +175,10 @@ public class GlobalExceptionHandler {
         );
     }
 
-    /*
-     * No static resource - 404
-     * */
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(NOT_FOUND)
     public ErrorResponse handleNoResourceFoundException(NoResourceFoundException e) {
+        log.error("No Resource Found Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(NOT_FOUND.value())
@@ -203,7 +200,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, WebRequest request) {
-        log.error(e.toString());
+        log.error("Method Argument Type Mismatch Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(BAD_REQUEST.value())
@@ -225,7 +222,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e, WebRequest request) {
-
+        log.error("Data Integrity Violation Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.CONFLICT.value())
@@ -254,7 +251,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e, WebRequest request) {
-        log.error(String.valueOf(e));
+        log.error("Illegal Argument Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -276,6 +273,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleAlreadyExistsException(AlreadyExistsException e, WebRequest request) {
+        log.error("Already Exists Exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(CONFLICT.value())
@@ -297,6 +295,7 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleNotExistsException(NotExistsException e, WebRequest request) {
+        log.error("Not exits exception: ", e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(NOT_FOUND.value())
