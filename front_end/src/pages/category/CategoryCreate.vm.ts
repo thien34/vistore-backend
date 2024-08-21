@@ -1,5 +1,5 @@
 import useCreateApi from '@/hooks/use-create-api'
-import { CategoriesResponse, CategoryNameResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
+import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
 import { Form, GetProp, UploadFile, UploadProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -24,7 +24,7 @@ function useCategoryCreateViewModel() {
         document.title = 'Add a new category - Vítore'
     }, [])
 
-    const data = useGetApi<CategoryNameResponse[]>(
+    const data = useGetApi<CategoriesResponse[]>(
         `${CategoryConfigs.resourceUrl}/list-name`,
         CategoryConfigs.resourceKey,
     ).data
