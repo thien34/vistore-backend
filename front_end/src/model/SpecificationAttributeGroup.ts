@@ -11,3 +11,7 @@ export type SpecificationAttributeGroupResponse = {
     displayOrder: number
     specificationAttributes: Array<SpecificationAttributeResponse>
 }
+export type SpecificationAttributeGroupNameResponse = {
+    id: number
+    name: string
+}

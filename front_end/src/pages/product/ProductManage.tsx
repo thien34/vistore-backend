@@ -25,7 +25,7 @@ export default function ProductManage() {
     const dataSource = listResponse?.items || []
 
     const handleRowClick = (record: ProductResponse) => {
-        navigate(`/admin/products/product-spec-attributes/productId/${record.id}`)
+        navigate(`/admin/products/specification-attributes/productId/${record.id}`)
     }
 
     return (

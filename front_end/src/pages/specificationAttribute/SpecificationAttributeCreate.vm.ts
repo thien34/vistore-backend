@@ -1,26 +1,27 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useCreateApi from '@/hooks/use-create-api'
-import useGetAllApi from '@/hooks/use-get-all-api'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
-import { message, Modal } from 'antd'
+import { FormInstance, message, Modal } from 'antd'
+import useGetApi from '@/hooks/use-get-api'
+import { SpecificationAttributeGroupNameResponse } from '@/model/SpecificationAttributeGroup'
 
-const useSpecificationAttributeCreateViewModel = (form) => {
-    const [groups, setGroups] = useState([])
+const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
+    const [groups, setGroups] = useState<SpecificationAttributeGroupNameResponse[]>([])
     const [loadingGroups, setLoadingGroups] = useState(true)
     const [shouldRedirect, setShouldRedirect] = useState(false)
     const navigate = useNavigate()
 
-    const { mutate, isLoading: creating } = useCreateApi(SpecificationAttributeConfigs.resourceUrl)
-    const { data, error } = useGetAllApi(
-        SpecificationAttributeGroupConfigs.resourceUrl,
+    const { mutate, isSuccess: creating } = useCreateApi(SpecificationAttributeConfigs.resourceUrl)
+    const { data, error } = useGetApi<SpecificationAttributeGroupNameResponse[]>(
+        `${SpecificationAttributeGroupConfigs.resourceUrl}/list-name`,
         SpecificationAttributeGroupConfigs.resourceKey,
     )
 
     useEffect(() => {
         if (data) {
-            setGroups(data.items)
+            setGroups(data) // Set array directly
             setLoadingGroups(false)
         }
         if (error) {

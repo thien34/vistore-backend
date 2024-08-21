@@ -19,14 +19,17 @@ import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-de
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
-import useGetAllApi from '@/hooks/use-get-all-api.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
 import useUpdateApi from '@/hooks/use-update-api.ts'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
-import { SpecificationAttributeGroupResponse } from '@/model/SpecificationAttributeGroup'
+import {
+    SpecificationAttributeGroupNameResponse,
+    SpecificationAttributeGroupResponse,
+} from '@/model/SpecificationAttributeGroup'
 import Title from 'antd/es/typography/Title'
 import { AggregationColor } from 'antd/es/color-picker/color'
+import useGetApi from '@/hooks/use-get-api'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -36,7 +39,7 @@ interface Option {
     specificationAttribute: number
     name: string
     displayOrder: number
-    color: string
+    color: string | null
     associatedProducts: number
 }
 interface FormValues {
@@ -56,6 +59,22 @@ function OptionsList({ options = [], onDelete, onEdit }: OptionsListProps) {
         { title: 'Name', dataIndex: 'name', key: 'name' },
         { title: 'Display order', dataIndex: 'displayOrder', key: 'displayOrder' },
         { title: 'Number of associated products', dataIndex: 'associatedProducts', key: 'associatedProducts' },
+        {
+            title: 'Color',
+            dataIndex: 'color',
+            key: 'color',
+            render: (color: string) => (
+                <div
+                    style={{
+                        width: '20px',
+                        height: '20px',
+                        backgroundColor: color,
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                    }}
+                />
+            ),
+        },
         {
             title: 'Actions',
             key: 'actions',
@@ -81,17 +100,30 @@ function SpecificationAttributeUpdate() {
     const [modalForm] = Form.useForm()
     const { id } = useParams()
     const [editData, setEditData] = useState<SpecificationAttributeResponse | null>(null)
-    const [groups, setGroups] = useState<SpecificationAttributeGroupResponse[]>([])
+    const [setGroups] = useState<SpecificationAttributeGroupResponse[]>([])
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isColorPickerVisible, setIsColorPickerVisible] = useState(false)
-    const [color, setColor] = useState('#FFFFFF')
+    const [color, setColor] = useState('')
     const [options, setOptions] = useState<Option[]>([])
     const [editingOption, setEditingOption] = useState<Option | null>(null)
     const navigate = useNavigate()
+    function rgbToHex(r: number, g: number, b: number): string {
+        return (
+            '#' +
+            [r, g, b]
+                .map((x) => {
+                    const hex = x.toString(16)
+                    return hex.length === 1 ? '0' + hex : hex
+                })
+                .join('')
+                .toUpperCase()
+        )
+    }
 
     const formatColorHex = (hex: string) => {
+        // Ensure the color is a valid 6-character hex code
         if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-            return '#FFFFFF'
+            return '#FFFFFF' // Default to white if the color is not valid
         }
         return hex.toUpperCase()
     }
@@ -106,7 +138,10 @@ function SpecificationAttributeUpdate() {
         data: groupData,
         isLoading: isLoadingGroups,
         error,
-    } = useGetAllApi(SpecificationAttributeGroupConfigs.resourceUrl, SpecificationAttributeGroupConfigs.resourceKey)
+    } = useGetApi<SpecificationAttributeGroupNameResponse[]>(
+        `${SpecificationAttributeGroupConfigs.resourceUrl}/list-name`,
+        SpecificationAttributeGroupConfigs.resourceKey,
+    )
 
     const { mutate: updateAttribute } = useUpdateApi<SpecificationAttributeResponse, SpecificationAttributeResponse>(
         SpecificationAttributeConfigs.resourceUrl,
@@ -136,7 +171,7 @@ function SpecificationAttributeUpdate() {
                     name: option.name || '',
                     displayOrder: option.displayOrder || 0,
                     associatedProducts: 0,
-                    color: option.colorSquaresRgb || '#FFFFFF',
+                    color: option.colorSquaresRgb !== null ? option.colorSquaresRgb : null, // Ensure proper mapping
                 }))
                 setOptions(formattedOptions)
             }
@@ -147,7 +182,7 @@ function SpecificationAttributeUpdate() {
         if (groupData && groupData.items) {
             setGroups(groupData.items)
         }
-    }, [groupData])
+    }, [groupData, setGroups])
 
     if (isLoadingAttribute || isLoadingGroups) {
         return <div>Loading...</div>
@@ -157,15 +192,33 @@ function SpecificationAttributeUpdate() {
         return <div>Error loading data: {error.message}</div>
     }
 
+    // For example, check the data before setting the value
+    const processColor = (color: string | null): string | null => {
+        if (color === null || color === undefined || color === '') {
+            return null // Returns null if color is null, undefined, or an empty string
+        }
+        return color // Returns the color value unchanged if not null or an empty string
+    }
+
     const showEditModal = (option: Option) => {
+        console.log('Option Color:', option.color) // Debugging value
+
         setEditingOption(option)
         setIsModalVisible(true)
         modalForm.setFieldsValue({
             optionName: option.name,
             optionDisplayOrder: option.displayOrder,
         })
-        setColor(option.color || '#FFFFFF')
-        setIsColorPickerVisible(!!option.color)
+
+        // Update the state of color and checkbox
+        const processedColor = processColor(option.color)
+        if (processedColor !== null) {
+            setColor(processedColor)
+            setIsColorPickerVisible(true) //Checkbox is selected if colored
+        } else {
+            setColor('#FFFFFF') // Or default color value
+            setIsColorPickerVisible(false) // Checkbox is not selected if there is no color
+        }
     }
 
     const handleCancel = () => {
@@ -181,10 +234,21 @@ function SpecificationAttributeUpdate() {
             optionName: string
             optionDisplayOrder: number
         }
-        if (!newOption.optionName) {
-            message.error('Please enter a name for the option!')
-            return
+
+        // Determine the final color to be saved
+        let finalColor: string | null = null
+        if (isColorPickerVisible) {
+            finalColor = color === '#FFFFFF' ? '#FFFFFF' : color
+        } else {
+            finalColor = null
         }
+
+        console.log('Final Color:', finalColor)
+        console.log('New Option Details:', {
+            name: newOption.optionName || '',
+            displayOrder: Number(newOption.optionDisplayOrder) || 0,
+            color: finalColor,
+        })
 
         if (editingOption) {
             setOptions((prevOptions) =>
@@ -194,7 +258,7 @@ function SpecificationAttributeUpdate() {
                               ...option,
                               name: newOption.optionName || '',
                               displayOrder: Number(newOption.optionDisplayOrder) || 0,
-                              color: isColorPickerVisible ? color : editingOption.color,
+                              color: finalColor,
                           }
                         : option,
                 ),
@@ -208,61 +272,68 @@ function SpecificationAttributeUpdate() {
                     name: newOption.optionName || '',
                     displayOrder: Number(newOption.optionDisplayOrder) || 0,
                     associatedProducts: 0,
-                    color: isColorPickerVisible ? color : '#FFFFFF',
+                    color: finalColor,
                 },
             ])
         }
         handleCancel()
     }
 
-    const handleColorChange = (_value: AggregationColor, hex: string) => {
+    const handleColorChange = (value: AggregationColor) => {
+        const { r, g, b } = value.toRgb() // Assuming value has a `toRgb` method returning an object with r, g, b properties
+        const hex = rgbToHex(r, g, b)
         setColor(hex)
     }
 
     const handleColorCheckChange = (e: CheckboxChangeEvent) => {
-        setIsColorPickerVisible(e.target.checked)
-        if (!e.target.checked) {
-            setColor('#FFFFFF')
+        const isChecked = e.target.checked
+        setIsColorPickerVisible(isChecked)
+
+        // If the checkbox is not selected, set the color to null or default value
+        if (!isChecked) {
+            setColor('#FFFFFF') // Or another default value if needed
         }
     }
 
     const handleSave = () => {
-        confirm({
-            title: 'Do you want to save these changes?',
-            icon: <ExclamationCircleOutlined />,
-            content: 'Your changes will be saved permanently.',
-            onOk() {
-                const formValues = form.getFieldsValue() as FormValues
+        const formValues = form.getFieldsValue() as FormValues
 
-                const updatedOptions = options.map((option) => ({
-                    id: Number(option.id),
-                    name: option.name,
-                    colorSquaresRgb: option.color === '#FFFFFF' ? null : option.color,
-                    displayOrder: option.displayOrder,
-                    productSpecificationAttributeMappings: [],
-                    specificationAttributeId: Number(id),
-                }))
+        const updatedOptions = options.map((option) => ({
+            id: Number(option.id),
+            name: option.name,
+            colorSquaresRgb: option.color === '#FFFFFF' ? '#FFFFFF' : option.color,
+            displayOrder: option.displayOrder,
+            productSpecificationAttributeMappings: [],
+            specificationAttributeId: Number(id),
+        }))
 
-                const dataToSend = {
-                    id: Number(id),
-                    name: formValues.name,
-                    displayOrder: Number(formValues.displayOrder),
-                    specificationAttributeGroupId: formValues.group === 'none' ? null : Number(formValues.group),
-                    listOptions: updatedOptions,
-                }
+        const dataToSend = {
+            id: Number(id),
+            name: formValues.name,
+            displayOrder: Number(formValues.displayOrder),
+            specificationAttributeGroupId: formValues.group === 'none' ? null : Number(formValues.group),
+            listOptions: updatedOptions,
+        }
 
+        // Show confirmation dialog
+        Modal.confirm({
+            title: 'Are you sure you want to save?',
+            content: 'Your changes will be saved, and you will be redirected.',
+            okText: 'Yes',
+            cancelText: 'No',
+            onOk: () => {
                 updateAttribute(dataToSend, {
-                    onSuccess: (result) => {
-                        console.log('API response:', result)
+                    onSuccess: () => {
+                        message.success('Save and continue edit successfully')
                         navigate('/admin/specification-attribute-groups')
                     },
-                    onError: (error) => {
-                        console.error('Error saving attribute:', error)
+                    onError: () => {
+                        message.error('Error save and continue edit failed')
                     },
                 })
             },
-            onCancel() {
-                console.log('Cancel save operation')
+            onCancel: () => {
+                console.log('Save operation cancelled')
             },
         })
     }
@@ -273,7 +344,7 @@ function SpecificationAttributeUpdate() {
         const updatedOptions = options.map((option) => ({
             id: Number(option.id),
             name: option.name,
-            colorSquaresRgb: option.color === '#FFFFFF' ? null : option.color,
+            colorSquaresRgb: option.color === '#FFFFFF' ? '#FFFFFF' : option.color,
             displayOrder: option.displayOrder,
             productSpecificationAttributeMappings: [],
             specificationAttributeId: Number(id),
@@ -377,18 +448,24 @@ function SpecificationAttributeUpdate() {
                         { max: 100, message: 'Name cannot exceed 100 characters!' },
                     ]}
                 >
-                    <Input style={{ maxWidth: 800 }} maxLength={101} />
+                    <Input style={{ maxWidth: 700 }} maxLength={101} />
                 </Form.Item>
-                <Form.Item label='Group' name='group'>
-                    <Select style={{ maxWidth: 800 }} defaultValue='none'>
+                <Form.Item
+                    style={{ maxWidth: 350 }}
+                    name='group'
+                    label='Group'
+                    rules={[{ required: true, message: 'Please select a group!' }]}
+                >
+                    <Select placeholder='Select a group'>
                         <Option value='none'>None</Option>
-                        {groups.map((group) => (
+                        {groupData?.map((group) => (
                             <Option key={group.id} value={group.id}>
                                 {group.name}
                             </Option>
                         ))}
                     </Select>
                 </Form.Item>
+
                 <Form.Item
                     label='Display order'
                     name='displayOrder'

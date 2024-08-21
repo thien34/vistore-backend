@@ -1,7 +1,6 @@
-import { Button, Form, Input, InputNumber, Select, Space, Spin, message } from 'antd'
+import { Button, Form, Input, InputNumber, Select, Spin, message } from 'antd'
 import { SaveOutlined } from '@ant-design/icons'
 import useSpecificationAttributeCreateViewModel from '@/pages/specificationAttribute/SpecificationAttributeCreate.vm.ts'
-import Title from 'antd/es/typography/Title'
 import Alert from 'antd/es/alert/Alert'
 
 const { Item } = Form
@@ -67,7 +66,7 @@ const SpecificationAttributeCreate = () => {
                         <Spin />
                     ) : (
                         <Select placeholder='Select a group'>
-                            {groups.map((group: { id: number; name: string }) => (
+                            {groups.map((group) => (
                                 <Option key={group.id} value={group.id}>
                                     {group.name}
                                 </Option>

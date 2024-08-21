@@ -12,9 +12,9 @@ import {
 } from '@/model/ProductSpecificationAttributeMapping.ts'
 import { SpecificationAttributeOptionResponse } from '@/model/SpecificationAttributeOption.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
-import { message, Modal } from 'antd'
+import { FormInstance, message, Modal } from 'antd'
 
-const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
+const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstance) => {
     const [attributeType, setAttributeType] = useState('Option')
     const [isSpinning, setIsSpinning] = useState(false)
     const [attributeOptions, setAttributeOptions] = useState<SpecificationAttributeOptionResponse[]>([])
@@ -169,7 +169,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form) => {
                 deleteApi.mutate(parseInt(id, 10), {
                     onSuccess: () => {
                         message.success('Deleted successfully')
-                        navigate(`/admin/products/product-spec-attributes/productId/${productId}`)
+                        navigate(`/admin/products/specification-attributes/productId/${productId}`)
                     },
                     onError: () => {
                         message.error('Delete failed!')

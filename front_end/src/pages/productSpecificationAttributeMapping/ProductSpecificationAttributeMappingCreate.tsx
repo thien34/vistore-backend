@@ -80,10 +80,11 @@ const ProductSpecificationAttributeMappingCreate = () => {
                                     ))}
                                 </OptGroup>
                             ))}
-                        {!groupedAttributes?.size && <Option value=''>No attributes available</Option>}
+                        {(!groupedAttributes || groupedAttributes.size === 0) && (
+                            <Option value=''>No attributes available</Option>
+                        )}
                     </Select>
                 </Form.Item>
-
                 {attributeType === 'Option' && (
                     <Form.Item
                         label='Attribute option'

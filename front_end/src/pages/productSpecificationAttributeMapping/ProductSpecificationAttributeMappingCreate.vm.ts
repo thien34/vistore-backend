@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import useGetAllApi from '@/hooks/use-get-all-api'
 import useCreateApi from '@/hooks/use-create-api'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
@@ -8,6 +7,7 @@ import { ProductSpecificationAttributeMappingRequest } from '@/model/ProductSpec
 import { FormInstance, message } from 'antd'
 import { NavigateFunction } from 'react-router-dom'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute'
+import useGetApi from '@/hooks/use-get-api'
 
 const useProductSpecificationAttributeMappingCreateViewModel = (
     form: FormInstance,
@@ -25,11 +25,11 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
         isLoading,
         error,
         refetch: refetchAttributes,
-    } = useGetAllApi(SpecificationAttributeConfigs.resourceUrl, SpecificationAttributeConfigs.resourceKey)
+    } = useGetApi(`${SpecificationAttributeConfigs.resourceUrl}/list-name`, SpecificationAttributeConfigs.resourceKey)
 
     useEffect(() => {
-        if (listAttribute?.items) {
-            const attrs = listAttribute.items as SpecificationAttributeResponse[]
+        if (listAttribute) {
+            const attrs = listAttribute as SpecificationAttributeResponse[]
             const filteredAttrs = attrs.filter((attr) => (attr.listOptions || []).length > 0)
             setAttributes(filteredAttrs)
 
@@ -99,7 +99,7 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                 createMutation.mutate(payload, {
                     onSuccess: () => {
                         message.success('Product specification created successfully')
-                        navigate(`/admin/products/product-spec-attributes/productId/${productId}`)
+                        navigate(`/admin/products/specification-attributes/productId/${productId}`)
                     },
                     onError: (error) => {
                         message.error(`Error creating mapping: ${error.message}`)
