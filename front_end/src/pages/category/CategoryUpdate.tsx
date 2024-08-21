@@ -74,7 +74,7 @@ export default function CategoryUpdate() {
                                     }
                                     options={[
                                         { label: '[None]', value: null },
-                                        ...(data?.items.map((item) => ({
+                                        ...(data?.map((item) => ({
                                             label: getCategoryFullName(item),
                                             value: item.id,
                                         })) ?? []),

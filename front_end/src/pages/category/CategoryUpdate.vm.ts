@@ -28,16 +28,19 @@ function useCategoryUpdateViewModel() {
         CategoryConfigs.resourceKey,
         Number(id),
     )
+
     const { data: categoryResponse, isLoading } = useGetByIdApi<CategoryResponse>(
         CategoryConfigs.resourceUrl,
         CategoryConfigs.resourceKey,
         Number(id),
     )
+
     const { data: pictureResponse } = useGetByIdApi<PictureResponse>(
         PictureConfigs.resourceUrl,
         PictureConfigs.resourceKey,
         categoryResponse?.pictureId ?? 0,
     )
+
     const { mutateAsync: createPictures } = useUploadMultipleImagesApi()
 
     //
