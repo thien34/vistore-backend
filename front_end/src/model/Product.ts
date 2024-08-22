@@ -8,6 +8,6 @@ export type ProductResponse = {
 }
 
 export interface ProductNameResponse {
-    id: number;
-    name: string;
+    id: number
+    name: string
 }

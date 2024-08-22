@@ -30,8 +30,6 @@ public class ProductSpecificationAttributeMappingController {
 
     private final ProductSpecificationAttributeMappingService productSpecificationAttributeMappingService;
 
-    @Operation(method = "POST", summary = "Add new product specification attribute mapping",
-            description = "Send a request via this API to create new product specification attribute mapping")
     @PostMapping
     public ResponseData<ProductSpecificationAttributeMappingResponse> createProductSpecificationAttributeMapping(
             @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) {
@@ -46,8 +44,6 @@ public class ProductSpecificationAttributeMappingController {
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get all product specification attribute mappings",
-            description = "Send a request via this API to get all product specification attribute mappings")
     @GetMapping
     public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
@@ -65,8 +61,6 @@ public class ProductSpecificationAttributeMappingController {
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get product specification attribute mapping by ID",
-            description = "Send a request via this API to get product specification attribute mapping by ID")
     @GetMapping("/{id}")
     public ResponseData<ProductSpecificationAttributeMappingResponse> getById(@PathVariable Long id) {
 
@@ -93,8 +87,6 @@ public class ProductSpecificationAttributeMappingController {
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get product specification attribute mappings by product ID",
-            description = "Send a request via this API to get product specification attribute mappings by product ID")
     @GetMapping("/by-product/{productId}")
     public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingResponse>>> getByProductId(
             @PathVariable Long productId,
@@ -112,8 +104,6 @@ public class ProductSpecificationAttributeMappingController {
                 .build();
     }
 
-    @Operation(method = "PUT", summary = "Update product specification attribute mapping",
-            description = "Send a request via this API to update product specification attribute mapping")
     @PutMapping("/{id}")
     public ResponseData<ProductSpecificationAttributeMappingUpdateResponse> updateProductSpecificationAttributeMapping(
             @PathVariable Long id,

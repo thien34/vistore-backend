@@ -7,12 +7,6 @@ interface StockQuantityHistorySearchProps {
     onSearch: (filter: { productId: string }) => void
 }
 
-// Declare ProductData Select
-// const {
-//     data: ProductNameResponse,
-// }= useGetAllApi<ProductNameResponse>(ManagerPath.PRODUCT_LISTNAME,ResourceURL.PRODUCT)
-// const Productdata : ProductSelect [] = ProductNameResponse?.items || [];
-// const Productdata = ProductNameResponse || [];
 const Productdata = [
     { id: 1, name: 'Product 1' },
     { id: 2, name: 'Product 2' },
