@@ -16,6 +16,7 @@ function SpecificationAttributeGroupUpdate() {
                 name='edit_specification'
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
+                initialValues={{ displayOrder: 0 }}
             >
                 <Form.Item
                     name='name'
@@ -42,7 +43,7 @@ function SpecificationAttributeGroupUpdate() {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
                 <div
                     style={{

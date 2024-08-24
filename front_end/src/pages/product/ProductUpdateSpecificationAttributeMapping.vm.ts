@@ -1,27 +1,50 @@
-import { useParams } from 'react-router-dom'
-import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
-import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
 import { useState } from 'react'
+import useGetAllApi from '@/hooks/use-get-all-api'
+import { ProductSpecificationAttributeMappingByProductResponse } from '@/model/ProductSpecificationAttributeMapping'
+import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
+import { RequestParams } from '@/utils/FetchUtils'
+import { getProductSpecificationAttributeMappingColumns } from './ProductSpecificationAttributeMappingColumns'
 
-export default function useProductUpdateSpecificationAttributeMappingViewModel() {
-    const { id: productId } = useParams<{ id: string }>()
+interface Search extends RequestParams {
+    productId: number
+}
+
+function useProductAttributeMappingViewModel() {
+    const [filter, setFilter] = useState<Search>({ productId: 31 })
     const [isSpinning, setIsSpinning] = useState(false)
+
+    const handleTableChange = (pagination: { current: number; pageSize: number }) => {
+        setFilter((prevFilter) => ({
+            ...prevFilter,
+            pageNo: pagination.current,
+            pageSize: pagination.pageSize,
+        }))
+    }
+
     const {
-        data: apiData,
-        isSuccess,
-        error,
-        refetch: refetchProductAttributeMappings,
-    } = useGetByIdApi(
+        data: listResponse,
+        isLoading,
+        refetch,
+    } = useGetAllApi<ProductSpecificationAttributeMappingByProductResponse>(
         ProductSpecificationAttributeMappingConfigs.resourceGetByProductId,
         ProductSpecificationAttributeMappingConfigs.resourceKey,
-        Number(productId),
+        filter,
     )
+
+    const handleEdit = (record: ProductSpecificationAttributeMappingByProductResponse) => {
+        // Handle edit logic here
+    }
+
+    const handleDelete = (id: number) => {
+        // Handle delete logic here
+    }
+
+    const columns = getProductSpecificationAttributeMappingColumns(handleEdit, handleDelete)
 
     const handleReload = async () => {
         setIsSpinning(true)
         try {
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            await refetchProductAttributeMappings()
+            await refetch()
         } catch (error) {
             console.error('Failed to reload data:', error)
         } finally {
@@ -29,42 +52,7 @@ export default function useProductUpdateSpecificationAttributeMappingViewModel()
         }
     }
 
-    if (error) {
-        return false
-    }
-
-    const dataSource = isSuccess && apiData && apiData.items ? apiData.items : []
-
-    const tableData = dataSource.map((mapping) => {
-        const attributeName = mapping.specificationAttributeName
-        let optionName = mapping.specificationAttributeOptionName
-
-        // If specificationAttributeOptionId is null, handle customValue
-        if (mapping.specificationAttributeOptionId === null && mapping.customValue) {
-            try {
-                const parsedValue = JSON.parse(mapping.customValue)
-                optionName = parsedValue.custom_value || mapping.customValue
-            } catch (e) {
-                console.error('Error parsing customValue:', e)
-                optionName = mapping.customValue // Fallback to raw customValue if parsing fails
-            }
-        } else {
-            optionName = mapping.specificationAttributeOptionName || mapping.customValue
-        }
-
-        return {
-            key: mapping.id,
-            attributeName,
-            optionName,
-            showOnProductPage: mapping.showOnProductPage,
-            displayOrder: mapping.displayOrder,
-        }
-    })
-
-    return {
-        handleReload,
-        tableData,
-        productId,
-        isSpinning,
-    }
+    return { listResponse, isLoading, refetch, setFilter, filter, handleTableChange, columns, handleReload, isSpinning }
 }
+
+export default useProductAttributeMappingViewModel

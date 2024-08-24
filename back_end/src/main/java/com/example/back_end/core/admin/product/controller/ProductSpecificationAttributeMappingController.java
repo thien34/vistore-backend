@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingUpdateRequest;
+import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingByProductResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingUpdateResponse;
 import com.example.back_end.core.admin.product.service.ProductSpecificationAttributeMappingService;
@@ -95,17 +96,17 @@ public class ProductSpecificationAttributeMappingController {
 
     @Operation(method = "GET", summary = "Get product specification attribute mappings by product ID",
             description = "Send a request via this API to get product specification attribute mappings by product ID")
-    @GetMapping("/by-product/{productId}")
-    public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingResponse>>> getByProductId(
-            @PathVariable Long productId,
+    @GetMapping("/by-product")
+    public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>>> getByProductId(
+            @RequestParam Long productId,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
-        PageResponse<List<ProductSpecificationAttributeMappingResponse>> response =
+        PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>> response =
                 productSpecificationAttributeMappingService
                         .getProcSpecMappingsByProductId(productId, pageNo, pageSize);
 
-        return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingResponse>>>builder()
+        return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get product specification attribute mappings by product ID success")
                 .data(response)

@@ -24,5 +24,6 @@ public interface SpecificationAttributeGroupService {
             Long id, SpecificationAttributeGroupRequest request);
 
     void deleteSpecificationAttributeGroupById(Long id);
+    List<SpecificationAttributeGroupResponse> getAllSpecificationAttributeGroups();
 
 }

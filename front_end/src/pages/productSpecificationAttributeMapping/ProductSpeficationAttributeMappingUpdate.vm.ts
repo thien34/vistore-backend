@@ -21,7 +21,6 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
     const [attributes, setAttributes] = useState<SpecificationAttributeResponse[]>([])
     const { productId, id } = useParams<{ productId: string; id: string }>()
     const navigate = useNavigate()
-
     // Fetch attributes
     const {
         data: listAttribute,
@@ -29,7 +28,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
         error: errorAttributes,
         refetch: refetchAttributes,
     } = useGetAllApi<SpecificationAttributeResponse>(
-        SpecificationAttributeConfigs.resourceUrl,
+        `${SpecificationAttributeConfigs.resourceUrl}/list-name`,
         SpecificationAttributeConfigs.resourceKey,
     )
 
@@ -69,16 +68,11 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
                 setAttributeOptions(filteredAttrs[0].listOptions || [])
                 form.setFieldsValue({
                     attribute: defaultAttributeId,
-                    attributeOption: filteredAttrs[0].listOptions?.[0]?.id,
+                    attributeOption: Number(filteredAttrs[0].listOptions?.[0]?.id),
                 })
             }
         }
     }, [listAttribute, form])
-
-    useEffect(() => {}, [attributes])
-
-    useEffect(() => {}, [attributeOptions])
-
     useEffect(() => {
         if (existingMapping) {
             const {
@@ -118,7 +112,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
 
             form.setFieldsValue({
                 attribute: specificationAttributeId || undefined,
-                attributeOption: specificationAttributeOptionId || undefined,
+                attributeOption: Number(specificationAttributeOptionId) || undefined,
                 customText,
                 specificationAttributeName,
                 showOnProductPage,
@@ -166,10 +160,10 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
             okType: 'danger',
             cancelText: 'Cancel',
             onOk: () => {
-                deleteApi.mutate(parseInt(id, 10), {
+                deleteApi.mutate(parseInt(id ?? '', 10), {
                     onSuccess: () => {
                         message.success('Deleted successfully')
-                        navigate(`/admin/products/specification-attributes/productId/${productId}`)
+                        navigate(`/admin/products/${productId}`)
                     },
                     onError: () => {
                         message.error('Delete failed!')

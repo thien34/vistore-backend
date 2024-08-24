@@ -126,11 +126,7 @@ const ProductSpecificationAttributeMappingUpdate = () => {
                     <Form.Item>
                         <Button
                             type='primary'
-                            onClick={() =>
-                                handleSave(() =>
-                                    navigate(`/admin/products/specification-attributes/productId/${productId}`),
-                                )
-                            }
+                            onClick={() => handleSave(() => navigate(`/admin/products/${productId}`))}
                         >
                             Save
                         </Button>
@@ -143,7 +139,7 @@ const ProductSpecificationAttributeMappingUpdate = () => {
                         </Button>
                         <Button
                             type='default'
-                            onClick={() => navigate(`/admin/products/specification-attributes/productId/${productId}`)}
+                            onClick={() => navigate(`/admin/products/${productId}`)}
                             style={{ marginLeft: '10px' }}
                         >
                             Cancel

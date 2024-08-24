@@ -1,44 +1,31 @@
-import { Table, Button, Pagination, Spin, Collapse } from 'antd'
-import { EditOutlined, ReloadOutlined } from '@ant-design/icons'
+import { Table, Button, Spin, Collapse } from 'antd'
+import { ReloadOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
-import useProductUpdateSpecificationAttributeMappingViewModel from '@/pages/product/ProductUpdateSpecificationAttributeMapping.vm.ts'
-
+import useProductAttributeMappingViewModel from './ProductUpdateSpecificationAttributeMapping.vm'
 const { Panel } = Collapse
 
-const ProductUpdateSpecificationAttributeMapping = () => {
-    const { handleReload, tableData, productId, isSpinning } = useProductUpdateSpecificationAttributeMappingViewModel()
+export default function ProductUpdateSpecificationAttributeMapping() {
+    const { listResponse, isLoading, handleReload, filter, handleTableChange, columns, isSpinning } =
+        useProductAttributeMappingViewModel()
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Collapse defaultActiveKey={['1']} expandIconPosition='left'>
                 <Panel header='Product Specification Attributes' key='1'>
-                    <Table dataSource={tableData} pagination={false} bordered>
-                        <Table.Column title='Attribute' dataIndex='attributeName' key='attributeName' />
-                        <Table.Column title='Value' dataIndex='optionName' key='optionName' />
-                        <Table.Column
-                            title='Show on product page'
-                            dataIndex='showOnProductPage'
-                            key='showOnProductPage'
-                            render={(showOnProductPage) => (showOnProductPage ? '✔' : '✘')}
-                        />
-                        <Table.Column title='Display order' dataIndex='displayOrder' key='displayOrder' />
-                        <Table.Column
-                            title='Edit'
-                            key='edit'
-                            render={(record) => (
-                                <Link
-                                    to={`/admin/products/product-spec-attribute-mapping/edit/${productId}/${record.key}`}
-                                >
-                                    <Button type='primary' icon={<EditOutlined />}>
-                                        Edit
-                                    </Button>
-                                </Link>
-                            )}
-                        />
-                    </Table>
+                    <Table
+                        dataSource={listResponse?.items || []}
+                        columns={columns}
+                        pagination={{
+                            current: filter.pageNo ?? 1,
+                            pageSize: filter.pageSize ?? 6,
+                            total: listResponse?.totalPages * (filter.pageSize ?? 6) || 0, // Sử dụng giá trị mặc định nếu listResponse hoặc totalPages không tồn tại
+                            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
+                        }}
+                        loading={isLoading}
+                        bordered
+                    />
 
-                    <Pagination defaultCurrent={1} total={tableData.length} style={{ marginTop: '20px' }} />
-                    <Link to={`/admin/product/product-spec-attribute/add/${productId}`}>
+                    <Link to={`/admin/product/product-spec-attribute/add/${filter.productId}`}>
                         <Button type='primary' style={{ marginTop: '20px' }}>
                             + Add attribute
                         </Button>
@@ -55,5 +42,3 @@ const ProductUpdateSpecificationAttributeMapping = () => {
         </div>
     )
 }
-
-export default ProductUpdateSpecificationAttributeMapping

@@ -438,7 +438,7 @@ function SpecificationAttributeUpdate() {
                     </Button>
                 </Col>
             </Row>
-            <Form form={form} layout='vertical' style={{ marginBottom: '20px' }}>
+            <Form initialValues={{ displayOrder: 0 }} form={form} layout='vertical' style={{ marginBottom: '20px' }}>
                 <Form.Item
                     name='name'
                     label='Name'
@@ -480,7 +480,7 @@ function SpecificationAttributeUpdate() {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
             </Form>
             <h2>Options</h2>
@@ -497,7 +497,7 @@ function SpecificationAttributeUpdate() {
                 okText={editingOption ? 'Update' : 'Add'}
                 cancelText='Cancel'
             >
-                <Form form={modalForm} layout='vertical'>
+                <Form initialValues={{ displayOrder: 0 }} form={modalForm} layout='vertical'>
                     <Form.Item
                         name='optionName'
                         label='Name'
@@ -536,7 +536,7 @@ function SpecificationAttributeUpdate() {
                             },
                         ]}
                     >
-                        <InputNumber defaultValue={0} type='number' />
+                        <InputNumber type='number' />
                     </Form.Item>
                 </Form>
             </Modal>

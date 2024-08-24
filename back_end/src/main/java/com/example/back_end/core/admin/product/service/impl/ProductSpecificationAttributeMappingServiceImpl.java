@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.product.service.impl;
 import com.example.back_end.core.admin.product.mapper.ProductSpecificationAttributeMappingMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingUpdateRequest;
+import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingByProductResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingUpdateResponse;
 import com.example.back_end.core.admin.product.service.ProductSpecificationAttributeMappingService;
@@ -216,54 +217,87 @@ public class ProductSpecificationAttributeMappingServiceImpl implements ProductS
     }
 
     @Override
-    public PageResponse<List<ProductSpecificationAttributeMappingResponse>> getProcSpecMappingsByProductId(
+    public PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>> getProcSpecMappingsByProductId(
             Long productId, int pageNo, int pageSize) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
         Page<ProductSpecificationAttributeMapping> mappingPage =
                 productSpecificationAttributeMappingRepository.findByProductId(productId, pageable);
 
-        List<ProductSpecificationAttributeMappingResponse> responses = mappingPage.getContent().stream()
-                .map(mapping -> {
-                    ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingMapper
-                            .toDto(mapping);
+        ObjectMapper objectMapper = new ObjectMapper();
 
-                    //If `specificationAttributeId` has a value, get the name from `SpecificationAttribute`
+        List<ProductSpecificationAttributeMappingByProductResponse> responses = mappingPage.getContent().stream()
+                .map(mapping -> {
+                    ProductSpecificationAttributeMappingByProductResponse response = productSpecificationAttributeMappingMapper
+                            .toDtos(mapping);
+
+                    // Set specification attribute name and option name
                     if (mapping.getSpecificationAttributeOption() != null) {
                         SpecificationAttributeOption option = mapping.getSpecificationAttributeOption();
                         SpecificationAttribute attribute = option.getSpecificationAttribute();
-                        if (attribute != null) {
-                            response.setSpecificationAttributeName(attribute.getName());
-                        }
-                    } else if (mapping.getCustomValue() != null) {
-                        try {
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            JsonNode customValueNode = objectMapper.readTree(mapping.getCustomValue());
-                            Long specAttributeId = customValueNode.has(SPEC_ATTRIBUTE_ID)
-                                    ? customValueNode.get(SPEC_ATTRIBUTE_ID).asLong()
-                                    : null;
 
-                            if (specAttributeId != null) {
-                                SpecificationAttribute attribute = specificationAttributeRepository
-                                        .findById(specAttributeId).orElse(null);
-                                response.setSpecificationAttributeName(attribute != null ? attribute.getName() : null);
+                        response.setSpecificationAttributeName(attribute.getName());
+                        response.setSpecificationAttributeOptionName(option.getName());
+                        response.setAttributeType("Option");
+                    } else {
+                        // Nếu không có specificationAttributeOption, trích xuất custom_value từ customValue
+                        String customValue = mapping.getCustomValue();
+
+                        if (customValue != null) {
+                            try {
+                                JsonNode customValueNode = objectMapper.readTree(customValue);
+
+                                // Trích xuất custom_value nếu có
+                                if (customValueNode.has("custom_value")) {
+                                    response.setCustomValue(customValueNode.get("custom_value").asText());
+                                } else {
+                                    // Nếu không có `custom_value`, sử dụng raw customValue
+                                    response.setCustomValue(customValue);
+                                }
+
+                            } catch (JsonProcessingException e) {
+                                log.error("Invalid JSON format in customValue: {}", customValue, e);
+                                // Xử lý lỗi phân tích JSON bằng cách sử dụng raw customValue
+                                response.setCustomValue(customValue);
                             }
-                        } catch (JsonProcessingException e) {
-                            throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
                         }
+                        response.setAttributeType("Custom Text");
                     }
 
                     return response;
                 })
                 .toList();
 
-        return PageResponse.<List<ProductSpecificationAttributeMappingResponse>>builder()
+        return PageResponse.<List<ProductSpecificationAttributeMappingByProductResponse>>builder()
                 .page(mappingPage.getNumber())
                 .size(mappingPage.getSize())
                 .totalPage(mappingPage.getTotalPages())
                 .items(responses)
                 .build();
     }
+
+
+
+
+
+    // Utility method to check if a string is JSON
+    private boolean isJson(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            new ObjectMapper().readTree(value);
+            return true;
+        } catch (JsonProcessingException e) {
+            return false;
+        }
+    }
+
+
+
+
+
+
 
     @Override
     @Transactional

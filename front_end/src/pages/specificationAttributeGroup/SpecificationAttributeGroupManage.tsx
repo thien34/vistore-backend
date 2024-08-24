@@ -1,7 +1,8 @@
-import { Table, Button, Row, Col, Space, Spin, Pagination, Modal } from 'antd'
+import { Table, Button, Row, Col, Space, Spin, Pagination, Modal, Input } from 'antd'
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import useSpecificationAttributeGroupManageViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroup.vm.ts'
+
 const { Column } = Table
 
 const SpecificationAttributeGroupManage = () => {
@@ -24,6 +25,8 @@ const SpecificationAttributeGroupManage = () => {
         handleCancel,
         modalData,
         rowSelection,
+        searchTerm,
+        setSearchTerm,
     } = useSpecificationAttributeGroupManageViewModel()
 
     if (isLoading) {
@@ -61,6 +64,12 @@ const SpecificationAttributeGroupManage = () => {
                     <Spin size='large' />
                 </div>
             )}
+            <Input
+                placeholder='Search...'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginBottom: 16 }}
+            />
             <div className='max-h-[500px]'>
                 <Table
                     scroll={{ y: 400, x: 500 }}

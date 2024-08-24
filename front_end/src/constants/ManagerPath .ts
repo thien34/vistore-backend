@@ -30,8 +30,7 @@ class ManagerPath {
 
     static readonly Test = '/admin/test'
 
-    static readonly PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING =
-        '/admin/products/specification-attributes/productId/:id'
+    static readonly PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING = '/admin/products/:id'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE =
         '/admin/products/product-spec-attribute-mapping/edit/:productId/:id'
 

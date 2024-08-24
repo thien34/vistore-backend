@@ -44,6 +44,7 @@ const SpecificationAttributeCreate = () => {
             <Form
                 form={form}
                 layout='vertical'
+                initialValues={{ displayOrder: 0 }}
                 style={{ marginTop: 24 }}
                 onFinish={handleSubmit}
                 onFinishFailed={() => {
@@ -88,7 +89,7 @@ const SpecificationAttributeCreate = () => {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
             </Form>
         </div>

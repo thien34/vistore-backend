@@ -146,7 +146,7 @@ const ProductSpecificationAttributeMappingCreate = () => {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
 
                 <Form.Item>

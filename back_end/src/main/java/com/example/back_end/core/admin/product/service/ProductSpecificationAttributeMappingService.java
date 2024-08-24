@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.service;
 
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductSpecificationAttributeMappingUpdateRequest;
+import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingByProductResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingUpdateResponse;
 import com.example.back_end.core.common.PageResponse;
@@ -21,7 +22,7 @@ public interface ProductSpecificationAttributeMappingService {
 
     void deleteProductSpecificationAttribute(List<Long> ids);
 
-    PageResponse<List<ProductSpecificationAttributeMappingResponse>> getProcSpecMappingsByProductId(
+    PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>> getProcSpecMappingsByProductId(
             Long productId, int pageNo, int pageSize);
 
     ProductSpecificationAttributeMappingUpdateResponse updateProductSpecificationAttributeMapping(

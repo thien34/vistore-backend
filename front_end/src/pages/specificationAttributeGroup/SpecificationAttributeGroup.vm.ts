@@ -5,6 +5,7 @@ import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
+import useGetApi from '@/hooks/use-get-api'
 
 const { confirm } = Modal
 
@@ -15,15 +16,21 @@ const useSpecificationAttributeGroupManageViewModel = () => {
     const [current, setCurrent] = useState(1)
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [modalData, setModalData] = useState([])
+    const [searchTerm, setSearchTerm] = useState('') // New state for search term
+
     const onChange: PaginationProps['onChange'] = (page) => {
         setCurrent(page)
     }
+
     const {
         data,
         isLoading,
         error,
         refetch: refetchGrouped,
-    } = useGetAllApi(SpecificationAttributeGroupConfigs.resourceUrl, SpecificationAttributeGroupConfigs.resourceKey)
+    } = useGetApi(
+        `${SpecificationAttributeGroupConfigs.resourceUrl}/all`,
+        SpecificationAttributeGroupConfigs.resourceKey,
+    )
 
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(
         SpecificationAttributeConfigs.resourceUrl,
@@ -64,6 +71,10 @@ const useSpecificationAttributeGroupManageViewModel = () => {
     }
 
     const ungroupedAttributes = ungroupedAttributesData?.items || []
+
+    // Filter data based on the search term
+    const filteredData = data?.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase())) || []
+
     const dataSource = [
         {
             id: 'ungrouped',
@@ -71,7 +82,7 @@ const useSpecificationAttributeGroupManageViewModel = () => {
             displayOrder: 0,
             specificationAttributes: ungroupedAttributes,
         },
-        ...data?.items,
+        ...filteredData,
     ]
 
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -170,6 +181,8 @@ const useSpecificationAttributeGroupManageViewModel = () => {
         modalData,
         isModalVisible,
         rowSelection,
+        searchTerm, // Return search term state
+        setSearchTerm, // Return setter for search term
     }
 }
 
