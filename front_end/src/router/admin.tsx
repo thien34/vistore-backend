@@ -8,7 +8,6 @@ import Home from '@/pages/home'
 import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeManage.tsx'
 import ProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.tsx'
 import ManufactureManage, { ManufactureCreate, ManufactureUpdate } from '@/pages/manufacturer'
-import ProductAttributeMappingManage from '@/pages/product-attribute-mapping'
 import ProductAttributeMappingCreate from '@/pages/product-attribute-mapping/ProductAttributeMappingCreate'
 import SpecificationAttributeGroupManage from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
 import SpecificationAttributeManage from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupManage.tsx'
@@ -17,12 +16,11 @@ import SpecificationAttributeCreate from '@/pages/specificationAttribute/Specifi
 import SpecificationAttributeUpdate from '@/pages/specificationAttribute/SpecificationAttributeUpdate.tsx'
 import SpecificationAttributeGroupUpdate from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupUpdate.tsx'
 import ProductManage from '@/pages/product'
-import ProductUpdateSpecificationAttributeMapping from '@/pages/product/ProductUpdateSpecificationAttributeMapping.tsx'
 import ProductSpecificationAttributeMappingCreate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingCreate'
 import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingUpdate'
 import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
-import ProductAtbCombinations from '@/pages/product-attribute-combinations/ProductAtbCombinations'
 import ProductAttribute from '@/pages/productAttribute/ProductAttributeCreate'
+import ProductUpdate from '@/pages/product/ProductUpdate'
 
 const routers = [
     {
@@ -101,24 +99,10 @@ const routers = [
         pageType: 'manufacture',
     },
     {
-        path: ManagerPath.PRODUCT_ATTRIBUTE_MAPPING,
-        layout: 'main',
-        element: <ProductAttributeMappingManage />,
-        breadcrumbName: 'Manufacture',
-        pageType: 'manufacture',
-    },
-    {
         path: ManagerPath.PRODUCT_ATTRIBUTE_MAPPING_ADD,
         layout: 'main',
         element: <ProductAttributeMappingCreate />,
         breadcrumbName: 'Add Manufacture',
-        pageType: 'manufacture',
-    },
-    {
-        path: ManagerPath.Test,
-        layout: 'main',
-        element: <ProductAtbCombinations />,
-        breadcrumbName: 'Manufacture',
         pageType: 'manufacture',
     },
     {
@@ -180,7 +164,7 @@ const routers = [
     {
         path: ManagerPath.PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING,
         layout: 'main',
-        element: <ProductUpdateSpecificationAttributeMapping />,
+        element: <ProductUpdate />,
         breadcrumbName: 'Product Update',
         pageType: 'product',
     },

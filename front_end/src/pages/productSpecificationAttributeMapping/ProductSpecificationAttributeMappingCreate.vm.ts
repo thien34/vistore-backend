@@ -94,7 +94,6 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
                     showOnProductPage: values.showOnProductPage,
                     displayOrder: Number(values.displayOrder),
                 }
-                console.log(payload)
 
                 createMutation.mutate(payload, {
                     onSuccess: () => {

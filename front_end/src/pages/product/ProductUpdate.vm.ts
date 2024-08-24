@@ -4,6 +4,9 @@ import { ProductSpecificationAttributeMappingByProductResponse } from '@/model/P
 import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
 import { RequestParams } from '@/utils/FetchUtils'
 import { getProductSpecificationAttributeMappingColumns } from './ProductSpecificationAttributeMappingColumns'
+import { useParams } from 'react-router-dom'
+import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
+import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
 
 interface Search extends RequestParams {
     productId: number
