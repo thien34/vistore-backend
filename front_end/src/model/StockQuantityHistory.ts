@@ -10,6 +10,6 @@ export type StockQuantityHistoryResponse = {
     productId: number
     quantityAdjustment: number
     stockQuantity: number
-    message: string,
+    message: string
     createdDate: Date
 }

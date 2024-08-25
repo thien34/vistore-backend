@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.product.mapper.SpecificationAttributeOptionMapper;
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeOptionRequest;
+import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeOptionNameResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeOptionResponse;
 import com.example.back_end.core.admin.product.service.SpecificationAttributeOptionService;
 import com.example.back_end.core.common.PageResponse;
@@ -74,6 +75,18 @@ public class SpecificationAttributeOptionServiceImpl implements SpecificationAtt
 
         specificationAttributeOption = specificationAttributeOptionRepository.save(specificationAttributeOption);
         return specificationAttributeOptionMapper.toDto(specificationAttributeOption);
+    }
+
+    @Override
+    public List<SpecificationAttributeOptionNameResponse> getAllOptionsBySpecificationAttributeId(
+            Long specificationAttributeId
+    ) {
+        List<SpecificationAttributeOption> options = specificationAttributeOptionRepository
+                .findBySpecificationAttributeId(specificationAttributeId);
+
+        return options.stream().map(option ->
+                        new SpecificationAttributeOptionNameResponse(option.getId(), option.getName()))
+                .toList();
     }
 
     @Override

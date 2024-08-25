@@ -7,7 +7,6 @@ import SpecificationAttributeConfigs from '@/pages/specificationAttribute/Specif
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
 
 const { confirm } = Modal
-
 const useSpecificationAttributeGroupManageViewModel = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [selectedModalRowKeys, setSelectedModalRowKeys] = useState<React.Key[]>([]) // New state for modal
@@ -15,6 +14,12 @@ const useSpecificationAttributeGroupManageViewModel = () => {
     const [current, setCurrent] = useState(1)
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [modalData, setModalData] = useState([])
+    const [filter, setFilter] = useState<{ current: number; pageSize: number; pageNo: number; totalPage: number }>({
+        current: 1,
+        pageSize: 6,
+        pageNo: 1,
+        totalPage: 1,
+    })
     const onChange: PaginationProps['onChange'] = (page) => {
         setCurrent(page)
     }
@@ -23,13 +28,20 @@ const useSpecificationAttributeGroupManageViewModel = () => {
         isLoading,
         error,
         refetch: refetchGrouped,
-    } = useGetAllApi(SpecificationAttributeGroupConfigs.resourceUrl, SpecificationAttributeGroupConfigs.resourceKey)
+    } = useGetAllApi(SpecificationAttributeGroupConfigs.resourceUrl, SpecificationAttributeGroupConfigs.resourceKey, {
+        pageNo: filter.pageNo,
+    })
 
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(
         SpecificationAttributeConfigs.resourceUrl,
         SpecificationAttributeConfigs.resourceKey,
     )
-
+    const handleTableChangeFilter = (pagination: { current: number; pageSize: number }) => {
+        setFilter((prevFilter) => ({
+            ...prevFilter,
+            pageNo: pagination.current,
+        }))
+    }
     const {
         data: ungroupedAttributesData,
         isLoading: isLoadingUngrouped,
@@ -148,6 +160,10 @@ const useSpecificationAttributeGroupManageViewModel = () => {
     const isModalDeleteButtonDisabled = selectedModalRowKeys.length === 0
 
     return {
+        data,
+        totalPages: data?.totalPages || 1,
+        filter,
+        handleTableChangeFilter,
         selectedRowKeys,
         dataSource,
         isLoading,
