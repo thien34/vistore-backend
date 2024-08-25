@@ -23,7 +23,7 @@ function useCategoryUpdateViewModel() {
 
     const { id } = useParams<{ id: string }>()
 
-    const { mutate: updateCategory, isPending } = useUpdateApi<CategoryRequest, string>(
+    const { mutate: updateCategory } = useUpdateApi<CategoryRequest, string>(
         CategoryConfigs.resourceUrl,
         CategoryConfigs.resourceKey,
         Number(id),
@@ -38,7 +38,7 @@ function useCategoryUpdateViewModel() {
         PictureConfigs.resourceKey,
         categoryResponse?.pictureId ?? 0,
     )
-    const { mutateAsync: createPictures } = useUploadMultipleImagesApi()
+    const { mutateAsync: createPictures, isPending } = useUploadMultipleImagesApi()
 
     //
     const getBase64 = (file: FileType): Promise<string> =>
@@ -59,20 +59,28 @@ function useCategoryUpdateViewModel() {
 
     //
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        setFileList(newFileList)
-        console.log(newFileList)
+        setFileList(
+            newFileList.map((file) => {
+                return { ...file, status: 'done' }
+            }),
+        )
     }
 
     // HANDLER FUNCTION ON FINISH FORM
     const onFinish = async (values: CategoryRequest) => {
-        try {
-            const result = await createPictures([fileList[0].originFileObj as File])
-            values.pictureId = result.content[0]
-        } catch (error) {
-            console.error(error)
+        if (fileList.length > 0) {
+            if (fileList[0].originFileObj) {
+                const result = await createPictures([fileList[0].originFileObj as File])
+                values.pictureId = result.content[0]
+            } else {
+                values.pictureId = pictureResponse?.id ?? values.pictureId
+            }
+        } else {
+            values.pictureId = null
         }
         updateCategory({ id: Number(id), ...values }, { onSuccess: () => navigation(-1) })
     }
+
     return {
         pictureResponse,
         onFinish,

@@ -2,7 +2,6 @@ import AppActions from '@/constants/AppActions '
 import { EditOutlined } from '@ant-design/icons'
 import { Button, Table } from 'antd'
 import ProductAtbCombinationsModal from './ProductAtbCombinationsModal'
-
 import {
     ProductAttributeCombinationRequest,
     ProductAttributeCombinationResponse,

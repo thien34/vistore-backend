@@ -24,8 +24,11 @@ public interface CategoryMapper {
 
     @Mapping(target = "deleted", constant = "false")
     @Mapping(target = "name", source = "name", qualifiedByName = "trimName")
+    @Mapping(target = "description", source = "description", qualifiedByName = "trimName")
     Category mapToCategory(CategoryRequest request);
 
+    @Mapping(target = "name", source = "name", qualifiedByName = "trimName")
+    @Mapping(target = "description", source = "description", qualifiedByName = "trimName")
     void updateCategoryFromRequest(CategoryRequest request, @MappingTarget Category category);
 
     @Named("trimName")

@@ -59,10 +59,28 @@ export default function CategoryUpdate() {
                 <Row gutter={[24, 8]}>
                     <Col span={12}>
                         <Card className='min-h-full' size='small' title='Category info'>
-                            <Form.Item name='name' label='Name' rules={[{ required: true }]}>
+                            <Form.Item
+                                name='name'
+                                label='Name'
+                                rules={[
+                                    { required: true, message: 'Please input category name!' },
+                                    { max: 25, message: 'Category name is too long!, max is 25 characters' },
+                                    { pattern: /^[^<>]*$/, message: 'Name must not contain special characters' },
+                                ]}
+                            >
                                 <Input />
                             </Form.Item>
-                            <Form.Item name='description' label='Description'>
+                            <Form.Item
+                                name='description'
+                                label='Description'
+                                rules={[
+                                    { max: 255, message: 'Category name is too long!, max is 255 characters' },
+                                    {
+                                        pattern: /^(?!.*<script>).*$/,
+                                        message: 'Description must not contain special characters',
+                                    },
+                                ]}
+                            >
                                 <Input.TextArea />
                             </Form.Item>
                             <Form.Item name='categoryParentId' label='Parent category'>
@@ -120,7 +138,19 @@ export default function CategoryUpdate() {
                             <Form.Item
                                 name='pageSize'
                                 label='Page size'
-                                rules={[{ required: true, min: 1, type: 'number' }]}
+                                rules={[
+                                    {
+                                        min: 1,
+                                        type: 'number',
+                                        message: 'Page size must be greater than 1',
+                                    },
+                                    { required: true, message: 'Please input page size!' },
+                                    {
+                                        max: 214748647,
+                                        type: 'number',
+                                        message: 'Page size must be less than 214748647',
+                                    },
+                                ]}
                             >
                                 <InputNumber />
                             </Form.Item>
@@ -130,7 +160,19 @@ export default function CategoryUpdate() {
                             <Form.Item
                                 name='displayOrder'
                                 label='Display order'
-                                rules={[{ required: true, min: 0, type: 'number' }]}
+                                rules={[
+                                    {
+                                        min: 0,
+                                        type: 'number',
+                                        message: 'Display order must be greater than 0',
+                                    },
+                                    { required: true, message: 'Please input display order!' },
+                                    {
+                                        max: 214748647,
+                                        type: 'number',
+                                        message: 'Display order must be less than 214748647',
+                                    },
+                                ]}
                             >
                                 <InputNumber />
                             </Form.Item>

@@ -27,6 +27,7 @@ export default function CategoryManage() {
                         rowSelection={rowSelection}
                         columns={columns}
                         dataSource={listResponse.items}
+                        scroll={{ x: 650 }}
                         pagination={{
                             current: filter.pageNo ?? 1,
                             pageSize: filter.pageSize ?? 6,

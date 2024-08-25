@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {
 
-    @Query("SELECT new com.example.back_end.core.admin.category.payload.response.CategoryNameResponse(id, name) FROM Category")
+    @Query("SELECT new com.example.back_end.core.admin.category.payload.response.CategoryNameResponse(id, name) FROM Category ORDER BY id DESC")
     List<CategoryNameResponse> findAllCategoriesName();
 
 }

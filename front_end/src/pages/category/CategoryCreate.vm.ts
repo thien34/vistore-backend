@@ -71,7 +71,11 @@ function useCategoryCreateViewModel() {
 
     //
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        setFileList(newFileList)
+        setFileList(
+            newFileList.map((file) => {
+                return { ...file, status: 'done' }
+            }),
+        )
     }
 
     // HANDLER FUNCTIONS FOR FORM COMPONENTS ADD

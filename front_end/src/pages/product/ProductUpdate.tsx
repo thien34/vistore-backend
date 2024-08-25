@@ -44,7 +44,7 @@ const ProductUpdate = () => {
                         },
                     ]}
                 />
-                <Collapse defaultActiveKey={['2']} className='mb-6'>
+                <Collapse defaultActiveKey={['1']} className='mb-6'>
                     <Panel header='Product Specification Attributes' key='1'>
                         <Table rowKey='id' bordered dataSource={tableData} pagination={false}>
                             <Table.Column title='Attribute' dataIndex='attributeName' key='attributeName' />

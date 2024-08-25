@@ -43,8 +43,19 @@ function useCategoryViewModel() {
 
     // HANDLE DELETE
     const handleDelete = async () => {
+        const currentPage = filter.pageNo || 1
+        const currentSize = listResponse?.items.length || 0
         deleteApi(selectedRowKeys as number[], {
             onSuccess: () => {
+                let newPage = currentPage
+                if (currentSize === selectedRowKeys.length && currentPage > 1) {
+                    newPage = currentPage - 1
+                }
+
+                setFilter((prevFilter) => ({
+                    ...prevFilter,
+                    pageNo: newPage,
+                }))
                 refetch()
                 setSelectedRowKeys([])
             },

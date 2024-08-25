@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.UnexpectedTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,6 @@ public class GlobalExceptionHandler {
              }
             """))})})
     public ErrorResponse handleValidationException(Exception e, WebRequest request) {
-        log.error("Validation Exception: ", e);
         ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(BAD_REQUEST.value())
@@ -335,6 +335,32 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false).replace("uri=", ""))
                 .error(BAD_RQ)
                 .message("There was an error processing the JSON data: " + e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(UnexpectedTypeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "400 Response",
+                            summary = "Handle exception when JSON processing fails", value = """
+                            {
+                              "timestamp": "2024-07-24T07:19:51.110+00:00",
+                              "status": 400,
+                              "path": "/api/v1/...",
+                              "error": "Bad Request",
+                              "message": "There was an error processing the JSON data"
+                            }
+                            """))
+            })
+    })
+    public ErrorResponse handleUnexpectedTypeException(UnexpectedTypeException e, WebRequest request) {
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(BAD_RQ)
+                .message(e.getMessage())
                 .build();
     }
 
