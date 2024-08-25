@@ -132,5 +132,19 @@ public class SpecificationAttributeGroupController {
                 .data(response)
                 .build();
     }
+    @Operation(method = "GET", summary = "Get all specification attribute groups without pagination",
+            description = "Send a request via this API to get all specification attribute groups without pagination")
+    @GetMapping("/all")
+    public ResponseData<List<SpecificationAttributeGroupResponse>> getAllSpecificationAttributeGroups() {
+
+        List<SpecificationAttributeGroupResponse> response = specificationAttributeGroupService
+                .getAllSpecificationAttributeGroups();
+
+        return ResponseData.<List<SpecificationAttributeGroupResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get all specification attribute groups successfully")
+                .data(response)
+                .build();
+    }
 
 }

@@ -7,6 +7,7 @@ const { Column } = Table
 const SpecificationAttributeGroupManage = () => {
     const navigate = useNavigate()
     const {
+        data,
         dataSource,
         isLoading,
         error,
@@ -24,6 +25,9 @@ const SpecificationAttributeGroupManage = () => {
         handleCancel,
         modalData,
         rowSelection,
+        filter,
+        totalPages,
+        handleTableChangeFilter,
     } = useSpecificationAttributeGroupManageViewModel()
 
     if (isLoading) {
@@ -33,6 +37,7 @@ const SpecificationAttributeGroupManage = () => {
     if (error) {
         return <div>Error loading data: {error}</div>
     }
+    console.log(filter)
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
@@ -65,10 +70,16 @@ const SpecificationAttributeGroupManage = () => {
                 <Table
                     scroll={{ y: 400, x: 500 }}
                     className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'
+                    // dataSource={data?.items}
                     dataSource={dataSource}
                     bordered
                     rowKey='id'
-                    pagination={false}
+                    pagination={{
+                        current: filter?.pageNo ?? 1,
+                        pageSize: filter?.pageSize ?? 6,
+                        total: (totalPages ?? 1) * (filter?.pageSize ?? 6),
+                        onChange: (page, pageSize) => handleTableChangeFilter({ current: page, pageSize: pageSize }),
+                    }}
                 >
                     <Column
                         title='Name'

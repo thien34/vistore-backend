@@ -1,10 +1,10 @@
 export type ProductSpecificationAttributeMappingRequest = {
     productId?: number
-    specificationAttributeOptionId: number
+    specificationAttributeOptionId: number | null
     customValue: string
     showOnProductPage: boolean
     displayOrder: number
-    specificationAttributeId: number
+    specificationAttributeId?: number
 }
 export interface ProductSpecificationAttributeMappingResponse {
     id: number
@@ -17,4 +17,13 @@ export interface ProductSpecificationAttributeMappingResponse {
     displayOrder: number
     specificationAttributeId: number | null
     specificationAttributeName: string | null
+}
+export interface ProductSpecificationAttributeMappingByProductResponse {
+    id: number
+    attributeType: string
+    specificationAttributeOptionName: number | null
+    customValue: string
+    showOnProductPage: boolean
+    displayOrder: number
+    specificationAttributeName: number | null
 }
