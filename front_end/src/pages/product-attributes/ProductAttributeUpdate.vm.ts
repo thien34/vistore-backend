@@ -1,18 +1,19 @@
-import useUpdateApi from '@/hooks/use-update-api'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Form } from 'antd'
+import useUpdateApi from '@/hooks/use-update-api'
 import useGetByIdApi from '@/hooks/use-get-by-id-api'
-import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
 import ProductAttributeConfigs from './ProductAttributeConfigs.ts'
-import { useState } from 'react'
-import { Form, message } from 'antd'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
+import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
 
 function useProductAttributeUpdate() {
     const NUMERIC_REGEX = /^\d{0,12}(\.\d{0,2})?$/
     const DISPLAY_ORDER_REGEX = /^\d{0,8}(\.\d{0,2})?$/
-    const navigation = useNavigate()
+    const navigate = useNavigate()
     const { id } = useParams<{ id: string }>()
     const [current, setCurrent] = useState(1)
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const { mutate: updateProductAttribute, isPending } = useUpdateApi<ProductAttributeResponse, string>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
@@ -21,10 +22,10 @@ function useProductAttributeUpdate() {
     const [form] = Form.useForm()
     const [formAdd] = Form.useForm()
     const [values, setValues] = useState<PredefinedProductAttributeValueRequest[]>([])
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
     const [newValue, setNewValue] = useState<PredefinedProductAttributeValueRequest>({
         id: 1,
+        productAttribute: '',
         name: '',
         priceAdjustment: 0,
         priceAdjustmentUsePercentage: false,
@@ -33,7 +34,6 @@ function useProductAttributeUpdate() {
         isPreSelected: false,
         displayOrder: 0,
     })
-    const [isOpenConfirm, setOpenConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const { data: productAttributeResponse, isLoading } = useGetByIdApi<ProductAttributeResponse>(
@@ -42,13 +42,24 @@ function useProductAttributeUpdate() {
         Number(id),
     )
 
-    // HANDLER FUNCTION ON FINISH FORM
+    useEffect(() => {
+        if (productAttributeResponse) {
+            form.setFieldsValue({
+                name: productAttributeResponse.name,
+                description: productAttributeResponse.description,
+            })
+            setValues(productAttributeResponse.values)
+        }
+    }, [form, productAttributeResponse])
+
     const onFinish = async (values: ProductAttributeResponse) => {
-        updateProductAttribute({ id: Number(id), ...values }, { onSuccess: () => navigation(-1) })
+        updateProductAttribute({ id: Number(id), ...values }, { onSuccess: () => navigate(-1) })
     }
+
     const handlePageChange = (page: number) => {
         setCurrent(page)
     }
+
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
         const maxId = Math.max(...arr.map((item) => item.id))
         return arr.length === 0 ? 0 : maxId + 1
@@ -67,21 +78,9 @@ function useProductAttributeUpdate() {
                 displayOrder: newValue.displayOrder || 0,
             })
             setValues(newArr)
-            setIsModalOpen(false)
             setIsEdit(false)
         } else {
             formAdd.resetFields()
-            newValue.id = getNewId(values)
-            setValues([
-                ...values,
-                {
-                    ...newValue,
-                    priceAdjustment: newValue.priceAdjustment || 0,
-                    weightAdjustment: newValue.weightAdjustment || 0,
-                    cost: newValue.cost || 0,
-                    displayOrder: newValue.displayOrder || 0,
-                },
-            ])
             setNewValue({
                 id: getNewId(values),
                 name: '',
@@ -91,66 +90,75 @@ function useProductAttributeUpdate() {
                 cost: 0,
                 isPreSelected: false,
                 displayOrder: 0,
+                productAttribute: '',
             })
-            setIsModalOpen(false)
+            setValues([
+                ...values,
+                {
+                    ...newValue,
+                    id: getNewId(values),
+                    priceAdjustment: newValue.priceAdjustment || 0,
+                    weightAdjustment: newValue.weightAdjustment || 0,
+                    cost: newValue.cost || 0,
+                    displayOrder: newValue.displayOrder || 0,
+                },
+            ])
         }
+        setIsModalOpen(false)
+    }
+    const handleModalCancel = () => {
+        formAdd.resetFields()
+        setNewValue({
+            id: getNewId(values),
+            name: '',
+            priceAdjustment: 0,
+            priceAdjustmentUsePercentage: false,
+            weightAdjustment: 0,
+            cost: 0,
+            isPreSelected: false,
+            displayOrder: 0,
+            productAttribute: '',
+        })
+        setIsModalOpen(false)
     }
 
     const handleRemoveValue = (value: PredefinedProductAttributeValueRequest) => {
-        setValues(values.filter((v) => v.id !== value.id))
+        setValues((prevValues) => prevValues.filter((v) => v.id !== value.id))
     }
 
     const handleEditValue = (value: PredefinedProductAttributeValueRequest) => {
-        setIsModalOpen(true)
+        setIsEdit(true)
         formAdd.setFieldsValue(value)
         setNewValue(value)
-        setIsEdit(true)
-    }
-    const gradientStyleEdit = {
-        background: 'linear-gradient(to right, #4facfe, #00f2fe)',
-        border: 'none',
-        color: 'white',
-    }
-    const gradientStyleSave = {
-        background: 'linear-gradient(to right, #34C759, #8BC34A)',
-        border: 'none',
-        color: 'white',
-    }
-
-    const gradientStyleRemove = {
-        background: 'linear-gradient(to right, #ff6a6a, #ff0000)',
-        border: 'none',
-        color: 'white',
+        setIsModalOpen(true)
     }
 
     const handleFinish = async (formValues: { name: string; description: string }) => {
         setLoading(true)
-        setOpenConfirm(false)
         try {
-            form.resetFields()
-            setValues([])
+            const sanitizedValues = values.map((val) => ({
+                ...val,
+                priceAdjustment: parseFloat(val.priceAdjustment.toString().replace(/[^\d.-]/g, '')) || 0,
+                weightAdjustment: parseFloat(val.weightAdjustment.toString().replace(/[^\d.-]/g, '')) || 0,
+                cost: parseFloat(val.cost.toString().replace(/[^\d.-]/g, '')) || 0,
+                displayOrder: parseFloat(val.displayOrder.toString().replace(/[^\d.-]/g, '')) || 0,
+            }))
 
             const data = {
                 name: formValues.name,
                 description: formValues.description,
-                values: values.map((val) => ({
-                    ...val,
-                    priceAdjustment: val.priceAdjustment || 0,
-                    weightAdjustment: val.weightAdjustment || 0,
-                    cost: val.cost || 0,
-                    displayOrder: val.displayOrder || 0,
-                })),
+                values: sanitizedValues,
             }
 
-            console.log('data: ', data)
             await onFinish(data)
         } catch (error) {
             console.error('Error submitting form:', error)
-            message.error('Failed to submit form')
+            console.error('Failed to submit form')
         } finally {
             setLoading(false)
         }
     }
+
     const handleInputChange =
         (field: keyof PredefinedProductAttributeValueRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.target.value
@@ -161,6 +169,7 @@ function useProductAttributeUpdate() {
                 })
             }
         }
+
     const handleInputDisplayOrder =
         (field: keyof PredefinedProductAttributeValueRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.target.value
@@ -183,26 +192,23 @@ function useProductAttributeUpdate() {
         formAdd,
         values,
         setValues,
-        isModalOpen,
-        setIsModalOpen,
         isEdit,
         setIsEdit,
         newValue,
         setNewValue,
-        isOpenConfirm,
-        setOpenConfirm,
         loading,
         setLoading,
         handleAddValue,
         handleRemoveValue,
         handleEditValue,
-        gradientStyleEdit,
-        gradientStyleSave,
-        gradientStyleRemove,
         handleFinish,
         NUMERIC_REGEX,
         handleInputChange,
         handleInputDisplayOrder,
+        isModalOpen,
+        setIsModalOpen,
+        handleModalCancel,
     }
 }
+
 export default useProductAttributeUpdate

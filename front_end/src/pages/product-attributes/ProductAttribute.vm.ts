@@ -58,18 +58,21 @@ function useProductAttributeViewModel() {
     const handleDelete = async () => {
         deleteApi(selectedRowKeys as number[], {
             onSuccess: () => {
-                refetch()
-                setSelectedRowKeys([])
+                refetch().then(() => {
+                    setSelectedRowKeys([])
+                    setFilter((prevFilter) => ({ ...prevFilter, pageNo: 1 }))
+                })
             },
         })
     }
 
     // HANDLE TABLE CHANGE
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
-        setFilter((prevFilter) => ({
-            ...prevFilter,
-            pageNo: pagination.current,
-        }))
+        if (pagination.current > 1 && listResponse?.totalPages < pagination.current) {
+            setFilter((prevFilter) => ({ ...prevFilter, pageNo: listResponse?.totalPages }))
+        } else {
+            setFilter((prevFilter) => ({ ...prevFilter, pageNo: pagination.current }))
+        }
     }
 
     // HANDLE SEARCH
