@@ -18,7 +18,7 @@ export default function useManufactureUpdateViewModel() {
 
     const { id } = useParams<{ id: string }>()
 
-    const { mutate: updateManufacturer, isPending } = useUpdateApi<ManufacturerRequest, string>(
+    const { mutate: updateManufacturer, isPending } = useUpdateApi<ManufacturerRequest>(
         ManufactureConfigs.resourceUrl,
         ManufactureConfigs.resourceKey,
         Number(id),
@@ -60,6 +60,7 @@ export default function useManufactureUpdateViewModel() {
 
     // HANDLER FUNCTION ON FINISH FORM
     const onFinish = async (values: ManufacturerRequest) => {
+        values.name = values.name.trim()
         try {
             const result = await createPictures([fileList[0].originFileObj as File])
             values.pictureId = result.content[0]

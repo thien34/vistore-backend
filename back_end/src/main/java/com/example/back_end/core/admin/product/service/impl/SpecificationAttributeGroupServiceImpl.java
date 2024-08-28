@@ -38,7 +38,7 @@ public class SpecificationAttributeGroupServiceImpl implements SpecificationAttr
             int pageNo,
             int pageSize) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.DESC.getValue());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
         Page<SpecificationAttributeGroup> specificationAttributeGroupPage = specificationAttributeGroupRepository
                 .findByNameContaining(name, pageable);
 

@@ -55,7 +55,12 @@ export default function CategoryCreate() {
                                     },
                                 ]}
                             >
-                                <Input.TextArea />
+                                <Input.TextArea
+                                    allowClear
+                                    showCount
+                                    maxLength={255}
+                                    autoSize={{ minRows: 3, maxRows: 5 }}
+                                />
                             </Form.Item>
                             <Form.Item name='categoryParentId' label='Parent category'>
                                 <Select

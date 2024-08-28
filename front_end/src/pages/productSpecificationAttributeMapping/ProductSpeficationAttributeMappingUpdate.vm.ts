@@ -45,10 +45,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
         mappingId || 0,
     )
 
-    const updateMutation = useUpdateApi<
-        ProductSpecificationAttributeMappingRequest,
-        ProductSpecificationAttributeMappingRequest
-    >(
+    const updateMutation = useUpdateApi<ProductSpecificationAttributeMappingRequest>(
         ProductSpecificationAttributeMappingConfigs.resourceUrl,
         ProductSpecificationAttributeMappingConfigs.resourceKey,
         mappingId || 0,
@@ -166,7 +163,7 @@ const useProductSpecificationAttributeMappingUpdateViewModel = (form: FormInstan
             okType: 'danger',
             cancelText: 'Cancel',
             onOk: () => {
-                deleteApi.mutate(parseInt(id, 10), {
+                deleteApi.mutate(Number(id), {
                     onSuccess: () => {
                         message.success('Deleted successfully')
                         navigate(`/admin/products/specification-attributes/productId/${productId}`)

@@ -102,6 +102,8 @@ export const getProductAttributeMappingColumns = (): TableColumnsType<ProductPro
         key: 'control type',
     },
     {
+        width: '11%',
+        align: 'center',
         title: 'Display Order',
         dataIndex: 'displayOrder',
         key: 'display order',
@@ -112,7 +114,7 @@ export const getProductAttributeMappingColumns = (): TableColumnsType<ProductPro
         key: 'action',
         align: 'center',
         render: (_, record) => (
-            <Link to={`/admin/categories/${record.id}/update`}>
+            <Link to={`/admin/products/product-attribute-mapping-update/${record.id}`}>
                 <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
                     {AppActions.EDIT}
                 </Button>

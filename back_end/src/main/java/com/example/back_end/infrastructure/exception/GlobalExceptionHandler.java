@@ -256,8 +256,6 @@ public class GlobalExceptionHandler {
             }
             """))})})
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e, WebRequest request) {
-        log.error("Illegal Argument Exception: ", e);
-        log.error(String.valueOf(e));
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())

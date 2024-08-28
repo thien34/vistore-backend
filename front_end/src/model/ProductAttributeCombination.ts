@@ -8,6 +8,7 @@ export interface ProductAttributeCombinationRequest {
     manufacturerPartNumber: string
     gtin: string
     pictureIds: []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any
 }
 export interface ProductAttributeCombinationResponse {
@@ -19,7 +20,7 @@ export interface ProductAttributeCombinationResponse {
     sku: string
     manufacturerPartNumber: string
     gtin: string
-    pictureUrl: String
+    pictureUrl: string
     attributesXml: string
     pictureIds: []
 }

@@ -27,7 +27,7 @@ const SpecificationAttributeGroupCreate = () => {
                     </Button>
                 </div>
             </div>
-            <Form form={form} layout='vertical' style={{ marginTop: 30 }}>
+            <Form initialValues={{ displayOrder: 0 }} form={form} layout='vertical' style={{ marginTop: 30 }}>
                 <Form.Item
                     name='name'
                     label='Name'
@@ -53,7 +53,7 @@ const SpecificationAttributeGroupCreate = () => {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
             </Form>
         </div>

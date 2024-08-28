@@ -20,7 +20,7 @@ function useProductTagCreateViewModel() {
     const [filter, setFilter] = useState<Search>({})
     const queryClient = useQueryClient()
 
-    const createApi = useCreateApi<ProductTagRequest, string>(ProductTagConfigs.resourceUrl)
+    const createApi = useCreateApi<ProductTagRequest>(ProductTagConfigs.resourceUrl)
     const deleteApi = useDeleteByIdsApi<number>(ProductTagConfigs.resourceUrl, ProductTagConfigs.resourceKey)
 
     const handleSearch = (term: string) => {

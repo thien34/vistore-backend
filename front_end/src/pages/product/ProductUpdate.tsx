@@ -1,5 +1,4 @@
 import { Table, Button, Collapse, Tabs } from 'antd'
-import { EditOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import useProductUpdateViewModel from '@/pages/product/ProductUpdate.vm'
 import ProductAttributeMappingConfigs from '../product-attribute-mapping/ProductAttributeMappingConfigs'
@@ -46,24 +45,26 @@ export default function ProductUpdate() {
                 />
                 <Collapse defaultActiveKey={['1']} className='mb-6'>
                     <Panel header='Product Specification Attributes' key='1'>
-                        <Table
-                            dataSource={listResponse?.items || []}
-                            columns={columns}
-                            pagination={{
-                                current: filter.pageNo ?? 1,
-                                pageSize: filter.pageSize ?? 6,
-                                total: listResponse?.totalPages * (filter.pageSize ?? 6) || 0, // Sử dụng giá trị mặc định nếu listResponse hoặc totalPages không tồn tại
-                                onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
-                            }}
-                            loading={isLoading}
-                            bordered
-                        />
+                        {listResponse && (
+                            <Table
+                                rowKey='id'
+                                dataSource={listResponse?.items}
+                                columns={columns}
+                                bordered
+                                pagination={{
+                                    current: filter.pageNo ?? 1,
+                                    pageSize: filter.pageSize ?? 6,
+                                    total: listResponse.totalPages * (filter.pageSize ?? 6),
+                                    onChange: (page, pageSize) =>
+                                        handleTableChange({ current: page, pageSize: pageSize }),
+                                }}
+                                loading={isLoading}
+                            />
+                        )}
+
                         <Link to={`/admin/product/product-spec-attribute/add/${filter.productId}`}>
-                            <Button type='primary' style={{ marginTop: '20px' }}>
-                                + Add attribute
-                            </Button>
+                            <Button type='primary'>+ Add attribute</Button>
                         </Link>
-                        <Button style={{ margin: 10 }} icon={<ReloadOutlined />}></Button>
                     </Panel>
                 </Collapse>
             </div>

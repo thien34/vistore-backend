@@ -4,7 +4,7 @@ import {
     ProductProductAttributeMappingRequest,
 } from '@/model/ProductProductAttributeMapping'
 import ProductAttributeMappingConfigs from './ProductAttributeMappingConfigs'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getProductAttributeValueColumns } from './ProductAttributeMappingColumns'
 import { ProductAttributeNameResponse } from '@/model/ProductAttribute'
 import ProductAttributeConfigs from '../productAttribute/ProductAttributeConfigs'
@@ -23,7 +23,7 @@ function useProductAttributeMappingCreateViewModel() {
     const [open, setOpen] = useState(false)
     const [isAddMode, setIsAddMode] = useState(true)
     const navigation = useNavigate()
-    const { mutate: createProductAttributeMappingApi } = useCreateApi<ProductProductAttributeMappingRequest, string>(
+    const { mutate: createProductAttributeMappingApi } = useCreateApi<ProductProductAttributeMappingRequest>(
         ProductAttributeMappingConfigs.resourceUrl,
     )
     const productAttributeName = useGetApi<ProductAttributeNameResponse[]>(
@@ -32,6 +32,9 @@ function useProductAttributeMappingCreateViewModel() {
         {},
     ).data
 
+    const params = useSearchParams()
+    const productId = new URLSearchParams(params[0]).get('product-id')
+
     const [editingRecord, setEditingRecord] = useState<ProductAttributeValueRequest | null>(null)
 
     // HANDLE DELETE VALUE ATTRIBUTE
@@ -39,16 +42,24 @@ function useProductAttributeMappingCreateViewModel() {
         setDataSource((prev) => prev.filter((item) => item.name !== name))
     }
 
+    // HANDLE UPDATE VALUE ATTRIBUTE
+    const handleOpenModalUpdateValue = (updatedRecord: ProductAttributeValueRequest | null) => {
+        if (updatedRecord) {
+            setEditingRecord(updatedRecord)
+            setIsAddMode(false)
+            setOpen(true)
+        }
+    }
+
     // HANDLE OPEN MODAL
-    const handleOpenModal = (isAdd: boolean) => {
-        setIsAddMode(isAdd)
+    const handleOpenModal = () => {
+        setIsAddMode(true)
         setOpen(true)
-        form.resetFields()
     }
 
     // INITIAL VALUE
     const initialValue: ProductProductAttributeMappingRequest = {
-        productId: 0,
+        productId: Number(productId ?? 0),
         productAttributeId: 0,
         textPrompt: '',
         isRequired: false,
@@ -59,13 +70,14 @@ function useProductAttributeMappingCreateViewModel() {
 
     // HANDLER FUNCTIONS FOR FORM COMPONENTS ADD
     const onFinish = async (values: ProductProductAttributeMappingRequest) => {
+        dataSource.forEach((item) => {
+            item.id = null
+        })
         const requestData: ProductProductAttributeMappingRequest = {
             ...values,
             productAttributeValueRequests: dataSource,
-            productId: 1,
+            productId: Number(productId ?? 0),
         }
-        console.log(requestData)
-
         createProductAttributeMappingApi(requestData, { onSuccess: () => navigation(-1) })
     }
 
@@ -75,18 +87,18 @@ function useProductAttributeMappingCreateViewModel() {
     }
 
     // GET COLUMNS
-    const columns = getProductAttributeValueColumns(handleDeleteValue, () => handleOpenModal(false))
+    const columns = getProductAttributeValueColumns(handleDeleteValue, handleOpenModalUpdateValue)
 
     // HANDLE ADD VALUE ATTRIBUTE
     const handleAddValue = (newValue: ProductAttributeValueRequest) => {
+        newValue.id = dataSource.length + 1
         setDataSource([...dataSource, newValue])
     }
 
     // HANDLE UPDATE VALUE ATTRIBUTE
-    const handleUpdateValue = (updatedValue: ProductAttributeValueRequest | null) => {
-        if (updatedValue) {
-            setEditingRecord(updatedValue)
-            setIsAddMode(false)
+    const handleUpdateValue = (newValue: ProductAttributeValueRequest | null) => {
+        if (newValue) {
+            setDataSource((prev) => prev.map((item) => (item.id === newValue.id ? newValue : item)))
         }
     }
 
@@ -105,9 +117,9 @@ function useProductAttributeMappingCreateViewModel() {
         setDataSource,
         handleAddValue,
         handleDeleteValue,
-        handleUpdateValue,
         isAddMode,
         editingRecord,
+        handleUpdateValue,
     }
 }
 export default useProductAttributeMappingCreateViewModel

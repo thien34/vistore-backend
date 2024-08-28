@@ -13,6 +13,7 @@ public interface SpecificationAttributeGroupService {
             String name, int pageNo, int pageSize
     );
     List<SpecificationAttributeGroupNameResponse> getAllGroupName();
+
     List<SpecificationAttributeGroupResponse> getAllSpecificationAttributeGroups();
 
     SpecificationAttributeGroupResponse createSpecificationAttributeGroup(SpecificationAttributeGroupRequest request);

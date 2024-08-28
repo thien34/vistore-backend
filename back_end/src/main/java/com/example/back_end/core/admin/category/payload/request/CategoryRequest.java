@@ -21,7 +21,6 @@ public class CategoryRequest {
     @Pattern(regexp = "^[^<>]*$", message = "Name must not contain special characters")
     private String name;
 
-
     @Pattern(regexp = "^(?!.*<script>).*$", message = "must not contain script tag")
     @Size(max = 255, message = "Description must be max 255 characters")
     private String description;

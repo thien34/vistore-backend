@@ -11,9 +11,10 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
     const [groups, setGroups] = useState<SpecificationAttributeGroupNameResponse[]>([])
     const [loadingGroups, setLoadingGroups] = useState(true)
     const [shouldRedirect, setShouldRedirect] = useState(false)
+    const [creating, setCreating] = useState(false)
     const navigate = useNavigate()
 
-    const { mutate, isSuccess: creating } = useCreateApi(SpecificationAttributeConfigs.resourceUrl)
+    const { mutate } = useCreateApi(SpecificationAttributeConfigs.resourceUrl)
     const { data, error } = useGetApi<SpecificationAttributeGroupNameResponse[]>(
         `${SpecificationAttributeGroupConfigs.resourceUrl}/list-name`,
         SpecificationAttributeGroupConfigs.resourceKey,
@@ -21,7 +22,7 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
 
     useEffect(() => {
         if (data) {
-            setGroups(data) // Set array directly
+            setGroups(data)
             setLoadingGroups(false)
         }
         if (error) {
@@ -31,6 +32,7 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
     }, [data, error])
 
     const handleSubmit = (values: { name: string; group: string; displayOrder: string }) => {
+        setCreating(true)
         const requestBody = {
             name: values.name,
             specificationAttributeGroupId: values.group,
@@ -40,6 +42,7 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
         mutate(requestBody, {
             onSuccess: () => {
                 message.success('Created successfully')
+                setCreating(false)
                 if (shouldRedirect) {
                     navigate('/admin/specification-attributes')
                 } else {
@@ -47,6 +50,7 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
                 }
             },
             onError: (error) => {
+                setCreating(false)
                 message.error(`Error creating attribute: ${error.message}`)
             },
         })

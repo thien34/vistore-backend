@@ -236,7 +236,7 @@ class FetchUtils {
      * @param resourceUrl
      * @param requestBody
      */
-    static async create<I, O>(resourceUrl: string, requestBody: I): Promise<O> {
+    static async create<I>(resourceUrl: string, requestBody: I) {
         const response = await fetch(resourceUrl, {
             method: 'POST',
             headers: {
@@ -258,7 +258,7 @@ class FetchUtils {
      * @param entityId
      * @param requestBody
      */
-    static async update<I, O>(resourceUrl: string, entityId: number, requestBody: I): Promise<O> {
+    static async update<I>(resourceUrl: string, entityId: number, requestBody: I) {
         const response = await fetch(resourceUrl + '/' + entityId, {
             method: 'PUT',
             headers: {
@@ -299,6 +299,7 @@ class FetchUtils {
         if (!response.ok) {
             throw await response.json()
         }
+        return await response.json()
     }
 
     /**

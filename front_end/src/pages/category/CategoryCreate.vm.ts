@@ -29,7 +29,7 @@ function useCategoryCreateViewModel() {
         CategoryConfigs.resourceKey,
     ).data
     const { mutateAsync: createPictures, isPending } = useUploadMultipleImagesApi()
-    const { mutate: createCategoryApi } = useCreateApi<CategoryRequest, string>(CategoryConfigs.resourceUrl)
+    const { mutate: createCategoryApi } = useCreateApi<CategoryRequest>(CategoryConfigs.resourceUrl)
 
     // INITIAL VALUES
     const initialValues: CategoryRequest = {

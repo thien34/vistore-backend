@@ -30,9 +30,29 @@ export default function ManufactureCreate() {
             <Form {...layout} name='nest-messages' form={form} onFinish={onFinish} initialValues={initialManufacture}>
                 <Row gutter={[24, 8]}>
                     <Col span={12}>
-                        <Card className='min-h-full' size='small' title='Category info'>
-                            <Form.Item name='name' label='Name' rules={[{ required: true }]}>
-                                <Input />
+                        <Card className='min-h-full' size='small' title='Manufacturer Info'>
+                            <Form.Item
+                                name='name'
+                                label='Name'
+                                rules={[
+                                    { required: true, message: 'Please input manufacturer name' },
+                                    { max: 255, message: 'Name must be shorter than 256 characters' },
+                                    {
+                                        validator: (_, value) => {
+                                            if (value && value.trim() === '') {
+                                                return Promise.reject(new Error('Name must different space character'))
+                                            }
+                                            if (value && /[^a-zA-Z0-9]/.test(value)) {
+                                                return Promise.reject(
+                                                    new Error('Name cannot contain special character'),
+                                                )
+                                            }
+                                            return Promise.resolve()
+                                        },
+                                    },
+                                ]}
+                            >
+                                <Input placeholder='Manufacturer name' />
                             </Form.Item>
                             <Form.Item name='description' label='Description'>
                                 <Input.TextArea />

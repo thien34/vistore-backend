@@ -23,7 +23,7 @@ function useCategoryUpdateViewModel() {
 
     const { id } = useParams<{ id: string }>()
 
-    const { mutate: updateCategory } = useUpdateApi<CategoryRequest, string>(
+    const { mutate: updateCategory } = useUpdateApi<CategoryRequest>(
         CategoryConfigs.resourceUrl,
         CategoryConfigs.resourceKey,
         Number(id),

@@ -23,8 +23,8 @@ export default function ProductAttributeMapping() {
                     }}
                 />
             )}
-            <div className=''>
-                <Link to={ManagerPath.PRODUCT_ATTRIBUTE_MAPPING_ADD}>
+            <div className='mt-5'>
+                <Link to={`${ManagerPath.PRODUCT_ATTRIBUTE_MAPPING_ADD}?product-id=${filter.productId}`}>
                     <Button className='bg-[#475569] text-white' size='large'>
                         {AppActions.ADD}
                     </Button>

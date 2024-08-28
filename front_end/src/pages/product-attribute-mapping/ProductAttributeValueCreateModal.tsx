@@ -1,12 +1,13 @@
-import { Checkbox, Form, Input, InputNumber, Modal } from 'antd'
+import { Checkbox, Form, Input, InputNumber, Modal, Select } from 'antd'
 import useProductAttributeValueCreateViewModel from './ProductAttributeValueCreate.vm'
 import { ProductAttributeValueRequest } from '@/model/ProductProductAttributeMapping'
+import { useEffect } from 'react'
 
 interface ProductAttributeValueCreateModalProps {
     open: boolean
     setOpen: (open: boolean) => void
     onAddValue: (newValue: ProductAttributeValueRequest) => void
-    onUpdateValue: (newValue: ProductAttributeValueRequest) => void
+    openUpdateValue: (newValue: ProductAttributeValueRequest) => void
     isAdd: boolean
     editingRecord: ProductAttributeValueRequest | null
 }
@@ -15,14 +16,37 @@ export default function ProductAttributeValueCreateModal({
     open,
     setOpen,
     onAddValue,
-    onUpdateValue,
+    openUpdateValue,
     isAdd,
+    editingRecord,
 }: Readonly<ProductAttributeValueCreateModalProps>) {
-    const { layout, form, onFinish, initialValue } = useProductAttributeValueCreateViewModel(
-        onAddValue,
-        onUpdateValue,
-        setOpen,
-        isAdd,
+    const { layout, form, onFinish, initialValue, handleSelectChange, selectedUnit, setSelectedUnit } =
+        useProductAttributeValueCreateViewModel(onAddValue, openUpdateValue, setOpen, isAdd, editingRecord)
+
+    useEffect(() => {
+        if (open) {
+            if (editingRecord) {
+                form.setFieldsValue(editingRecord)
+                setSelectedUnit(editingRecord.priceAdjustmentPercentage ? 'true' : 'false')
+            }
+            if (isAdd) {
+                form.resetFields()
+                setSelectedUnit('false')
+            }
+        }
+    }, [open, editingRecord, form, isAdd, setSelectedUnit])
+
+    const selectAfter = (
+        <Select
+            defaultValue='false'
+            value={selectedUnit}
+            onChange={(value) => {
+                handleSelectChange(value)
+            }}
+        >
+            <Select.Option value='false'>&#36;</Select.Option>
+            <Select.Option value='true'>&#37;</Select.Option>
+        </Select>
     )
 
     return (
@@ -32,7 +56,7 @@ export default function ProductAttributeValueCreateModal({
             open={open}
             onOk={() => form.submit()}
             onCancel={() => setOpen(false)}
-            width={650}
+            width={700}
         >
             <Form {...layout} form={form} size='large' onFinish={onFinish} initialValues={initialValue}>
                 <Form.Item label='Name' name='name' rules={[{ required: true, message: 'Please input the name!' }]}>
@@ -43,14 +67,7 @@ export default function ProductAttributeValueCreateModal({
                     name='priceAdjustment'
                     rules={[{ type: 'number', message: 'Please input a valid number!' }]}
                 >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label='Price adjustment. Use percentage'
-                    name='priceAdjustmentPercentage'
-                    valuePropName='checked'
-                >
-                    <Checkbox />
+                    <InputNumber addonAfter={selectAfter} />
                 </Form.Item>
                 <Form.Item
                     label='Weight adjustment'

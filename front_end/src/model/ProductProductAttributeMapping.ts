@@ -10,7 +10,7 @@ export type ProductProductAttributeMappingRequest = {
 }
 
 export type ProductAttributeValueRequest = {
-    id?: number
+    id?: number | null
     name: string
     colorSquaresRgb: string
     priceAdjustment: number

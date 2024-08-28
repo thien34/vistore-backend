@@ -61,6 +61,7 @@ function useProductUpdateViewModel() {
             },
         })
     }
+
     useEffect(() => {
         if (productId) {
             setFilter((prevFilter) => ({

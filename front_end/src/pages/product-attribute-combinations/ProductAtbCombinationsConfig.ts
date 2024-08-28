@@ -8,7 +8,4 @@ export default class ProductAtbCombinationsConfig extends Configs {
     static readonly resourceUrlByProductId = ResourceURL.PRODUCT_COMBINATIONS_BY_PRODUCT_ID
     static readonly resourceKey = 'product-attribute-combinations'
     static readonly resourceUrlByProductIdMapping = ResourceURL.PRODUCT_ATB_MAPPING_PRODUCT
-    // static readonly createTitle = 'Create Product Tag'
-    // static readonly updateTitle = 'Update Product Tag'
-    // static readonly searchTitle = 'Search'
 }

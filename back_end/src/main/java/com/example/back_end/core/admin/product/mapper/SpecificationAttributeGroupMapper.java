@@ -25,7 +25,7 @@ public interface SpecificationAttributeGroupMapper {
     ) {
         return specificationAttributes.stream()
                 .map(SpecificationAttributeResponse::mapToResponse)
-                .sorted(Comparator.comparing(SpecificationAttributeResponse::getDisplayOrder).reversed())
+                .sorted(Comparator.comparing(SpecificationAttributeResponse::getId).reversed())
                 .toList();
     }
 

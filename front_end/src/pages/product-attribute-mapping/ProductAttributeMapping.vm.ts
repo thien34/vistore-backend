@@ -2,23 +2,37 @@ import useGetAllApi from '@/hooks/use-get-all-api'
 import { ProductProductAttributeMappingResponse } from '@/model/ProductProductAttributeMapping'
 import ProductAttributeMappingConfigs from './ProductAttributeMappingConfigs'
 import { RequestParams } from '@/utils/FetchUtils'
-import { useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getProductAttributeMappingColumns } from './ProductAttributeMappingColumns'
+import { useParams } from 'react-router-dom'
 
 interface Search extends RequestParams {
     productId: number
 }
 
 function useProductAttributeMappingViewModel() {
-    const [filter, setFilter] = useState<Search>({ productId: 1 })
+    const { productId } = useParams<{ productId: string }>()
+    const [filter, setFilter] = useState<Search>({ productId: Number(productId) || 0 })
+
+    useEffect(() => {
+        if (productId) {
+            setFilter((prevFilter) => ({
+                ...prevFilter,
+                productId: Number(productId),
+            }))
+        }
+    }, [productId])
 
     // HANDLE TABLE CHANGE
-    const handleTableChange = (pagination: { current: number; pageSize: number }) => {
+    const handleTableChange = useCallback((pagination: { current: number; pageSize: number }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
             pageNo: pagination.current,
         }))
-    }
+    }, [])
+
+    // GET COLUMNS
+    const columns = useMemo(getProductAttributeMappingColumns, [])
 
     // RETURN DATA
     const {
@@ -30,9 +44,6 @@ function useProductAttributeMappingViewModel() {
         ProductAttributeMappingConfigs.resourceKey,
         filter,
     )
-
-    // GET COLUMNS
-    const columns = getProductAttributeMappingColumns()
 
     return { listResponse, isLoading, refetch, setFilter, filter, handleTableChange, columns }
 }

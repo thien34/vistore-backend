@@ -1,49 +1,35 @@
-import { useState, useEffect } from 'react'
-import { Modal, PaginationProps } from 'antd'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { Modal } from 'antd'
 import useGetAllApi from '@/hooks/use-get-all-api.ts'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
-import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
+import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute'
 
 const { confirm } = Modal
+
 const useSpecificationAttributeGroupManageViewModel = () => {
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-    const [selectedModalRowKeys, setSelectedModalRowKeys] = useState<React.Key[]>([]) // New state for modal
+    const [selectedModalRowKeys, setSelectedModalRowKeys] = useState<React.Key[]>([]) // State for modal
     const [isSpinning, setIsSpinning] = useState(false)
-    const [current, setCurrent] = useState(1)
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [modalData, setModalData] = useState([])
-    const [filter, setFilter] = useState<{ current: number; pageSize: number; pageNo: number; totalPage: number }>({
-        current: 1,
-        pageSize: 6,
-        pageNo: 1,
-        totalPage: 1,
-    })
-    const onChange: PaginationProps['onChange'] = (page) => {
-        setCurrent(page)
-    }
+
+    // State for filters
+    const [groupedFilter, setGroupedFilter] = useState({ pageNo: 1, pageSize: 6 })
+    const [ungroupedFilter, setUngroupedFilter] = useState({ pageNo: 1, pageSize: 6 })
+
+    // Grouped API
     const {
-        data,
+        data: groupedData,
         isLoading,
-        error,
         refetch: refetchGrouped,
     } = useGetAllApi(SpecificationAttributeGroupConfigs.resourceUrl, SpecificationAttributeGroupConfigs.resourceKey, {
-        pageNo: filter.pageNo,
+        pageNo: groupedFilter.pageNo,
     })
 
-    const { mutate: deleteApi } = useDeleteByIdsApi<number>(
-        SpecificationAttributeConfigs.resourceUrl,
-        SpecificationAttributeConfigs.resourceKey,
-    )
-    const handleTableChangeFilter = (pagination: { current: number; pageSize: number }) => {
-        setFilter((prevFilter) => ({
-            ...prevFilter,
-            pageNo: pagination.current,
-        }))
-    }
+    // Ungrouped API
     const {
-        data: ungroupedAttributesData,
+        data: ungroupedData,
         isLoading: isLoadingUngrouped,
         error: errorUngrouped,
         refetch: refetchUngrouped,
@@ -51,13 +37,23 @@ const useSpecificationAttributeGroupManageViewModel = () => {
         SpecificationAttributeGroupConfigs.resourceGetUngroupedAttributes,
         SpecificationAttributeGroupConfigs.resourceGetUngroupedAttributesKey,
         {
-            pageNo: current,
+            pageNo: ungroupedFilter.pageNo,
         },
     )
 
-    const handleEdit = (record: SpecificationAttributeResponse) => {
-        console.log(`Edit attribute: ${record.name}`)
-    }
+    const { mutate: deleteApi } = useDeleteByIdsApi<number>(
+        SpecificationAttributeConfigs.resourceUrl,
+        SpecificationAttributeConfigs.resourceKey,
+    )
+
+    // Handle filters change
+    const handleGroupedTableChangeFilter = useCallback((pagination: { current: number; pageSize: number }) => {
+        setGroupedFilter({ pageNo: pagination.current, pageSize: pagination.pageSize })
+    }, [])
+
+    const handleUngroupedTableChangeFilter = useCallback((pagination: { current: number; pageSize: number }) => {
+        setUngroupedFilter({ pageNo: pagination.current, pageSize: pagination.pageSize })
+    }, [])
 
     useEffect(() => {
         if (!isLoading && !isLoadingUngrouped) {
@@ -65,55 +61,17 @@ const useSpecificationAttributeGroupManageViewModel = () => {
             refetchUngrouped()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading, isLoadingUngrouped])
+    }, [isLoading, isLoadingUngrouped, groupedFilter, ungroupedFilter])
 
-    if (isLoading || isLoadingUngrouped) {
-        return { isLoading: true }
-    }
+    const handleEdit = useCallback((record: SpecificationAttributeResponse) => {
+        console.log(`Edit attribute: ${record.name}`)
+    }, [])
 
-    if (error || errorUngrouped) {
-        return { error: error?.message || errorUngrouped?.message }
-    }
-
-    const ungroupedAttributes = ungroupedAttributesData?.items || []
-    const dataSource = [
-        {
-            id: 'ungrouped',
-            name: 'Default group (non-grouped specification attributes)',
-            displayOrder: 0,
-            specificationAttributes: ungroupedAttributes,
-        },
-        ...data?.items,
-    ]
-
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        setSelectedRowKeys(newSelectedRowKeys)
-    }
-
-    const onModalSelectChange = (newSelectedModalRowKeys: React.Key[]) => {
+    const onModalSelectChange = useCallback((newSelectedModalRowKeys: React.Key[]) => {
         setSelectedModalRowKeys(newSelectedModalRowKeys)
-    }
+    }, [])
 
-    const handleDelete = () => {
-        confirm({
-            title: 'Are you sure you want to delete the selected attributes?',
-            content: 'This action cannot be undone.',
-            onOk: async () => {
-                deleteApi(selectedRowKeys as number[], {
-                    onSuccess: () => {
-                        refetchGrouped()
-                        refetchUngrouped()
-                        setSelectedRowKeys([])
-                    },
-                })
-            },
-            onCancel() {
-                console.log('Cancel')
-            },
-        })
-    }
-
-    const handleModalDelete = () => {
+    const handleModalDelete = useCallback(() => {
         confirm({
             title: 'Are you sure you want to delete the selected attributes?',
             content: 'This action cannot be undone.',
@@ -122,6 +80,8 @@ const useSpecificationAttributeGroupManageViewModel = () => {
                     onSuccess: () => {
                         setIsModalVisible(false)
                         setSelectedModalRowKeys([])
+                        refetchGrouped()
+                        refetchUngrouped()
                     },
                 })
             },
@@ -129,63 +89,55 @@ const useSpecificationAttributeGroupManageViewModel = () => {
                 console.log('Cancel')
             },
         })
-    }
+    }, [selectedModalRowKeys, deleteApi, refetchGrouped, refetchUngrouped])
 
-    const showModal = (record: SpecificationAttributeResponse) => {
+    const showModal = useCallback((record: SpecificationAttributeResponse) => {
         setModalData(record.specificationAttributes)
         setIsModalVisible(true)
-    }
+    }, [])
 
-    const handleOk = () => {
+    const handleOk = useCallback(() => {
         setIsModalVisible(false)
-    }
+    }, [])
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         setIsModalVisible(false)
-    }
+    }, [])
 
-    const rowSelection = {
-        selectedRowKeys: selectedModalRowKeys,
-        onChange: onModalSelectChange,
-    }
-
-    const handleReload = async () => {
+    const handleReload = useCallback(async () => {
         setIsSpinning(true)
         await new Promise((resolve) => setTimeout(resolve, 1000))
         refetchGrouped()
         refetchUngrouped()
         setIsSpinning(false)
-    }
+    }, [refetchGrouped, refetchUngrouped])
 
-    const isModalDeleteButtonDisabled = selectedModalRowKeys.length === 0
+    const isModalDeleteButtonDisabled = useMemo(() => selectedModalRowKeys.length === 0, [selectedModalRowKeys])
 
     return {
-        data,
-        totalPages: data?.totalPages || 1,
-        filter,
-        handleTableChangeFilter,
-        selectedRowKeys,
-        dataSource,
+        groupedData,
+        ungroupedData,
         isLoading,
-        error,
+        errorUngrouped,
         handleEdit,
-        handleDelete,
         handleReload,
-        onSelectChange,
         isSpinning,
-        onChange,
-        current,
-        ungroupedAttributesData,
-        selectedModalRowKeys,
-        onModalSelectChange,
-        handleModalDelete,
-        isModalDeleteButtonDisabled,
+        isModalVisible,
+        modalData,
         showModal,
         handleOk,
         handleCancel,
-        modalData,
-        isModalVisible,
-        rowSelection,
+        selectedModalRowKeys,
+        rowSelection: {
+            selectedRowKeys: selectedModalRowKeys,
+            onChange: onModalSelectChange,
+        },
+        handleModalDelete,
+        isModalDeleteButtonDisabled,
+        groupedFilter,
+        ungroupedFilter,
+        handleGroupedTableChangeFilter,
+        handleUngroupedTableChangeFilter,
     }
 }
 

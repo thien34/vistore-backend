@@ -40,8 +40,8 @@ class ManagerPath {
     static readonly ORDER = '/admin/orders'
 
     static readonly PRODUCT_ATTRIBUTE_MAPPING = '/admin/product-attribute-mapping'
-    static readonly PRODUCT_ATTRIBUTE_MAPPING_ADD = '/admin/product-attribute-mapping/add'
-    static readonly PRODUCT_ATTRIBUTE_MAPPING_UPDATE = '/admin/product-attribute-mapping'
+    static readonly PRODUCT_ATTRIBUTE_MAPPING_ADD = '/admin/products/product-attribute-mapping-add'
+    static readonly PRODUCT_ATTRIBUTE_MAPPING_UPDATE = '/admin/products/product-attribute-mapping-update/:id'
 
     static readonly STOCK_QUANTITY_HISTORY = '/admin/stock-quantity-history'
     static readonly STOCK_QUANTITY_HISTORY_ADD = '/admin/stock-quantity-history/add'

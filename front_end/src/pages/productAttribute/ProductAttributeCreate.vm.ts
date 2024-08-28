@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
 
 function useProductAttributeCreate() {
-    const { mutate: createProductAttribute } = useCreateApi<ProductAttributeRequest, string>(
+    const { mutate: createProductAttribute } = useCreateApi<ProductAttributeRequest>(
         ProductAttributeConfigs.resourceUrl,
     )
     const navigate = useNavigate()

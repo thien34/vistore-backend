@@ -438,7 +438,7 @@ function SpecificationAttributeUpdate() {
                     </Button>
                 </Col>
             </Row>
-            <Form form={form} layout='vertical' style={{ marginBottom: '20px' }}>
+            <Form form={form} layout='vertical' initialValues={{ displayOrder: 0 }} style={{ marginBottom: '20px' }}>
                 <Form.Item
                     name='name'
                     label='Name'
@@ -480,7 +480,7 @@ function SpecificationAttributeUpdate() {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
             </Form>
             <h2>Options</h2>

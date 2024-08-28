@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/product-attribute-mapping")
-public class ProductProductAttributeMappingController {
+public class ProductAttributeMappingController {
 
     private final ProductProductAttributeMappingService productAttributeService;
 

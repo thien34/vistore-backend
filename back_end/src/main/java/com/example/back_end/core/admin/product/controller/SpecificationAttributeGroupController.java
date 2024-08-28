@@ -121,6 +121,7 @@ public class SpecificationAttributeGroupController {
                 .message("Delete specification attribute group success")
                 .build();
     }
+
     @GetMapping("/list-name")
     public ResponseData<List<SpecificationAttributeGroupNameResponse>> getAllGroupName() {
 
@@ -132,6 +133,7 @@ public class SpecificationAttributeGroupController {
                 .data(response)
                 .build();
     }
+
     @Operation(method = "GET", summary = "Get all specification attribute groups without pagination",
             description = "Send a request via this API to get all specification attribute groups without pagination")
     @GetMapping("/all")

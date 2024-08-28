@@ -13,7 +13,7 @@ function useProductAttributeUpdate() {
     const navigation = useNavigate()
     const { id } = useParams<{ id: string }>()
     const [current, setCurrent] = useState(1)
-    const { mutate: updateProductAttribute, isPending } = useUpdateApi<ProductAttributeResponse, string>(
+    const { mutate: updateProductAttribute, isPending } = useUpdateApi<ProductAttributeResponse>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
         Number(id),
@@ -32,6 +32,8 @@ function useProductAttributeUpdate() {
         cost: 0,
         isPreSelected: false,
         displayOrder: 0,
+        productAttribute: null,
+        setIsEditPriceAdjustment: 0,
     })
     const [isOpenConfirm, setOpenConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -91,6 +93,8 @@ function useProductAttributeUpdate() {
                 cost: 0,
                 isPreSelected: false,
                 displayOrder: 0,
+                productAttribute: null,
+                setIsEditPriceAdjustment: 0,
             })
             setIsModalOpen(false)
         }

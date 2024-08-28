@@ -2,7 +2,7 @@ import { Button, Form, Input, InputNumber } from 'antd'
 import useSpecificationAttributeGroupUpdateViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupUpdate.vm.ts'
 
 function SpecificationAttributeGroupUpdate() {
-    const { setIsSaveAndContinue, isLoading, form, onFinish, onFinishFailed, handleDelete } =
+    const { setIsSaveAndContinue, isLoading, form, onFinish, handleDelete } =
         useSpecificationAttributeGroupUpdateViewModel()
 
     return (
@@ -15,7 +15,7 @@ function SpecificationAttributeGroupUpdate() {
                 layout='vertical'
                 name='edit_specification'
                 onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
+                initialValues={{ displayOrder: 0 }}
             >
                 <Form.Item
                     name='name'
@@ -42,7 +42,7 @@ function SpecificationAttributeGroupUpdate() {
                         },
                     ]}
                 >
-                    <InputNumber defaultValue={0} type='number' />
+                    <InputNumber type='number' />
                 </Form.Item>
                 <div
                     style={{

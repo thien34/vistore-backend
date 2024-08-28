@@ -1,49 +1,53 @@
-import { Table, Button, Row, Col, Space, Spin, Pagination, Modal } from 'antd'
+import { Table, Button, Row, Col, Space, Spin, Modal, Collapse, Alert } from 'antd'
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import useSpecificationAttributeGroupManageViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroup.vm.ts'
+
 const { Column } = Table
+const { Panel } = Collapse
 
 const SpecificationAttributeGroupManage = () => {
     const navigate = useNavigate()
     const {
-        data,
-        dataSource,
+        groupedData,
+        ungroupedData,
         isLoading,
-        error,
-        handleEdit,
+        errorUngrouped,
         handleReload,
         isSpinning,
-        current,
-        onChange,
-        ungroupedAttributesData,
         handleModalDelete,
         isModalDeleteButtonDisabled,
         isModalVisible,
         showModal,
         handleOk,
+        handleEdit,
         handleCancel,
         modalData,
         rowSelection,
-        filter,
-        totalPages,
-        handleTableChangeFilter,
+        groupedFilter,
+        ungroupedFilter,
+        handleGroupedTableChangeFilter,
+        handleUngroupedTableChangeFilter,
     } = useSpecificationAttributeGroupManageViewModel()
 
     if (isLoading) {
         return <div>Loading...</div>
     }
 
-    if (error) {
-        return <div>Error loading data: {error}</div>
+    if (errorUngrouped) {
+        return <div>Error loading data: {errorUngrouped.message}</div>
     }
-    console.log(filter)
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Row justify='space-between' align='middle' style={{ marginBottom: 16 }}>
                 <Col>
-                    <h1>Specification attributes</h1>
+                    <Alert
+                        message={<span>Specification Attribute</span>}
+                        type='info'
+                        showIcon
+                        style={{ marginBottom: 20 }}
+                    />
                 </Col>
                 <Col>
                     <Space>
@@ -66,50 +70,102 @@ const SpecificationAttributeGroupManage = () => {
                     <Spin size='large' />
                 </div>
             )}
-            <div className='max-h-[500px]'>
-                <Table
-                    scroll={{ y: 400, x: 500 }}
-                    className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'
-                    // dataSource={data?.items}
-                    dataSource={dataSource}
-                    bordered
-                    rowKey='id'
-                    pagination={{
-                        current: filter?.pageNo ?? 1,
-                        pageSize: filter?.pageSize ?? 6,
-                        total: (totalPages ?? 1) * (filter?.pageSize ?? 6),
-                        onChange: (page, pageSize) => handleTableChangeFilter({ current: page, pageSize: pageSize }),
-                    }}
-                >
-                    <Column
-                        title='Name'
-                        dataIndex='name'
-                        key='name'
-                        render={(text, record) => (
-                            <a onClick={() => navigate(`/admin/specification-attribute-groups/${record.id}`)}>{text}</a>
-                        )}
-                    />
-                    <Column
-                        align={'center'}
-                        width='20%'
-                        title='Display order'
-                        dataIndex='displayOrder'
-                        key='displayOrder'
-                    />
-                    <Column
-                        width='10%'
-                        title='View'
-                        key='view'
-                        align={'center'}
-                        render={(record) => (
-                            <Button type='primary' onClick={() => showModal(record)}>
-                                View
-                            </Button>
-                        )}
-                    />
-                </Table>
-            </div>
+            <Collapse defaultActiveKey={['1']} className='mb-6'>
+                <Panel header='Grouped Specification Attributes' key='1'>
+                    <Table
+                        className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'
+                        dataSource={groupedData?.items}
+                        bordered
+                        rowKey='id'
+                        pagination={{
+                            current: groupedFilter?.pageNo ?? 1,
+                            pageSize: groupedFilter?.pageSize ?? 6,
+                            total: (groupedData?.totalPages ?? 1) * (groupedFilter?.pageSize ?? 6),
+                            onChange: (page, pageSize) =>
+                                handleGroupedTableChangeFilter({ current: page, pageSize: pageSize }),
+                        }}
+                    >
+                        <Column
+                            title='Name'
+                            dataIndex='name'
+                            key='name'
+                            sorter={(a, b) => a.name.localeCompare(b.name)}
+                            render={(text, record) => (
+                                <a onClick={() => navigate(`/admin/specification-attribute-groups/${record.id}`)}>
+                                    {text}
+                                </a>
+                            )}
+                        />
+                        <Column
+                            align={'center'}
+                            width='20%'
+                            title='Display order'
+                            dataIndex='displayOrder'
+                            key='displayOrder'
+                            sorter={(a, b) => a.displayOrder - b.displayOrder}
+                        />
+                        <Column
+                            width='10%'
+                            title='Actions'
+                            key='Detail'
+                            align={'center'}
+                            render={(record) => (
+                                <Button type='primary' onClick={() => showModal(record)}>
+                                    Detail
+                                </Button>
+                            )}
+                        />
+                    </Table>
+                </Panel>
+            </Collapse>
+            <Collapse defaultActiveKey={['2']} className='mb-6'>
+                <Panel header='Ungrouped Specification Attributes' key='2'>
+                    <Table
+                        className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'
+                        dataSource={ungroupedData?.items}
+                        bordered
+                        rowKey='id'
+                        pagination={{
+                            current: ungroupedFilter?.pageNo ?? 1,
+                            pageSize: ungroupedFilter?.pageSize ?? 6,
+                            total: (ungroupedData?.totalPages ?? 1) * (ungroupedFilter?.pageSize ?? 6),
+                            onChange: (page, pageSize) =>
+                                handleUngroupedTableChangeFilter({ current: page, pageSize: pageSize }),
+                        }}
+                    >
+                        <Column
+                            title='Name'
+                            dataIndex='name'
+                            key='name'
+                            sorter={(a, b) => a.name.localeCompare(b.name)}
+                        />
+                        <Column
+                            align={'center'}
+                            width='20%'
+                            title='Display order'
+                            dataIndex='displayOrder'
+                            key='displayOrder'
+                            sorter={(a, b) => a.displayOrder - b.displayOrder}
+                        />
+                        <Column
+                            width='10%'
+                            title='Edit'
+                            key='edit'
+                            align={'center'}
+                            render={(record) => (
+                                <Link to={`/admin/specification-attributes/${record?.id}/update`}>
+                                    <Button type='primary' icon={<EditOutlined />} size='middle'>
+                                        Edit
+                                    </Button>
+                                </Link>
+                            )}
+                        />
+                    </Table>
+                </Panel>
+            </Collapse>
+
             <Modal
+                width={550}
                 title='Specification Attributes'
                 open={isModalVisible}
                 onOk={handleOk}
@@ -129,9 +185,27 @@ const SpecificationAttributeGroupManage = () => {
                     </Button>,
                 ]}
             >
-                <Table dataSource={modalData} rowKey='id' pagination={false} rowSelection={rowSelection}>
-                    <Column title='Name' dataIndex='name' key='name' />
-                    <Column title='Display order' dataIndex='displayOrder' key='displayOrder' />
+                <Table
+                    dataSource={modalData}
+                    scroll={{ y: 400 }}
+                    rowKey='id'
+                    pagination={false}
+                    rowSelection={rowSelection}
+                >
+                    <Column
+                        title='Name'
+                        dataIndex='name'
+                        key='name'
+                        sorter={(a, b) => a.name.localeCompare(b.name)}
+                        sortDirections={['ascend', 'descend']}
+                    />
+                    <Column
+                        title='Display order'
+                        dataIndex='displayOrder'
+                        key='displayOrder'
+                        sorter={(a, b) => a.displayOrder - b.displayOrder}
+                        sortDirections={['ascend', 'descend']}
+                    />
                     <Column
                         width='20%'
                         title='Edit'
@@ -150,13 +224,6 @@ const SpecificationAttributeGroupManage = () => {
                         )}
                     />
                 </Table>
-                <div style={{ marginTop: '16px', textAlign: 'center' }}>
-                    <Pagination
-                        current={current}
-                        onChange={onChange}
-                        total={ungroupedAttributesData.totalPages * ungroupedAttributesData.size}
-                    />
-                </div>
             </Modal>
         </div>
     )

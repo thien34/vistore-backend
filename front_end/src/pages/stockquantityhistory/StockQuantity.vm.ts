@@ -9,7 +9,7 @@ interface Search extends RequestParams {
     page?: number
 }
 
-export default function useStockQuanityHistoryViewModel() {
+export default function useStockQuantityHistoryViewModel() {
     const [filter, setFilter] = useState<Search>({})
     // GET COLUMNS
     const columns = getStockQuantityColumns()

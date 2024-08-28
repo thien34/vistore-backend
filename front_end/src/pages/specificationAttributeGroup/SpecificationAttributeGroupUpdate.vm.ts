@@ -12,7 +12,7 @@ const useSpecificationAttributeGroupUpdateViewModel = () => {
     const { data, isLoading } = useGetByIdApi(
         SpecificationAttributeGroupConfigs.resourceUrl,
         SpecificationAttributeGroupConfigs.resourceKey,
-        parseInt(id, 10),
+        Number(id),
     )
 
     const [form] = Form.useForm()
@@ -32,7 +32,7 @@ const useSpecificationAttributeGroupUpdateViewModel = () => {
     const updateApi = useUpdateApi<SpecificationAttributeResponse>(
         SpecificationAttributeGroupConfigs.resourceUrl,
         SpecificationAttributeGroupConfigs.resourceKey,
-        parseInt(id, 10),
+        Number(id),
     )
 
     const deleteApi = useDeleteByIdApi(
@@ -48,7 +48,7 @@ const useSpecificationAttributeGroupUpdateViewModel = () => {
             okType: 'danger',
             cancelText: 'Cancel',
             onOk: () => {
-                deleteApi.mutate(parseInt(id, 10), {
+                deleteApi.mutate(Number(id), {
                     onSuccess: () => {
                         console.log('Deleted successfully!')
                         navigate('/admin/specification-attribute-groups')

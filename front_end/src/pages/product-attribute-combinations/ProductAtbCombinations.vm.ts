@@ -21,6 +21,7 @@ interface ProductAtbMappingValue {
 function useProductAtbCombinationsViewModel() {
     const [form] = Form.useForm()
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const initialValues: { [key: string]: any } = {
         id: null,
         stockQuantity: 1000,
@@ -37,7 +38,7 @@ function useProductAtbCombinationsViewModel() {
     const [open, setOpen] = useState(false)
     const [selectedRecord, setSelectedRecord] = useState<ProductAttributeCombinationRequest | null>(null)
     const [error, setError] = useState('')
-    const createApi = useCreateApi<ProductAttributeCombinationRequest, string>(ProductAtbCombinationsConfig.resourceUrl)
+    const createApi = useCreateApi<ProductAttributeCombinationRequest>(ProductAtbCombinationsConfig.resourceUrl)
     const { mutate: deleteApi } = useDeleteByIdApi<number>(ProductAtbCombinationsConfig.resourceUrl)
 
     const handleCreate = async (values: ProductAttributeCombinationRequest) => {

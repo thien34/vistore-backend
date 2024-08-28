@@ -43,6 +43,7 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
     useEffect(() => {
         if (selectedRecord) {
             const attributes = JSON.parse(selectedRecord.attributesXml).attributes.reduce(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (acc: any, attr: any) => ({ ...acc, ...attr }),
                 {},
             )

@@ -166,7 +166,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
                 .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
 
         if (productProductAttributeMappingRepository.existsByProductAttributeAndProduct(productAttribute, product)) {
-            throw new IllegalArgumentException("Product attribute already mapped");
+            throw new IllegalArgumentException("Product attribute " + productAttribute.getName() + " already exists in product");
         }
     }
 

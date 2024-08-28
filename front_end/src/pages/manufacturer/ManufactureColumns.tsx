@@ -31,7 +31,6 @@ const getManufactureColumns = (): TableColumnsType<ManufacturerResponse> => [
     },
     {
         width: '10%',
-        align: 'center',
         title: 'Action',
         key: 'action',
         render: (_, record) => (

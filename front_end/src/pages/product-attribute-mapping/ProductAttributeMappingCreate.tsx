@@ -133,7 +133,7 @@ export default function ProductAttributeMappingCreate() {
                                         <Button
                                             className='bg-[#475569] text-white'
                                             size='large'
-                                            onClick={() => handleOpenModal(true)}
+                                            onClick={handleOpenModal}
                                         >
                                             {AppActions.ADD}
                                         </Button>
@@ -141,7 +141,7 @@ export default function ProductAttributeMappingCreate() {
                                             open={open}
                                             setOpen={setOpen}
                                             onAddValue={handleAddValue}
-                                            onUpdateValue={() => handleUpdateValue(editingRecord)}
+                                            openUpdateValue={handleUpdateValue}
                                             isAdd={isAddMode}
                                             editingRecord={editingRecord}
                                         />

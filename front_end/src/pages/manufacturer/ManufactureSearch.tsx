@@ -44,7 +44,7 @@ export default function ManufactureSearch({
                         <Input
                             className='w-56'
                             size='large'
-                            placeholder='Manufacture name'
+                            placeholder='Manufacturer name'
                             value={manufactureName}
                             onChange={(e) => setManufactureName(e.target.value)}
                         />

@@ -25,20 +25,15 @@ public interface ProductSpecificationAttributeMappingMapper {
     ProductSpecificationAttributeMappingResponse toDto(ProductSpecificationAttributeMapping mapping);
     List<ProductSpecificationAttributeMappingResponse> toDto(
             List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
+
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "specificationAttributeOption.name", target = "specificationAttributeOptionName")
     @Mapping(target = "specificationAttributeName", expression = "java(getSpecificationAttributeName(mapping))")
     ProductSpecificationAttributeMappingByIdResponse toDtooo(ProductSpecificationAttributeMapping mapping);
 
-    List<ProductSpecificationAttributeMappingByIdResponse> toDtooo(List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
-
     @Mapping(source = "specificationAttributeOption.name", target = "specificationAttributeOptionName")
     @Mapping(target = "specificationAttributeName", expression = "java(getSpecificationAttributeName(mapping))")
     ProductSpecificationAttributeMappingByProductResponse toDtos(ProductSpecificationAttributeMapping mapping);
-
-    List<ProductSpecificationAttributeMappingByProductResponse> toDtos(
-            List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
-
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "specificationAttributeOption", ignore = true)
@@ -81,4 +76,5 @@ public interface ProductSpecificationAttributeMappingMapper {
             }
         }
     }
+
 }

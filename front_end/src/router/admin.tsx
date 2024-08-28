@@ -21,6 +21,7 @@ import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpecifica
 import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
 import ProductAttribute from '@/pages/productAttribute/ProductAttributeCreate'
 import ProductUpdate from '@/pages/product/ProductUpdate'
+import { ProductAttributeMappingUpdate } from '@/pages/product-attribute-mapping'
 
 const routers = [
     {
@@ -102,6 +103,13 @@ const routers = [
         path: ManagerPath.PRODUCT_ATTRIBUTE_MAPPING_ADD,
         layout: 'main',
         element: <ProductAttributeMappingCreate />,
+        breadcrumbName: 'Add Manufacture',
+        pageType: 'manufacture',
+    },
+    {
+        path: ManagerPath.PRODUCT_ATTRIBUTE_MAPPING_UPDATE,
+        layout: 'main',
+        element: <ProductAttributeMappingUpdate />,
         breadcrumbName: 'Add Manufacture',
         pageType: 'manufacture',
     },
@@ -196,7 +204,6 @@ const routesAdmin = [
                     {
                         path: item.path,
                         element: item.element,
-                        breadcrumbName: item.breadcrumbName,
                     },
                 ],
             }

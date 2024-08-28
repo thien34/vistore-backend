@@ -17,7 +17,7 @@ function useManufactureCreateViewModel() {
         wrapperCol: { span: 16 },
     }
     const { mutateAsync: createPictures, isPending } = useUploadMultipleImagesApi()
-    const { mutate: createManufactureApi } = useCreateApi<ManufacturerRequest, string>(ManufactureConfigs.resourceUrl)
+    const { mutate: createManufactureApi } = useCreateApi<ManufacturerRequest>(ManufactureConfigs.resourceUrl)
 
     // INITIAL VALUES
     const initialManufacture: ManufacturerRequest = {
@@ -52,6 +52,7 @@ function useManufactureCreateViewModel() {
 
     // HANDLER FUNCTIONS FOR FORM COMPONENTS ADD
     const onFinish = async (values: ManufacturerRequest) => {
+        values.name = values.name.trim()
         if (fileList.length) {
             try {
                 const result = await createPictures([fileList[0].originFileObj as File])
