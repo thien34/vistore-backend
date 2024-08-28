@@ -1,10 +1,10 @@
-import ProductAttributeConfigs from './ProductAttributeConfigs'
-import useCreateApi from '@/hooks/use-create-api.ts'
-import { ProductAttributeRequest } from '@/model/ProductAttribute.ts'
-import { Form, message } from 'antd'
+import { Form, Modal } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import useCreateApi from '@/hooks/use-create-api.ts'
+import { ProductAttributeRequest } from '@/model/ProductAttribute.ts'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
+import ProductAttributeConfigs from './ProductAttributeConfigs'
 
 function useProductAttributeCreate() {
     const { mutate: createProductAttribute } = useCreateApi<ProductAttributeRequest>(
@@ -31,22 +31,6 @@ function useProductAttributeCreate() {
     const [isOpenConfirm, setOpenConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [current, setCurrent] = useState(1)
-    const gradientStyleEdit = {
-        background: 'linear-gradient(to right, #4facfe, #00f2fe)',
-        border: 'none',
-        color: 'white',
-    }
-    const gradientStyleSave = {
-        background: 'linear-gradient(to right, #34C759, #8BC34A)',
-        border: 'none',
-        color: 'white',
-    }
-
-    const gradientStyleRemove = {
-        background: 'linear-gradient(to right, #ff6a6a, #ff0000)',
-        border: 'none',
-        color: 'white',
-    }
 
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
         const maxId = Math.max(...arr.map((item) => item.id ?? 0))
@@ -55,39 +39,69 @@ function useProductAttributeCreate() {
 
     const handleAddValue = () => {
         if (!newValue.name || newValue.name.length > 50) {
-            message.error('Name is required and cannot exceed 50 characters')
+            console.error('Name is required and cannot exceed 50 characters')
             return
         }
+
         if (isEdit) {
-            formAdd.resetFields()
             const index = values.findIndex((item) => item.id === newValue.id)
-            const newArr = values.filter((item) => item.id !== newValue.id)
-            newArr.splice(index, 0, newValue)
-            setValues(newArr)
-            setIsModalOpen(false)
-            setIsEdit(false)
+            if (index > -1) {
+                const updatedValues = [...values]
+                updatedValues[index] = newValue
+                setValues(updatedValues)
+                console.log('Value updated successfully')
+            }
         } else {
-            formAdd.resetFields()
-            newValue.id = getNewId(values)
-            setValues([...values, newValue])
-            setNewValue({
-                id: getNewId(values),
-                name: '',
-                priceAdjustment: 0,
-                priceAdjustmentUsePercentage: false,
-                weightAdjustment: 0,
-                cost: 0,
-                isPreSelected: false,
-                displayOrder: 0,
-                productAttribute: 0,
-                setIsEditPriceAdjustment: 0,
-            })
-            setIsModalOpen(false)
+            const newId = getNewId(values)
+            const newValueWithId = { ...newValue, id: newId }
+            setValues([...values, newValueWithId])
+            console.log('Value added successfully')
         }
+
+        formAdd.resetFields()
+        setNewValue({
+            id: getNewId(values),
+            name: '',
+            priceAdjustment: 0,
+            priceAdjustmentUsePercentage: false,
+            weightAdjustment: 0,
+            cost: 0,
+            isPreSelected: false,
+            displayOrder: 0,
+            productAttribute: 0,
+            setIsEditPriceAdjustment: 0,
+        })
+        setIsModalOpen(false)
+        setIsEdit(false)
+    }
+    const handleCancelModal = () => {
+        formAdd.resetFields()
+        setNewValue({
+            id: getNewId(values),
+            name: '',
+            priceAdjustment: 0,
+            priceAdjustmentUsePercentage: false,
+            weightAdjustment: 0,
+            cost: 0,
+            isPreSelected: false,
+            displayOrder: 0,
+            productAttribute: 0,
+            setIsEditPriceAdjustment: 0,
+        })
+        setIsModalOpen(false)
+        setIsEdit(false)
     }
 
     const handleRemoveValue = (value: PredefinedProductAttributeValueRequest) => {
-        setValues(values.filter((v) => v.id !== value.id))
+        Modal.confirm({
+            title: 'Confirm Delete',
+            content: 'Are you sure you want to delete this value?',
+            okText: 'Yes',
+            cancelText: 'No',
+            onOk: () => {
+                setValues(values.filter((v) => v.id !== value.id))
+            },
+        })
     }
 
     const handleEditValue = (value: PredefinedProductAttributeValueRequest) => {
@@ -97,12 +111,12 @@ function useProductAttributeCreate() {
         setIsEdit(true)
     }
 
-    const handleFinish = async (formValues: { name: string; description: string }) => {
+    const handleFinish = async (formValues: { name?: string; description?: string }) => {
         setLoading(true)
         setOpenConfirm(false)
         try {
-            if (formValues.name.length > 50) {
-                message.error('Name cannot exceed 50 characters')
+            if (!formValues.name || formValues.name.length > 50) {
+                console.error('Name is required and cannot exceed 50 characters')
                 setLoading(false)
                 return
             }
@@ -110,15 +124,13 @@ function useProductAttributeCreate() {
             setValues([])
             const data = {
                 name: formValues.name,
-                description: formValues.description,
+                description: formValues.description || '',
                 values: values,
             }
             await onFinish(data)
-            // Navigate with state to reload data
             navigate('/admin/product-attributes', { state: { reload: true } })
         } catch (error) {
             console.error('Error submitting form:', error)
-            message.error('Failed to submit form')
         } finally {
             setLoading(false)
         }
@@ -129,19 +141,23 @@ function useProductAttributeCreate() {
     }
 
     const onFinish = async (values: ProductAttributeRequest) => {
-        console.log(values)
-        createProductAttribute(values, {
-            onSuccess: (data: string) => {
-                console.log('data tra ve thanh cong: ', data)
-                message.success(data)
-                navigate(-1)
-            },
-            onError: (error: { message: string }) => {
-                console.log('data tra ve loi: ', error)
-                message.error(error.message)
-            },
-        })
+        try {
+            console.log(values)
+            createProductAttribute(values, {
+                onSuccess: (data: string) => {
+                    console.log('data tra ve thanh cong: ', data)
+                    navigate(-1)
+                },
+                onError: (error: { message: string }) => {
+                    console.log('data tra ve loi: ', error)
+                    console.error(error.message)
+                },
+            })
+        } catch (error) {
+            console.error('Error in onFinish:', error)
+        }
     }
+
     const createNumericRegex = (maxLength: number, decimalPlaces: number) => {
         return new RegExp(`^\\d{0,${maxLength}}(\\.\\d{0,${decimalPlaces}})?$`)
     }
@@ -174,14 +190,11 @@ function useProductAttributeCreate() {
         setOpenConfirm,
         loading,
         current,
-        gradientStyleEdit,
-        gradientStyleSave,
-        gradientStyleRemove,
         form,
         formAdd,
         setNewValue,
-        setIsEdit,
         handleInputChange,
+        handleCancelModal,
     }
 }
 

@@ -1,7 +1,8 @@
-import { Form, Input, Button, Space, Modal, Table, Empty } from 'antd'
+import { Form, Input, Button, Space, Modal, Table, Empty, Collapse, Checkbox, InputNumber } from 'antd'
 import { CheckCircleOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
-import useProductAttributeCreate from '@/pages/productAttribute/ProductAttributeCreate.vm.ts'
+import useProductAttributeCreate from '@/pages/product-attributes/ProductAttributeCreate.vm.ts'
+import TextArea from 'antd/es/input/TextArea'
 
 const pageSize = 6
 
@@ -13,30 +14,32 @@ export default function ProductAttribute() {
         handleRemoveValue,
         handleEditValue,
         isModalOpen,
+        handleCancelModal,
         setIsModalOpen,
         values,
         newValue,
-        isOpenConfirm,
-        setOpenConfirm,
         loading,
         current,
-        gradientStyleEdit,
-        gradientStyleSave,
-        gradientStyleRemove,
         form,
         formAdd,
         setNewValue,
-        setIsEdit,
         handleInputChange,
     } = useProductAttributeCreate()
+
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Price Adjustment', dataIndex: 'priceAdjustment', key: 'priceAdjustment' },
+        {
+            title: 'Price Adjustment',
+            dataIndex: 'priceAdjustment',
+            key: 'priceAdjustment',
+            render: (text: number, record: PredefinedProductAttributeValueRequest) =>
+                `${text} ${record.priceAdjustmentUsePercentage ? '%' : '$'}`,
+        },
         {
             title: 'Price Adjustment Use Percentage',
             dataIndex: 'priceAdjustmentUsePercentage',
             key: 'priceAdjustmentUsePercentage',
-            render: (text: boolean) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? '✔' : '✘'),
         },
         { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment' },
         { title: 'Cost', dataIndex: 'cost', key: 'cost' },
@@ -44,7 +47,7 @@ export default function ProductAttribute() {
             title: 'Pre-selected',
             dataIndex: 'isPreSelected',
             key: 'isPreSelected',
-            render: (text: boolean) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? '✔' : '✘'),
         },
         { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder' },
         {
@@ -54,15 +57,23 @@ export default function ProductAttribute() {
                 <Space size='middle'>
                     <Button
                         type='link'
-                        style={gradientStyleEdit}
+                        style={{
+                            backgroundColor: '#4682B4',
+                            color: '#FFFFFF',
+                        }}
                         icon={<EditOutlined />}
                         onClick={() => handleEditValue(record)}
                     >
                         Edit
                     </Button>
+
                     <Button
                         type='link'
-                        style={gradientStyleRemove}
+                        style={{
+                            color: '#FFFFFF',
+                            backgroundColor: '#FF0000',
+                            border: 'none',
+                        }}
                         icon={<DeleteOutlined />}
                         onClick={() => handleRemoveValue(record)}
                     >
@@ -73,39 +84,55 @@ export default function ProductAttribute() {
         },
     ]
 
+    const showConfirmModal = () => {
+        Modal.confirm({
+            title: 'Confirm Creation',
+            content: 'Do you want to create Product Attribute?',
+            okText: 'Yes',
+            cancelText: 'No',
+            onOk: () => handleFinish(form.getFieldsValue()),
+        })
+    }
+
     return (
-        <div>
-            <Form id='myForm' form={form} onFinish={handleFinish} layout='vertical'>
-                <Modal
-                    onCancel={() => setOpenConfirm(false)}
-                    footer={() => (
-                        <div>
-                            <Button style={{ margin: 8 }} form='myForm' key='submit' type='primary' htmlType='submit'>
-                                Submit
-                            </Button>
-                            <Button type='default' onClick={() => setOpenConfirm(false)}>
-                                Cancel
-                            </Button>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Form id='myForm' form={form} onFinish={handleFinish} layout='vertical' style={{ width: '100%' }}>
+                <Collapse defaultActiveKey={['1']} style={{ height: '100%' }}>
+                    <Collapse.Panel header='Attribute Information' key='1' style={{ height: '100%' }}>
+                        <div
+                            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+                        >
+                            <div style={{ width: '66.67%' }}>
+                                <Form.Item
+                                    name='name'
+                                    label='Name'
+                                    rules={[{ required: true, message: 'Please enter the attribute name' }]}
+                                >
+                                    <Input size='large' placeholder='Enter attribute name' style={{ width: '100%' }} />
+                                </Form.Item>
+                                <Form.Item name='description' label='Description'>
+                                    <TextArea
+                                        size='large'
+                                        rows={3}
+                                        placeholder='Enter description'
+                                        style={{ width: '100%' }}
+                                    />
+                                </Form.Item>
+                                <Form.Item className='mt-5' style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Button
+                                        type='primary'
+                                        style={{ backgroundColor: '#34C759', color: '#FFFFFF' }}
+                                        onClick={showConfirmModal}
+                                        icon={<CheckCircleOutlined />}
+                                        loading={loading}
+                                    >
+                                        Save
+                                    </Button>
+                                </Form.Item>
+                            </div>
                         </div>
-                    )}
-                    open={isOpenConfirm}
-                >
-                    <div className={'py-10 font-bold text-[16px]'}>Do you want to create Product Attribute?</div>
-                </Modal>
-                <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
-                    <Form.Item
-                        name='name'
-                        label='Name'
-                        rules={[{ required: true, message: 'Please enter the attribute name' }]}
-                    >
-                        <Input placeholder='Enter attribute name' />
-                    </Form.Item>
-                    <Form.Item name='description' label='Description'>
-                        <Input placeholder='Enter description' />
-                    </Form.Item>
-                </div>
-                <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
-                    <Form.Item label='Predefined Values'>
+                    </Collapse.Panel>
+                    <Collapse.Panel header='Predefined Values' key='2'>
                         <Space direction='vertical' style={{ width: '100%' }}>
                             <Button type='dashed' onClick={() => setIsModalOpen(true)} icon={<PlusOutlined />}>
                                 Add New Value
@@ -123,22 +150,12 @@ export default function ProductAttribute() {
                                         onChange: (page) => handlePageChange(page),
                                     }}
                                     rowKey='id'
+                                    scroll={{ x: 1000 }}
                                 />
                             )}
                         </Space>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button
-                            type='primary'
-                            style={gradientStyleSave}
-                            onClick={() => setOpenConfirm(true)}
-                            icon={<CheckCircleOutlined />}
-                            loading={loading}
-                        >
-                            Save
-                        </Button>
-                    </Form.Item>
-                </div>
+                    </Collapse.Panel>
+                </Collapse>
             </Form>
 
             <Modal
@@ -146,10 +163,7 @@ export default function ProductAttribute() {
                 open={isModalOpen}
                 centered
                 onOk={formAdd.submit}
-                onCancel={() => {
-                    setIsModalOpen(false)
-                    setIsEdit(false)
-                }}
+                onCancel={handleCancelModal}
             >
                 <Form form={formAdd} layout='vertical' onFinish={handleAddValue}>
                     <Form.Item
@@ -168,6 +182,7 @@ export default function ProductAttribute() {
                         label={<span style={{ fontWeight: 'bold' }}>Price Adjustment</span>}
                     >
                         <Input
+                            addonAfter={newValue.priceAdjustmentUsePercentage ? '%' : '$'}
                             value={newValue.priceAdjustment || 0}
                             onChange={handleInputChange('priceAdjustment', 12, 2)}
                             placeholder='Enter price adjustment'
@@ -175,8 +190,7 @@ export default function ProductAttribute() {
                         />
                     </Form.Item>
                     <Form.Item label={<span style={{ fontWeight: 'bold' }}>Price Adjustment Use Percentage</span>}>
-                        <input
-                            type='checkbox'
+                        <Checkbox
                             checked={newValue.priceAdjustmentUsePercentage}
                             onChange={(e) =>
                                 setNewValue({
@@ -184,7 +198,6 @@ export default function ProductAttribute() {
                                     priceAdjustmentUsePercentage: e.target.checked,
                                 })
                             }
-                            style={{ marginLeft: 8 }}
                         />
                     </Form.Item>
                     <Form.Item
@@ -192,6 +205,7 @@ export default function ProductAttribute() {
                         label={<span style={{ fontWeight: 'bold' }}>Weight Adjustment</span>}
                     >
                         <Input
+                            addonAfter={'$'}
                             value={newValue.weightAdjustment || 0}
                             onChange={handleInputChange('weightAdjustment', 12, 2)}
                             placeholder='Enter weight adjustment'
@@ -200,6 +214,7 @@ export default function ProductAttribute() {
                     </Form.Item>
                     <Form.Item name='cost' label={<span style={{ fontWeight: 'bold' }}>Cost</span>}>
                         <Input
+                            addonAfter={'$'}
                             value={newValue.cost || 0}
                             onChange={handleInputChange('cost', 12, 2)}
                             placeholder='Enter cost'
@@ -207,8 +222,7 @@ export default function ProductAttribute() {
                         />
                     </Form.Item>
                     <Form.Item label={<span style={{ fontWeight: 'bold' }}>Is Pre-selected</span>}>
-                        <input
-                            type='checkbox'
+                        <Checkbox
                             checked={newValue.isPreSelected}
                             onChange={(e) =>
                                 setNewValue({
@@ -216,15 +230,19 @@ export default function ProductAttribute() {
                                     isPreSelected: e.target.checked,
                                 })
                             }
-                            style={{ marginLeft: 8 }}
                         />
                     </Form.Item>
                     <Form.Item name='displayOrder' label={<span style={{ fontWeight: 'bold' }}>Display Order</span>}>
-                        <Input
+                        <InputNumber
                             value={newValue.displayOrder || 0}
-                            onChange={handleInputChange('displayOrder', 8, 0)}
+                            onChange={(value) =>
+                                setNewValue({
+                                    ...newValue,
+                                    displayOrder: value ?? 0,
+                                })
+                            }
                             placeholder='Enter display order'
-                            type='number'
+                            style={{ width: '100%' }}
                         />
                     </Form.Item>
                 </Form>

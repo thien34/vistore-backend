@@ -1,16 +1,12 @@
 import { useEffect } from 'react'
-import { Form, Input, Button, Space, Modal, Table, Empty } from 'antd'
-import {
-    CheckCircleOutlined,
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleOutlined,
-    PlusOutlined,
-} from '@ant-design/icons'
+import { Form, Input, Button, Space, Modal, Table, Empty, Collapse, Checkbox, InputNumber } from 'antd'
+import { CheckCircleOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
-import useProductAttributeUpdate from '@/pages/productAttribute/ProductAttributeUpdate.vm.ts'
+import useProductAttributeUpdate from '@/pages/product-attributes/ProductAttributeUpdate.vm.ts'
+import TextArea from 'antd/es/input/TextArea'
 
-const pageSize = 5
+const pageSize = 6
+
 export default function ProductAttributeUpdate() {
     const {
         productAttributeResponse,
@@ -25,22 +21,16 @@ export default function ProductAttributeUpdate() {
         setNewValue,
         isModalOpen,
         setIsModalOpen,
-        setIsEdit,
-        loading,
-        setOpenConfirm,
-        isOpenConfirm,
-        gradientStyleEdit,
-        handleEditValue,
-        gradientStyleRemove,
-        handleRemoveValue,
-        handleFinish,
-        gradientStyleSave,
         handleAddValue,
+        handleRemoveValue,
+        handleEditValue,
+        handleFinish,
         handleInputChange,
-        handleInputDisplayOrder,
+        handleModalCancel,
+        loading,
     } = useProductAttributeUpdate()
+
     useEffect(() => {
-        console.log('productAttributeResponse: ', productAttributeResponse)
         if (productAttributeResponse) {
             form.setFieldsValue({
                 name: productAttributeResponse.name,
@@ -52,12 +42,19 @@ export default function ProductAttributeUpdate() {
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Price Adjustment', dataIndex: 'priceAdjustment', key: 'priceAdjustment' },
+        {
+            title: 'Price Adjustment',
+            dataIndex: 'priceAdjustment',
+            key: 'priceAdjustment',
+            render: (text: number, record: PredefinedProductAttributeValueRequest) => (
+                <>{record.priceAdjustmentUsePercentage ? `${text}%` : `$${text}`}</>
+            ),
+        },
         {
             title: 'Price Adjustment Use Percentage',
             dataIndex: 'priceAdjustmentUsePercentage',
             key: 'priceAdjustmentUsePercentage',
-            render: (text: boolean) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? '✔' : '✘'),
         },
         { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment' },
         { title: 'Cost', dataIndex: 'cost', key: 'cost' },
@@ -65,7 +62,7 @@ export default function ProductAttributeUpdate() {
             title: 'Pre-selected',
             dataIndex: 'isPreSelected',
             key: 'isPreSelected',
-            render: (text: boolean) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? '✔' : '✘'),
         },
         { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder' },
         {
@@ -74,18 +71,36 @@ export default function ProductAttributeUpdate() {
             render: (record: PredefinedProductAttributeValueRequest) => (
                 <Space size='middle'>
                     <Button
-                        type='link'
-                        style={gradientStyleEdit}
+                        type='default'
+                        style={{
+                            backgroundColor: '#4682B4',
+                            color: 'white',
+                            borderColor: 'white',
+                            borderWidth: 1,
+                            borderStyle: 'solid',
+                        }}
                         icon={<EditOutlined />}
                         onClick={() => handleEditValue(record)}
                     >
                         Edit
                     </Button>
+
                     <Button
                         type='link'
-                        style={gradientStyleRemove}
+                        style={{
+                            backgroundColor: '#FF0000',
+                            color: '#FFFFFF',
+                        }}
                         icon={<DeleteOutlined />}
-                        onClick={() => handleRemoveValue(record)}
+                        onClick={() =>
+                            Modal.confirm({
+                                title: 'Confirm Delete',
+                                content: 'Are you sure you want to delete this value?',
+                                okText: 'Yes',
+                                cancelText: 'No',
+                                onOk: () => handleRemoveValue(record),
+                            })
+                        }
                     >
                         Remove
                     </Button>
@@ -99,43 +114,53 @@ export default function ProductAttributeUpdate() {
     }
 
     return (
-        <div>
-            <Form id='myform1' form={form} onFinish={handleFinish} layout='vertical'>
-                <Modal
-                    onCancel={() => setOpenConfirm(false)}
-                    footer={() => (
-                        <div>
-                            <Button form='myform1' key='submit' type='primary' htmlType='submit'>
-                                Update
-                            </Button>
-                            <Button type='default' key='cancel' onClick={() => setOpenConfirm(false)}>
-                                Cancel
-                            </Button>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Form id='myform1' form={form} onFinish={handleFinish} layout='vertical' style={{ width: '100%' }}>
+                <Collapse defaultActiveKey={['1', '2']} style={{ width: '100%' }}>
+                    <Collapse.Panel header='Attribute Information' key='1'>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <div style={{ width: '66.67%' }}>
+                                <Form.Item
+                                    name='name'
+                                    label='Name'
+                                    rules={[{ required: true, message: 'Please enter the attribute name' }]}
+                                >
+                                    <Input size='large' placeholder='Enter attribute name' style={{ width: '100%' }} />
+                                </Form.Item>
+                                <Form.Item name='description' label='Description'>
+                                    <TextArea
+                                        size='large'
+                                        rows={3}
+                                        placeholder='Enter description'
+                                        style={{ width: '100%' }}
+                                    />
+                                </Form.Item>
+                                <Form.Item className='mt-5' style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Button
+                                        type='primary'
+                                        style={{
+                                            backgroundColor: '#34C759',
+                                            borderColor: '#34C759',
+                                        }}
+                                        onClick={() => {
+                                            Modal.confirm({
+                                                title: 'Confirm Save',
+                                                content: 'Are you sure you want to save the changes?',
+                                                okText: 'Yes',
+                                                cancelText: 'No',
+                                                onOk: () => handleFinish(form.getFieldsValue()),
+                                            })
+                                        }}
+                                        icon={<CheckCircleOutlined />}
+                                        loading={loading}
+                                    >
+                                        Save
+                                    </Button>
+                                </Form.Item>
+                            </div>
                         </div>
-                    )}
-                    open={isOpenConfirm}
-                    title={
-                        <span>
-                            <ExclamationCircleOutlined style={{ marginRight: 8 }} /> Confirm Action
-                        </span>
-                    }
-                >
-                    <p className='text-center'>Do you want to create Product Attribute?</p>
-                </Modal>
-                <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
-                    <Form.Item
-                        name='name'
-                        label='Name'
-                        rules={[{ required: true, message: 'Please enter the attribute name' }]}
-                    >
-                        <Input placeholder='Enter attribute name' />
-                    </Form.Item>
-                    <Form.Item name='description' label='Description'>
-                        <Input placeholder='Enter description' />
-                    </Form.Item>
-                </div>
-                <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
-                    <Form.Item label='Predefined Values'>
+                    </Collapse.Panel>
+                    <Collapse.Panel header='Predefined Values' key='2'>
                         <Space direction='vertical' style={{ width: '100%' }}>
                             <Button type='dashed' onClick={() => setIsModalOpen(true)} icon={<PlusOutlined />}>
                                 Add New Value
@@ -152,33 +177,21 @@ export default function ProductAttributeUpdate() {
                                         total: values.length,
                                         onChange: (page) => handlePageChange(page),
                                     }}
+                                    scroll={{ x: 1000 }}
                                     rowKey='id'
                                 />
                             )}
                         </Space>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button
-                            style={gradientStyleSave}
-                            icon={<CheckCircleOutlined />}
-                            onClick={() => setOpenConfirm(true)}
-                            loading={loading}
-                        >
-                            Save
-                        </Button>
-                    </Form.Item>
-                </div>
+                    </Collapse.Panel>
+                </Collapse>
             </Form>
 
             <Modal
-                title='Add Predefined Value'
+                title='Edit Predefined Value'
                 open={isModalOpen}
                 centered
                 onOk={formAdd.submit}
-                onCancel={() => {
-                    setIsModalOpen(false)
-                    setIsEdit(false)
-                }}
+                onCancel={handleModalCancel}
             >
                 <Form form={formAdd} layout='vertical' onFinish={handleAddValue}>
                     <Form.Item
@@ -197,15 +210,22 @@ export default function ProductAttributeUpdate() {
                         label={<span style={{ fontWeight: 'bold' }}>Price Adjustment</span>}
                     >
                         <Input
+                            addonAfter={newValue.priceAdjustmentUsePercentage ? '%' : '$'}
                             value={newValue.priceAdjustment || 0}
-                            onChange={handleInputChange('priceAdjustment')}
+                            onChange={(e) =>
+                                setNewValue({
+                                    ...newValue,
+                                    priceAdjustment: e.target.value.replace(/[^\d.-]/g, '')
+                                        ? parseFloat(e.target.value.replace(/[^\d.-]/g, ''))
+                                        : 0,
+                                })
+                            }
                             placeholder='Enter price adjustment'
                             type='number'
                         />
                     </Form.Item>
                     <Form.Item label={<span style={{ fontWeight: 'bold' }}>Price Adjustment Use Percentage</span>}>
-                        <input
-                            type='checkbox'
+                        <Checkbox
                             checked={newValue.priceAdjustmentUsePercentage}
                             onChange={(e) =>
                                 setNewValue({
@@ -213,7 +233,6 @@ export default function ProductAttributeUpdate() {
                                     priceAdjustmentUsePercentage: e.target.checked,
                                 })
                             }
-                            style={{ marginLeft: 8 }}
                         />
                     </Form.Item>
                     <Form.Item
@@ -221,6 +240,7 @@ export default function ProductAttributeUpdate() {
                         label={<span style={{ fontWeight: 'bold' }}>Weight Adjustment</span>}
                     >
                         <Input
+                            addonAfter={'$'}
                             value={newValue.weightAdjustment || 0}
                             onChange={handleInputChange('weightAdjustment')}
                             placeholder='Enter weight adjustment'
@@ -229,6 +249,7 @@ export default function ProductAttributeUpdate() {
                     </Form.Item>
                     <Form.Item name='cost' label={<span style={{ fontWeight: 'bold' }}>Cost</span>}>
                         <Input
+                            addonAfter={'$'}
                             value={newValue.cost || 0}
                             onChange={handleInputChange('cost')}
                             placeholder='Enter cost'
@@ -236,8 +257,7 @@ export default function ProductAttributeUpdate() {
                         />
                     </Form.Item>
                     <Form.Item label={<span style={{ fontWeight: 'bold' }}>Is Pre-selected</span>}>
-                        <input
-                            type='checkbox'
+                        <Checkbox
                             checked={newValue.isPreSelected}
                             onChange={(e) =>
                                 setNewValue({
@@ -245,15 +265,19 @@ export default function ProductAttributeUpdate() {
                                     isPreSelected: e.target.checked,
                                 })
                             }
-                            style={{ marginLeft: 8 }}
                         />
                     </Form.Item>
                     <Form.Item name='displayOrder' label={<span style={{ fontWeight: 'bold' }}>Display Order</span>}>
-                        <Input
+                        <InputNumber
                             value={newValue.displayOrder || 0}
-                            onChange={handleInputDisplayOrder('displayOrder')}
+                            onChange={(value) =>
+                                setNewValue({
+                                    ...newValue,
+                                    displayOrder: value ?? 0,
+                                })
+                            }
                             placeholder='Enter display order'
-                            type='number'
+                            style={{ width: '100%' }}
                         />
                     </Form.Item>
                 </Form>

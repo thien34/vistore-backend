@@ -1,6 +1,6 @@
 import { Button, Modal, Table, TableColumnsType, Form, Spin } from 'antd'
-import ProductAttributeSearch from '@/pages/productAttribute/ProductAttributeSearch.tsx'
-import { useEffect } from 'react'
+import ProductAttributeSearch from '@/pages/product-attributes/ProductAttributeSearch.tsx'
+import { useEffect, useState } from 'react'
 import useProductAttributeViewModel from './ProductAttribute.vm'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
 import { EditOutlined, EyeOutlined } from '@ant-design/icons'
@@ -24,11 +24,28 @@ export default function ProductAttributeManage() {
         isOpenList,
         form,
         dataDetail,
-        cancel,
     } = useProductAttributeViewModel()
+
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 6,
+        total: 0,
+    })
+
     useEffect(() => {
         handleSearch({ name: '', published: true })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (dataDetail) {
+            setPagination({
+                ...pagination,
+                total: dataDetail.length, // Set total to the length of the dataDetail array
+            })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataDetail])
 
     const getProductAttributeColumns = (): TableColumnsType<ProductAttributeResponse> => [
         {
@@ -36,22 +53,27 @@ export default function ProductAttributeManage() {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            sorter: (a, b) => a.name.localeCompare(b.name),
         },
         {
             width: '50%',
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
+            sorter: (a, b) => a.description.localeCompare(b.description),
         },
         {
             width: '10%',
-            align: 'center',
             title: 'Action',
             key: 'action',
             render: (_, record) => (
                 <div className='flex gap-x-1.5'>
                     <Link to={`/admin/product-attributes/${record?.id}`}>
-                        <Button onClick={() => setShowList(record)} type='primary' icon={<EditOutlined />}>
+                        <Button
+                            onClick={() => setShowList(record)}
+                            className='bg-[#374151] border-[#374151] text-white'
+                            icon={<EditOutlined />}
+                        >
                             Update
                         </Button>
                     </Link>
@@ -69,12 +91,21 @@ export default function ProductAttributeManage() {
 
     const columnsList = [
         { title: 'Name', dataIndex: 'name', key: 'name', editable: true },
-        { title: 'Price Adjustment', dataIndex: 'priceAdjustment', key: 'priceAdjustment', editable: true },
+        {
+            title: 'Price Adjustment',
+            dataIndex: 'priceAdjustment',
+            key: 'priceAdjustment',
+            render: (text: number, record: PredefinedProductAttributeValueRequest) => {
+                const currencySymbol = record.priceAdjustmentUsePercentage ? '%' : '$'
+                return `${text} ${currencySymbol}`
+            },
+            editable: true,
+        },
         {
             title: 'Price Adjustment Use Percentage',
             dataIndex: 'priceAdjustmentUsePercentage',
             key: 'priceAdjustmentUsePercentage',
-            render: (text: string) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? '✔' : '✘'),
             editable: true,
         },
         { title: 'Weight Adjustment', dataIndex: 'weightAdjustment', key: 'weightAdjustment', editable: true },
@@ -83,7 +114,7 @@ export default function ProductAttributeManage() {
             title: 'Pre-selected',
             dataIndex: 'isPreSelected',
             key: 'isPreSelected',
-            render: (text: string) => (text ? 'Yes' : 'No'),
+            render: (text: boolean) => (text ? '✔' : '✘'),
             editable: true,
         },
         { title: 'Display Order', dataIndex: 'displayOrder', key: 'displayOrder', editable: true },
@@ -113,6 +144,14 @@ export default function ProductAttributeManage() {
         },
     )
 
+    const handlePaginationChange = (page: number, pageSize?: number) => {
+        setPagination({
+            ...pagination,
+            current: page,
+            pageSize: pageSize || pagination.pageSize,
+        })
+    }
+
     return (
         <>
             <Modal
@@ -130,8 +169,16 @@ export default function ProductAttributeManage() {
                         rowKey='id'
                         bordered
                         columns={mergedColumnsList}
-                        dataSource={dataDetail}
-                        pagination={{ onChange: cancel }}
+                        dataSource={dataDetail.slice(
+                            (pagination.current - 1) * pagination.pageSize,
+                            pagination.current * pagination.pageSize,
+                        )}
+                        pagination={{
+                            current: pagination.current,
+                            pageSize: pagination.pageSize,
+                            total: pagination.total,
+                            onChange: handlePaginationChange,
+                        }}
                     />
                 </Form>
             </Modal>
@@ -169,7 +216,7 @@ export default function ProductAttributeManage() {
                         columns={getProductAttributeColumns()}
                         dataSource={listResponse.items}
                         pagination={{
-                            current: (filter.pageNo ?? 1) + 1,
+                            current: filter.pageNo ?? 1,
                             pageSize: filter.pageSize ?? 6,
                             total: listResponse.totalPages * (filter.pageSize ?? 6),
                             onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
