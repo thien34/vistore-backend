@@ -59,7 +59,7 @@ public class ProductController {
 
         return ResponseData.<PageResponse<List<ProductResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get products successfully")
+                .message("Get products successfully ")
                 .data(response)
                 .build();
     }
