@@ -6,10 +6,12 @@ const clientApiPath = ApplicationConstants.CLIENT_API_PATH
 class ResourceURL {
     // ADMIN
     static readonly PRODUCT = apiPath + '/products'
+    static readonly PRODUCT_BY_SKU = apiPath + '/products/sku'
     static readonly PRODUCT_TAG = apiPath + '/product-tags'
     static readonly PRODUCT_ATTRIBUTE = apiPath + '/product-attributes'
     static readonly PREDEFINED_PRODUCT_ATTRIBUTE_VALUE = apiPath + '/predefined-product-attribute-values'
     static readonly CATEGORY = apiPath + '/categories'
+    static readonly CATEGORY_LIST_NAME = apiPath + '/categories/list-name'
     static readonly PICTURE = apiPath + '/picture'
     static readonly PRODUCT_COMBINATIONS = apiPath + '/product-attribute-combinations'
     static readonly PRODUCT_COMBINATIONS_BY_PRODUCT_ID = apiPath + '/product-attribute-combinations/product'
@@ -17,6 +19,7 @@ class ResourceURL {
     static readonly BRAND = apiPath + '/brands'
     static readonly ORDER = apiPath + '/orders'
     static readonly MANUFACTURE = apiPath + '/manufacturers'
+    static readonly MANUFACTURE_LIST_NAME = apiPath + '/manufacturers/list-name'
     static readonly PRODUCT_ATTRIBUTE_MAPPING = apiPath + '/product-attribute-mapping'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP = apiPath + '/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE = apiPath + '/specification-attributes'

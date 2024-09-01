@@ -232,6 +232,20 @@ class FetchUtils {
     }
 
     /**
+     * Hàm getById dùng để lấy entity có id cho trước
+     * @param resourceUrl
+     * @param entityId
+     */
+    static async getByIdString<O>(resourceUrl: string, entityId: string): Promise<O> {
+        const response = await fetch(resourceUrl + '/' + entityId)
+        if (!response.ok) {
+            throw await response.json()
+        }
+        const responseData = await response.json()
+        return responseData
+    }
+
+    /**
      * Hàm create dùng để tạo entity từ requestBody
      * @param resourceUrl
      * @param requestBody

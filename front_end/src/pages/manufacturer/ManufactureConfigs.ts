@@ -5,6 +5,7 @@ import { Configs } from '@/types/Configs'
 export default class ManufactureConfigs extends Configs {
     static readonly managerPath = ManagerPath.MANUFACTURE
     static readonly resourceUrl = ResourceURL.MANUFACTURE
+    static readonly resourceUrlListName = ResourceURL.MANUFACTURE_LIST_NAME
     static readonly resourceKey = 'manufacturers'
     static readonly createTitle = 'Create Manufacture'
     static readonly updateTitle = 'Update Manufacture'
