@@ -7,10 +7,10 @@ import com.example.back_end.core.admin.product.service.ProductVideoMappingServic
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,9 +25,20 @@ public class ProductVideoMappingController {
             description = "Send a request via this API to create a new product video mapping")
     @PostMapping
     public ResponseData<ProductVideoMappingResponse> createProductVideoMapping(
-            @Valid @RequestBody ProductVideoMappingRequest dto) {
+            @RequestParam Long productId,
+            @RequestParam Integer displayOrder,
+            @RequestParam boolean isUpload,
+            @RequestParam(required = false) String videoUrl,
+            @RequestParam(required = false) MultipartFile videoFile) {
 
-        ProductVideoMappingResponse response = productVideoMappingService.createMapping(dto);
+        ProductVideoMappingRequest dto = ProductVideoMappingRequest.builder()
+                .productId(productId)
+                .displayOrder(displayOrder)
+                .isUpload(isUpload)
+                .videoUrl(videoUrl)
+                .build();
+
+        ProductVideoMappingResponse response = productVideoMappingService.createMapping(dto, videoFile);
 
         return ResponseData.<ProductVideoMappingResponse>builder()
                 .status(HttpStatus.CREATED.value())
@@ -36,19 +47,34 @@ public class ProductVideoMappingController {
                 .build();
     }
 
-    @Operation(method = "PUT", summary = "Update product video mapping",
-            description = "Send a request via this API to update product video mapping")
+
+
     @PutMapping("/{id}")
     public ResponseData<ProductVideoMappingResponse> updateProductVideoMapping(
             @PathVariable Long id,
-            @Valid @RequestBody ProductVideoMappingUpdateRequest dto) {
-        ProductVideoMappingResponse response = productVideoMappingService.updateMapping(id, dto);
+            @RequestParam Long productId,
+            @RequestParam Integer displayOrder,
+            @RequestParam boolean isUpload,
+            @RequestParam(required = false) String videoUrl,
+            @RequestParam(required = false) MultipartFile videoFile) {
+
+        ProductVideoMappingUpdateRequest dto = ProductVideoMappingUpdateRequest.builder()
+                .productId(productId)
+                .displayOrder(displayOrder)
+                .isUpload(isUpload)
+                .videoUrl(videoUrl)
+                .build();
+
+        ProductVideoMappingResponse response = productVideoMappingService.updateMapping(id, dto, videoFile);
         return ResponseData.<ProductVideoMappingResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Product video mapping updated successfully")
                 .data(response)
                 .build();
     }
+
+
+
 
 
     @Operation(method = "DELETE", summary = "Delete product video mapping",

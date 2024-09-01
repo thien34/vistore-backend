@@ -21,4 +21,6 @@ public class ProductVideoMappingUpdateRequest {
 
     private Long productId;
 
+    private boolean isUpload;
+
 }

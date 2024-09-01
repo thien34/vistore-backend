@@ -1,6 +1,7 @@
 import { Button, TableColumnsType } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { ProductVideoMappingResponse } from '@/model/ProductVideoMapping'
+import defaultThumbnail from '../picture/video-not-found.jpg'
 import AppActions from '@/constants/AppActions '
 
 export const getProductVideoMappingColumns = (
@@ -8,34 +9,83 @@ export const getProductVideoMappingColumns = (
     onDeleteProductVideo: (id: number) => void,
 ): TableColumnsType<ProductVideoMappingResponse> => [
     {
+        title: 'Preview',
+        dataIndex: 'videoUrl',
+        key: 'preview',
+        render: (text) => {
+            let thumbnailUrl = ''
+
+            if (text.includes('cloudinary.com')) {
+                thumbnailUrl = text.replace('/video/upload/', '/video/upload/').replace('.mp4', '.jpg')
+            } else if (text.includes('youtube.com') || text.includes('youtu.be')) {
+                const videoId = text.split('v=')[1]?.split('&')[0] || text.split('/').pop()
+                thumbnailUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`
+            } else {
+                thumbnailUrl = defaultThumbnail
+            }
+
+            return (
+                <a href={text} target='_blank' rel='noopener noreferrer'>
+                    <img
+                        src={thumbnailUrl}
+                        style={{ width: '100px', height: 'auto', display: 'block', margin: '0 auto' }}
+                    />
+                </a>
+            )
+        },
+        width: 120,
+    },
+    {
         title: 'Embed video URL',
         dataIndex: 'videoUrl',
         key: 'videoUrl',
-        render: (text) => text ?? 'N/A',
-        sorter: (a, b) => a.videoUrl.localeCompare(b.videoUrl),
+        render: (text) =>
+            text ? (
+                <a
+                    href={text}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{
+                        display: 'block',
+                        maxWidth: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {text}
+                </a>
+            ) : (
+                'N/A'
+            ),
+        sorter: (a, b) => a.videoUrl?.localeCompare(b.videoUrl ?? '') ?? 0,
+        width: 250,
+        ellipsis: true,
     },
     {
-        width: '10%',
+        width: 100,
         title: 'Display Order',
         dataIndex: 'displayOrder',
         key: 'displayOrder',
         sorter: (a, b) => a.displayOrder - b.displayOrder,
+        ellipsis: true,
     },
     {
-        width: '20%',
+        width: 160,
         title: 'Action',
         key: 'action',
         render: (_, record) => (
-            <div className='flex flex-wrap justify-around'>
+            <div style={{ display: 'flex', gap: '8px' }}>
+                {' '}
                 <Button
-                    className='bg-[#374151] border-[#374151] text-white m-1'
+                    className='bg-[#374151] border-[#374151] text-white'
                     icon={<EditOutlined />}
                     onClick={() => onEditProductVideo(record)}
                 >
                     {AppActions.EDIT}
                 </Button>
                 <Button
-                    className='bg-[#ff4d4f] border-[#ff4d4f] text-white m-1'
+                    className='bg-[#ff4d4f] border-[#ff4d4f] text-white'
                     icon={<DeleteOutlined />}
                     onClick={() => onDeleteProductVideo(record.id)}
                 >
@@ -43,5 +93,6 @@ export const getProductVideoMappingColumns = (
                 </Button>
             </div>
         ),
+        ellipsis: true,
     },
 ]
