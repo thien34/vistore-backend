@@ -27,6 +27,7 @@ class ResourceURL {
         apiPath + '/product-specification-attribute-mappings/by-product'
     static readonly STOCK_QUANTITY_HISTORY = apiPath + '/stock-quantity-history'
     static readonly PRODUCT_VIDEO_MAPPING = apiPath + '/product-video-mappings'
+    static readonly PRODUCT_PICTURE_MAPPING = apiPath + '/product-picture-mapping'
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'
