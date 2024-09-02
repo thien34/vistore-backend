@@ -25,7 +25,10 @@ public class CloudinaryUpload {
         try {
             uploadedFile = convertMultiPartToFile(gif);
 
-            Map<String, Object> uploadParams = ObjectUtils.asMap("folder", folderName.toString());
+            Map<String, Object> uploadParams = ObjectUtils.asMap(
+                    "folder", folderName.toString(),
+                    "resource_type", "auto"
+            );
             Map<String, Object> uploadResult = cloudinaryConfig.uploader().upload(uploadedFile, uploadParams);
 
             return uploadResult.get("url").toString();

@@ -44,9 +44,20 @@ public class GlobalExceptionHandler {
      * @param request
      * @return errorResponse
      */
-    @ExceptionHandler({ConstraintViolationException.class, MissingServletRequestParameterException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({
+            ConstraintViolationException.class,
+            MissingServletRequestParameterException.class,
+            MethodArgumentNotValidException.class
+    })
     @ResponseStatus(BAD_REQUEST)
-    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "Handle exception when the data is invalid. (@RequestBody, @RequestParam, @PathVariable)", summary = "Handle Bad Request", value = """
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "Handle exception when the data is invalid. " +
+                            "(@RequestBody, @RequestParam, @PathVariable)",
+                            summary = "Handle Bad Request",
+                            value = """
             {
                  "timestamp": "2024-04-07T11:38:56.368+00:00",
                  "status": 400,
@@ -86,7 +97,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(NOT_FOUND)
-    @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Bad Request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "404 Response", summary = "Handle exception when resource not found", value = """
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "404",
+            description = "Bad Request",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "404 Response",
+                            summary = "Handle exception when resource not found",
+                            value = """
             {
               "timestamp": "2023-10-19T06:07:35.321+00:00",
               "status": 404,
@@ -115,7 +132,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(CONFLICT)
-    @ApiResponses(value = {@ApiResponse(responseCode = "409", description = "Conflict", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "409 Response", summary = "Handle exception when input data is conflicted", value = """
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "409",
+            description = "Conflict",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "409 Response",
+                            summary = "Handle exception when input data is conflicted",
+                            value = """
             {
               "timestamp": "2023-10-19T06:07:35.321+00:00",
               "status": 409,
@@ -144,7 +167,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ApiResponses(value = {@ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "500 Response", summary = "Handle exception when internal server error", value = """
+    @ApiResponses(value = {@ApiResponse(responseCode = "500",
+            description = "Internal Server Error",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "500 Response",
+                            summary = "Handle exception when internal server error",
+                            value = """
             {
               "timestamp": "2023-10-19T06:35:52.333+00:00",
               "status": 500,
@@ -193,7 +221,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(BAD_REQUEST)
-    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad request", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "404 Response", summary = "Handle exception when type mismatch occurs", value = """
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "404 Response",
+                            summary = "Handle exception when type mismatch occurs",
+                            value = """
             {
               "timestamp": "2024-07-14T11:23:14.801+00:00",
               "status": 400,
@@ -202,7 +236,9 @@ public class GlobalExceptionHandler {
               "message": "Resource not found due to type mismatch"
             }
             """))})})
-    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, WebRequest request) {
+    public ErrorResponse handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e,
+            WebRequest request) {
         log.error("Method Argument Type Mismatch Exception: ", e);
         log.error(e.toString());
         return ErrorResponse.builder()
@@ -216,7 +252,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ApiResponses(value = {@ApiResponse(responseCode = "409", description = "Conflict", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "409 Response", summary = "Handle exception when data integrity is violated", value = """
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "409",
+            description = "Conflict",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "409 Response",
+                            summary = "Handle exception when data integrity is violated",
+                            value = """
             {
               "timestamp": "2024-07-14T11:23:14.801+00:00",
               "status": 409,
@@ -245,7 +287,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content(mediaType = "application/json", examples = @ExampleObject(name = "400 Response", summary = "Handle IllegalArgumentException", value = """
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = {@Content(mediaType = "application/json",
+                    examples = @ExampleObject(name = "400 Response",
+                            summary = "Handle IllegalArgumentException",
+                            value = """
             {
               "timestamp": "2024-07-14T11:23:14.801+00:00",
               "status": 400,
@@ -266,15 +314,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(CONFLICT)
-    @ApiResponses(value = {@ApiResponse(responseCode = "409", description = "Conflict", content = {@Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "409 Response", summary = "Handle exception when a resource already exists", value = """
-            {
-              "timestamp": "2024-07-24T07:19:51.110+00:00",
-              "status": 409,
-              "path": "/api/admin/specification-attributes/2",
-              "error": "Conflict",
-              "message": "Product attribute already existed"
-            }
-            """))})})
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "409",
+            description = "Conflict",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "409 Response",
+                            summary = "Handle exception when a resource already exists",
+                            value = """
+                                    {
+                                      "timestamp": "2024-07-24T07:19:51.110+00:00",
+                                      "status": 409,
+                                      "path": "/api/admin/specification-attributes/2",
+                                      "error": "Conflict",
+                                      "message": "Product attribute already existed"
+                                    }
+                                    """))})})
     public ErrorResponse handleAlreadyExistsException(AlreadyExistsException e, WebRequest request) {
         log.error("Already Exists Exception: ", e);
         return ErrorResponse.builder()
@@ -288,15 +342,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotExistsException.class)
     @ResponseStatus(NOT_FOUND)
-    @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(mediaType = "application/json", examples = @ExampleObject(name = "404 Response", summary = "Handle exception when resource does not exist", value = """
-            {
-              "timestamp": "2024-07-24T14:28:17.569+07:00",
-              "status": 404,
-              "path": "/api/v1/...",
-              "error": "Not Found",
-              "message": "Product attribute does not exist"
-            }
-            """))})})
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = {@Content(mediaType = "application/json",
+                    examples = @ExampleObject(name = "404 Response",
+                            summary = "Handle exception when resource does not exist",
+                            value = """
+                                    {
+                                      "timestamp": "2024-07-24T14:28:17.569+07:00",
+                                      "status": 404,
+                                      "path": "/api/v1/...",
+                                      "error": "Not Found",
+                                      "message": "Product attribute does not exist"
+                                    }
+                                    """))})})
     public ErrorResponse handleNotExistsException(NotExistsException e, WebRequest request) {
         log.error("Not exits exception: ", e);
         return ErrorResponse.builder()
@@ -304,6 +364,34 @@ public class GlobalExceptionHandler {
                 .status(NOT_FOUND.value())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .error(NOT_FOUND.getReasonPhrase())
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Not Found", content = {
+                    @Content(mediaType = "application/json", examples = @ExampleObject(name = "404 Response",
+                            summary = "Handle exception when resource does not found", value = """
+                            {
+                              "timestamp": "2024-07-24T14:28:17.569+07:00",
+                              "status": 404,
+                              "path": "/api/v1/...",
+                              "error": "Not Found",
+                              "message": "Product attribute does not found"
+                            }
+                            """))
+            })
+    })
+    public ErrorResponse handleNotFoundException(NotFoundException e, WebRequest request) {
+        log.error("Not Found exception: ", e);
+
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.NOT_FOUND.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(e.getMessage())
                 .build();
     }

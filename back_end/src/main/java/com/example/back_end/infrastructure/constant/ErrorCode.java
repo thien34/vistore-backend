@@ -64,6 +64,9 @@ public enum ErrorCode {
             "Product specification attribute mapping does not exist",
             HttpStatus.NOT_FOUND
     ),
+    //Product video mapping
+    PRODUCT_VIDEO_MAPPING_NOT_FOUND("Product video mapping not found", HttpStatus.NOT_FOUND),
+    PRODUCT_VIDEO_MAPPING_NOT_EXISTS("Product video mapping not exists", HttpStatus.BAD_REQUEST),
 
     // ID validation errors
     ID_SPECIFICATION_ATTRIBUTE_OPTION_INVALID(
