@@ -5,9 +5,12 @@ import ProductConfigs from '@/pages/product/ProductConfigs'
 import { TableRowSelection } from 'antd/es/table/interface'
 import { useState } from 'react'
 import { getProductColumns } from './ProductColumns'
+import { ProductFilter } from '@/model/ProductFilter'
+
 function useProductManageViewModel() {
     const navigate = useNavigate()
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+    const [filter, setFilter] = useState<ProductFilter>({})
 
     // GET COLUMNS
     const columns = getProductColumns()
@@ -17,7 +20,15 @@ function useProductManageViewModel() {
         setSelectedRowKeys(newSelectedRowKeys)
     }
 
-    const { data: listResponse } = useGetAllApi<ProductResponse>(ProductConfigs.resourceUrl, ProductConfigs.resourceKey)
+    const handleFilterChange = (newFilter: ProductFilter) => {
+        setFilter(newFilter)
+    }
+
+    const { data: listResponse } = useGetAllApi<ProductResponse>(
+        ProductConfigs.resourceUrl,
+        ProductConfigs.resourceKey,
+        filter,
+    )
 
     const dataSource = listResponse?.items || []
 
@@ -25,11 +36,13 @@ function useProductManageViewModel() {
         navigate(`/admin/products/${record.id}`)
     }
 
+    const handleNavigateBySku = () => {}
     const rowSelection: TableRowSelection<ProductResponse> = {
         selectedRowKeys,
         onChange: onSelectChange,
     }
 
-    return { dataSource, handleRowClick, columns, rowSelection }
+    return { dataSource, handleRowClick, columns, rowSelection, handleFilterChange, handleNavigateBySku }
 }
+
 export default useProductManageViewModel

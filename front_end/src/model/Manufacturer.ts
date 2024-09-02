@@ -19,3 +19,8 @@ export type ManufacturerRequest = {
     displayOrder: number
     priceRangeFiltering: boolean
 }
+
+export type ManufacturerResponseListName = {
+    id: number
+    manufacturerName: string
+}
