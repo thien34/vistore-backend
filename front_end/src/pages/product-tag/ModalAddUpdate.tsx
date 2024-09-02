@@ -52,7 +52,6 @@ export default function ModalAddUpdate({
     }
 
     const handleCancel = () => {
-        form.resetFields()
         setTitle('Create Product Tag')
         setIsModalOpen(false)
     }

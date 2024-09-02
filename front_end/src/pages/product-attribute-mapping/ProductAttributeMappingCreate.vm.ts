@@ -33,7 +33,7 @@ function useProductAttributeMappingCreateViewModel() {
     ).data
 
     const params = useSearchParams()
-    const productId = new URLSearchParams(params[0]).get('product-id')
+    const productId = new URLSearchParams(params[0]).get('productId')
 
     const [editingRecord, setEditingRecord] = useState<ProductAttributeValueRequest | null>(null)
 

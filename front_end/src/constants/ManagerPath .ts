@@ -53,7 +53,7 @@ class ManagerPath {
 
     static readonly SPECIFICATION_ATTRIBUTE_OPTION = '/admin/specification-attribute-options'
 
-    static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_ADD = '/admin/product/product-spec-attribute/add/:productId'
+    static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_ADD = '/admin/product/product-spec-attribute-add'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = '/admin/product-specification-attribute-mappings'
     static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =
         '/admin/product-specification-attribute-mappings/by-product/:productId'

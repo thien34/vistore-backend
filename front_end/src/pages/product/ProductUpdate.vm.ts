@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { getProductSpecificationAttributeMappingColumns } from './ProductSpecificationAttributeMappingColumns'
 import { useNavigate, useParams } from 'react-router-dom'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api'
-import { message, Modal } from 'antd'
+import { Modal } from 'antd'
 interface Search extends RequestParams {
     productId: number
 }
@@ -49,15 +49,7 @@ function useProductUpdateViewModel() {
             okType: 'danger',
             cancelText: 'Cancel',
             onOk: () => {
-                deleteApi.mutate(parseInt(id.toString()), {
-                    onSuccess: () => {
-                        message.success('Deleted successfully')
-                        navigate(`/admin/products/${productId}`)
-                    },
-                    onError: () => {
-                        message.error('Delete failed!')
-                    },
-                })
+                deleteApi.mutate(Number(id.toString()))
             },
         })
     }
@@ -66,7 +58,7 @@ function useProductUpdateViewModel() {
         if (productId) {
             setFilter((prevFilter) => ({
                 ...prevFilter,
-                productId: parseInt(productId, 10),
+                productId: Number(productId),
             }))
         }
     }, [productId])

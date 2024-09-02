@@ -23,7 +23,7 @@ public enum ErrorCode {
     FORBIDDEN("You do not have permission", HttpStatus.FORBIDDEN),
 
     // Product-related errors
-    PRODUCT_ID_NOT_FOUND("Product ID not found", HttpStatus.NOT_FOUND),
+    PRODUCT_NOT_FOUND("Product not found", HttpStatus.NOT_FOUND),
 
     // Product-attributes-related errors
     PRODUCT_ATTRIBUTE_NOT_EXISTED("Product attribute does not exist", HttpStatus.NOT_FOUND),

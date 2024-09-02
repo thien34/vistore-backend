@@ -4,14 +4,14 @@ import SpecificationAttributeConfigs from '@/pages/specificationAttribute/Specif
 import ProductSpecificationAttributeMappingConfigs from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingConfigs'
 import { SpecificationAttributeOptionResponse } from '@/model/SpecificationAttributeOption.ts'
 import { ProductSpecificationAttributeMappingRequest } from '@/model/ProductSpecificationAttributeMapping.ts'
-import { FormInstance, message } from 'antd'
+import { FormInstance } from 'antd'
 import { NavigateFunction } from 'react-router-dom'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute'
 import useGetApi from '@/hooks/use-get-api'
 
 const useProductSpecificationAttributeMappingCreateViewModel = (
     form: FormInstance,
-    productId: string | undefined,
+    productId: string | null,
     navigate: NavigateFunction,
 ) => {
     const [attributeType, setAttributeType] = useState('Option')
@@ -19,11 +19,9 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
     const [attributeOptions, setAttributeOptions] = useState<SpecificationAttributeOptionResponse[]>([])
     const [attributes, setAttributes] = useState<SpecificationAttributeResponse[]>([])
     const [groupedAttributes, setGroupedAttributes] = useState<Map<string, SpecificationAttributeResponse[]>>()
-    const [isSpinning, setIsSpinning] = useState(false)
     const {
         data: listAttribute,
         isLoading,
-        error,
         refetch: refetchAttributes,
     } = useGetApi(`${SpecificationAttributeConfigs.resourceUrl}/list-name`, SpecificationAttributeConfigs.resourceKey)
 
@@ -75,87 +73,30 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
     const createMutation = useCreateApi(ProductSpecificationAttributeMappingConfigs.resourceUrl)
 
     const handleSave = () => {
-        form.validateFields()
-            .then((values) => {
-                const customValue =
-                    attributeType === 'Option'
-                        ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
-                        : attributeType === 'CustomText'
-                          ? values.customText
-                          : ''
+        form.validateFields().then((values) => {
+            const value =
+                attributeType === 'CustomText'
+                    ? JSON.stringify({
+                          custom_value: values.customText,
+                          spec_attribute_id: selectedAttributeId,
+                      })
+                    : ''
+            const payload: ProductSpecificationAttributeMappingRequest = {
+                productId: Number(productId),
+                specificationAttributeOptionId: values.attributeOption || null,
+                customValue: value,
+                showOnProductPage: values.showOnProductPage,
+                displayOrder: Number(values.displayOrder),
+            }
 
-                const payload: ProductSpecificationAttributeMappingRequest = {
-                    productId: Number(productId),
-                    specificationAttributeOptionId: values.attributeOption || null,
-                    customValue: JSON.stringify({
-                        custom_value: customValue,
-                        spec_attribute_id: selectedAttributeId,
-                    }),
-                    showOnProductPage: values.showOnProductPage,
-                    displayOrder: Number(values.displayOrder),
-                }
-
-                createMutation.mutate(payload, {
-                    onSuccess: () => {
-                        message.success('Product specification created successfully')
-                        navigate(`/admin/products/${productId}`)
-                    },
-                    onError: (error) => {
-                        message.error(`Error creating mapping: ${error.message}`)
-                    },
-                })
+            createMutation.mutate(payload, {
+                onSuccess: () => {
+                    navigate(`/admin/products/${productId}`)
+                },
             })
-            .catch((info) => {
-                console.log('Validate Failed:', info)
-            })
+        })
     }
 
-    const handleSaveAndContinue = () => {
-        form.validateFields()
-            .then((values) => {
-                const customValue =
-                    attributeType === 'Option'
-                        ? attributeOptions.find((option) => option.id === values.attributeOption)?.name || ''
-                        : attributeType === 'CustomText'
-                          ? values.customText
-                          : ''
-
-                const payload: ProductSpecificationAttributeMappingRequest = {
-                    productId: Number(productId),
-                    specificationAttributeOptionId: values.attributeOption || null,
-                    customValue: JSON.stringify({
-                        custom_value: customValue,
-                        spec_attribute_id: selectedAttributeId,
-                    }),
-                    showOnProductPage: values.showOnProductPage,
-                    displayOrder: Number(values.displayOrder),
-                }
-
-                createMutation.mutate(payload, {
-                    onSuccess: () => {
-                        message.success('Product specification created successfully')
-                    },
-                    onError: (error) => {
-                        console.error('Error creating mapping:', error.message)
-                    },
-                })
-            })
-            .catch((info: string) => {
-                console.log('Validate Failed:', info)
-            })
-    }
-
-    const handleReload = async () => {
-        setIsSpinning(true)
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            await refetchAttributes()
-        } catch (error) {
-            console.error('Failed to reload data:', error)
-        } finally {
-            setIsSpinning(false)
-        }
-    }
     return {
         attributeType,
         setAttributeType,
@@ -168,13 +109,9 @@ const useProductSpecificationAttributeMappingCreateViewModel = (
         groupedAttributes,
         listAttribute,
         isLoading,
-        error,
         refetchAttributes,
-        handleReload,
         handleAttributeChange,
         handleSave,
-        handleSaveAndContinue,
-        isSpinning,
     }
 }
 

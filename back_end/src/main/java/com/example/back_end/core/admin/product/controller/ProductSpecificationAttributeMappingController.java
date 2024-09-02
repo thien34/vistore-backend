@@ -38,13 +38,11 @@ public class ProductSpecificationAttributeMappingController {
     public ResponseData<ProductSpecificationAttributeMappingResponse> createProductSpecificationAttributeMapping(
             @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) {
 
-        ProductSpecificationAttributeMappingResponse response = productSpecificationAttributeMappingService
-                .createProductSpecificationAttributeMapping(dto);
+        productSpecificationAttributeMappingService.createProductSpecificationAttributeMapping(dto);
 
         return ResponseData.<ProductSpecificationAttributeMappingResponse>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Product specification attribute mapping created successfully")
-                .data(response)
                 .build();
     }
 

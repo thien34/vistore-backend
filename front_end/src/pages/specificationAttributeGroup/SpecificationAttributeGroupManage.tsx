@@ -41,14 +41,7 @@ const SpecificationAttributeGroupManage = () => {
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Row justify='space-between' align='middle' style={{ marginBottom: 16 }}>
-                <Col>
-                    <Alert
-                        message={<span>Specification Attribute</span>}
-                        type='info'
-                        showIcon
-                        style={{ marginBottom: 20 }}
-                    />
-                </Col>
+                <Col></Col>
                 <Col>
                     <Space>
                         <Link to='/admin/specification-attribute-groups/add'>

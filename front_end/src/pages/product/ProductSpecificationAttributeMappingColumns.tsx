@@ -23,7 +23,10 @@ export const getProductSpecificationAttributeMappingColumns = (
         title: 'Value',
         dataIndex: 'customValue',
         key: 'customValue',
-        render: (text) => text ?? 'N/A',
+        render: (text, record) =>
+            record.attributeType === 'Custom Text'
+                ? (text ?? 'N/A')
+                : (record.specificationAttributeOptionName ?? 'N/A'),
     },
     {
         width: '10%',

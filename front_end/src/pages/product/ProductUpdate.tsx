@@ -62,7 +62,7 @@ export default function ProductUpdate() {
                             />
                         )}
 
-                        <Link to={`/admin/product/product-spec-attribute/add/${filter.productId}`}>
+                        <Link to={`/admin/product/product-spec-attribute-add/?productId=${filter.productId}`}>
                             <Button type='primary'>+ Add attribute</Button>
                         </Link>
                     </Panel>

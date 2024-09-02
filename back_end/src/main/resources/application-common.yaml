@@ -1,0 +1,51 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: none
+
+    show-sql: false
+
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        format_sql: true
+        hbm2ddl:
+          auto: none
+        jdbc:
+          time_zone: UTC
+
+  main:
+    allow-bean-definition-overriding: true
+
+  sql:
+    init:
+      encoding: UTF-8
+
+  output:
+    ansi:
+      enabled: always
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+
+springdoc:
+  pathsToMatch: /api/**
+  swagger-ui:
+    path: /api/docs/swagger-ui.html
+

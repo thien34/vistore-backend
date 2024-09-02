@@ -21,9 +21,9 @@ export interface ProductSpecificationAttributeMappingResponse {
 export interface ProductSpecificationAttributeMappingByProductResponse {
     id: number
     attributeType: string
-    specificationAttributeOptionName: number | null
+    specificationAttributeOptionName: string | null
     customValue: string
     showOnProductPage: boolean
     displayOrder: number
-    specificationAttributeName: number | null
+    specificationAttributeName: string | null
 }

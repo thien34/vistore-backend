@@ -1,6 +1,5 @@
-import { Form, Input, Select, Checkbox, Button, Typography, Spin, InputNumber } from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ReloadOutlined } from '@ant-design/icons'
+import { Form, Input, Select, Checkbox, Button, Typography, InputNumber } from 'antd'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useProductSpecificationAttributeMappingCreateViewModel from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingCreate.vm'
 
 const { Title } = Typography
@@ -8,7 +7,8 @@ const { Option, OptGroup } = Select
 
 const ProductSpecificationAttributeMappingCreate = () => {
     const [form] = Form.useForm()
-    const { productId } = useParams<{ productId: string }>()
+    const params = useSearchParams()
+    const productId = new URLSearchParams(params[0]).get('productId')
     const navigate = useNavigate()
 
     const viewModel = useProductSpecificationAttributeMappingCreateViewModel(form, productId, navigate)
@@ -20,21 +20,15 @@ const ProductSpecificationAttributeMappingCreate = () => {
         attributeOptions,
         groupedAttributes,
         isLoading,
-        error,
-        handleReload,
         handleAttributeChange,
         handleSave,
-        handleSaveAndContinue,
-        isSpinning,
     } = viewModel
 
     if (isLoading) return <p>Loading...</p>
-    if (error) return <p>Error fetching attributes: {error.message}</p>
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <Title level={4}>Add a new product specification attribute</Title>
-            <a href='/product/details'>Back to product details</a>
             <Form
                 form={form}
                 layout='vertical'
@@ -49,12 +43,11 @@ const ProductSpecificationAttributeMappingCreate = () => {
                 style={{ marginTop: '16px' }}
             >
                 <Form.Item name='productId' noStyle>
-                    <Input type='hidden' value={productId} />
+                    <Input type='hidden' value={Number(productId ?? 0)} />
                 </Form.Item>
                 <Form.Item
                     label='Attribute type'
                     name='attributeType'
-                    tooltip='Select the attribute type'
                     rules={[{ required: true, message: 'Please select an attribute type!' }]}
                 >
                     <Select onChange={(value) => setAttributeType(value)}>
@@ -62,11 +55,9 @@ const ProductSpecificationAttributeMappingCreate = () => {
                         <Option value='CustomText'>Custom Text</Option>
                     </Select>
                 </Form.Item>
-
                 <Form.Item
                     label='Attribute'
                     name='attribute'
-                    tooltip='Select the attribute'
                     rules={[{ required: true, message: 'Please select an attribute!' }]}
                 >
                     <Select onChange={handleAttributeChange} dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}>
@@ -89,7 +80,6 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     <Form.Item
                         label='Attribute option'
                         name='attributeOption'
-                        tooltip='Select the attribute option'
                         rules={[{ required: true, message: 'Please select an attribute option!' }]}
                     >
                         <Select dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}>
@@ -135,7 +125,6 @@ const ProductSpecificationAttributeMappingCreate = () => {
                 <Form.Item
                     label='Display order'
                     name='displayOrder'
-                    tooltip='Set the display order'
                     rules={[
                         { required: true, message: 'Please enter the display order!' },
                         {
@@ -153,17 +142,8 @@ const ProductSpecificationAttributeMappingCreate = () => {
                     <Button type='primary' onClick={handleSave}>
                         Save
                     </Button>
-                    <Button type='default' onClick={handleSaveAndContinue} style={{ marginLeft: '8px' }}>
-                        Save and Continue Edit
-                    </Button>
-                    <Button style={{ margin: 10 }} onClick={handleReload} icon={<ReloadOutlined />}></Button>
                 </Form.Item>
             </Form>
-            {isSpinning && (
-                <div className='flex justify-center items-center h-full w-full fixed top-0 left-0 bg-[#fff] bg-opacity-50 z-10'>
-                    <Spin size='large' />
-                </div>
-            )}
         </div>
     )
 }

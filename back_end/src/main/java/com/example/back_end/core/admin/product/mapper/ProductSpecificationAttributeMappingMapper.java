@@ -5,12 +5,14 @@ import com.example.back_end.core.admin.product.payload.response.ProductSpecifica
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingByProductResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.entity.ProductSpecificationAttributeMapping;
+import com.example.back_end.entity.SpecificationAttributeOption;
 import com.example.back_end.infrastructure.exception.CustomJsonProcessingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ public interface ProductSpecificationAttributeMappingMapper {
     @Mapping(target = "specificationAttributeId", expression = "java(getSpecificationAttributeId(mapping))")
     @Mapping(target = "specificationAttributeName", expression = "java(getSpecificationAttributeName(mapping))")
     ProductSpecificationAttributeMappingResponse toDto(ProductSpecificationAttributeMapping mapping);
+
     List<ProductSpecificationAttributeMappingResponse> toDto(
             List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings);
 
@@ -33,10 +36,11 @@ public interface ProductSpecificationAttributeMappingMapper {
 
     @Mapping(source = "specificationAttributeOption.name", target = "specificationAttributeOptionName")
     @Mapping(target = "specificationAttributeName", expression = "java(getSpecificationAttributeName(mapping))")
+    @Mapping(target = "customValue", expression = "java(getCustomValue(mapping))")
     ProductSpecificationAttributeMappingByProductResponse toDtos(ProductSpecificationAttributeMapping mapping);
 
-    @Mapping(target = "product", ignore = true)
-    @Mapping(target = "specificationAttributeOption", ignore = true)
+    @Mapping(target = "product.id", source = "productId")
+    @Mapping(target = "specificationAttributeOption", source = "specificationAttributeOptionId", qualifiedByName = "mapSpecificationAttributeOption")
     ProductSpecificationAttributeMapping toEntity(
             ProductSpecificationAttributeMappingRequest productSpecificationAttributeMappingRequest);
 
@@ -57,24 +61,47 @@ public interface ProductSpecificationAttributeMappingMapper {
 
     default String getSpecificationAttributeName(ProductSpecificationAttributeMapping mapping) {
         if (mapping.getSpecificationAttributeOption() != null) {
+            // if the option exists, return the attribute name
             return mapping.getSpecificationAttributeOption().getSpecificationAttribute().getName();
         } else {
-            // No option, check if customValue is JSON or plain text
+            // if customValue is JSON or plain text
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode customValueNode = objectMapper.readTree(mapping.getCustomValue());
 
-                // Extract custom_value from JSON if it exists
-                if (customValueNode.isObject() && customValueNode.has("custom_value")) {
-                    return customValueNode.get("custom_value").asText();
-                } else {
-                    // Not JSON or no custom_value, return the raw customValue
-                    return mapping.getCustomValue();
-                }
+                String idSpecAtb = customValueNode.has("spec_attribute_id") ? customValueNode
+                        .get("spec_attribute_id").asText() : null;
+                return idSpecAtb;
             } catch (JsonProcessingException e) {
-                return mapping.getCustomValue();
+                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
             }
         }
+    }
+
+    default String getCustomValue(ProductSpecificationAttributeMapping mapping) {
+        if (mapping.getSpecificationAttributeOption() == null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode customValueNode = objectMapper.readTree(mapping.getCustomValue());
+
+                String customValue = customValueNode.has("custom_value") ? customValueNode
+                        .get("custom_value").asText() : null;
+                return customValue;
+            } catch (JsonProcessingException e) {
+                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
+            }
+        }
+        return mapping.getCustomValue();
+    }
+
+    @Named("mapSpecificationAttributeOption")
+    default SpecificationAttributeOption mapSpecificationAttributeOption(Long specificationAttributeOptionId) {
+        if (specificationAttributeOptionId == null) {
+            return null;
+        }
+        SpecificationAttributeOption option = new SpecificationAttributeOption();
+        option.setId(specificationAttributeOptionId);
+        return option;
     }
 
 }

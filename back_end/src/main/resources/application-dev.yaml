@@ -3,32 +3,20 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/store_db
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1}
-    driver-class-name: org.postgresql.Driver
+    password: ${DB_PASSWORD:123456}
 
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    open-in-view: true
-    properties:
-      hibernate:
-        globally_quoted_identifiers: true
-        format_sql: true
-
-  sql:
-    init:
-      encoding: UTF-8
-
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-
-  main:
-    allow-bean-definition-overriding: true
+  mvc:
+    log-request-details: true
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:dccuxj8ll}
   api-key: ${CLOUDINARY_API_KEY:934946519676845}
   api-secret: ${CLOUDINARY_API_SECRET:JORMLqc5oK1HzEPqS3toNumm5XI}
+
+logging:
+  level:
+    web: DEBUG
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: ERROR

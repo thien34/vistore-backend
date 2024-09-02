@@ -16,7 +16,7 @@ public interface ProductSpecificationAttributeMappingService {
             String name, int pageNo, int pageSize
     );
 
-    ProductSpecificationAttributeMappingResponse createProductSpecificationAttributeMapping(
+    void createProductSpecificationAttributeMapping(
             ProductSpecificationAttributeMappingRequest request);
 
     ProductSpecificationAttributeMappingByIdResponse getProductSpecificationAttributeMappingById(Long id);
