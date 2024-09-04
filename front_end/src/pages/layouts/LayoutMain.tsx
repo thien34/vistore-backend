@@ -18,7 +18,7 @@ import type { MenuProps } from 'antd'
 import { Button, Layout, Menu } from 'antd'
 import { Link, Outlet } from 'react-router-dom'
 import { Breadcrumbs } from './Breadcrumbs'
-import ManagerPath from '@/constants/ManagerPath '
+import ManagerPath from '@/constants/ManagerPath'
 
 const { Header, Content, Footer, Sider } = Layout
 

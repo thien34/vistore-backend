@@ -1,5 +1,5 @@
 import AppActions from '@/constants/AppActions '
-import ManagerPath from '@/constants/ManagerPath '
+import ManagerPath from '@/constants/ManagerPath'
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import Input from 'antd/es/input/Input'

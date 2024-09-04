@@ -1,5 +1,5 @@
-import ManagerPath from '@/constants/ManagerPath '
-import ResourceURL from '@/constants/ResourceURL '
+import ManagerPath from '@/constants/ManagerPath'
+import ResourceURL from '@/constants/ResourceURL'
 
 export default class StockQuantityHistoryConfigs {
     static readonly managerPath = ManagerPath.STOCK_QUANTITY_HISTORY

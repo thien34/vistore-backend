@@ -9,27 +9,31 @@ const capitalizeChar = (str: string): string => {
 const Breadcrumbs: React.FC = () => {
     const location = useLocation()
     const pathSnippets = location.pathname.split('/').filter((i) => i)
+
     const breadcrumbItems = pathSnippets.map((snippet, index) => {
         const url = `/${pathSnippets.slice(0, index + 1).join('/')}`
-        const title = snippet.replace(/-/g, ' ')
+        const title = capitalizeChar(snippet.replace(/-/g, ' '))
         const isLastItem = index === pathSnippets.length - 1
 
         return {
             key: url,
-            title: isLastItem ? capitalizeChar(title) : <NavLink to={url}>{capitalizeChar(title)}</NavLink>,
+            title: isLastItem ? title : <NavLink to={url}>{title}</NavLink>,
         }
     })
 
-    const labelValue = capitalizeChar(pathSnippets[pathSnippets.length - 1])
+    const labelValue =
+        pathSnippets.length > 0 ? capitalizeChar(pathSnippets[pathSnippets.length - 1].replace(/-/g, ' ')) : 'Home'
 
     return (
         <Row>
             <Col className='flex items-center gap-2 p-4'>
                 <Breadcrumb items={breadcrumbItems} />
             </Col>
-            <Col span={24} className='flex items-center pl-4 pb-2 font-medium'>
-                <label>{labelValue}</label>
-            </Col>
+            {pathSnippets.length > 0 && (
+                <Col span={24} className='flex items-center pl-4 pb-2 font-medium'>
+                    <label>{labelValue}</label>
+                </Col>
+            )}
         </Row>
     )
 }
