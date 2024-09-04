@@ -53,7 +53,6 @@ class ManagerPath {
     static readonly STOCK_QUANTITY_HISTORY_ADD = '/admin/stock-quantity-history/add'
     static readonly STOCK_QUANTITY_HISTORY_UPDATE = '/admin/stock-quantity-history/:id/update'
 
-    static readonly SPECIFICATION_ATTRIBUTE_GROUP = '/admin/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_ADD = '/admin/specification-attribute-groups/add'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_UPDATE = '/admin/specification-attribute-groups/:id'
 

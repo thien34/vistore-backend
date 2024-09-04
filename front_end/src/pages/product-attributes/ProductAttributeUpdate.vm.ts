@@ -14,7 +14,7 @@ function useProductAttributeUpdate() {
     const { id } = useParams<{ id: string }>()
     const [current, setCurrent] = useState(1)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const { mutate: updateProductAttribute, isPending } = useUpdateApi<ProductAttributeResponse, string>(
+    const { mutate: updateProductAttribute, isPending } = useUpdateApi<ProductAttributeResponse>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
         Number(id),
@@ -25,7 +25,7 @@ function useProductAttributeUpdate() {
     const [isEdit, setIsEdit] = useState(false)
     const [newValue, setNewValue] = useState<PredefinedProductAttributeValueRequest>({
         id: 1,
-        productAttribute: '',
+        productAttribute: 0,
         name: '',
         priceAdjustment: 0,
         priceAdjustmentUsePercentage: false,
@@ -90,7 +90,7 @@ function useProductAttributeUpdate() {
                 cost: 0,
                 isPreSelected: false,
                 displayOrder: 0,
-                productAttribute: '',
+                productAttribute: 0,
             })
             setValues([
                 ...values,
@@ -117,7 +117,7 @@ function useProductAttributeUpdate() {
             cost: 0,
             isPreSelected: false,
             displayOrder: 0,
-            productAttribute: '',
+            productAttribute: 0,
         })
         setIsModalOpen(false)
     }

@@ -3,7 +3,7 @@ import ManagerPath from '@/constants/ManagerPath'
 import ResourceURL from '@/constants/ResourceURL'
 
 export default class SpecificationAttributeGroupConfigs extends Configs {
-    static readonly managerPath = ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP
+    static readonly managerPath = ManagerPath.SPECIFICATION_ATTRIBUTE
     static readonly resourceUrl = ResourceURL.SPECIFICATION_ATTRIBUTE_GROUP
     static readonly resourceGetUngroupedAttributes = ResourceURL.USE_GET_UNGROUPED_ATTRIBUTES
     static readonly resourceGetUngroupedAttributesKey = 'resourceGetUngroupedAttributes'

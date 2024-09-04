@@ -6,7 +6,7 @@ const SpecificationAttributeGroupCreate = () => {
     const { form, showSaveConfirm, handleSave } = useSpecificationAttributeGroupCreateViewModel()
 
     return (
-        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40' style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <div
                 className='site-page-header'
                 style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}

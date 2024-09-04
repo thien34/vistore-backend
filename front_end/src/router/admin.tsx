@@ -12,11 +12,7 @@ import {
     SpecificationAttributeGroupCreate,
     SpecificationAttributeGroupUpdate,
 } from '@/pages/specificationAttributeGroup'
-import {
-    SpecificationAttributeManage,
-    SpecificationAttributeCreate,
-    SpecificationAttributeUpdate,
-} from '@/pages/specificationAttribute'
+import { SpecificationAttributeCreate, SpecificationAttributeUpdate } from '@/pages/specificationAttribute'
 import {
     ProductSpecificationAttributeMappingCreate,
     ProductSpecificationAttributeMappingUpdate,
@@ -95,11 +91,6 @@ const routers = [
         element: <StockQuantityHistoryManage />,
     },
     {
-        path: ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP,
-        layout: 'main',
-        element: <SpecificationAttributeGroupManage />,
-    },
-    {
         path: ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_ADD,
         layout: 'main',
         element: <SpecificationAttributeGroupCreate />,
@@ -112,7 +103,7 @@ const routers = [
     {
         path: ManagerPath.SPECIFICATION_ATTRIBUTE,
         layout: 'main',
-        element: <SpecificationAttributeManage />,
+        element: <SpecificationAttributeGroupManage />,
     },
     {
         path: ManagerPath.SPECIFICATION_ATTRIBUTE_UPDATE,

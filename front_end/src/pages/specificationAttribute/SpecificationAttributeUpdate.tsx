@@ -143,7 +143,7 @@ function SpecificationAttributeUpdate() {
         SpecificationAttributeGroupConfigs.resourceKey,
     )
 
-    const { mutate: updateAttribute } = useUpdateApi<SpecificationAttributeResponse, SpecificationAttributeResponse>(
+    const { mutate: updateAttribute } = useUpdateApi<SpecificationAttributeResponse>(
         SpecificationAttributeConfigs.resourceUrl,
         SpecificationAttributeConfigs.resourceKey,
         Number(id),
