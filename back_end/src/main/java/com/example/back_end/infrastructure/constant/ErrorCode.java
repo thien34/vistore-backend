@@ -25,6 +25,12 @@ public enum ErrorCode {
     // Product-related errors
     PRODUCT_NOT_FOUND("Product not found", HttpStatus.NOT_FOUND),
 
+    //Discounts errors
+    DISCOUNT_NOT_FOUND("Discount not found", HttpStatus.NOT_FOUND),
+    DISCOUNT_ALREADY_EXISTS("Discount already exists", HttpStatus.BAD_REQUEST),
+    DISCOUNT_NOT_ACTIVE("Discount is not active", HttpStatus.FORBIDDEN),
+    DISCOUNT_WITH_THIS_NAME_ALREADY_EXISTS("Discount with this name already exists", HttpStatus.BAD_REQUEST),
+
     // Product-attributes-related errors
     PRODUCT_ATTRIBUTE_NOT_EXISTED("Product attribute does not exist", HttpStatus.NOT_FOUND),
     PRODUCT_ATTRIBUTE_ALREADY_EXISTS("Product attribute already exists, you can reuse it", HttpStatus.BAD_REQUEST),
