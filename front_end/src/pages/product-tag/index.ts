@@ -1,1 +1,1 @@
-export { default } from './ProductTagManage'
+export { default as ProductTagManage } from './ProductTagManage'

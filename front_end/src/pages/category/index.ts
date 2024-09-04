@@ -1,5 +1,3 @@
-import CategoryCreate from './CategoryCreate'
-import CategoryManage from './CategoryManage'
-import CategoryUpdate from './CategoryUpdate'
-
-export { CategoryManage as default, CategoryCreate, CategoryUpdate }
+export { default as CategoryManage } from './CategoryManage'
+export { default as CategoryCreate } from './CategoryCreate'
+export { default as CategoryUpdate } from './CategoryUpdate'

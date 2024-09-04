@@ -35,20 +35,6 @@ public class ProductController {
                 .build();
     }
 
-//    @GetMapping
-//    public ResponseData<PageResponse<List<ProductFakeResponse>>> getAll(
-//            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-//            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
-//
-//        PageResponse<List<ProductFakeResponse>> response = productService.getAllProducts(pageNo, pageSize);
-//
-//        return ResponseData.<PageResponse<List<ProductFakeResponse>>>builder()
-//                .status(HttpStatus.OK.value())
-//                .message("Get product success")
-//                .data(response)
-//                .build();
-//    }
-
     @GetMapping
     public ResponseData<PageResponse<List<ProductResponse>>> getAll(
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
@@ -59,7 +45,7 @@ public class ProductController {
 
         return ResponseData.<PageResponse<List<ProductResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get products successfully ")
+                .message("Get products successfully")
                 .data(response)
                 .build();
     }

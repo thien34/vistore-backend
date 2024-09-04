@@ -1,4 +1,4 @@
-import { Table, Button, Row, Col, Space, Spin, Modal, Collapse, Alert } from 'antd'
+import { Table, Button, Row, Col, Space, Spin, Modal, Collapse } from 'antd'
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import useSpecificationAttributeGroupManageViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroup.vm.ts'

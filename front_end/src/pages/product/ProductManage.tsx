@@ -3,12 +3,11 @@ import useProductManageViewModel from './ProductManage.vm'
 import ProductFilter from './ProductFilter'
 
 export default function ProductManage() {
-    const { dataSource, handleRowClick, columns, rowSelection, handleFilterChange, handleNavigateBySku } =
-        useProductManageViewModel()
+    const { dataSource, columns, rowSelection, handleFilterChange } = useProductManageViewModel()
 
     return (
         <>
-            <ProductFilter onFilterChange={handleFilterChange} handleNavigateBySku={handleNavigateBySku} />
+            <ProductFilter onFilterChange={handleFilterChange} />
             <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
                 <Table
                     rowKey='id'
@@ -17,12 +16,7 @@ export default function ProductManage() {
                     dataSource={dataSource}
                     columns={columns}
                     pagination={{ pageSize: 6 }}
-                    onRow={(record) => {
-                        return {
-                            onClick: () => handleRowClick(record),
-                        }
-                    }}
-                ></Table>
+                />
             </div>
         </>
     )

@@ -23,11 +23,12 @@ public interface ProductMapper {
     ProductResponse toResponse(Product product);
 
     default String getImageUrl(Product product) {
-        
+
         return product.getProductPictureMappings().stream()
                 .sorted(Comparator.comparingInt(ProductPictureMapping::getDisplayOrder))
                 .map(mapping -> mapping.getPicture().getLinkImg())
-                .findFirst() 
+                .findFirst()
                 .orElse(null);
     }
+
 }

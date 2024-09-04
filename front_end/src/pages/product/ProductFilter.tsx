@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Form, Input, Select, Checkbox, Button, Row, Col } from 'antd'
+import { Form, Input, Select, Checkbox, Button, Row, Col, Space } from 'antd'
 import { SearchOutlined, CaretUpOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import type { ProductFilter } from '@/model/ProductFilter'
 import { CategoryNameResponse } from '@/model/Category'
 import CategoryConfigs from '../category/CategoryConfigs'
@@ -9,21 +10,20 @@ import { ManufacturerResponseListName } from '@/model/Manufacturer'
 import ManufactureConfigs from '../manufacturer/ManufactureConfigs'
 import FetchUtils from '@/utils/FetchUtils'
 import ProductConfigs from './ProductConfigs'
-import { useNavigate } from 'react-router-dom'
 
 const { Option } = Select
+
 interface ProductFilterProps {
     onFilterChange: (filter: ProductFilter) => void
-    handleNavigateBySku: (sku: string) => void
 }
 
 const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
     const [form] = Form.useForm()
     const [isOpen, setIsOpen] = useState(true)
     const contentRef = useRef<HTMLDivElement>(null)
-    const [contentHeight, setContentHeight] = useState(0)
-    const [sku, setSku] = useState<string>('')
+    const [sku, setSku] = useState('')
     const navigate = useNavigate()
+
     const { data: categories } = useGetApi<CategoryNameResponse[]>(
         CategoryConfigs.resourceUrlListName,
         CategoryConfigs.resourceKey,
@@ -36,52 +36,43 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
 
     useEffect(() => {
         if (contentRef.current) {
-            setContentHeight(contentRef.current.scrollHeight)
+            contentRef.current.style.maxHeight = isOpen ? `${contentRef.current.scrollHeight}px` : '0px'
         }
-    }, [])
+    }, [isOpen])
 
-    const toggleCollapse = () => {
-        setIsOpen(!isOpen)
-    }
+    const toggleCollapse = () => setIsOpen((prev) => !prev)
 
-    const onFinish = (values: ProductFilter) => {
-        console.log('Form values:', values)
-        onFilterChange(values)
-    }
+    const handleFinish = (values: ProductFilter) => onFilterChange(values)
 
-    const onFinishBySku = async () => {
-        const productId = await FetchUtils.getByIdString<number>(ProductConfigs.resourceUrlBySku, sku || '-------')
-        if (productId !== -1) {
-            navigate(`/admin/products/${productId}`)
+    const handleNavigateBySku = async () => {
+        if (sku.trim()) {
+            const productId = await FetchUtils.getByIdString<number>(ProductConfigs.resourceUrlBySku, sku)
+            if (productId !== -1) {
+                navigate(`/admin/products/${productId}`)
+            }
         }
     }
 
     return (
-        <div className='mb-5 bg-white rounded-lg shadow-md overflow-hidden'>
-            <div className='flex justify-between items-center p-4 cursor-pointer' onClick={toggleCollapse}>
-                <span className='text-lg font-medium'>Search</span>
+        <div className='mb-5 bg-white rounded-lg shadow-md  overflow-hidden'>
+            <div className='flex justify-between items-center p-6 cursor-pointer' onClick={toggleCollapse}>
+                <h3 className='text-xl font-bold'>Search</h3>
                 <CaretUpOutlined rotate={isOpen ? 0 : 180} className='text-lg transition-transform duration-300' />
             </div>
-            <div
-                style={{
-                    maxHeight: isOpen ? `${contentHeight}px` : '0px',
-                    overflow: 'hidden',
-                    transition: 'max-height 0.3s ease-out',
-                }}
-            >
-                <div ref={contentRef} className='p-4'>
-                    <Form form={form} layout='vertical' onFinish={onFinish}>
+            <div ref={contentRef} className='transition-[max-height] duration-300 ease-out overflow-hidden'>
+                <div className='px-12'>
+                    <Form form={form} layout='vertical' onFinish={handleFinish} initialValues={{ published: '' }}>
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item label='Product name' name='name'>
-                                    <Input />
+                                    <Input size='large' />
                                 </Form.Item>
                                 <Form.Item label='Category' name='categoryId'>
-                                    <Select defaultValue=''>
+                                    <Select size='large'>
                                         <Option value=''>All</Option>
-                                        {categories?.map((category: CategoryNameResponse) => (
-                                            <Option key={category.id} value={category.id}>
-                                                {category.name}
+                                        {categories?.map(({ id, name }) => (
+                                            <Option key={id} value={id}>
+                                                {name}
                                             </Option>
                                         ))}
                                     </Select>
@@ -92,39 +83,36 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
                             </Col>
                             <Col span={12}>
                                 <Form.Item label='Manufacturer' name='manufacturerId'>
-                                    <Select defaultValue=''>
+                                    <Select size='large'>
                                         <Option value=''>All</Option>
-                                        {manufacturers?.map((manufacturer: ManufacturerResponseListName) => (
-                                            <Option key={manufacturer.id} value={manufacturer.id}>
-                                                {manufacturer.manufacturerName}
+                                        {manufacturers?.map(({ id, manufacturerName }) => (
+                                            <Option key={id} value={id}>
+                                                {manufacturerName}
                                             </Option>
                                         ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label='Published' name='published'>
-                                    <Select defaultValue='All'>
+                                    <Select size='large'>
                                         <Option value=''>All</Option>
                                         <Option value='true'>Published only</Option>
                                         <Option value='false'>Unpublished only</Option>
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label='Go directly to product SKU' name='sku'>
-                                    <Input.Group compact>
-                                        <Input
-                                            onChange={(e) => setSku(e.target.value)}
-                                            style={{ width: 'calc(100% - 50px)' }}
-                                        />
-                                        <Button onClick={onFinishBySku} type='primary'>
+                                    <Space.Compact block>
+                                        <Input size='large' value={sku} onChange={(e) => setSku(e.target.value)} />
+                                        <Button size='large' onClick={handleNavigateBySku} type='primary'>
                                             Go
                                         </Button>
-                                    </Input.Group>
+                                    </Space.Compact>
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Form.Item>
                             <Row justify='center'>
                                 <Col>
-                                    <Button type='primary' htmlType='submit' icon={<SearchOutlined />}>
+                                    <Button size='large' type='primary' htmlType='submit' icon={<SearchOutlined />}>
                                         Search
                                     </Button>
                                 </Col>

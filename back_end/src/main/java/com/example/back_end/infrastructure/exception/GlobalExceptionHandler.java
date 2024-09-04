@@ -58,14 +58,14 @@ public class GlobalExceptionHandler {
                             "(@RequestBody, @RequestParam, @PathVariable)",
                             summary = "Handle Bad Request",
                             value = """
-            {
-                 "timestamp": "2024-04-07T11:38:56.368+00:00",
-                 "status": 400,
-                 "path": "/api/v1/...",
-                 "error": "Invalid Payload",
-                 "message": "{data} must be not blank"
-             }
-            """))})})
+                                    {
+                                         "timestamp": "2024-04-07T11:38:56.368+00:00",
+                                         "status": 400,
+                                         "path": "/api/v1/...",
+                                         "error": "Invalid Payload",
+                                         "message": "{data} must be not blank"
+                                     }
+                                    """))})})
     public ErrorResponse handleValidationException(Exception e, WebRequest request) {
         ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
                 .timestamp(new Date())
@@ -104,14 +104,14 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(name = "404 Response",
                             summary = "Handle exception when resource not found",
                             value = """
-            {
-              "timestamp": "2023-10-19T06:07:35.321+00:00",
-              "status": 404,
-              "path": "/api/v1/...",
-              "error": "Not Found",
-              "message": "{data} not found"
-            }
-            """))})})
+                                    {
+                                      "timestamp": "2023-10-19T06:07:35.321+00:00",
+                                      "status": 404,
+                                      "path": "/api/v1/...",
+                                      "error": "Not Found",
+                                      "message": "{data} not found"
+                                    }
+                                    """))})})
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
         log.error("Resource Not Found Exception: ", e);
         return ErrorResponse.builder()
@@ -139,14 +139,14 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(name = "409 Response",
                             summary = "Handle exception when input data is conflicted",
                             value = """
-            {
-              "timestamp": "2023-10-19T06:07:35.321+00:00",
-              "status": 409,
-              "path": "/api/v1/...",
-              "error": "Conflict",
-              "message": "{data} exists, Please try again!"
-            }
-            """))})})
+                                    {
+                                      "timestamp": "2023-10-19T06:07:35.321+00:00",
+                                      "status": 409,
+                                      "path": "/api/v1/...",
+                                      "error": "Conflict",
+                                      "message": "{data} exists, Please try again!"
+                                    }
+                                    """))})})
     public ErrorResponse handleDuplicateKeyException(InvalidDataException e, WebRequest request) {
         log.error("Duplicate Key Exception: ", e);
         return ErrorResponse.builder()
@@ -173,14 +173,14 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(name = "500 Response",
                             summary = "Handle exception when internal server error",
                             value = """
-            {
-              "timestamp": "2023-10-19T06:35:52.333+00:00",
-              "status": 500,
-              "path": "/api/v1/...",
-              "error": "Internal Server Error",
-              "message": "Connection timeout, please try again"
-            }
-            """))})})
+                                    {
+                                      "timestamp": "2023-10-19T06:35:52.333+00:00",
+                                      "status": 500,
+                                      "path": "/api/v1/...",
+                                      "error": "Internal Server Error",
+                                      "message": "Connection timeout, please try again"
+                                    }
+                                    """))})})
     public ErrorResponse handleException(Exception e, WebRequest request) {
         log.error("Exception: ", e);
         return ErrorResponse.builder()
@@ -228,14 +228,14 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(name = "404 Response",
                             summary = "Handle exception when type mismatch occurs",
                             value = """
-            {
-              "timestamp": "2024-07-14T11:23:14.801+00:00",
-              "status": 400,
-              "path": "/api/admin/product-attributes/3bjbjjbjk",
-              "error": "Bad Request",
-              "message": "Resource not found due to type mismatch"
-            }
-            """))})})
+                                    {
+                                      "timestamp": "2024-07-14T11:23:14.801+00:00",
+                                      "status": 400,
+                                      "path": "/api/admin/product-attributes/3bjbjjbjk",
+                                      "error": "Bad Request",
+                                      "message": "Resource not found due to type mismatch"
+                                    }
+                                    """))})})
     public ErrorResponse handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException e,
             WebRequest request) {
@@ -259,14 +259,14 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(name = "409 Response",
                             summary = "Handle exception when data integrity is violated",
                             value = """
-            {
-              "timestamp": "2024-07-14T11:23:14.801+00:00",
-              "status": 409,
-              "path": "/api/v1/...",
-              "error": "Conflict",
-              "message": "Data integrity violation occurred"
-            }
-            """))})})
+                                    {
+                                      "timestamp": "2024-07-14T11:23:14.801+00:00",
+                                      "status": 409,
+                                      "path": "/api/v1/...",
+                                      "error": "Conflict",
+                                      "message": "Data integrity violation occurred"
+                                    }
+                                    """))})})
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e, WebRequest request) {
         log.error("Data Integrity Violation Exception: ", e);
         return ErrorResponse.builder()
@@ -294,14 +294,14 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(name = "400 Response",
                             summary = "Handle IllegalArgumentException",
                             value = """
-            {
-              "timestamp": "2024-07-14T11:23:14.801+00:00",
-              "status": 400,
-              "path": "/api/v1/...",
-              "error": "Bad Request",
-              "message": "Invalid argument provided"
-            }
-            """))})})
+                                    {
+                                      "timestamp": "2024-07-14T11:23:14.801+00:00",
+                                      "status": 400,
+                                      "path": "/api/v1/...",
+                                      "error": "Bad Request",
+                                      "message": "Invalid argument provided"
+                                    }
+                                    """))})})
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e, WebRequest request) {
         return ErrorResponse.builder()
                 .timestamp(new Date())

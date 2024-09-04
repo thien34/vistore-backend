@@ -1,3 +1,1 @@
-import ProductAtbCombinationsManage from './ProductAtbCombinationsManage'
-
-export { ProductAtbCombinationsManage as default }
+export { default as ProductAtbCombinationsManage } from './ProductAtbCombinationsManage'

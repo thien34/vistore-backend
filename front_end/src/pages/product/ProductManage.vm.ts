@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import { ProductResponse } from '@/model/Product'
 import ProductConfigs from '@/pages/product/ProductConfigs'
@@ -8,7 +7,6 @@ import { getProductColumns } from './ProductColumns'
 import { ProductFilter } from '@/model/ProductFilter'
 
 function useProductManageViewModel() {
-    const navigate = useNavigate()
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<ProductFilter>({})
 
@@ -32,17 +30,12 @@ function useProductManageViewModel() {
 
     const dataSource = listResponse?.items || []
 
-    const handleRowClick = (record: ProductResponse) => {
-        navigate(`/admin/products/${record.id}`)
-    }
-
-    const handleNavigateBySku = () => {}
     const rowSelection: TableRowSelection<ProductResponse> = {
         selectedRowKeys,
         onChange: onSelectChange,
     }
 
-    return { dataSource, handleRowClick, columns, rowSelection, handleFilterChange, handleNavigateBySku }
+    return { dataSource, columns, rowSelection, handleFilterChange }
 }
 
 export default useProductManageViewModel

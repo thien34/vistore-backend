@@ -1,8 +1,7 @@
 import AppActions from '@/constants/AppActions '
 import { ProductResponse } from '@/model/Product'
 import { EditOutlined } from '@ant-design/icons'
-import { Button, TableColumnsType } from 'antd'
-import { Image } from 'antd'
+import { Button, TableColumnsType, Image } from 'antd'
 import { Link } from 'react-router-dom'
 
 export const getProductColumns = (): TableColumnsType<ProductResponse> => [
@@ -14,35 +13,32 @@ export const getProductColumns = (): TableColumnsType<ProductResponse> => [
         render: (imageUrl: string) => <Image src={imageUrl} alt='Product' width={50} height={50} preview={false} />,
     },
     {
-        align: 'center',
-        title: 'Name',
+        title: 'Product name',
         dataIndex: 'name',
         key: 'name',
     },
     {
-        align: 'center',
         title: 'SKU',
         dataIndex: 'sku',
         key: 'sku',
     },
     {
-        align: 'center',
         title: 'Price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
     },
     {
-        align: 'center',
         title: 'Stock quantity',
         dataIndex: 'minStockQuantity',
         key: 'minStockQuantity',
     },
     {
+        width: '10%',
         align: 'center',
         title: 'Published',
         dataIndex: 'published',
         key: 'published',
-        render: (text: boolean) => (text ? '✔' : '✘'),
+        render: (published: boolean) => (published ? '✔' : '✘'),
     },
     {
         width: '10%',
@@ -50,7 +46,7 @@ export const getProductColumns = (): TableColumnsType<ProductResponse> => [
         title: 'Action',
         key: 'action',
         render: (_, record) => (
-            <Link to={`/admin/categories/${record.id}/update`}>
+            <Link to={`/admin/products/${record.id}`}>
                 <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
                     {AppActions.EDIT}
                 </Button>

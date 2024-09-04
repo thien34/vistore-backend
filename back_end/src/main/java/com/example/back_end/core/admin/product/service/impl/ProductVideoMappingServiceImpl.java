@@ -56,7 +56,7 @@ public class ProductVideoMappingServiceImpl implements ProductVideoMappingServic
                 .orElseGet(() -> videoRepository.save(Video.builder().videoUrl(videoUrl).build()));
 
         Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
 
         ProductVideoMapping mapping = mapper.toEntity(dto);
         mapping.setVideo(video);
@@ -87,7 +87,7 @@ public class ProductVideoMappingServiceImpl implements ProductVideoMappingServic
         videoRepository.save(video);
 
         Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new NotExistsException(ErrorCode.PRODUCT_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotExistsException(ErrorCode.PRODUCT_NOT_FOUND.getMessage()));
         mapping.setProduct(product);
 
         mapping.setDisplayOrder(dto.getDisplayOrder());

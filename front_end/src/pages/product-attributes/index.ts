@@ -1,4 +1,3 @@
-import ProductAttributeUpdate from '@/pages/product-attributes/ProductAttributeUpdate.tsx'
-import ProductAttributeManage from './ProductAttributeManage'
-
-export { ProductAttributeManage as default, ProductAttributeUpdate }
+export { default as ProductAttributeManage } from './ProductAttributeManage'
+export { default as ProductAttributeUpdate } from './ProductAttributeUpdate'
+export { default as ProductAttributeCreate } from './ProductAttributeCreate'

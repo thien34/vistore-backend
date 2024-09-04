@@ -1,4 +1,3 @@
-import ManufactureManage from './ManufactureManage'
-import ManufactureCreate from './ManufactureCreate'
-import ManufactureUpdate from './ManufactureUpdate'
-export { ManufactureManage as default, ManufactureCreate, ManufactureUpdate }
+export { default as ManufactureManage } from './ManufactureManage'
+export { default as ManufactureCreate } from './ManufactureCreate'
+export { default as ManufactureUpdate } from './ManufactureUpdate'

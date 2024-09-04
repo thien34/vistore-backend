@@ -110,7 +110,7 @@ export default function ProductAtbCombinationsManage() {
     const { open, setOpen, handleDelete, handleEdit, selectedRecord, handleOpenModal } =
         useProductAtbCombinationsViewModel()
     return (
-        <div>
+        <div className='bg-[#fff] rounded-lg shadow-md p-6'>
             <Table bordered dataSource={data} columns={columns} />
             <div className='bg-[#d4d2d2c0] h-24 flex  items-center  pl-5 rounded-lg'>
                 <Button type='primary' onClick={() => handleOpenModal()}>

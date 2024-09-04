@@ -6,7 +6,7 @@ import TextArea from 'antd/es/input/TextArea'
 
 const pageSize = 6
 
-export default function ProductAttribute() {
+export default function ProductAttributeCreate() {
     const {
         handlePageChange,
         handleFinish,

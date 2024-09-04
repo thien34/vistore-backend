@@ -1,5 +1,4 @@
-import ProductAttributeMappingCreate from '@/pages/product-attribute-mapping/ProductAttributeMappingCreate'
-import ProductAttributeMappingUpdate from '@/pages/product-attribute-mapping/ProductAttributeMappingUpdate'
-import ProductAttributeMapping from '@/pages/product-attribute-mapping/ProductAttributeMapping'
-
-export { ProductAttributeMapping as default, ProductAttributeMappingCreate, ProductAttributeMappingUpdate }
+export { default as ProductAttributeMapping } from './ProductAttributeMapping'
+export { default as ProductAttributeMappingCreate } from './ProductAttributeMappingCreate'
+export { default as ProductAttributeMappingUpdate } from './ProductAttributeMappingUpdate'
+export { default as ProductAttributeMappingManage } from './ProductAttributeMappingManage'
