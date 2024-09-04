@@ -1,4 +1,4 @@
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 import {
     ProductAttributeValueRequest,
     ProductProductAttributeMappingResponse,

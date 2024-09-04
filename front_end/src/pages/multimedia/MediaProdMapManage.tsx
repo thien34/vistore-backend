@@ -1,7 +1,7 @@
 import useMediaProdMapManage from './MediaProdMapManage.vm'
 import { Table, Button, Collapse, Tabs, Form, Input, Modal, InputNumber, Switch, Upload, Empty, Card } from 'antd'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 
 export default function MediaProdMapManage() {
     const {

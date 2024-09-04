@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from 'antd'
 import Search from 'antd/es/input/Search'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 
 interface ProductTagSearchProps {
     onSearch: (term: string) => void

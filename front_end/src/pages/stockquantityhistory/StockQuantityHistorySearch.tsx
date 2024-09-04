@@ -1,4 +1,4 @@
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 import { useState } from 'react'
 import { ProductSelect } from './ProductNameSelect'
 import { Button } from 'antd'

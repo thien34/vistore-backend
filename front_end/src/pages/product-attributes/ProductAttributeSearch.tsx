@@ -1,4 +1,4 @@
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 import { DeleteOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Modal } from 'antd'
 import Input from 'antd/es/input/Input'

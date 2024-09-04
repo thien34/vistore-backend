@@ -1,7 +1,7 @@
 import { Button, TableColumnsType } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import { ProductSpecificationAttributeMappingByProductResponse } from '@/model/ProductSpecificationAttributeMapping'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 
 export const getProductSpecificationAttributeMappingColumns = (
     handleEdit: (record: ProductSpecificationAttributeMappingByProductResponse) => void,

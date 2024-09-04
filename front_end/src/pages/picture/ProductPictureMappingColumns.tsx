@@ -1,7 +1,7 @@
 import { Tooltip, Button, TableColumnsType } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { ProductPictureMappingResponse } from '@/model/ProductPictureMapping'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 
 export const getProductPictureMappingColumns = (
     onEditProductPicture: (record: ProductPictureMappingResponse) => void,

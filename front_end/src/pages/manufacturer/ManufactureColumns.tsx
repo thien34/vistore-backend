@@ -1,4 +1,4 @@
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 import { ManufacturerResponse } from '@/model/Manufacturer'
 import { EditOutlined } from '@ant-design/icons'
 import { Button, TableColumnsType } from 'antd'

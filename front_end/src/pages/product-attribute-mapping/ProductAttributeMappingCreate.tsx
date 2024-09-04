@@ -1,4 +1,4 @@
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 import { Button, Checkbox, Collapse, Form, Input, InputNumber, Select, Table } from 'antd'
 import useProductAttributeMappingCreateViewModel from './ProductAttributeMappingCreate.vm'
 import ProductAttributeValueCreateModal from './ProductAttributeValueCreateModal'

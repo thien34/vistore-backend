@@ -1,7 +1,7 @@
 import { Button, Table } from 'antd'
 import useProductAttributeMappingViewModel from './ProductAttributeMapping.vm'
 import { Link } from 'react-router-dom'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 import ManagerPath from '@/constants/ManagerPath'
 
 export default function ProductAttributeMapping() {

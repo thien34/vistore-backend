@@ -2,7 +2,7 @@ import { Button, TableColumnsType } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { ProductVideoMappingResponse } from '@/model/ProductVideoMapping'
 import defaultThumbnail from '../picture/video-not-found.jpg'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 
 export const getProductVideoMappingColumns = (
     onEditProductVideo: (record: ProductVideoMappingResponse) => void,

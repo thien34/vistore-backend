@@ -1,7 +1,7 @@
 import { Button, TableColumnsType } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import { ProductTagResponse } from '@/model/ProductTag'
-import AppActions from '@/constants/AppActions '
+import AppActions from '@/constants/AppActions'
 
 const getProductTagColumns = (
     handleEdit: (record: ProductTagResponse) => void,
