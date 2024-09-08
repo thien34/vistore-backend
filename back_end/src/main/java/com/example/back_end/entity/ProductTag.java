@@ -34,4 +34,11 @@ public class ProductTag extends Auditable {
     @OneToMany(mappedBy = "productTag")
     private List<ProductProductTagMapping> productProductTagMappings;
 
+    public void update(ProductTag newTag) {
+        if (newTag.getName() != null && !newTag.getName().equals(this.name)) {
+            this.name = newTag.getName();
+        }
+    }
+
+
 }

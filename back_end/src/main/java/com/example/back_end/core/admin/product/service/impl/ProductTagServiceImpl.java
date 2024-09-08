@@ -22,6 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -87,6 +93,46 @@ public class ProductTagServiceImpl implements ProductTagService {
         productTagRepository.deleteAllInBatch(productTags);
     }
 
+    @Override
+    public void createProductTags(List<ProductTag> productTags,Product product) {
+        Set<String> tagNames = productTags.stream()
+                .map(ProductTag::getName)
+                .collect(Collectors.toSet());
+
+        List<ProductTag> existingProductTags = productTagRepository.findByNameIn(tagNames);
+
+        Map<String, ProductTag> existingTagMap = existingProductTags.stream()
+                .collect(Collectors.toMap(ProductTag::getName, tag -> tag));
+
+        List<ProductTag> newProductTags = new ArrayList<>();
+        List<ProductTag> updatedProductTags = new ArrayList<>();
+
+        for (ProductTag productTag : productTags) {
+            ProductTag existingTag = existingTagMap.get(productTag.getName());
+            if (existingTag != null) {
+                existingTag.update(productTag);
+                updatedProductTags.add(existingTag);
+            } else {
+                newProductTags.add(productTag);
+            }
+        }
+
+        productTagRepository.saveAll(updatedProductTags);
+        productTagRepository.saveAll(newProductTags);
+
+        Stream.concat(updatedProductTags.stream(), newProductTags.stream())
+                .forEach(tag -> saveProductTagMapping(product, tag));
+    }
+
+    @Override
+    public List<ProductTag> getProductTagsByProductId(Long id) {
+        return productProductTagMappingRepository.findByProductId(id)
+                .stream()
+                .map(ProductProductTagMapping::getProductTag)
+                .collect(Collectors.toList());
+    }
+
+
     private Product getProduct(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
@@ -97,11 +143,14 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     private void saveProductTagMapping(Product product, ProductTag productTag) {
-        ProductProductTagMapping productTagMapping = ProductProductTagMapping.builder()
-                .product(product)
-                .productTag(productTag)
-                .build();
-        productProductTagMappingRepository.save(productTagMapping);
+        boolean exists = productProductTagMappingRepository.existsByProductAndProductTag(product, productTag);
+        if (!exists) {
+            ProductProductTagMapping productTagMapping = ProductProductTagMapping.builder()
+                    .product(product)
+                    .productTag(productTag)
+                    .build();
+            productProductTagMappingRepository.save(productTagMapping);
+        }
     }
 
 }

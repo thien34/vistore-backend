@@ -1,7 +1,9 @@
 package com.example.back_end.core.admin.product.service;
 
+import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductFakeResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductNameResponse;
+import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.core.common.PageResponse;
 
 import java.util.List;
@@ -12,4 +14,9 @@ public interface ProductService {
 
     PageResponse<List<ProductFakeResponse>> getAllProducts(int pageNo, int pageSize);
 
+    Long createOrUpdateProduct(ProductRequest request);
+
+    ProductResponse getProductById(long id);
+
+    void deleteProductById(long id);
 }

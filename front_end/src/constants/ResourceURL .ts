@@ -10,6 +10,7 @@ class ResourceURL {
     static readonly PRODUCT_ATTRIBUTE = apiPath + '/product-attributes'
     static readonly PREDEFINED_PRODUCT_ATTRIBUTE_VALUE = apiPath + '/predefined-product-attribute-values'
     static readonly CATEGORY = apiPath + '/categories'
+    static readonly CATEGORY_LIST_NAME = apiPath + '/categories/list-name'
     static readonly PICTURE = apiPath + '/picture'
     static readonly PRODUCT_COMBINATIONS = apiPath + '/product-attribute-combinations'
     static readonly PRODUCT_COMBINATIONS_BY_PRODUCT_ID = apiPath + '/product-attribute-combinations/product'
@@ -17,6 +18,7 @@ class ResourceURL {
     static readonly BRAND = apiPath + '/brands'
     static readonly ORDER = apiPath + '/orders'
     static readonly MANUFACTURE = apiPath + '/manufacturers'
+    static readonly MANUFACTURE_LIST_NAME = apiPath + '/manufacturers/list-name'
     static readonly PRODUCT_ATTRIBUTE_MAPPING = apiPath + '/product-attribute-mapping'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP = apiPath + '/specification-attribute-groups'
     static readonly SPECIFICATION_ATTRIBUTE = apiPath + '/specification-attributes'
@@ -26,6 +28,10 @@ class ResourceURL {
     static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =
         apiPath + '/product-specification-attribute-mappings/by-product'
     static readonly STOCK_QUANTITY_HISTORY = apiPath + '/stock-quantity-history'
+
+    static readonly DISCOUNT = apiPath + '/discounts'
+    static readonly DISCOUNT_LIST_NAME = apiPath + '/discounts/list-name'
+
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'

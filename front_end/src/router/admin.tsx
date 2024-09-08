@@ -18,10 +18,11 @@ import SpecificationAttributeGroupUpdate from '@/pages/specificationAttributeGro
 import ProductManage from '@/pages/product'
 import ProductSpecificationAttributeMappingCreate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingCreate'
 import ProductSpecificationAttributeMappingUpdate from '@/pages/productSpecificationAttributeMapping/ProductSpecificationAttributeMappingUpdate'
-import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
+// import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
 import ProductAttribute from '@/pages/product-attributes/ProductAttributeCreate'
 import ProductUpdate from '@/pages/product/ProductUpdate'
 import { ProductAttributeMappingUpdate } from '@/pages/product-attribute-mapping'
+import ProductCreate from '@/pages/product/ProductCreate'
 
 const routers = [
     {
@@ -116,7 +117,7 @@ const routers = [
     {
         path: ManagerPath.STOCK_QUANTITY_HISTORY,
         layout: 'main',
-        element: <StockQuantityHistoryManage />,
+        // element: <StockQuantityHistoryManage />,
         breadcrumbName: 'StockQuantityHistory',
         pageType: 'StockQuantityHistory',
     },
@@ -174,6 +175,13 @@ const routers = [
         layout: 'main',
         element: <ProductUpdate />,
         breadcrumbName: 'Product Update',
+        pageType: 'product',
+    },
+    {
+        path: ManagerPath.PRODUCT_CREATE,
+        layout: 'main',
+        element: <ProductCreate />,
+        breadcrumbName: 'Product Create',
         pageType: 'product',
     },
     {

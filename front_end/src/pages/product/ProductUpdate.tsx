@@ -4,6 +4,11 @@ import useProductUpdateViewModel from '@/pages/product/ProductUpdate.vm'
 import ProductAttributeMappingConfigs from '../product-attribute-mapping/ProductAttributeMappingConfigs'
 import ProductAttributeMapping from '../product-attribute-mapping/ProductAttributeMapping'
 import ProductAtbCombinationsManage from '../product-attribute-combinations'
+import ProductInfo from './ProductInfo'
+import ProductPrice from './ProductPrice'
+import ProductShipping from './ProductShipping'
+import ProductInventory from './ProductInventory'
+import ProductAction from './ProductAction'
 
 const { Panel } = Collapse
 
@@ -12,6 +17,11 @@ export default function ProductUpdate() {
 
     return (
         <>
+            <ProductAction isUpdate={true} />
+            <ProductInfo />
+            <ProductPrice />
+            <ProductShipping />
+            <ProductInventory />
             <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
                 <Collapse
                     collapsible='header'
