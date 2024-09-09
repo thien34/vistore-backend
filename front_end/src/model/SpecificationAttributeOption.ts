@@ -7,8 +7,8 @@ export type SpecificationAttributeOptionRequest = {
 }
 export type SpecificationAttributeOptionResponse = {
     id: number
-    specificationAttribute: number | null
+    specificationAttribute?: number | null
     name: string
-    colorSquaresRgb: string
+    colorSquaresRgb: string | null
     displayOrder: number
 }

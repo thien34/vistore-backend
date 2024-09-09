@@ -34,6 +34,10 @@ class ManagerPath {
     static readonly SPECIFICATION_ATTRIBUTE = '/admin/specification-attributes'
     static readonly SPECIFICATION_ATTRIBUTE_ADD = '/admin/specification-attributes/add'
     static readonly SPECIFICATION_ATTRIBUTE_UPDATE = '/admin/specification-attributes/:id/update'
+    static readonly SPECIFICATION_ATTRIBUTE_GROUP_ADD =
+        '/admin/specification-attributes/specification-attribute-group-add'
+    static readonly SPECIFICATION_ATTRIBUTE_GROUP_UPDATE =
+        '/admin/specification-attributes/specification-attribute-group/:id'
 
     static readonly PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING = '/admin/products/:productId'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE =
@@ -53,9 +57,6 @@ class ManagerPath {
     static readonly STOCK_QUANTITY_HISTORY = '/admin/stock-quantity-history'
     static readonly STOCK_QUANTITY_HISTORY_ADD = '/admin/stock-quantity-history/add'
     static readonly STOCK_QUANTITY_HISTORY_UPDATE = '/admin/stock-quantity-history/:id/update'
-
-    static readonly SPECIFICATION_ATTRIBUTE_GROUP_ADD = '/admin/specification-attribute-groups/add'
-    static readonly SPECIFICATION_ATTRIBUTE_GROUP_UPDATE = '/admin/specification-attribute-groups/:id'
 
     static readonly SPECIFICATION_ATTRIBUTE_OPTION = '/admin/specification-attribute-options'
 

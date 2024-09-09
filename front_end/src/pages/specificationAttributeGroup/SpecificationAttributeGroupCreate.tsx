@@ -1,62 +1,64 @@
-import { Button, Form, Input, InputNumber } from 'antd'
+import { Button, Col, Form, Input, InputNumber, Row } from 'antd'
 import { SaveOutlined } from '@ant-design/icons'
 import useSpecificationAttributeGroupCreateViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupCreate.vm.ts'
+import SpecificationAttributeGroupConfigs from './SpecificationAttributeGroupConfigs'
 
 const SpecificationAttributeGroupCreate = () => {
-    const { form, showSaveConfirm, handleSave } = useSpecificationAttributeGroupCreateViewModel()
+    const { form, showSaveConfirm, layout } = useSpecificationAttributeGroupCreateViewModel()
 
     return (
-        <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
-            <div
-                className='site-page-header'
-                style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-            >
-                <h1 style={{ margin: 0 }}>Add a new specification attribute group</h1>
-                <div>
+        <>
+            <div className='flex justify-between mb-5'>
+                <div className='text-2xl font-medium '>
+                    <div className=''>{SpecificationAttributeGroupConfigs.addTitle}</div>
+                </div>
+                <div className='flex gap-4 flex-wrap'>
                     <Button
-                        key='1'
-                        type='primary'
+                        className='default-btn-color'
+                        size='large'
                         icon={<SaveOutlined />}
                         onClick={showSaveConfirm}
-                        style={{ marginRight: 8 }}
                     >
-                        Save
-                    </Button>
-                    <Button key='2' icon={<SaveOutlined />} onClick={() => handleSave(false)}>
-                        Save and Continue Edit
+                        {SpecificationAttributeGroupConfigs.btnSave}
                     </Button>
                 </div>
             </div>
-            <Form initialValues={{ displayOrder: 0 }} form={form} layout='vertical' style={{ marginTop: 30 }}>
-                <Form.Item
-                    name='name'
-                    label='Name'
-                    tooltip='Set the name'
-                    rules={[
-                        { required: true, message: 'Please input the group name!' },
-                        { max: 100, message: 'Name cannot exceed 100 characters!' },
-                    ]}
-                >
-                    <Input maxLength={101} />
-                </Form.Item>
-                <Form.Item
-                    label='Display order'
-                    name='displayOrder'
-                    tooltip='Set the display order'
-                    rules={[
-                        { required: true, message: 'Please enter the display order!' },
-                        {
-                            type: 'number',
-                            min: 0,
-                            max: 2000000,
-                            message: 'Display order must be between 0 and 2,000,000!',
-                        },
-                    ]}
-                >
-                    <InputNumber type='number' />
-                </Form.Item>
-            </Form>
-        </div>
+            <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6'>
+                <Form initialValues={{ displayOrder: 0 }} {...layout} form={form} layout='vertical' size='large'>
+                    <Row>
+                        <Col span={12}>
+                            <Form.Item
+                                name='name'
+                                label='Name'
+                                rules={[
+                                    { required: true, message: 'Please input the group name!' },
+                                    { max: 100, message: 'Name cannot exceed 100 characters!' },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                label='Display order'
+                                name='displayOrder'
+                                rules={[
+                                    { required: true, message: 'Please enter the display order!' },
+                                    {
+                                        type: 'number',
+                                        min: 0,
+                                        max: 2000000,
+                                        message: 'Display order must be between 0 and 2,000,000!',
+                                    },
+                                ]}
+                            >
+                                <InputNumber className='w-36' type='number' />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </Form>
+            </div>
+        </>
     )
 }
 

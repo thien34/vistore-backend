@@ -1,22 +1,39 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import useGetByIdApi from '@/hooks/use-get-by-id-api.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
-import { Form, message, Modal } from 'antd'
-import { useEffect, useState } from 'react'
+import { Form, Modal } from 'antd'
+import { useCallback, useEffect, useState } from 'react'
 import useUpdateApi from '@/hooks/use-update-api.ts'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api.ts'
+import ManagerPath from '@/constants/ManagerPath'
+import { SpecificationAttributeGroupResponse } from '@/model/SpecificationAttributeGroup'
+import { getSpecAttrUnGroupCols } from './SpecAttrGroupCols'
+import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
+import SpecificationAttributeConfigs from '../specificationAttribute/SpecificationAttributeConfigs'
 
 const useSpecificationAttributeGroupUpdateViewModel = () => {
+    const [form] = Form.useForm()
+    const navigate = useNavigate()
+    const [selectedModalRowKeys, setSelectedModalRowKeys] = useState<React.Key[]>([])
     const { id } = useParams<{ id: string }>()
-    const { data, isLoading } = useGetByIdApi(
+    const layout = {
+        labelCol: { span: 8 },
+        wrapperCol: { span: 16 },
+    }
+    const [modalData, setModalData] = useState<SpecificationAttributeResponse[]>()
+
+    const onModalSelectChange = useCallback((newSelectedModalRowKeys: React.Key[]) => {
+        setSelectedModalRowKeys(newSelectedModalRowKeys)
+    }, [])
+
+    const unGroupColumns = getSpecAttrUnGroupCols
+
+    const { data } = useGetByIdApi<SpecificationAttributeGroupResponse>(
         SpecificationAttributeGroupConfigs.resourceUrl,
         SpecificationAttributeGroupConfigs.resourceKey,
         Number(id),
     )
-
-    const [form] = Form.useForm()
-    const navigate = useNavigate()
 
     useEffect(() => {
         if (data) {
@@ -24,10 +41,9 @@ const useSpecificationAttributeGroupUpdateViewModel = () => {
                 name: data.name,
                 displayOrder: data.displayOrder,
             })
+            setModalData(data.specificationAttributes)
         }
     }, [data, form])
-
-    const [isSaveAndContinue, setIsSaveAndContinue] = useState(false)
 
     const updateApi = useUpdateApi<SpecificationAttributeResponse>(
         SpecificationAttributeGroupConfigs.resourceUrl,
@@ -46,54 +62,63 @@ const useSpecificationAttributeGroupUpdateViewModel = () => {
             content: 'This action cannot be undone.',
             okText: 'Delete',
             okType: 'danger',
-            cancelText: 'Cancel',
             onOk: () => {
                 deleteApi.mutate(Number(id), {
                     onSuccess: () => {
-                        console.log('Deleted successfully!')
-                        navigate('/admin/specification-attribute-groups')
-                    },
-                    onError: (error) => {
-                        console.error('Deletion failed:', error)
-                        message.error('Deletion failed!')
+                        navigate(ManagerPath.SPECIFICATION_ATTRIBUTE)
                     },
                 })
             },
         })
     }
 
+    const { mutate: deleteAtbApi } = useDeleteByIdsApi<number>(
+        SpecificationAttributeConfigs.resourceUrl,
+        SpecificationAttributeConfigs.resourceKey,
+    )
+
+    const handleModalDelete = useCallback(() => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete the selected attributes?',
+            content: 'This action cannot be undone.',
+            okText: 'Delete',
+            okType: 'danger',
+            onOk: async () => {
+                deleteAtbApi(selectedModalRowKeys as number[], {
+                    onSuccess: () => {
+                        setSelectedModalRowKeys([])
+                    },
+                })
+            },
+        })
+    }, [selectedModalRowKeys, deleteAtbApi])
+
     const onFinish = (values: SpecificationAttributeResponse) => {
         updateApi.mutate(values, {
             onSuccess: () => {
-                console.log('Update successful!')
-                if (isSaveAndContinue) {
-                    message.success('Saved successfully. You can continue editing.')
-                    form.resetFields()
-                } else {
-                    message.success('Saved successfully.')
-                    navigate('/admin/specification-attribute-groups')
-                }
-            },
-            onError: (error) => {
-                console.error('Update failed:', error)
-                message.error('Update failed!')
+                navigate(ManagerPath.SPECIFICATION_ATTRIBUTE)
             },
         })
     }
 
-    const onFinishFailed = (errorInfo: never) => {
-        console.log('Failed:', errorInfo)
+    const handleUpdate = () => {
+        form.submit()
     }
 
     return {
         form,
-        isLoading,
         handleDelete,
         onFinish,
-        onFinishFailed,
-        isSaveAndContinue,
-        setIsSaveAndContinue,
-        navigate,
+        layout,
+        handleUpdate,
+        unGroupColumns,
+        modalData,
+        rowSelection: {
+            selectedRowKeys: selectedModalRowKeys,
+            onChange: onModalSelectChange,
+        },
+        handleModalDelete,
+        selectedModalRowKeys,
     }
 }
 

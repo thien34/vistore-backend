@@ -3,36 +3,33 @@ import { useNavigate } from 'react-router-dom'
 import useCreateApi from '@/hooks/use-create-api'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
-import { FormInstance, message, Modal } from 'antd'
+import { Form, Modal } from 'antd'
 import useGetApi from '@/hooks/use-get-api'
 import { SpecificationAttributeGroupNameResponse } from '@/model/SpecificationAttributeGroup'
 
-const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
+const useSpecificationAttributeCreateViewModel = () => {
+    const [form] = Form.useForm()
     const [groups, setGroups] = useState<SpecificationAttributeGroupNameResponse[]>([])
-    const [loadingGroups, setLoadingGroups] = useState(true)
-    const [shouldRedirect, setShouldRedirect] = useState(false)
-    const [creating, setCreating] = useState(false)
     const navigate = useNavigate()
 
     const { mutate } = useCreateApi(SpecificationAttributeConfigs.resourceUrl)
-    const { data, error } = useGetApi<SpecificationAttributeGroupNameResponse[]>(
+    const { data } = useGetApi<SpecificationAttributeGroupNameResponse[]>(
         `${SpecificationAttributeGroupConfigs.resourceUrl}/list-name`,
         SpecificationAttributeGroupConfigs.resourceKey,
     )
 
+    const layout = {
+        labelCol: { span: 8 },
+        wrapperCol: { span: 13 },
+    }
+
     useEffect(() => {
         if (data) {
             setGroups(data)
-            setLoadingGroups(false)
         }
-        if (error) {
-            message.error(`Error loading groups: ${error.message}`)
-            setLoadingGroups(false)
-        }
-    }, [data, error])
+    }, [data])
 
     const handleSubmit = (values: { name: string; group: string; displayOrder: string }) => {
-        setCreating(true)
         const requestBody = {
             name: values.name,
             specificationAttributeGroupId: values.group,
@@ -41,17 +38,7 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
 
         mutate(requestBody, {
             onSuccess: () => {
-                message.success('Created successfully')
-                setCreating(false)
-                if (shouldRedirect) {
-                    navigate('/admin/specification-attributes')
-                } else {
-                    form.resetFields()
-                }
-            },
-            onError: (error) => {
-                setCreating(false)
-                message.error(`Error creating attribute: ${error.message}`)
+                navigate('/admin/specification-attributes')
             },
         })
     }
@@ -61,7 +48,6 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
             title: 'Are you sure you want to save?',
             content: 'Please confirm if you want to save the changes.',
             onOk: () => {
-                setShouldRedirect(true)
                 form.submit()
             },
         })
@@ -69,11 +55,10 @@ const useSpecificationAttributeCreateViewModel = (form: FormInstance) => {
 
     return {
         groups,
-        loadingGroups,
         handleSubmit,
         showSaveConfirm,
-        creating,
-        setShouldRedirect,
+        layout,
+        form,
     }
 }
 
