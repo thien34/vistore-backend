@@ -12,7 +12,7 @@ export type SpecificationAttributeResponse = {
     id: number
     name: string
     specificationAttributeGroupId: number | null
-    specificationAttributeGroupName: string | null
+    specificationAttributeGroupName?: string | null
     displayOrder: number
     listOptions: Array<SpecificationAttributeOptionResponse>
 }

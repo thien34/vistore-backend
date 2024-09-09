@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.default-btn-color {
+    @apply bg-[#475569] text-white border-[#475569];
+}

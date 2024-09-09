@@ -1,7 +1,7 @@
 import { ProductSpecificationAttributeMappingByProductResponse } from '@/model/ProductSpecificationAttributeMapping'
 import { getProductSpecificationAttributeMappingColumns } from './ProductSpecificationAttributeMappingColumns'
 import { useNavigate, useParams } from 'react-router-dom'
-import { message, Modal } from 'antd'
+import { Modal } from 'antd'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api'
 import ProductSpecificationAttributeMappingConfigs from './ProductSpecificationAttributeMappingConfigs'
 import { RequestParams } from '@/utils/FetchUtils'
@@ -44,11 +44,7 @@ export default function useProdSpecAttrMappingManage() {
             onOk: () => {
                 deleteApi.mutate(id, {
                     onSuccess: () => {
-                        message.success('Deleted successfully')
                         navigate(`/admin/products/${productId}`)
-                    },
-                    onError: () => {
-                        message.error('Delete failed!')
                     },
                 })
                 deleteApi.mutate(Number(id.toString()))

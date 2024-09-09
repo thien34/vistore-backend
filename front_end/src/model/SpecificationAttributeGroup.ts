@@ -9,7 +9,7 @@ export type SpecificationAttributeGroupResponse = {
     id: number
     name: string
     displayOrder: number
-    specificationAttributes: Array<SpecificationAttributeResponse>
+    specificationAttributes: SpecificationAttributeResponse[]
 }
 export type SpecificationAttributeGroupNameResponse = {
     id: number

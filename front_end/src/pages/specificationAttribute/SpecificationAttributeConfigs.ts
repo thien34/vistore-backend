@@ -9,4 +9,7 @@ export default class SpecificationAttributeConfigs extends Configs {
     static readonly createTitle = 'Create Specification Attribute'
     static readonly updateTitle = 'Update Specification Attribute'
     static readonly searchTitle = 'Search'
+    static readonly btnSave = 'Save'
+    static readonly btnDelete = 'Delete'
+    static readonly addTitle = 'Add specification attribute'
 }

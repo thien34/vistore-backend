@@ -21,19 +21,11 @@ const Breadcrumbs: React.FC = () => {
         }
     })
 
-    const labelValue =
-        pathSnippets.length > 0 ? capitalizeChar(pathSnippets[pathSnippets.length - 1].replace(/-/g, ' ')) : 'Home'
-
     return (
         <Row>
             <Col className='flex items-center gap-2 p-4'>
                 <Breadcrumb items={breadcrumbItems} />
             </Col>
-            {pathSnippets.length > 0 && (
-                <Col span={24} className='flex items-center pl-4 pb-2 font-medium'>
-                    <label>{labelValue}</label>
-                </Col>
-            )}
         </Row>
     )
 }
