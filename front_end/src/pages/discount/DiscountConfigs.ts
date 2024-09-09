@@ -1,4 +1,4 @@
-import ResourceURL from '@/constants/ResourceURL '
+import ResourceURL from '@/constants/ResourceURL'
 import { Configs } from '@/types/Configs'
 
 export default class DiscountConfigs extends Configs {
