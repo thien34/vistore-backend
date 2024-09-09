@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import { ProductDetailResponse, ProductResponse } from '@/model/Product'
 import ProductConfigs from '@/pages/product/ProductConfigs'
@@ -16,6 +17,7 @@ function useProductManageViewModel() {
     const [productId, setProductId] = useState<number | null>(null)
     const dispatch = useDispatch()
     const queryClient = useQueryClient()
+    const navigate = useNavigate()
     const [filter, setFilter] = useState<ProductFilter>({})
 
     // GET COLUMNS
@@ -60,7 +62,7 @@ function useProductManageViewModel() {
         onChange: onSelectChange,
     }
 
-    return { dataSource, columns, rowSelection, handleFilterChange }
+    return { dataSource, columns, rowSelection, handleFilterChange, handleRowClick }
 }
 
 export default useProductManageViewModel

@@ -3,7 +3,7 @@ import { Button, Dropdown } from 'antd'
 import { DownloadOutlined, ExportOutlined, ImportOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import ManagerPath from '@/constants/ManagerPath '
+import ManagerPath from '@/constants/ManagerPath'
 import { resetProductState } from '@/slice/productSlice'
 import { useDispatch } from 'react-redux'
 

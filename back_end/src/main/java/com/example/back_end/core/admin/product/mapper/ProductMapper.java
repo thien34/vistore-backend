@@ -6,6 +6,7 @@ import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductPictureMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.Comparator;
 import java.util.List;

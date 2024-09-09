@@ -136,10 +136,10 @@ public class Product extends Auditable {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "minCartQty")
+    @Column(name = "min_cart_qty")
     private Integer minCartQty;
 
-    @Column(name = "maxCartQty")
+    @Column(name = "max_cart_qty")
     private Integer maxCartQty;
 
     @JsonManagedReference

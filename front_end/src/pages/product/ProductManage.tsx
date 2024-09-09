@@ -4,7 +4,7 @@ import ProductFilter from './ProductFilter'
 import ProductActionManage from './ProductActionManage'
 
 export default function ProductManage() {
-    const { dataSource, columns, rowSelection, handleFilterChange } = useProductManageViewModel()
+    const { dataSource, columns, rowSelection, handleFilterChange, handleRowClick } = useProductManageViewModel()
 
     return (
         <>
@@ -18,6 +18,11 @@ export default function ProductManage() {
                     dataSource={dataSource}
                     columns={columns}
                     pagination={{ pageSize: 6 }}
+                    onRow={(record) => {
+                        return {
+                            onClick: () => handleRowClick(record),
+                        }
+                    }}
                 />
             </div>
         </>
