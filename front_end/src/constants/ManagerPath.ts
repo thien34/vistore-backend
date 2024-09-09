@@ -1,6 +1,7 @@
 class ManagerPath {
     // dashboard
     static readonly DASHBOARD = '/admin/dashboards'
+    static readonly PRODUCT_CREATE = '/admin/products/create'
 
     // product
     static readonly PRODUCT = '/admin/products'

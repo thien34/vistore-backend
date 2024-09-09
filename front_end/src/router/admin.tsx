@@ -18,6 +18,7 @@ import {
     ProductSpecificationAttributeMappingUpdate,
 } from '@/pages/productSpecificationAttributeMapping'
 import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
+import ProductCreate from '@/pages/product/ProductCreate'
 
 const routers = [
     {
@@ -124,6 +125,11 @@ const routers = [
         path: ManagerPath.PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING,
         layout: 'main',
         element: <ProductUpdate />,
+    },
+    {
+        path: ManagerPath.PRODUCT_CREATE,
+        layout: 'main',
+        element: <ProductCreate />,
     },
     {
         path: ManagerPath.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_ADD,

@@ -1,5 +1,8 @@
 package com.example.back_end.entity;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,10 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 
 @Getter
 @Setter
@@ -137,17 +136,26 @@ public class Product extends Auditable {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Column(name = "minCartQty")
+    private Integer minCartQty;
+
+    @Column(name = "maxCartQty")
+    private Integer maxCartQty;
+
     @JsonManagedReference
-    @OneToMany(mappedBy = "product",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
 
-    
     @JsonManagedReference
-    @OneToMany(mappedBy = "product",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductCategoryMapping> productCategoryMappings;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "product",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<ProductProductTagMapping> productProductTagMappings;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductManufacturerMapping> productManufacturerMappings;
 
     @JsonManagedReference

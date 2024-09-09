@@ -31,6 +31,10 @@ class ResourceURL {
     static readonly STOCK_QUANTITY_HISTORY = apiPath + '/stock-quantity-history'
     static readonly PRODUCT_VIDEO_MAPPING = apiPath + '/product-video-mappings'
     static readonly PRODUCT_PICTURE_MAPPING = apiPath + '/product-picture-mapping'
+
+    static readonly DISCOUNT = apiPath + '/discounts'
+    static readonly DISCOUNT_LIST_NAME = apiPath + '/discounts/list-name'
+
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'
     static readonly CLIENT_PRODUCT = clientApiPath + '/products'

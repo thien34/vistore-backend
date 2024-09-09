@@ -1,23 +1,21 @@
-package com.example.back_end.core.admin.product.payload.response;
+package com.example.back_end.core.admin.product.payload.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Builder
 @Setter
-public class ProductResponse {
+public class ProductRequest {
 
     private Long id;
 
+
+    @NotEmpty
     private String name;
 
     private String sku;
@@ -91,13 +89,12 @@ public class ProductResponse {
     private List<Long> categoryIds;
 
     private List<Long> manufacturerIds;
-
+    
     private List<String> productTags;
+    private List<Long> discountIds;
 
     private Integer minCartQty;
 
     private Integer maxCartQty;
-
-    private String imageUrl;
 
 }
