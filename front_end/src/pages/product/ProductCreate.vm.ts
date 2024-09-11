@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store/productStore'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { resetProductState, setProductErrors } from '@/slice/productSlice'
+import { resetProductState, setProduct, setProductErrors } from '@/slice/productSlice'
+import { CheckboxChangeEvent } from 'antd/es/checkbox'
 
 function useProductCreateViewModel() {
     const createApi = useCreateApi<ProductRequest>(ProductConfigs.resourceUrl)
@@ -18,6 +19,7 @@ function useProductCreateViewModel() {
         if (validateProduct()) {
             const productRequest: ProductRequest = {
                 ...product,
+                fullDescription: product.lastContent ?? '',
                 categories: [],
                 manufacturers: [],
                 availableStartDate: new Date().toISOString(),
@@ -44,7 +46,6 @@ function useProductCreateViewModel() {
             createApi.mutate(productRequest, {
                 onSuccess: (response) => {
                     const newProductId = response.data
-                    dispatch(resetProductState())
                     navigate(`/admin/products/${newProductId}`)
                 },
             })
@@ -65,12 +66,51 @@ function useProductCreateViewModel() {
         dispatch(setProductErrors({ ...errors, [fieldName]: '' }))
     }
 
+    const handleMarkAsNewChange = (e: { target: { checked: boolean } }) => {
+        dispatch(setProduct({ markAsNew: e.target.checked }))
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target
+        dispatch(setProduct({ [name]: value }))
+        if (errors[name]) {
+            clearError(name)
+        }
+    }
+
+    const handleCategoriesChange = (selectedValues: number[]) => {
+        dispatch(setProduct({ categoryIds: selectedValues }))
+    }
+
+    const handleManufacturerChange = (selectedValues: number[]) => {
+        dispatch(setProduct({ manufacturerIds: selectedValues }))
+    }
+
+    const handleProductTagsChange = (selectedValues: string[]) => {
+        dispatch(setProduct({ productTags: selectedValues }))
+    }
+
+    const handleCheckboxChange = (e: CheckboxChangeEvent) => {
+        const { name, checked } = e.target as { name: string; checked: boolean }
+        dispatch(setProduct({ [name]: checked }))
+    }
+    const handleDiscountsChange = (selectedValues: number[]) => {
+        dispatch(setProduct({ discountIds: selectedValues }))
+    }
+
     return {
         handleCreate,
         handleSaveAndContinueEdit,
         errors,
         setErrors,
         clearError,
+        handleMarkAsNewChange,
+        handleInputChange,
+        handleCategoriesChange,
+        handleManufacturerChange,
+        handleProductTagsChange,
+        handleCheckboxChange,
+        handleDiscountsChange,
     }
 }
 export default useProductCreateViewModel

@@ -169,7 +169,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<Long> manufacturerIds = productManufacturerMappingRepository.findByProductId(product.getId())
                 .stream()
-                .map(mapping -> ((ProductManufacturerMapping) mapping).getManufacturer()) // Lấy manufacturer
+                .map(mapping -> ((ProductManufacturerMapping) mapping).getManufacturer())
                 .filter(Objects::nonNull)
                 .map(Manufacturer::getId)
                 .collect(Collectors.toList());
@@ -182,6 +182,14 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductTag::getName)
                 .collect(Collectors.toList());
         response.setProductTags(productTags);
+
+        List<Long> discountIds = discountAppliedToProductRepository.findByProductId(product.getId())
+                .stream()
+                .map(mapping -> ((DiscountAppliedToProduct) mapping).getDiscount())
+                .filter(Objects::nonNull)
+                .map(Discount::getId)
+                .toList();
+        response.setDiscountIds(discountIds);
 
         return response;
     }
@@ -233,16 +241,17 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductManufacturerMapping> manufacturerMappings = manufacturers.stream()
                 .map(manufacturer -> ProductManufacturerMapping.builder()
-                        .id(manufacturer.getId())
+                        .manufacturer(manufacturer)
                         .product(product)
                         .build())
                 .toList();
 
         productManufacturerMappingRepository.saveAll(manufacturerMappings);
+
     }
 
     private void saveProductDiscountsToProduct(List<Discount> discounts, Product product) {
-        productManufacturerMappingRepository.deleteByProductId(product.getId());
+        discountAppliedToProductRepository.deleteByProductId(product.getId());
 
         List<DiscountAppliedToProduct> discountList = discounts.stream()
                 .map(discount -> DiscountAppliedToProduct.builder()

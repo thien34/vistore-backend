@@ -1,26 +1,14 @@
-import React from 'react'
 import { Collapse, Form, Input, Checkbox } from 'antd'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState, AppDispatch } from '@/redux/store/productStore'
-import { setProduct } from '@/slice/productSlice'
-import { CheckboxChangeEvent } from 'antd/es/checkbox'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store/productStore'
+import useProductCreateViewModel from './ProductCreate.vm'
 
 const { Panel } = Collapse
 const { Item } = Form
 
 export default function ProductShipping(): JSX.Element {
-    const dispatch = useDispatch<AppDispatch>()
     const product = useSelector((state: RootState) => state.product)
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        dispatch(setProduct({ [name]: parseFloat(value) || 0 }))
-    }
-
-    const handleCheckboxChange = (e: CheckboxChangeEvent) => {
-        const { name, checked } = e.target as { name: string; checked: boolean }
-        dispatch(setProduct({ [name]: checked }))
-    }
+    const { handleInputChange, handleCheckboxChange } = useProductCreateViewModel()
 
     return (
         <Collapse defaultActiveKey={['1']} className='mb-6'>

@@ -45,6 +45,7 @@ interface ProductState {
     maxCartQty: number
     manageInventoryMethodId: number
     errors: Record<string, string>
+    lastContent: string
 }
 
 export const initialState: ProductState = {
@@ -93,6 +94,7 @@ export const initialState: ProductState = {
     minCartQty: 0,
     maxCartQty: 0,
     errors: {},
+    lastContent: '',
 }
 
 const productSlice = createSlice({

@@ -1,14 +1,14 @@
 import { Button } from 'antd'
 import { SaveOutlined, EditOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons'
 import useProductCreateViewModel from './ProductCreate.vm'
-import useProductUpdateViewModelV2 from './ProductUpdate.vmV2'
+import useProductUpdateViewModel from './ProductUpdate.vm'
 type Props = {
     isUpdate: boolean
 }
 
 function ProductAction({ isUpdate }: Props) {
     const { handleCreate, handleSaveAndContinueEdit } = useProductCreateViewModel()
-    const { handleDeleteProduct } = useProductUpdateViewModelV2()
+    const { handleDeleteProduct } = useProductUpdateViewModel()
 
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-20'>

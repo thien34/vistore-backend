@@ -24,7 +24,13 @@ const ProductInfo = (): JSX.Element => {
     const [isMarkAsNew, setIsMarkAsNew] = useState(false)
     const dispatch = useDispatch<AppDispatch>()
     const product = useSelector((state: RootState) => state.product)
-    const { errors, clearError } = useProductCreateViewModel()
+    const {
+        handleMarkAsNewChange,
+        handleInputChange,
+        handleCategoriesChange,
+        handleManufacturerChange,
+        handleProductTagsChange,
+    } = useProductCreateViewModel()
 
     const { data: categories } = useGetApi<CategoryNameResponse[]>(
         CategoryConfigs.resourceUrlListName,
@@ -48,7 +54,7 @@ const ProductInfo = (): JSX.Element => {
         if (quill) {
             quill.on('text-change', () => {
                 const fullDescription = quill.root.innerHTML
-                dispatch(setProduct({ fullDescription }))
+                dispatch(setProduct({ lastContent: fullDescription }))
             })
         }
     }, [quill, dispatch])
@@ -62,31 +68,6 @@ const ProductInfo = (): JSX.Element => {
             quill.clipboard.dangerouslyPasteHTML(product.fullDescription)
         }
     }, [quill, product.fullDescription])
-
-    const handleMarkAsNewChange = (e: { target: { checked: boolean } }) => {
-        setIsMarkAsNew(e.target.checked as boolean)
-        dispatch(setProduct({ markAsNew: e.target.checked as boolean }))
-    }
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target
-        dispatch(setProduct({ [name]: value }))
-        if (errors[name]) {
-            clearError(name)
-        }
-    }
-
-    const handleCategoriesChange = (selectedValues: number[]) => {
-        dispatch(setProduct({ categoryIds: selectedValues }))
-    }
-
-    const handleManufacturerChange = (selectedValues: number[]) => {
-        dispatch(setProduct({ manufacturerIds: selectedValues }))
-    }
-
-    const handleProductTagsChange = (selectedValues: string[]) => {
-        dispatch(setProduct({ productTags: selectedValues }))
-    }
 
     return (
         <Collapse defaultActiveKey={['1']} className='mb-6'>

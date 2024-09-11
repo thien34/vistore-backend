@@ -94,6 +94,8 @@ public class ProductResponse {
 
     private List<String> productTags;
 
+    private List<Long> discountIds;
+
     private Integer minCartQty;
 
     private Integer maxCartQty;

@@ -1,31 +1,22 @@
 import { Collapse, Form, Input, Select } from 'antd'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState, AppDispatch } from '@/redux/store/productStore'
-import { setProduct } from '@/slice/productSlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store/productStore'
 import useGetApi from '@/hooks/use-get-api'
 import { DiscountNameResponse } from '@/model/Discount'
 import DiscountConfigs from '../discount/DiscountConfigs'
+import useProductCreateViewModel from './ProductCreate.vm'
 
 const { Panel } = Collapse
 
 const ProductPrice = (): JSX.Element => {
-    const dispatch = useDispatch<AppDispatch>()
     const product = useSelector((state: RootState) => state.product)
+    const { handleInputChange, handleDiscountsChange } = useProductCreateViewModel()
 
     const { data: discounts } = useGetApi<DiscountNameResponse[]>(
         DiscountConfigs.resourceUrlListName,
         DiscountConfigs.resourceKey,
         { discountType: 1 },
     )
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        dispatch(setProduct({ [name]: parseFloat(value) || 0 }))
-    }
-
-    const handleDiscountsChange = (selectedValues: number[]) => {
-        dispatch(setProduct({ discountIds: selectedValues }))
-    }
 
     return (
         <Collapse defaultActiveKey={['1']} className='mb-6'>
