@@ -71,7 +71,6 @@ const SpecificationAttributeGroupManage = () => {
                 />
                 <Collapse
                     defaultActiveKey={['2']}
-                    className='mb-6'
                     items={[
                         {
                             key: '2',

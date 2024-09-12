@@ -4,7 +4,7 @@ import useSpecificationAttributeCreateViewModel from '@/pages/specificationAttri
 import SpecificationAttributeConfigs from './SpecificationAttributeConfigs'
 
 const SpecificationAttributeCreate = () => {
-    const { layout, groups, handleSubmit, showSaveConfirm, form } = useSpecificationAttributeCreateViewModel()
+    const { layout, groups, handleSubmit, handleSave, form } = useSpecificationAttributeCreateViewModel()
 
     return (
         <>
@@ -13,12 +13,7 @@ const SpecificationAttributeCreate = () => {
                     <div className=''>{SpecificationAttributeConfigs.addTitle}</div>
                 </div>
                 <div className='flex gap-4 flex-wrap'>
-                    <Button
-                        className='default-btn-color'
-                        size='large'
-                        icon={<SaveOutlined />}
-                        onClick={showSaveConfirm}
-                    >
+                    <Button className='default-btn-color' size='large' icon={<SaveOutlined />} onClick={handleSave}>
                         {SpecificationAttributeConfigs.btnSave}
                     </Button>
                 </div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useCreateApi from '@/hooks/use-create-api'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
-import { Form, Modal } from 'antd'
+import { Form } from 'antd'
 import useGetApi from '@/hooks/use-get-api'
 import { SpecificationAttributeGroupNameResponse } from '@/model/SpecificationAttributeGroup'
 
@@ -38,25 +38,19 @@ const useSpecificationAttributeCreateViewModel = () => {
 
         mutate(requestBody, {
             onSuccess: () => {
-                navigate('/admin/specification-attributes')
+                navigate(-1)
             },
         })
     }
 
-    const showSaveConfirm = () => {
-        Modal.confirm({
-            title: 'Are you sure you want to save?',
-            content: 'Please confirm if you want to save the changes.',
-            onOk: () => {
-                form.submit()
-            },
-        })
+    const handleSave = () => {
+        form.submit()
     }
 
     return {
         groups,
         handleSubmit,
-        showSaveConfirm,
+        handleSave,
         layout,
         form,
     }

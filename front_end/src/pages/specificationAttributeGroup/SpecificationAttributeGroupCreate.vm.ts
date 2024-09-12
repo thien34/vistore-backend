@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Form, Modal } from 'antd'
+import { Form } from 'antd'
 import useCreateApi from '@/hooks/use-create-api.ts'
 import SpecificationAttributeGroupConfigs from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupConfigs.ts'
 
@@ -23,17 +23,9 @@ const useSpecificationAttributeGroupCreateViewModel = () => {
         })
     }
 
-    const showSaveConfirm = () => {
-        Modal.confirm({
-            title: 'Are you sure you want to save?',
-            content: 'Please confirm if you want to save the changes.',
-            onOk: () => handleSave,
-        })
-    }
-
     return {
         form,
-        showSaveConfirm,
+        handleSave,
         layout,
     }
 }

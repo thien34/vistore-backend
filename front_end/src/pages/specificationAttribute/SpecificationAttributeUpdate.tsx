@@ -60,7 +60,13 @@ function SpecificationAttributeUpdate() {
                     <Button className='default-btn-color' size='large' icon={<SaveOutlined />} onClick={handleSave}>
                         {SpecificationAttributeConfigs.btnSave}
                     </Button>
-                    <Button danger size='large' icon={<DeleteOutlined />} onClick={handleDeleteAttribute}>
+                    <Button
+                        type='primary'
+                        danger
+                        size='large'
+                        icon={<DeleteOutlined />}
+                        onClick={handleDeleteAttribute}
+                    >
                         {SpecificationAttributeConfigs.btnDelete}
                     </Button>
                 </div>

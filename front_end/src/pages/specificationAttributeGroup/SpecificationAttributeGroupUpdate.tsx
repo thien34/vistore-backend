@@ -1,7 +1,9 @@
 import { Button, Col, Form, Input, InputNumber, Row, Table } from 'antd'
 import useSpecificationAttributeGroupUpdateViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroupUpdate.vm.ts'
-import { SaveOutlined } from '@ant-design/icons'
+import { PlusOutlined, SaveOutlined } from '@ant-design/icons'
 import SpecificationAttributeGroupConfigs from './SpecificationAttributeGroupConfigs'
+import { Link } from 'react-router-dom'
+import ManagerPath from '@/constants/ManagerPath'
 
 function SpecificationAttributeGroupUpdate() {
     const {
@@ -83,11 +85,17 @@ function SpecificationAttributeGroupUpdate() {
                             key='delete'
                             type='primary'
                             danger
+                            size='middle'
                             onClick={handleModalDelete}
                             disabled={selectedModalRowKeys.length === 0}
                         >
                             {SpecificationAttributeGroupConfigs.btnDelete}
                         </Button>
+                        <Link to={ManagerPath.SPECIFICATION_ATTRIBUTE_ADD}>
+                            <Button icon={<PlusOutlined />} className='default-btn-color' size='middle'>
+                                Add Attribute
+                            </Button>
+                        </Link>
                     </div>
                 </div>
                 <Table

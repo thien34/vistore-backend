@@ -55,7 +55,7 @@ export const getSpecAttrUnGroupCols: TableColumnsType<SpecificationAttributeResp
         title: 'Edit',
         key: 'edit',
         render: (record) => (
-            <Link to={`${ManagerPath.SPECIFICATION_ATTRIBUTE}/${record?.id}/update`}>
+            <Link to={`${ManagerPath.SPECIFICATION_ATTRIBUTE_UPDATE.replace(':id', record?.id)}`}>
                 <Button className='default-btn-color' icon={<EditOutlined />} size='middle'>
                     Edit
                 </Button>

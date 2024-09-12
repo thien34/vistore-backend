@@ -32,7 +32,7 @@ class ManagerPath {
 
     // specification attribute
     static readonly SPECIFICATION_ATTRIBUTE = '/admin/specification-attributes'
-    static readonly SPECIFICATION_ATTRIBUTE_ADD = '/admin/specification-attributes/add'
+    static readonly SPECIFICATION_ATTRIBUTE_ADD = '/admin/specification-attributes/specification-attributes-add'
     static readonly SPECIFICATION_ATTRIBUTE_UPDATE = '/admin/specification-attributes/:id/update'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_ADD =
         '/admin/specification-attributes/specification-attribute-group-add'
