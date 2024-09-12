@@ -71,7 +71,7 @@ function SpecificationAttributeGroupUpdate() {
                                     },
                                 ]}
                             >
-                                <InputNumber className='w-36' type='number' />
+                                <InputNumber className='min-w-36' type='number' />
                             </Form.Item>
                         </Col>
                     </Row>

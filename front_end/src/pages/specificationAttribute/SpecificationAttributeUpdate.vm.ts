@@ -40,46 +40,29 @@ const useSpecificationAttributeUpdateViewModel = () => {
     const [color, setColor] = useState('')
     const [isColorPickerVisible, setIsColorPickerVisible] = useState(false)
 
-    const processColor = (color: string | null): string | null => {
-        if (color === null || color === undefined || color === '') {
-            return null // Returns null if color is null, undefined, or an empty string
-        }
-        return color // Returns the color value unchanged if not null or an empty string
+    const layout = {
+        labelCol: { span: 5 },
+        wrapperCol: { span: 15 },
     }
 
-    const formatColorHex = (hex: string) => {
-        // Ensure the color is a valid 6-character hex code
-        if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-            return '#FFFFFF' // Default to white if the color is not valid
-        }
-        return hex.toUpperCase()
+    const processColor = (color: string | null): string | null => {
+        return color?.trim() || null
     }
+
+    const formatColorHex = (hex: string) => (/^#[0-9A-Fa-f]{6}$/.test(hex) ? hex.toUpperCase() : '#FFFFFF')
 
     const handleColorCheckChange = (e: CheckboxChangeEvent) => {
         const isChecked = e.target.checked
         setIsColorPickerVisible(isChecked)
-
-        // If the checkbox is not selected, set the color to null or default value
-        if (!isChecked) {
-            setColor('#FFFFFF') // Or another default value if needed
-        }
+        setColor(isChecked ? color : '#FFFFFF')
     }
 
     const handleColorChange = (value: AggregationColor) => {
-        const { r, g, b } = value.toRgb() // Assuming value has a `toRgb` method returning an object with r, g, b properties
-        function rgbToHex(r: number, g: number, b: number): string {
-            return (
-                '#' +
-                [r, g, b]
-                    .map((x) => {
-                        const hex = x.toString(16)
-                        return hex.length === 1 ? '0' + hex : hex
-                    })
-                    .join('')
-                    .toUpperCase()
-            )
-        }
-        const hex = rgbToHex(r, g, b)
+        const { r, g, b } = value.toRgb()
+        const hex = `#${[r, g, b]
+            .map((x) => x.toString(16).padStart(2, '0'))
+            .join('')
+            .toUpperCase()}`
         setColor(hex)
     }
 
@@ -125,12 +108,7 @@ const useSpecificationAttributeUpdateViewModel = () => {
         }
 
         // Determine the final color to be saved
-        let finalColor: string | null = null
-        if (isColorPickerVisible) {
-            finalColor = color === '#FFFFFF' ? '#FFFFFF' : color
-        } else {
-            finalColor = null
-        }
+        const finalColor = isColorPickerVisible ? color : null
 
         if (editingOption) {
             setOptions((prevOptions) =>
@@ -167,7 +145,7 @@ const useSpecificationAttributeUpdateViewModel = () => {
         const updatedOptions = options.map((option) => ({
             id: Number(option.id),
             name: option.name,
-            colorSquaresRgb: option.color === '#FFFFFF' ? '#FFFFFF' : option.color,
+            colorSquaresRgb: option.color || '#FFFFFF',
             displayOrder: option.displayOrder,
             productSpecificationAttributeMappings: [],
             specificationAttributeId: Number(id),
@@ -181,18 +159,9 @@ const useSpecificationAttributeUpdateViewModel = () => {
             listOptions: updatedOptions,
         }
 
-        // Show confirmation dialog
-        Modal.confirm({
-            title: 'Are you sure you want to save?',
-            content: 'Your changes will be saved, and you will be redirected.',
-            okText: 'Yes',
-            cancelText: 'No',
-            onOk: () => {
-                updateAttribute(dataToSend, {
-                    onSuccess: () => {
-                        navigate(ManagerPath.SPECIFICATION_ATTRIBUTE)
-                    },
-                })
+        updateAttribute(dataToSend, {
+            onSuccess: () => {
+                navigate(ManagerPath.SPECIFICATION_ATTRIBUTE)
             },
         })
     }
@@ -221,13 +190,8 @@ const useSpecificationAttributeUpdateViewModel = () => {
 
         // Update the state of color and checkbox
         const processedColor = processColor(option.color)
-        if (processedColor !== null) {
-            setColor(processedColor)
-            setIsColorPickerVisible(true) //Checkbox is selected if colored
-        } else {
-            setColor('#FFFFFF') // Or default color value
-            setIsColorPickerVisible(false) // Checkbox is not selected if there is no color
-        }
+        setColor(processedColor || '#FFFFFF')
+        setIsColorPickerVisible(processedColor !== null)
     }
 
     const handleDeleteOption = (optionId: number) => {
@@ -265,6 +229,7 @@ const useSpecificationAttributeUpdateViewModel = () => {
         setIsModalVisible,
         options,
         setOptions,
+        layout,
     }
 }
 

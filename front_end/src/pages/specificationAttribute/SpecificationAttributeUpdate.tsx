@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Form, Input, Select, Button, Table, Modal, Checkbox, InputNumber, ColorPicker } from 'antd'
-import { DeleteOutlined, SaveOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons'
 import SpecificationAttributeConfigs from '@/pages/specificationAttribute/SpecificationAttributeConfigs.ts'
 import useSpecificationAttributeUpdateViewModel from './SpecificationAttributeUpdate.vm'
 
@@ -25,6 +25,7 @@ function SpecificationAttributeUpdate() {
         setIsModalVisible,
         options,
         setOptions,
+        layout,
     } = useSpecificationAttributeUpdateViewModel()
 
     useEffect(() => {
@@ -54,7 +55,7 @@ function SpecificationAttributeUpdate() {
         <>
             <div className='flex justify-between mb-5'>
                 <div className='text-2xl font-medium '>
-                    <div className=''>Edit specification attribute details</div>
+                    <div className=''>{SpecificationAttributeConfigs.editTitle}</div>
                 </div>
                 <div className='flex gap-4 flex-wrap'>
                     <Button className='default-btn-color' size='large' icon={<SaveOutlined />} onClick={handleSave}>
@@ -72,7 +73,7 @@ function SpecificationAttributeUpdate() {
                 </div>
             </div>
             <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6'>
-                <Form form={form} layout='vertical' initialValues={{ displayOrder: 0 }}>
+                <Form {...layout} form={form} layout='horizontal' size='large' initialValues={{ displayOrder: 0 }}>
                     <Form.Item
                         name='name'
                         label='Name'
@@ -110,15 +111,25 @@ function SpecificationAttributeUpdate() {
                             },
                         ]}
                     >
-                        <InputNumber type='number' />
+                        <InputNumber type='number' className='min-w-36' />
                     </Form.Item>
                 </Form>
-                <h2>Options</h2>
-                <Table columns={columns} dataSource={options} pagination={{ pageSize: 6 }} />
-                <Button style={{ marginTop: '20px' }} onClick={() => setIsModalVisible(true)}>
-                    Add a new option
-                </Button>
-
+                <div className='flex justify-between mb-5'>
+                    <div className='text-base'>
+                        <div className=''>{SpecificationAttributeConfigs.optionsTitle}</div>
+                    </div>
+                    <div className='flex gap-4 flex-wrap'>
+                        <Button
+                            icon={<PlusOutlined />}
+                            className='default-btn-color'
+                            size='middle'
+                            onClick={() => setIsModalVisible(true)}
+                        >
+                            {SpecificationAttributeConfigs.addOptionBtn}
+                        </Button>
+                    </div>
+                </div>
+                <Table rowKey='id' columns={columns} bordered dataSource={options} pagination={{ pageSize: 6 }} />
                 <Modal
                     title={editingOption ? 'Edit Option' : 'Add New Option'}
                     open={isModalVisible}
@@ -126,7 +137,7 @@ function SpecificationAttributeUpdate() {
                     onCancel={handleCancel}
                     okText={editingOption ? 'Update' : 'Add'}
                 >
-                    <Form form={modalForm} layout='vertical'>
+                    <Form form={modalForm} initialValues={{ optionDisplayOrder: 0 }} layout='vertical' size='large'>
                         <Form.Item
                             name='optionName'
                             label='Name'
@@ -142,10 +153,10 @@ function SpecificationAttributeUpdate() {
                                 Enable color picker
                             </Checkbox>
                             {isColorPickerVisible && (
-                                <div style={{ marginTop: '10px' }}>
+                                <div className='mt-3'>
                                     <ColorPicker value={color} onChange={handleColorChange} />
-                                    <div style={{ marginTop: '10px' }}>
-                                        <strong>Selected Color:</strong> {formatColorHex(color)}
+                                    <div>
+                                        Selected color: <strong>{formatColorHex(color)}</strong>
                                     </div>
                                 </div>
                             )}
@@ -163,7 +174,7 @@ function SpecificationAttributeUpdate() {
                                 },
                             ]}
                         >
-                            <InputNumber defaultValue={0} type='number' />
+                            <InputNumber type='number' />
                         </Form.Item>
                     </Form>
                 </Modal>
