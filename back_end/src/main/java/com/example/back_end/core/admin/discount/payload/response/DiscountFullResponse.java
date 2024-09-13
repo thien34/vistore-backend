@@ -10,23 +10,44 @@ import java.time.Instant;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DiscountResponse {
+public class DiscountFullResponse {
 
     Long id;
 
+    Boolean isActive;
+
     String name;
 
-    String discountTypeName;
+    Integer discountTypeId;
 
-    BigDecimal discountAmount;
+    Boolean appliedToSubCategories;
+
+    Boolean usePercentage;
 
     BigDecimal discountPercentage;
+
+    BigDecimal maxDiscountAmount;
+
+    Boolean requiresCouponCode;
+
+    String couponCode;
+
+    Integer discountLimitationId;
 
     Instant startDateUtc;
 
     Instant endDateUtc;
 
+    String comment;
+
+    BigDecimal discountAmount;
+
+    Boolean isCumulative;
+
     Integer limitationTimes;
 
-    Boolean isActive;
+    Integer maxDiscountedQuantity;
+
+    BigDecimal minOderAmount;
+
 }

@@ -1,5 +1,6 @@
 package com.example.back_end.core.admin.discount.payload.request;
 
+import com.example.back_end.infrastructure.constant.DiscountType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ public class DiscountRequest {
 
     String name;
 
-    Integer discountTypeId;
+    DiscountType discountTypeId;
 
     Boolean appliedToSubCategories;
 

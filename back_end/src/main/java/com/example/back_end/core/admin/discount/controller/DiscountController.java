@@ -1,10 +1,12 @@
 package com.example.back_end.core.admin.discount.controller;
 
 import com.example.back_end.core.admin.discount.payload.request.DiscountRequest;
+import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
 import com.example.back_end.core.admin.discount.service.DiscountService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.infrastructure.constant.DiscountType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -34,10 +38,19 @@ public class DiscountController {
 
     @GetMapping
     public ResponseData<PageResponse<List<DiscountResponse>>> getAllDiscounts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String couponCode,
+            @RequestParam(required = false) DiscountType discountTypeId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant endDate,
+            @RequestParam(required = false) Boolean isActive,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
-        PageResponse<List<DiscountResponse>> response = discountService.getAllDiscounts(pageNo, pageSize);
+        PageResponse<List<DiscountResponse>> response = discountService.getAllDiscounts(
+                name, couponCode, discountTypeId,
+                startDate, endDate, isActive, pageNo, pageSize
+        );
 
         return ResponseData.<PageResponse<List<DiscountResponse>>>builder()
                 .status(HttpStatus.OK.value())
@@ -92,6 +105,21 @@ public class DiscountController {
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
                 .message("Discount deleted successfully")
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get discount by ID", description = "Retrieve discount details using the provided ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Discount found successfully"),
+            @ApiResponse(responseCode = "404", description = "Discount not found")
+    })
+    public ResponseData<DiscountFullResponse> getDiscountById(@PathVariable Long id) {
+        DiscountFullResponse discountResponse = discountService.getDiscountById(id);
+        return ResponseData.<DiscountFullResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Discount retrieved successfully")
+                .data(discountResponse)
                 .build();
     }
 

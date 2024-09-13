@@ -2,7 +2,10 @@ package com.example.back_end.entity;
 
 import com.example.back_end.infrastructure.constant.DiscountLimitationType;
 import com.example.back_end.infrastructure.constant.DiscountType;
+import com.example.back_end.infrastructure.utils.DiscountLimitationTypeConverter;
+import com.example.back_end.infrastructure.utils.DiscountTypeConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,11 +33,13 @@ public class Discount extends Auditable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Convert(converter = DiscountTypeConverter.class)
     @Column(name = "discount_type_id")
-    private Integer discountTypeId;
+    private DiscountType discountTypeId;
 
+    @Convert(converter = DiscountLimitationTypeConverter.class)
     @Column(name = "discount_limitation_id")
-    private Integer discountLimitationId;
+    private DiscountLimitationType discountLimitationId;
 
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
@@ -83,20 +88,5 @@ public class Discount extends Auditable {
 
     @Column(name = "is_active")
     private Boolean isActive;
-
-    public DiscountType getDiscountType() {
-        return DiscountType.getById(discountTypeId);
-    }
-    public void setDiscountType(DiscountType discountType) {
-        this.discountTypeId = discountType.getId();
-    }
-    // Getter and Setter for discountLimitationId
-    public DiscountLimitationType getDiscountLimitation() {
-        return DiscountLimitationType.getById(this.discountLimitationId);
-    }
-
-    public void setDiscountLimitation(DiscountLimitationType discountLimitation) {
-        this.discountLimitationId = discountLimitation.getId();
-    }
 
 }
