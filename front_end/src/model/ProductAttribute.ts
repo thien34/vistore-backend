@@ -1,10 +1,13 @@
-import { PredefinedProductAttributeValueResponse } from '@/model/PredefinedProductAttributeValue.ts'
+import {
+    PredefinedProductAttributeValueRequest,
+    PredefinedProductAttributeValueResponse,
+} from '@/model/PredefinedProductAttributeValue.ts'
 
 export type ProductAttributeRequest = {
-    id: number
+    id?: number
     name: string
-    description: string
-    values: PredefinedProductAttributeValueResponse
+    description?: string
+    values?: PredefinedProductAttributeValueRequest[]
 }
 
 export type ProductAttributeResponse = {

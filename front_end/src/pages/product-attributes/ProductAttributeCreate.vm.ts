@@ -5,6 +5,7 @@ import useCreateApi from '@/hooks/use-create-api.ts'
 import { ProductAttributeRequest } from '@/model/ProductAttribute.ts'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
 import ProductAttributeConfigs from './ProductAttributeConfigs'
+import { getProductAttributeValueColumns } from './ProductAttributeColumns'
 
 function useProductAttributeCreate() {
     const { mutate: createProductAttribute } = useCreateApi<ProductAttributeRequest>(
@@ -28,9 +29,12 @@ function useProductAttributeCreate() {
         productAttribute: 0,
         setIsEditPriceAdjustment: 0,
     })
-    const [isOpenConfirm, setOpenConfirm] = useState(false)
-    const [loading, setLoading] = useState(false)
     const [current, setCurrent] = useState(1)
+
+    const layout = {
+        labelCol: { span: 5 },
+        wrapperCol: { span: 13 },
+    }
 
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
         const maxId = Math.max(...arr.map((item) => item.id ?? 0))
@@ -38,56 +42,24 @@ function useProductAttributeCreate() {
     }
 
     const handleAddValue = () => {
-        if (!newValue.name || newValue.name.length > 50) {
-            console.error('Name is required and cannot exceed 50 characters')
-            return
-        }
-
         if (isEdit) {
             const index = values.findIndex((item) => item.id === newValue.id)
             if (index > -1) {
                 const updatedValues = [...values]
                 updatedValues[index] = newValue
                 setValues(updatedValues)
-                console.log('Value updated successfully')
             }
         } else {
             const newId = getNewId(values)
             const newValueWithId = { ...newValue, id: newId }
             setValues([...values, newValueWithId])
-            console.log('Value added successfully')
         }
-
         formAdd.resetFields()
-        setNewValue({
-            id: getNewId(values),
-            name: '',
-            priceAdjustment: 0,
-            priceAdjustmentUsePercentage: false,
-            weightAdjustment: 0,
-            cost: 0,
-            isPreSelected: false,
-            displayOrder: 0,
-            productAttribute: 0,
-            setIsEditPriceAdjustment: 0,
-        })
         setIsModalOpen(false)
         setIsEdit(false)
     }
     const handleCancelModal = () => {
         formAdd.resetFields()
-        setNewValue({
-            id: getNewId(values),
-            name: '',
-            priceAdjustment: 0,
-            priceAdjustmentUsePercentage: false,
-            weightAdjustment: 0,
-            cost: 0,
-            isPreSelected: false,
-            displayOrder: 0,
-            productAttribute: 0,
-            setIsEditPriceAdjustment: 0,
-        })
         setIsModalOpen(false)
         setIsEdit(false)
     }
@@ -111,90 +83,42 @@ function useProductAttributeCreate() {
         setIsEdit(true)
     }
 
-    const handleFinish = async (formValues: { name?: string; description?: string }) => {
-        setLoading(true)
-        setOpenConfirm(false)
-        try {
-            if (!formValues.name || formValues.name.length > 50) {
-                console.error('Name is required and cannot exceed 50 characters')
-                setLoading(false)
-                return
-            }
-            form.resetFields()
-            setValues([])
-            const data = {
-                name: formValues.name,
-                description: formValues.description || '',
-                values: values,
-            }
-            await onFinish(data)
-            navigate('/admin/product-attributes', { state: { reload: true } })
-        } catch (error) {
-            console.error('Error submitting form:', error)
-        } finally {
-            setLoading(false)
+    const handleFinish = async (formValues: { name: string; description: string }) => {
+        form.resetFields()
+        setValues([])
+        const data: ProductAttributeRequest = {
+            name: formValues.name,
+            description: formValues.description || '',
+            values: values,
         }
+        createProductAttribute(data, {
+            onSuccess: () => {
+                navigate(-1)
+            },
+        })
     }
 
     const handlePageChange = (page: number) => {
         setCurrent(page)
     }
 
-    const onFinish = async (values: ProductAttributeRequest) => {
-        try {
-            console.log(values)
-            createProductAttribute(values, {
-                onSuccess: (data: string) => {
-                    console.log('data tra ve thanh cong: ', data)
-                    navigate(-1)
-                },
-                onError: (error: { message: string }) => {
-                    console.log('data tra ve loi: ', error)
-                    console.error(error.message)
-                },
-            })
-        } catch (error) {
-            console.error('Error in onFinish:', error)
-        }
-    }
-
-    const createNumericRegex = (maxLength: number, decimalPlaces: number) => {
-        return new RegExp(`^\\d{0,${maxLength}}(\\.\\d{0,${decimalPlaces}})?$`)
-    }
-
-    const handleInputChange =
-        (field: keyof PredefinedProductAttributeValueRequest, maxLength: number, decimalPlaces: number) =>
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value
-            const regex = createNumericRegex(maxLength, decimalPlaces)
-            if (regex.test(value)) {
-                setNewValue({
-                    ...newValue,
-                    [field]: value ? parseFloat(value) : 0,
-                })
-            }
-        }
+    const columns = getProductAttributeValueColumns(handleEditValue, handleRemoveValue)
 
     return {
-        onFinish,
         handlePageChange,
         handleFinish,
         handleAddValue,
-        handleRemoveValue,
-        handleEditValue,
         isModalOpen,
+        handleCancelModal,
         setIsModalOpen,
         values,
         newValue,
-        isOpenConfirm,
-        setOpenConfirm,
-        loading,
+        columns,
         current,
         form,
         formAdd,
         setNewValue,
-        handleInputChange,
-        handleCancelModal,
+        layout,
     }
 }
 

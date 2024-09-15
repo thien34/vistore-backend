@@ -35,7 +35,7 @@ const getManufactureColumns = (): TableColumnsType<ManufacturerResponse> => [
         key: 'action',
         render: (_, record) => (
             <Link to={`/admin/manufacturers/${record.id}/update`}>
-                <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
+                <Button className='default-btn-color' icon={<EditOutlined />}>
                     {AppActions.EDIT}
                 </Button>
             </Link>

@@ -1,4 +1,5 @@
 import AppActions from '@/constants/AppActions'
+import ManagerPath from '@/constants/ManagerPath'
 import { DeleteOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Modal } from 'antd'
 import Input from 'antd/es/input/Input'
@@ -6,7 +7,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 interface ProductAttributeSearchProps {
-    onSearch?: (filter: { name: string; published: boolean | undefined }) => void
+    onSearch?: (filter: { name: string }) => void
     handleDelete?: () => void
     selectedRowKeys?: React.Key[]
 }
@@ -19,9 +20,8 @@ export default function ProductAttributeSearch({
     const [name, setName] = useState<string>('')
 
     const handleSearch = () => {
-        const payload: { name: string } = { name }
         if (onSearch) {
-            onSearch(payload)
+            onSearch({ name })
         }
     }
 
@@ -69,12 +69,8 @@ export default function ProductAttributeSearch({
                         >
                             {AppActions.DELETE}
                         </Button>
-                        <Link to='/admin/product-attributes/add'>
-                            <Button
-                                className='bg-[#374151] border-[#374151] text-white'
-                                icon={<PlusOutlined />}
-                                size='large'
-                            >
+                        <Link to={ManagerPath.PRODUCT_ATTRIBUTE_ADD}>
+                            <Button className='default-btn-color' icon={<PlusOutlined />} size='large'>
                                 {AppActions.ADD}
                             </Button>
                         </Link>

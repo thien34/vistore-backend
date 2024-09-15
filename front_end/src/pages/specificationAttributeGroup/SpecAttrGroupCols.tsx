@@ -24,7 +24,7 @@ export const getSpecAttrGroupCols: TableColumnsType = [
         align: 'center',
         title: 'Actions',
         key: 'Detail',
-        render: (record) => (
+        render: (_, record) => (
             <Link to={`${ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_UPDATE.replace(':id', record?.id)}`}>
                 <Button className='default-btn-color' icon={<EditOutlined />} size='middle'>
                     Detail
