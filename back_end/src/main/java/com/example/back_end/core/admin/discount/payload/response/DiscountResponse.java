@@ -29,4 +29,5 @@ public class DiscountResponse {
     Integer limitationTimes;
 
     Boolean isActive;
+
 }

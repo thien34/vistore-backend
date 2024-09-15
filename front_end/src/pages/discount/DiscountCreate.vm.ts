@@ -5,6 +5,7 @@ import useCreateApi from '@/hooks/use-create-api'
 import DiscountConfigs from './DiscountConfigs'
 import { DiscountRequest } from '@/model/Discount'
 import { useNavigate } from 'react-router-dom'
+import ManagerPath from '@/constants/ManagerPath'
 
 function useDiscountCreateViewModel() {
     const [form] = Form.useForm()
@@ -67,7 +68,7 @@ function useDiscountCreateViewModel() {
         }
         createDiscount(discountRequest, {
             onSuccess: () => {
-                navigate('/admin/discounts')
+                navigate(ManagerPath.DISCOUNT)
             },
         })
     }

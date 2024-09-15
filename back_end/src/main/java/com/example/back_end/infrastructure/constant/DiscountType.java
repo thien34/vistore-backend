@@ -11,8 +11,7 @@ public enum DiscountType implements IdentifiableEnum<Integer> {
     ASSIGNED_TO_PRODUCTS(1),
     ASSIGNED_TO_CATEGORIES(2),
     ASSIGNED_TO_MANUFACTURERS(3),
-    ASSIGNED_TO_SHIPPING(4),
-    ASSIGNED_TO_ORDER_SUBTOTAL(5);
+    ASSIGNED_TO_ORDER_SUBTOTAL(4);
 
     private final int id;
 

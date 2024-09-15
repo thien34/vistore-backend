@@ -80,7 +80,6 @@ export default function DiscountSearch({ search }: DiscountSearchProps) {
                                 <Select.Option value='ASSIGNED_TO_MANUFACTURERS'>
                                     Assigned to manufacturers
                                 </Select.Option>
-                                <Select.Option value='ASSIGNED_TO_SHIPPING'>Assigned to shipping</Select.Option>
                                 <Select.Option value='ASSIGNED_TO_ORDER_SUBTOTAL'>
                                     Assigned to order subtotal
                                 </Select.Option>

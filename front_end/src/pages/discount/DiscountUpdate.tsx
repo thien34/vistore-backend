@@ -8,8 +8,7 @@ const DISCOUNT_TYPES = [
     { value: 1, label: 'Assigned to products' },
     { value: 2, label: 'Assigned to categories' },
     { value: 3, label: 'Assigned to manufacturers' },
-    { value: 4, label: 'Assigned to shipping' },
-    { value: 5, label: 'Assigned to order subtotal' },
+    { value: 4, label: 'Assigned to order subtotal' },
 ]
 
 const DISCOUNT_LIMITATIONS = [

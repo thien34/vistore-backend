@@ -43,8 +43,7 @@ export default function DiscountCreate() {
                             <Option value='1'>Assigned to products</Option>
                             <Option value='2'>Assigned to categories</Option>
                             <Option value='3'>Assigned to manufacturers</Option>
-                            <Option value='4'>Assigned to shipping</Option>
-                            <Option value='5'>Assigned to order subtotal</Option>
+                            <Option value='4'>Assigned to order subtotal</Option>
                         </Select>
                     </Form.Item>
 
@@ -152,11 +151,12 @@ export default function DiscountCreate() {
 
                     {(discountLimitation === '1' || discountLimitation === '2') && (
                         <Form.Item
+                            initialValue={1}
                             name='limitationTimes'
                             label='N times'
                             rules={[{ required: true, message: 'Please input the number of times!' }]}
                         >
-                            <InputNumber min={1} defaultValue={1} />
+                            <InputNumber min={1} />
                         </Form.Item>
                     )}
 

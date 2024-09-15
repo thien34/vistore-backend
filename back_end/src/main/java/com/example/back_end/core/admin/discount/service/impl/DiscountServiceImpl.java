@@ -1,13 +1,13 @@
 package com.example.back_end.core.admin.discount.service.impl;
 
 import com.example.back_end.core.admin.discount.mapper.DiscountMapper;
+import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.DiscountRequest;
 import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
 import com.example.back_end.core.admin.discount.service.DiscountService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Discount;
-import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
@@ -22,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -36,20 +35,23 @@ public class DiscountServiceImpl implements DiscountService {
     DiscountMapper discountMapper;
 
     @Override
-    @Transactional
-    public PageResponse<List<DiscountResponse>> getAllDiscounts(
-            String name,
-            String couponCode,
-            DiscountType discountTypeId,
-            Instant startDate,
-            Instant endDate,
-            Boolean isActive,
-            int pageNo,
-            int pageSize
-    ) {
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
+    public PageResponse<List<DiscountResponse>> getAllDiscounts(DiscountFilterRequest filterRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                filterRequest.getPageNo() != null ? filterRequest.getPageNo() : 1,
+                filterRequest.getPageSize() != null ? filterRequest.getPageSize() : 6,
+                "id",
+                SortType.DESC.getValue()
+        );
+
         Page<Discount> discountPage = discountRepository.searchDiscounts(
-                name, couponCode, discountTypeId, startDate, endDate, isActive, pageable);
+                filterRequest.getName(),
+                filterRequest.getCouponCode(),
+                filterRequest.getDiscountTypeId(),
+                filterRequest.getStartDate(),
+                filterRequest.getEndDate(),
+                filterRequest.getIsActive(),
+                pageable
+        );
 
         List<DiscountResponse> discountResponseList = discountPage.stream()
                 .map(discountMapper::toResponse)
@@ -65,7 +67,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     @Transactional
-    public DiscountResponse createDiscount(DiscountRequest discountRequest) {
+    public void createDiscount(DiscountRequest discountRequest) {
         String trimmedName = discountRequest.getName().trim().replaceAll("\\s+", " ");
 
         if (discountRepository.existsByName(trimmedName))
@@ -80,7 +82,7 @@ public class DiscountServiceImpl implements DiscountService {
             discount.setMaxDiscountAmount(maxDiscountAmount);
         }
         Discount savedDiscount = discountRepository.save(discount);
-        return discountMapper.toResponse(savedDiscount);
+        discountMapper.toResponse(savedDiscount);
 
     }
 
@@ -132,7 +134,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     @Transactional
-    public DiscountResponse updateDiscount(Long id, DiscountRequest discountRequest) {
+    public void updateDiscount(Long id, DiscountRequest discountRequest) {
 
         Discount discount = discountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Discount not found with ID: " + id));
@@ -146,7 +148,8 @@ public class DiscountServiceImpl implements DiscountService {
 
         Discount updatedDiscount = discountRepository.save(discount);
 
-        return discountMapper.toResponse(updatedDiscount);
+        discountMapper.toResponse(updatedDiscount);
+
     }
 
     @Override
