@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +37,6 @@ public class RelatedProductServicesImpl implements RelatedProductServices {
     }
 
     @Override
-    @Transactional
     public void UpdateRelatedProducts(Long id, RelatedProductRequest relatedProductRequest) {
         RelatedProduct relatedProduct = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Not Found Related Product Record with ID: " + id));
         mapper.updateRelatedProduct(relatedProduct, relatedProductRequest);

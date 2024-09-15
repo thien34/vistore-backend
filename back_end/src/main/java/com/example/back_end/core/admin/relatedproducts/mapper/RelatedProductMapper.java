@@ -1,14 +1,10 @@
 package com.example.back_end.core.admin.relatedproducts.mapper;
-
 import com.example.back_end.core.admin.relatedproducts.payload.request.RelatedProductRequest;
 import com.example.back_end.core.admin.relatedproducts.payload.response.RelatedProductResponse;
 import com.example.back_end.entity.RelatedProduct;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface RelatedProductMapper {
     @Mapping(target = "nameProduct2", source = "product2.name")
