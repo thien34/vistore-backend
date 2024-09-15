@@ -34,6 +34,7 @@ class ResourceURL {
 
     static readonly DISCOUNT = apiPath + '/discounts'
     static readonly DISCOUNT_LIST_NAME = apiPath + '/discounts/list-name'
+    static readonly RELATED_PRODUCT = apiPath + '/related-product'
 
     // CLIENT
     static readonly CLIENT_CATEGORY = clientApiPath + '/categories'

@@ -64,6 +64,10 @@ class ManagerPath {
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = '/admin/product-specification-attribute-mappings'
     static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =
         '/admin/product-specification-attribute-mappings/by-product/:productId'
+    //related product
+    static readonly RELATED_PRODUCT = '/admin/related-product/:productId'
+    static readonly RELATED_PRODUCT_ADD = '/admin/related-product/add'
+    static readonly RELATED_PRODUCT_UPDATE = '/admin/related-product/:id/update'
 }
 
 export default ManagerPath
