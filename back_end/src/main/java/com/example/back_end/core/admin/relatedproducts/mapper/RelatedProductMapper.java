@@ -16,8 +16,6 @@ public interface RelatedProductMapper {
     @Mapping(target = "product1Id", source = "product1.id")
     RelatedProductResponse mapToRelatedProductResponse(RelatedProduct relatedProduct);
 
-    List<RelatedProductResponse> mapToRelatedProductResponseList(List<RelatedProduct> relatedProducts);
-
     @Mapping(target = "product1.id", source = "product1Id")
     @Mapping(target = "product2.id", source = "product2Id")
     void updateRelatedProduct(@MappingTarget RelatedProduct relatedProduct, RelatedProductRequest request);
