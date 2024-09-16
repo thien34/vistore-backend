@@ -25,7 +25,7 @@ public class RelatedProductServicesImpl implements RelatedProductServices {
     private final RelatedProductMapper mapper;
 
     @Override
-    public void AddRelatedProducts(List<RelatedProductRequest> lstRelatedProductRequest) {
+    public void addRelatedProducts(List<RelatedProductRequest> lstRelatedProductRequest) {
         List<RelatedProduct> relatedProductList = lstRelatedProductRequest.stream()
                 .map(mapper::mapToRelatedProduct).filter(relatedProduct -> !isDuplicate(relatedProduct)).toList();
         repo.saveAll(relatedProductList);
@@ -37,14 +37,14 @@ public class RelatedProductServicesImpl implements RelatedProductServices {
     }
 
     @Override
-    public void UpdateRelatedProducts(Long id, RelatedProductRequest relatedProductRequest) {
+    public void updateRelatedProducts(Long id, RelatedProductRequest relatedProductRequest) {
         RelatedProduct relatedProduct = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Not Found Related Product Record with ID: " + id));
         mapper.updateRelatedProduct(relatedProduct, relatedProductRequest);
         repo.save(relatedProduct);
     }
 
     @Override
-    public void DeleteRelatedProducts(List<Long> id) {
+    public void deleteRelatedProducts(List<Long> id) {
         repo.deleteAllById(id);
     }
 

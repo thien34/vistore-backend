@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -41,7 +40,7 @@ public class RelatedProductController {
 
     @PostMapping()
     public ResponseData<Void> addRelatedProduct(@RequestBody @Valid List<RelatedProductRequest> relatedProductRequests) {
-        relatedProductServices.AddRelatedProducts(relatedProductRequests);
+        relatedProductServices.addRelatedProducts(relatedProductRequests);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Add new Related Products successfully")
@@ -50,7 +49,7 @@ public class RelatedProductController {
 
     @DeleteMapping()
     public ResponseData<Void> deleteRelatedProduct(@RequestBody List<Long> ids) {
-        relatedProductServices.DeleteRelatedProducts(ids);
+        relatedProductServices.deleteRelatedProducts(ids);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Delete Related Products successfully")
@@ -59,7 +58,7 @@ public class RelatedProductController {
 
     @PutMapping("/{id}")
     public ResponseData<Void> updateRelatedProduct(@PathVariable("id") Long id, @RequestBody @Valid RelatedProductRequest relatedProductRequest) {
-        relatedProductServices.UpdateRelatedProducts(id, relatedProductRequest);
+        relatedProductServices.updateRelatedProducts(id, relatedProductRequest);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Update Related Products successfully")
