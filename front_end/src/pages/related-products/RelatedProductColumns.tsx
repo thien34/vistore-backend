@@ -1,4 +1,5 @@
 import AppActions from '@/constants/AppActions'
+import ManagerPath from '@/constants/ManagerPath'
 import { RelatedProductResponse } from '@/model/RelatedProduct'
 import { EditOutlined, EyeOutlined } from '@ant-design/icons'
 import { Button, TableColumnsType } from 'antd'
@@ -25,7 +26,7 @@ const getRelatedProductColumns = (
         title: 'View',
         key: 'view',
         render: (_, record) => (
-            <Link to ={`/admin/product/${record.product2Id}`}>
+            <Link to ={`${ManagerPath.PRODUCT}/${record.product2Id}`}>
                 <Button className='bg-[#374151] border-[#374151] text-white' icon={<EyeOutlined />}>
                 </Button>
             </Link>
