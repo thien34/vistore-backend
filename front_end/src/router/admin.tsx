@@ -19,6 +19,7 @@ import {
 } from '@/pages/productSpecificationAttributeMapping'
 import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
 import ProductCreate from '@/pages/product/ProductCreate'
+import { DiscountCreate, DiscountManage, DiscountUpdate } from '@/pages/discount'
 
 const routers = [
     {
@@ -140,6 +141,21 @@ const routers = [
         path: ManagerPath.PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE,
         layout: 'main',
         element: <ProductSpecificationAttributeMappingUpdate />,
+    },
+    {
+        path: ManagerPath.DISCOUNT,
+        layout: 'main',
+        element: <DiscountManage />,
+    },
+    {
+        path: ManagerPath.DISCOUNT_ADD,
+        layout: 'main',
+        element: <DiscountCreate />,
+    },
+    {
+        path: ManagerPath.DISCOUNT_UPDATE,
+        layout: 'main',
+        element: <DiscountUpdate />,
     },
 ]
 

@@ -11,6 +11,10 @@ class ManagerPath {
 
     // product picture mapping
     static readonly PRODUCT_PICTURE_MAPPING = '/admin/product-picture-mapping'
+    // discount
+    static readonly DISCOUNT = '/admin/discounts'
+    static readonly DISCOUNT_ADD = '/admin/discounts/add'
+    static readonly DISCOUNT_UPDATE = '/admin/discounts/:id'
 
     // category
     static readonly CATEGORY = '/admin/categories'
