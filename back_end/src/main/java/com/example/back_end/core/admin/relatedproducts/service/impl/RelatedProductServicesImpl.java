@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -52,9 +51,7 @@ public class RelatedProductServicesImpl implements RelatedProductServices {
     public PageResponse<List<RelatedProductResponse>> getAll(Long id, Integer pageNo, Integer pageSize) {
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "displayOrder", SortType.ASC.getValue());
         Page<RelatedProduct> relatedProductPage = repo.findByProduct1Id(id, pageable);
-        List<RelatedProductResponse> relatedProductResponses = relatedProductPage.getContent()
-                .stream().map(mapper::mapToRelatedProductResponse).toList();
-
+        List<RelatedProductResponse> relatedProductResponses = mapper.maptoListRelatedProductResponse(relatedProductPage);
         return PageResponse.<List<RelatedProductResponse>>builder()
                 .page(relatedProductPage.getNumber())
                 .size(relatedProductPage.getSize())

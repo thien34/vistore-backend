@@ -5,6 +5,10 @@ import com.example.back_end.entity.RelatedProduct;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface RelatedProductMapper {
     @Mapping(target = "nameProduct2", source = "product2.name")
@@ -20,4 +24,5 @@ public interface RelatedProductMapper {
     @Mapping(target = "product2.id", source = "product2Id")
     RelatedProduct mapToRelatedProduct(RelatedProductRequest request);
 
+    List<RelatedProductResponse> maptoListRelatedProductResponse(Page<RelatedProduct> relatedProductPage);
 }
