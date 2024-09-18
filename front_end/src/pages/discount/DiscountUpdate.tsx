@@ -2,20 +2,8 @@ import { Form, Input, Button, Checkbox, DatePicker, InputNumber, Select, Card } 
 import 'tailwindcss/tailwind.css'
 import useDiscountUpdateViewModel from './DiscountUpdate.vm'
 import { DeleteOutlined } from '@ant-design/icons'
-
-const DISCOUNT_TYPES = [
-    { value: 0, label: 'Assigned to order total' },
-    { value: 1, label: 'Assigned to products' },
-    { value: 2, label: 'Assigned to categories' },
-    { value: 3, label: 'Assigned to manufacturers' },
-    { value: 4, label: 'Assigned to order subtotal' },
-]
-
-const DISCOUNT_LIMITATIONS = [
-    { value: 0, label: 'Unlimited' },
-    { value: 1, label: 'N times only' },
-    { value: 2, label: 'N times per customer' },
-]
+import { DiscountTypeNumberEnum } from './DiscountTypeEnum'
+import { DiscountLimitationNumberEnum } from './DiscountLimitationEnum'
 
 export default function DiscountUpdate() {
     const {
@@ -31,6 +19,8 @@ export default function DiscountUpdate() {
         handleUsePercentageChange,
         handleRequiresCouponCodeChange,
         handleDiscountLimitationChange,
+        DISCOUNT_TYPES,
+        DISCOUNT_LIMITATIONS,
     } = useDiscountUpdateViewModel()
 
     return (
@@ -63,13 +53,15 @@ export default function DiscountUpdate() {
                             options={DISCOUNT_TYPES}
                         />
                     </Form.Item>
-                    {discountTypeId === 2 && (
+                    {discountTypeId === DiscountTypeNumberEnum.CATEGORIES && (
                         <Form.Item name='appliedToSubCategories' valuePropName='checked'>
                             <Checkbox>Applied to subcategories</Checkbox>
                         </Form.Item>
                     )}
 
-                    {(discountTypeId === 1 || discountTypeId === 2 || discountTypeId === 3) && (
+                    {(discountTypeId === DiscountTypeNumberEnum.PRODUCTS ||
+                        discountTypeId === DiscountTypeNumberEnum.CATEGORIES ||
+                        discountTypeId === DiscountTypeNumberEnum.MANUFACTURERS) && (
                         <Form.Item
                             name='maxDiscountedQuantity'
                             label='Maximum discounted quantity'
@@ -133,17 +125,17 @@ export default function DiscountUpdate() {
                             name='startDate'
                             label='Start date'
                             rules={[{ required: true, message: 'Please select the start date!' }]}
-                            style={{ flex: 1 }}
+                            className='flex-1'
                         >
-                            <DatePicker size='large' showTime style={{ width: '100%' }} />
+                            <DatePicker size='large' showTime className='w-full' />
                         </Form.Item>
                         <Form.Item
                             name='endDate'
                             label='End date'
                             rules={[{ required: true, message: 'Please select the end date!' }]}
-                            style={{ flex: 1 }}
+                            className='flex-1'
                         >
-                            <DatePicker size='large' showTime style={{ width: '100%' }} />
+                            <DatePicker size='large' showTime className='w-full' />
                         </Form.Item>
                     </div>
                 </Card>
@@ -168,7 +160,8 @@ export default function DiscountUpdate() {
                             options={DISCOUNT_LIMITATIONS}
                         />
                     </Form.Item>
-                    {(discountLimitation === 1 || discountLimitation === 2) && (
+                    {(discountLimitation === DiscountLimitationNumberEnum.N_TIMES_ONLY ||
+                        discountLimitation === DiscountLimitationNumberEnum.N_TIMES_PER_CUSTOMER) && (
                         <Form.Item
                             name='limitationTimes'
                             label='N times'
@@ -191,7 +184,7 @@ export default function DiscountUpdate() {
                         size='large'
                         icon={<DeleteOutlined />}
                         onClick={handleDelete}
-                        style={{ marginLeft: '10px' }}
+                        className='ml-3'
                     >
                         Delete
                     </Button>

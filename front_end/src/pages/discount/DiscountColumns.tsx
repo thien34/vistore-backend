@@ -1,8 +1,10 @@
+import ManagerPath from '@/constants/ManagerPath'
 import { DiscountResponse } from '@/model/Discount'
 import { EditOutlined } from '@ant-design/icons'
 import { Button, TableColumnsType } from 'antd'
 import dayjs from 'dayjs'
 import { Link } from 'react-router-dom'
+import DiscountConfigs from './DiscountConfigs'
 
 const getDiscountColumns = (): TableColumnsType<DiscountResponse> => [
     {
@@ -45,7 +47,7 @@ const getDiscountColumns = (): TableColumnsType<DiscountResponse> => [
         dataIndex: 'startDate',
         key: 'startDate',
         align: 'center',
-        render: (_, record) => <span>{dayjs(record.startDateUtc).format('DD/MM/YYYY HH:mm:ss')}</span>,
+        render: (_, record) => <span>{dayjs(record.startDateUtc).format(DiscountConfigs.dateTimeUTC)}</span>,
         sorter: (a, b) => dayjs(a.startDateUtc).unix() - dayjs(b.startDateUtc).unix(),
     },
     {
@@ -54,7 +56,7 @@ const getDiscountColumns = (): TableColumnsType<DiscountResponse> => [
         dataIndex: 'endDate',
         key: 'endDate',
         align: 'center',
-        render: (_, record) => <span>{dayjs(record.endDateUtc).format('DD/MM/YYYY HH:mm:ss')}</span>,
+        render: (_, record) => <span>{dayjs(record.endDateUtc).format(DiscountConfigs.dateTimeUTC)}</span>,
         sorter: (a, b) => dayjs(a.endDateUtc).unix() - dayjs(b.endDateUtc).unix(),
     },
     {
@@ -85,7 +87,7 @@ const getDiscountColumns = (): TableColumnsType<DiscountResponse> => [
         key: 'action',
         align: 'center',
         render: (_, record) => (
-            <Link to={`/admin/discounts/${record.id}`}>
+            <Link to={`${ManagerPath.DISCOUNT_UPDATE.replace(':id', record.id.toString())}`}>
                 <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
                     Edit
                 </Button>

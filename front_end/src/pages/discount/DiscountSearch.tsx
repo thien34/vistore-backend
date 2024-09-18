@@ -1,6 +1,7 @@
 import { Button, Col, DatePicker, Form, Input, Row, Select } from 'antd'
 import { useState } from 'react'
 import dayjs from 'dayjs'
+import DiscountConfigs from './DiscountConfigs'
 
 export type Filter = {
     startDate?: string
@@ -37,8 +38,8 @@ export default function DiscountSearch({ search }: DiscountSearchProps) {
                         <Form.Item label='Start Date'>
                             <DatePicker
                                 showTime
-                                placeholder='mm/dd/yyyy hh:mm:ss'
-                                style={{ width: '100%' }}
+                                placeholder='From'
+                                className='w-full'
                                 onChange={(_date, dateString) => {
                                     if (typeof dateString === 'string') {
                                         setFilter((prev) => ({
@@ -54,7 +55,8 @@ export default function DiscountSearch({ search }: DiscountSearchProps) {
                         <Form.Item label='End Date'>
                             <DatePicker
                                 showTime
-                                style={{ width: '100%' }}
+                                placeholder='To'
+                                className='w-full'
                                 onChange={(_date, dateString) => {
                                     if (typeof dateString === 'string') {
                                         setFilter((prev) => ({
@@ -70,7 +72,7 @@ export default function DiscountSearch({ search }: DiscountSearchProps) {
                         <Form.Item label='Discount Type'>
                             <Select
                                 defaultValue='All'
-                                style={{ width: '100%' }}
+                                className='w-full'
                                 onChange={(value) => setFilter((prev) => ({ ...prev, discountTypeId: value }))}
                             >
                                 <Select.Option value='All'>All</Select.Option>
@@ -106,7 +108,7 @@ export default function DiscountSearch({ search }: DiscountSearchProps) {
                         <Form.Item label='Is Active'>
                             <Select
                                 defaultValue='All'
-                                style={{ width: '100%' }}
+                                className='w-full'
                                 onChange={(value) => setFilter((prev) => ({ ...prev, isActive: value }))}
                             >
                                 <Select.Option value='All'>All</Select.Option>
@@ -117,7 +119,7 @@ export default function DiscountSearch({ search }: DiscountSearchProps) {
                     </Col>
                     <Col span={24}>
                         <Button type='primary' onClick={handleSearch}>
-                            Search
+                            {DiscountConfigs.searchTitle}
                         </Button>
                     </Col>
                 </Row>

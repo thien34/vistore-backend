@@ -9,4 +9,5 @@ export default class DiscountConfigs extends Configs {
     static readonly createTitle = 'Create Discount'
     static readonly updateTitle = 'Update Discount'
     static readonly searchTitle = 'Search Discount'
+    static readonly dateTimeUTC = 'DD/MM/YYYY HH:mm:ss'
 }

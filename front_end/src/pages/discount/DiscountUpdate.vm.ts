@@ -8,16 +8,29 @@ import DiscountConfigs from './DiscountConfigs'
 import { useNavigate, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api'
+import { DiscountLimitationNumberEnum } from './DiscountLimitationEnum'
+import ManagerPath from '@/constants/ManagerPath'
 
 function useDiscountUpdateViewModel() {
     const [form] = Form.useForm()
-
     const [usePercentage, setUsePercentage] = useState<boolean>(false)
     const [requiresCouponCode, setRequiresCouponCode] = useState<boolean>(false)
     const [discountLimitation, setDiscountLimitation] = useState<number>(0)
     const [discountTypeId, setDiscountTypeId] = useState<number>(0)
     const navigate = useNavigate()
+    const DISCOUNT_TYPES = [
+        { value: 0, label: 'Assigned to order total' },
+        { value: 1, label: 'Assigned to products' },
+        { value: 2, label: 'Assigned to categories' },
+        { value: 3, label: 'Assigned to manufacturers' },
+        { value: 4, label: 'Assigned to order subtotal' },
+    ]
 
+    const DISCOUNT_LIMITATIONS = [
+        { value: 0, label: 'Unlimited' },
+        { value: 1, label: 'N times only' },
+        { value: 2, label: 'N times per customer' },
+    ]
     const { id } = useParams<{ id: string }>()
     const { data, isSuccess } = useGetByIdApi<DiscountRequest>(
         DiscountConfigs.resourceUrl,
@@ -67,13 +80,18 @@ function useDiscountUpdateViewModel() {
             comment: values.comment || '',
             discountAmount: usePercentage ? null : values.discountAmount,
             isCumulative: values.isCumulative || false,
-            limitationTimes: [1, 2].includes(discountLimitation) ? values.limitationTimes : 0,
+            limitationTimes: [
+                DiscountLimitationNumberEnum.N_TIMES_ONLY,
+                DiscountLimitationNumberEnum.N_TIMES_PER_CUSTOMER,
+            ].includes(discountLimitation)
+                ? values.limitationTimes
+                : DiscountLimitationNumberEnum.UNLIMITED,
             maxDiscountedQuantity: values.maxDiscountedQuantity || null,
             minOderAmount: values.minOrderAmount || null,
         }
         updateDiscount(discountRequest, {
             onSuccess: () => {
-                navigate('/admin/discounts')
+                navigate(ManagerPath.DISCOUNT)
             },
         })
     }
@@ -87,7 +105,7 @@ function useDiscountUpdateViewModel() {
             onOk: () => {
                 deleteDiscount(Number(id), {
                     onSuccess: () => {
-                        navigate(`/admin/discounts`)
+                        navigate(ManagerPath.DISCOUNT)
                     },
                 })
             },
@@ -125,6 +143,8 @@ function useDiscountUpdateViewModel() {
         handleDiscountLimitationChange,
         load,
         handleDelete,
+        DISCOUNT_TYPES,
+        DISCOUNT_LIMITATIONS,
     }
 }
 

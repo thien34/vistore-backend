@@ -3,6 +3,8 @@ import useDiscountViewModel from './Discount.vm'
 import DiscountSearch from './DiscountSearch'
 import { PlusSquareOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import ManagerPath from '@/constants/ManagerPath'
+import DiscountConfigs from './DiscountConfigs'
 
 export default function DiscountManage() {
     const { columns, dataResources, filter, handleTableChange, handleSearch } = useDiscountViewModel()
@@ -24,9 +26,9 @@ export default function DiscountManage() {
                         onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
                     }}
                 />
-                <Link to='/admin/discounts/add'>
+                <Link to={ManagerPath.DISCOUNT_ADD}>
                     <Button type='primary' icon={<PlusSquareOutlined />}>
-                        Add discount
+                        {DiscountConfigs.createTitle}
                     </Button>
                 </Link>
             </div>

@@ -6,6 +6,7 @@ import DiscountConfigs from './DiscountConfigs'
 import { DiscountRequest } from '@/model/Discount'
 import { useNavigate } from 'react-router-dom'
 import ManagerPath from '@/constants/ManagerPath'
+import { DiscountLimitationEnum } from './DiscountLimitationEnum'
 
 function useDiscountCreateViewModel() {
     const [form] = Form.useForm()
@@ -62,7 +63,12 @@ function useDiscountCreateViewModel() {
             comment: values.comment || '',
             discountAmount: values.usePercentage ? null : values.discountAmount,
             isCumulative: values.isCumulative || false,
-            limitationTimes: ['1', '2'].includes(values.discountLimitationId) ? values.limitationTimes : 0,
+            limitationTimes: [
+                DiscountLimitationEnum.N_TIMES_ONLY,
+                DiscountLimitationEnum.N_TIMES_PER_CUSTOMER,
+            ].includes(values.discountLimitationId)
+                ? values.limitationTimes
+                : DiscountLimitationEnum.UNLIMITED,
             maxDiscountedQuantity: values.maxDiscountedQuantity || null,
             minOderAmount: values.minOderAmount || null,
         }

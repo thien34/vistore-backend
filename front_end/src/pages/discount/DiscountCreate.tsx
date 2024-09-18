@@ -1,9 +1,9 @@
 import { Form, Input, Button, Checkbox, DatePicker, InputNumber, Select, Card } from 'antd'
 import 'tailwindcss/tailwind.css'
 import useDiscountCreateViewModel from './DiscountCreate.vm'
-
+import { DiscountTypeEnum } from './DiscountTypeEnum'
+import { DiscountLimitationEnum } from './DiscountLimitationEnum'
 const { Option } = Select
-
 export default function DiscountCreate() {
     const {
         form,
@@ -37,23 +37,25 @@ export default function DiscountCreate() {
                 </Card>
 
                 <Card title='Discount Type and Details' className='mb-4'>
-                    <Form.Item name='discountType' label='Discount type' initialValue='0'>
+                    <Form.Item name='discountType' label='Discount type' initialValue={DiscountTypeEnum.ORDER_TOTAL}>
                         <Select size='large' onChange={handleDiscountTypeChange} value={discountType}>
-                            <Option value='0'>Assigned to order total</Option>
-                            <Option value='1'>Assigned to products</Option>
-                            <Option value='2'>Assigned to categories</Option>
-                            <Option value='3'>Assigned to manufacturers</Option>
-                            <Option value='4'>Assigned to order subtotal</Option>
+                            <Option value={DiscountTypeEnum.ORDER_TOTAL}>Assigned to order total</Option>
+                            <Option value={DiscountTypeEnum.PRODUCTS}>Assigned to products</Option>
+                            <Option value={DiscountTypeEnum.CATEGORIES}>Assigned to categories</Option>
+                            <Option value={DiscountTypeEnum.MANUFACTURERS}>Assigned to manufacturers</Option>
+                            <Option value={DiscountTypeEnum.ORDER_SUBTOTAL}>Assigned to order subtotal</Option>
                         </Select>
                     </Form.Item>
 
-                    {discountType === '2' && (
+                    {discountType === DiscountTypeEnum.CATEGORIES && (
                         <Form.Item name='appliedToSubCategories' valuePropName='checked'>
                             <Checkbox>Applied to subcategories</Checkbox>
                         </Form.Item>
                     )}
 
-                    {(discountType === '1' || discountType === '2' || discountType === '3') && (
+                    {(discountType === DiscountTypeEnum.PRODUCTS ||
+                        discountType === DiscountTypeEnum.CATEGORIES ||
+                        discountType === DiscountTypeEnum.MANUFACTURERS) && (
                         <Form.Item
                             name='maxDiscountedQuantity'
                             label='Maximum discounted quantity'
@@ -120,18 +122,18 @@ export default function DiscountCreate() {
                             name='startDate'
                             label='Start date'
                             rules={[{ required: true, message: 'Please select the start date!' }]}
-                            style={{ flex: 1 }}
+                            className='flex-1'
                         >
-                            <DatePicker size='large' showTime style={{ width: '100%' }} />
+                            <DatePicker size='large' showTime className='w-full' />
                         </Form.Item>
 
                         <Form.Item
                             name='endDate'
                             label='End date'
                             rules={[{ required: true, message: 'Please select the end date!' }]}
-                            style={{ flex: 1 }}
+                            className='flex-1'
                         >
-                            <DatePicker size='large' showTime style={{ width: '100%' }} />
+                            <DatePicker size='large' showTime className='w-full' />
                         </Form.Item>
                     </div>
                 </Card>
@@ -141,15 +143,20 @@ export default function DiscountCreate() {
                         <Checkbox>Cumulative with other discounts</Checkbox>
                     </Form.Item>
 
-                    <Form.Item name='discountLimitationId' label='Discount limitation' initialValue='0'>
+                    <Form.Item
+                        name='discountLimitationId'
+                        label='Discount limitation'
+                        initialValue={DiscountLimitationEnum.UNLIMITED}
+                    >
                         <Select size='large' onChange={handleDiscountLimitationChange} value={discountLimitation}>
-                            <Option value='0'>Unlimited</Option>
-                            <Option value='1'>N times only</Option>
-                            <Option value='2'>N times per customer</Option>
+                            <Option value={DiscountLimitationEnum.UNLIMITED}>Unlimited</Option>
+                            <Option value={DiscountLimitationEnum.N_TIMES_ONLY}>N times only</Option>
+                            <Option value={DiscountLimitationEnum.N_TIMES_PER_CUSTOMER}>N times per customer</Option>
                         </Select>
                     </Form.Item>
 
-                    {(discountLimitation === '1' || discountLimitation === '2') && (
+                    {(discountLimitation === DiscountLimitationEnum.N_TIMES_ONLY ||
+                        discountLimitation === DiscountLimitationEnum.N_TIMES_PER_CUSTOMER) && (
                         <Form.Item
                             initialValue={1}
                             name='limitationTimes'
