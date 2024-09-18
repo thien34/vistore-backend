@@ -72,7 +72,7 @@ const items: MenuItem[] = [
         getItem('Activity Types', '20'),
     ]),
     getItem('Promotions', '21', <TagsOutlined />, [
-        getItem('Discounts', '22'),
+        getItem(<Link to={ManagerPath.DISCOUNT}>Discounts</Link>, '22'),
         getItem('Affiliates', '23'),
         getItem('Newsletter subscribers', '24'),
         getItem('Campaigns', '25'),

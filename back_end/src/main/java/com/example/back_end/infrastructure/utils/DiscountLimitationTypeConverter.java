@@ -5,7 +5,9 @@ import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class DiscountLimitationTypeConverter extends GenericEnumConverter<DiscountLimitationType, Integer> {
+
     public DiscountLimitationTypeConverter() {
         super(DiscountLimitationType.class);
     }
+
 }

@@ -1,7 +1,9 @@
 package com.example.back_end.infrastructure.utils;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
+@Converter
 public class GenericEnumConverter<E extends Enum<E> & IdentifiableEnum<T>, T> implements AttributeConverter<E, T> {
     private final Class<E> enumClass;
 
@@ -29,4 +31,5 @@ public class GenericEnumConverter<E extends Enum<E> & IdentifiableEnum<T>, T> im
         }
         throw new IllegalArgumentException("Unknown value: " + dbData);
     }
+
 }

@@ -13,6 +13,7 @@ import com.example.back_end.infrastructure.exception.DataIntegrityViolationExcep
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.utils.PageUtils;
+import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
@@ -43,7 +44,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
             throw new DataIntegrityViolationException(ErrorCode.PRODUCT_ATTRIBUTE_NOT_EXISTED.getMessage());
 
         if (predefinedProductAttributeValueRepository
-                .existsByName(request.getName().trim().replaceAll("\\s+", " ")))
+                .existsByName(StringUtils.sanitizeText(request.getName())))
             throw new ExistsByNameException(ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_NAME_EXISTED.getMessage());
 
         PredefinedProductAttributeValue value = predefinedProductAttributeValueMapper.toEntity(request);
@@ -88,7 +89,7 @@ public class PredefinedProductAttributeValueServiceImpl implements PredefinedPro
                         ErrorCode.PREDEFINED_PRODUCT_ATTRIBUTE_VALUE_NOT_EXISTED.getMessage()));
 
         if (productAttributeRepository
-                .existsByName(request.getName().trim().replaceAll("\\s+", " "))) {
+                .existsByName(StringUtils.sanitizeText(request.getName()))) {
             throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         }
 

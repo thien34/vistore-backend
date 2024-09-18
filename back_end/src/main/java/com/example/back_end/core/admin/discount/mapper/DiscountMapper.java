@@ -12,6 +12,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface DiscountMapper {
 
@@ -19,6 +21,8 @@ public interface DiscountMapper {
 
     @Mapping(target = "discountTypeName", source = "discountTypeId", qualifiedByName = "mapDiscountTypeName")
     DiscountResponse toResponse(Discount discount);
+
+    List<DiscountResponse> toResponseList(List<Discount> discounts);
 
     @Mapping(target = "discountTypeId", source = "discountTypeId", qualifiedByName = "mapDiscountTypeId")
     @Mapping(target = "discountLimitationId", source = "discountLimitationId", qualifiedByName = "mapDiscountLimitationTypeId")
@@ -33,11 +37,6 @@ public interface DiscountMapper {
     @Named("mapDiscountTypeName")
     default String mapDiscountTypeName(DiscountType discountType) {
         return discountType != null ? discountType.name() : null;
-    }
-
-    @Named("mapDiscountLimitationTypeName")
-    default String mapDiscountLimitationTypeName(DiscountLimitationType discountLimitationType) {
-        return discountLimitationType != null ? discountLimitationType.name() : null;
     }
 
     @Named("mapDiscountTypeId")

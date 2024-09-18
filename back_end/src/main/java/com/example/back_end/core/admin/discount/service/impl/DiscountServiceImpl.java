@@ -17,12 +17,12 @@ import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.ConvertEnumTypeUtils;
 import com.example.back_end.infrastructure.utils.PageUtils;
+import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -44,13 +44,15 @@ public class DiscountServiceImpl implements DiscountService {
         DiscountType discountType = ConvertEnumTypeUtils.converDiscountType(type);
 
         return discounts
-                .stream().filter(discount -> discount.getDiscountTypeId() == discountType)
+                .stream()
+                .filter(discount -> discount.getDiscountTypeId() == discountType)
                 .map(discountMapper::toDiscountNameResponse)
                 .toList();
     }
 
     @Override
     public PageResponse<List<DiscountResponse>> getAllDiscounts(DiscountFilterRequest filterRequest) {
+
         Pageable pageable = PageUtils.createPageable(
                 filterRequest.getPageNo() != null ? filterRequest.getPageNo() : 1,
                 filterRequest.getPageSize() != null ? filterRequest.getPageSize() : 6,
@@ -68,12 +70,10 @@ public class DiscountServiceImpl implements DiscountService {
                 pageable
         );
 
-        List<DiscountResponse> discountResponseList = discountPage.stream()
-                .map(discountMapper::toResponse)
-                .toList();
+        List<DiscountResponse> discountResponseList = discountMapper.toResponseList(discountPage.getContent());
 
         return PageResponse.<List<DiscountResponse>>builder()
-                .page(discountPage.getNumber() + 1)
+                .page(discountPage.getNumber())
                 .size(discountPage.getSize())
                 .totalPage(discountPage.getTotalPages())
                 .items(discountResponseList)
@@ -81,11 +81,10 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    @Transactional
     public void createDiscount(DiscountRequest discountRequest) {
-        String trimmedName = discountRequest.getName().trim().replaceAll("\\s+", " ");
 
-        if (discountRepository.existsByName(trimmedName))
+        String discountName = StringUtils.sanitizeText(discountRequest.getName());
+        if (discountRepository.existsByName(discountName))
             throw new ExistsByNameException(ErrorCode.DISCOUNT_WITH_THIS_NAME_ALREADY_EXISTS.getMessage());
 
         Discount discount = discountMapper.toEntity(discountRequest);
@@ -93,12 +92,39 @@ public class DiscountServiceImpl implements DiscountService {
         validateDiscount(discount);
 
         if (discount.getDiscountPercentage() != null && discount.getMaxDiscountAmount() == null) {
-            BigDecimal maxDiscountAmount = discount.getDiscountPercentage().multiply(new BigDecimal(100));
+            BigDecimal maxDiscountAmount = discount.getDiscountPercentage().multiply(BigDecimal.valueOf(100));
             discount.setMaxDiscountAmount(maxDiscountAmount);
         }
-        Discount savedDiscount = discountRepository.save(discount);
-        discountMapper.toResponse(savedDiscount);
 
+        discountRepository.save(discount);
+    }
+
+    @Override
+    public void updateDiscount(Long id, DiscountRequest discountRequest) {
+
+        Discount discount = findDiscountById(id);
+
+        String discountName = StringUtils.sanitizeText(discountRequest.getName());
+        if (discountRepository.existsByNameAndIdNot(discountName, id))
+            throw new ExistsByNameException("Discount with name '" + discountRequest.getName() + "' already exists.");
+
+        discountMapper.updateEntityFromRequest(discountRequest, discount);
+
+        validateDiscount(discount);
+
+        discountRepository.save(discount);
+    }
+
+    @Override
+    public DiscountFullResponse getDiscountById(Long id) {
+        Discount discount = findDiscountById(id);
+        return discountMapper.toGetOneResponse(discount);
+    }
+
+    @Override
+    public void deleteDiscount(Long id) {
+        Discount discount = findDiscountById(id);
+        discountRepository.delete(discount);
     }
 
     private void validateDiscount(Discount discount) {
@@ -147,39 +173,9 @@ public class DiscountServiceImpl implements DiscountService {
         }
     }
 
-    @Override
-    @Transactional
-    public void updateDiscount(Long id, DiscountRequest discountRequest) {
-
-        Discount discount = discountRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Discount not found with ID: " + id));
-
-        if (discountRepository.existsByNameAndIdNot(discountRequest.getName(), id))
-            throw new ExistsByNameException("Discount with name '" + discountRequest.getName() + "' already exists.");
-
-        discountMapper.updateEntityFromRequest(discountRequest, discount);
-
-        validateDiscount(discount);
-
-        Discount updatedDiscount = discountRepository.save(discount);
-
-        discountMapper.toResponse(updatedDiscount);
-
-    }
-
-    @Override
-    public DiscountFullResponse getDiscountById(Long id) {
-        Discount discount = discountRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Discount not found with ID: " + id));
-        return discountMapper.toGetOneResponse(discount);
-    }
-
-    @Override
-    public void deleteDiscount(Long id) {
-        Discount discount = discountRepository.findById(id)
+    private Discount findDiscountById(Long id) {
+        return discountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.DISCOUNT_NOT_FOUND.getMessage()));
-
-        discountRepository.delete(discount);
     }
 
 

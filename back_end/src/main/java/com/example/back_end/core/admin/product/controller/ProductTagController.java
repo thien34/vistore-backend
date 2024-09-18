@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.product.controller;
 
-import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductTagUpdateRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;

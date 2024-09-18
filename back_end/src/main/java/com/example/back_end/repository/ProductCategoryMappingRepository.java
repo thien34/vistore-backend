@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Collection;
 
 public interface ProductCategoryMappingRepository extends JpaRepository<ProductCategoryMapping, Long> {
+
     void deleteByProductId(Long id);
 
     Collection<Object> findByProductId(Long id);
+
 }

@@ -35,7 +35,8 @@ public class DiscountController {
     private final DiscountService discountService;
 
     @GetMapping("/list-name")
-    public ResponseData<List<DiscountNameResponse>> getAllDiscountNames(@RequestParam(name = "discountType") Integer discountType) {
+    public ResponseData<List<DiscountNameResponse>> getAllDiscountNames(
+            @RequestParam(name = "discountType") Integer discountType) {
 
         List<DiscountNameResponse> responses = discountService.getAllDiscounts(discountType);
 
@@ -117,6 +118,7 @@ public class DiscountController {
     })
     public ResponseData<DiscountFullResponse> getDiscountById(@PathVariable Long id) {
         DiscountFullResponse discountResponse = discountService.getDiscountById(id);
+
         return ResponseData.<DiscountFullResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Discount retrieved successfully")
