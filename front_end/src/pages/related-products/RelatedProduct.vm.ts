@@ -162,6 +162,7 @@ export default function useRelatedProductViewModel() {
 
         // Search and filtering
         productId,
+        filter,
         handleSearch,
     }
 }

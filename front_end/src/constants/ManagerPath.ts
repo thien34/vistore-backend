@@ -5,6 +5,7 @@ class ManagerPath {
 
     // product
     static readonly PRODUCT = '/admin/products'
+    static readonly PRODUCT_EDIT = '/admin/products/:productId'
 
     // product video mapping
     static readonly PRODUCT_VIDEO_MAPPING = '/admin/product-video-mappings'

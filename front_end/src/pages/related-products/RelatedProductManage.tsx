@@ -1,8 +1,10 @@
-import { Table } from "antd";
+import { Collapse, Table } from "antd";
 import useRelatedProductViewModel from "./RelatedProduct.vm";
 import RelatedProductAction from "./RelatedProductActionBar";
 import ModalUpdate from "./ModalUpdate";
 import ModalAdd from "./ModalAdd";
+
+const { Panel } = Collapse
 export default function RelatedProductManage() {
     const {
         columns,
@@ -16,6 +18,7 @@ export default function RelatedProductManage() {
         selectedRecord,
         handleDelete,
         handleUpdate,
+        filter,
         handleCreate,
         handleCreateFromModal,
         isModalAddOpen,
@@ -27,6 +30,8 @@ export default function RelatedProductManage() {
     } = useRelatedProductViewModel()
     return (
         <>  
+            <Collapse defaultActiveKey={['1']} className='mb-6'>
+            <Panel header='Related Products' key='1'>
             {isLoading && <p>Loading ...</p>}
             <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
                 {listResponse && (
@@ -37,7 +42,7 @@ export default function RelatedProductManage() {
                         columns={columns}
                         dataSource={listResponse.items}
                         pagination={{
-                            current: 1,
+                            current: filter.page ?? 1,
                             pageSize: 6,
                             total: listResponse.totalPages * 6,
                             onChange: (page, pageSize) => handleTableChange({ current: page, pageSize: pageSize }),
@@ -62,6 +67,8 @@ export default function RelatedProductManage() {
                     setTitle={setTitle}
                 />
             </div>
+            </Panel>
+        </Collapse>
         </>
     )
 }

@@ -26,8 +26,8 @@ const getRelatedProductColumns = (
         title: 'View',
         key: 'view',
         render: (_, record) => (
-            <Link to ={`${ManagerPath.PRODUCT}/${record.product2Id}`}>
-                <Button className='bg-[#374151] border-[#374151] text-white' icon={<EyeOutlined />}>
+            <Link to ={`${ManagerPath.PRODUCT_EDIT.replace(':productId',record?.product2Id.toString())}`}>
+                <Button type='link'  icon={<EyeOutlined />}>
                 </Button>
             </Link>
         ),
@@ -37,7 +37,7 @@ const getRelatedProductColumns = (
         title: 'Edit',
         key: 'edit',
         render: (_, record) => (
-                <Button className='bg-[#374151] border-[#374151] text-white' onClick={() => handleEdit(record)} icon={<EditOutlined />}>                  
+                <Button type='primary'   onClick={() => handleEdit(record)} icon={<EditOutlined />}>                  
                     {AppActions.EDIT}
                 </Button>
         ),
