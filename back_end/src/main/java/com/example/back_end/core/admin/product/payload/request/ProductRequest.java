@@ -14,7 +14,6 @@ public class ProductRequest {
 
     private Long id;
 
-
     @NotEmpty
     private String name;
 
@@ -89,8 +88,9 @@ public class ProductRequest {
     private List<Long> categoryIds;
 
     private List<Long> manufacturerIds;
-    
+
     private List<String> productTags;
+
     private List<Long> discountIds;
 
     private Integer minCartQty;

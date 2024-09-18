@@ -5,17 +5,11 @@ import AppActions from '@/constants/AppActions'
 
 interface ProductTagSearchProps {
     onSearch: (term: string) => void
-    showModal: () => void
     handleDelete: () => void
     selectedRowKeys: React.Key[]
 }
 
-const ProductTagSearchComponent: React.FC<ProductTagSearchProps> = ({
-    onSearch,
-    showModal,
-    handleDelete,
-    selectedRowKeys,
-}) => {
+const ProductTagSearchComponent: React.FC<ProductTagSearchProps> = ({ onSearch, handleDelete, selectedRowKeys }) => {
     return (
         <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6 min-h-40'>
             <div>
@@ -34,10 +28,6 @@ const ProductTagSearchComponent: React.FC<ProductTagSearchProps> = ({
                             size='large'
                         >
                             {AppActions.DELETE}
-                        </Button>
-
-                        <Button className='bg-[#475569] text-white border-[#475569]' size='large' onClick={showModal}>
-                            {AppActions.ADD}
                         </Button>
                     </div>
                 </div>

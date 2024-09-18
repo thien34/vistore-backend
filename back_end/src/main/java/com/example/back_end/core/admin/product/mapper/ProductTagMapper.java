@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.product.mapper;
 
 import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductTagUpdateRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;
 import com.example.back_end.entity.ProductTag;
 import org.mapstruct.Mapper;
@@ -17,6 +18,8 @@ public interface ProductTagMapper {
     ProductTagResponse toDto(ProductTag productTag);
 
     List<ProductTagResponse> toDtoList(List<ProductTag> productTags);
+
+    ProductTag toEntity(ProductTagUpdateRequest productTagResponse);
 
     default Long getProductId(ProductTag productTag) {
         if (productTag.getProductProductTagMappings() != null

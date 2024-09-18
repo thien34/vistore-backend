@@ -24,11 +24,7 @@ const getProductTagColumns = (
         title: 'Action',
         key: 'action',
         render: (_, record) => (
-            <Button
-                className='bg-[#475569] text-white border-[#475569]'
-                icon={<EditOutlined />}
-                onClick={() => handleEdit(record)}
-            >
+            <Button className='default-btn-color' icon={<EditOutlined />} onClick={() => handleEdit(record)}>
                 {AppActions.EDIT}
             </Button>
         ),

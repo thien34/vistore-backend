@@ -13,7 +13,5 @@ public interface ProductTagRepository extends JpaRepository<ProductTag, Long> {
 
     Page<ProductTag> findByNameContaining(String name, Pageable pageable);
 
-    ProductTag findByName(String name);
-
     List<ProductTag> findByNameIn(Set<String> tagNames);
 }
