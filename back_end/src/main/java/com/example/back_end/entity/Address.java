@@ -37,19 +37,19 @@ public class Address extends Auditable {
     @Column(name = "company", length = Integer.MAX_VALUE)
     private String company;
 
-    @Column(name = "county", length = Integer.MAX_VALUE)
-    private String county;
+    @Column(name = "district_id", nullable = false)
+    private int districtId;
 
-    @Column(name = "city", length = Integer.MAX_VALUE)
-    private String city;
+    @Column(name = "province_id", nullable = false)
+    private int provinceId;
+
+    @Column(name = "ward_id", nullable = false)
+    private int wardId;
 
     @Column(name = "address_name", length = Integer.MAX_VALUE)
     private String addressName;
 
     @Column(name = "phone_number", length = 15)
     private String phoneNumber;
-
-    @Column(name = "custom_attributes", length = Integer.MAX_VALUE)
-    private String customAttributes;
 
 }

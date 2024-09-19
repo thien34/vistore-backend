@@ -23,17 +23,12 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "product_review")
-public class ProductReview extends Auditable {
+@Table(name = "customer_role_mapping")
+public class CustomerRoleMapping {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_id")
-    private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -42,30 +37,7 @@ public class ProductReview extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_review_parent_id")
-    private ProductReview productReviewParent;
-
-    @Column(name = "is_approved")
-    private Boolean isApproved;
-
-    @Column(name = "title", length = Integer.MAX_VALUE)
-    private String title;
-
-    @Column(name = "review_text", length = Integer.MAX_VALUE)
-    private String reviewText;
-
-    @Column(name = "rating")
-    private Integer rating;
-
-    @Column(name = "helpful_yes_total")
-    private Integer helpfulYesTotal;
-
-    @Column(name = "helpful_no_total")
-    private Integer helpfulNoTotal;
+    @JoinColumn(name = "customer_role_id")
+    private CustomerRole customerRole;
 
 }

@@ -40,5 +40,4 @@ public class ProductTag extends Auditable {
         }
     }
 
-
 }

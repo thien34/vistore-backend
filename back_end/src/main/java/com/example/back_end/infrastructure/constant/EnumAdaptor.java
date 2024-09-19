@@ -9,7 +9,6 @@ import java.util.Optional;
 @NoArgsConstructor
 public final class EnumAdaptor {
 
-
     @SuppressWarnings("unchecked")
     public static <E> E valueOf(int constantValue, Class<E> enumClass) {
         Field valueField = getValueField(enumClass);
@@ -37,7 +36,6 @@ public final class EnumAdaptor {
     public static <E extends Enum<?>> List<EnumConstant> convertToValueNameList(Class<E> enumClass, Enum[] enumConstants) {
         return convertToValueNameList(enumClass, enumClass.getEnumConstants());
     }
-
 
     private static <E> Field getValueField(Class<E> enumClass) {
         try {

@@ -1,8 +1,12 @@
 package com.example.back_end.infrastructure.constant;
 
+import lombok.Getter;
+
 import java.beans.ConstructorProperties;
 
+@Getter
 public final class EnumConstant {
+
     private final int value;
     private final String fieldName;
 
@@ -11,15 +15,6 @@ public final class EnumConstant {
         this.value = value;
         this.fieldName = fieldName;
     }
-
-    public int getValue() {
-        return this.value;
-    }
-
-    public String getFieldName() {
-        return this.fieldName;
-    }
-
 
     public boolean equals(Object o) {
         if (o == this) {
@@ -49,7 +44,7 @@ public final class EnumConstant {
     }
 
     public String toString() {
-        return "EnumConstant(value=" + this.getValue() + ", fieldName=" + this.getFieldName() + ", localizedName=" +  ")";
+        return "EnumConstant(value=" + this.getValue() + ", fieldName=" + this.getFieldName() + ", localizedName=" + ")";
     }
 }
 
