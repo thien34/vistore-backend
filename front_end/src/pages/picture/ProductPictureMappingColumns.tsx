@@ -44,7 +44,7 @@ export const getProductPictureMappingColumns = (
         render: (_, record) => (
             <div style={{ display: 'flex', gap: '8px' }}>
                 <Button
-                    className='bg-[#374151] border-[#374151] text-white'
+                    className='default-btn-color'
                     icon={<EditOutlined />}
                     onClick={() => onEditProductPicture(record)}
                 >

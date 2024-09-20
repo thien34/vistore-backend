@@ -1,20 +1,19 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Form } from 'antd'
 import useUpdateApi from '@/hooks/use-update-api'
 import useGetByIdApi from '@/hooks/use-get-by-id-api'
 import ProductAttributeConfigs from './ProductAttributeConfigs.ts'
 import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
-import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
+import { ProductAttributeRequest, ProductAttributeResponse } from '@/model/ProductAttribute.ts'
+import { getProductAttributeValueColumns } from './ProductAttributeColumns.tsx'
 
 function useProductAttributeUpdate() {
-    const NUMERIC_REGEX = /^\d{0,12}(\.\d{0,2})?$/
-    const DISPLAY_ORDER_REGEX = /^\d{0,8}(\.\d{0,2})?$/
     const navigate = useNavigate()
     const { id } = useParams<{ id: string }>()
     const [current, setCurrent] = useState(1)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const { mutate: updateProductAttribute, isPending } = useUpdateApi<ProductAttributeResponse>(
+    const { mutate: updateProductAttribute } = useUpdateApi<ProductAttributeRequest>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
         Number(id),
@@ -34,34 +33,24 @@ function useProductAttributeUpdate() {
         isPreSelected: false,
         displayOrder: 0,
     })
-    const [loading, setLoading] = useState(false)
 
-    const { data: productAttributeResponse, isLoading } = useGetByIdApi<ProductAttributeResponse>(
+    const layout = {
+        labelCol: { span: 5 },
+        wrapperCol: { span: 13 },
+    }
+
+    const { data: productAttributeResponse } = useGetByIdApi<ProductAttributeResponse>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
         Number(id),
     )
-
-    useEffect(() => {
-        if (productAttributeResponse) {
-            form.setFieldsValue({
-                name: productAttributeResponse.name,
-                description: productAttributeResponse.description,
-            })
-            setValues(productAttributeResponse.values)
-        }
-    }, [form, productAttributeResponse])
-
-    const onFinish = async (values: ProductAttributeResponse) => {
-        updateProductAttribute({ id: Number(id), ...values }, { onSuccess: () => navigate(-1) })
-    }
 
     const handlePageChange = (page: number) => {
         setCurrent(page)
     }
 
     const getNewId = (arr: PredefinedProductAttributeValueRequest[]) => {
-        const maxId = Math.max(...arr.map((item) => item.id))
+        const maxId = Math.max(...arr.map((item) => item.id ?? 0))
         return arr.length === 0 ? 0 : maxId + 1
     }
 
@@ -81,17 +70,6 @@ function useProductAttributeUpdate() {
             setIsEdit(false)
         } else {
             formAdd.resetFields()
-            setNewValue({
-                id: getNewId(values),
-                name: '',
-                priceAdjustment: 0,
-                priceAdjustmentUsePercentage: false,
-                weightAdjustment: 0,
-                cost: 0,
-                isPreSelected: false,
-                displayOrder: 0,
-                productAttribute: 0,
-            })
             setValues([
                 ...values,
                 {
@@ -108,17 +86,6 @@ function useProductAttributeUpdate() {
     }
     const handleModalCancel = () => {
         formAdd.resetFields()
-        setNewValue({
-            id: getNewId(values),
-            name: '',
-            priceAdjustment: 0,
-            priceAdjustmentUsePercentage: false,
-            weightAdjustment: 0,
-            cost: 0,
-            isPreSelected: false,
-            displayOrder: 0,
-            productAttribute: 0,
-        })
         setIsModalOpen(false)
     }
 
@@ -134,14 +101,13 @@ function useProductAttributeUpdate() {
     }
 
     const handleFinish = async (formValues: { name: string; description: string }) => {
-        setLoading(true)
         try {
             const sanitizedValues = values.map((val) => ({
                 ...val,
-                priceAdjustment: parseFloat(val.priceAdjustment.toString().replace(/[^\d.-]/g, '')) || 0,
-                weightAdjustment: parseFloat(val.weightAdjustment.toString().replace(/[^\d.-]/g, '')) || 0,
-                cost: parseFloat(val.cost.toString().replace(/[^\d.-]/g, '')) || 0,
-                displayOrder: parseFloat(val.displayOrder.toString().replace(/[^\d.-]/g, '')) || 0,
+                priceAdjustment: val.priceAdjustment || 0,
+                weightAdjustment: val.weightAdjustment || 0,
+                cost: val.cost || 0,
+                displayOrder: val.displayOrder || 0,
             }))
 
             const data = {
@@ -150,64 +116,31 @@ function useProductAttributeUpdate() {
                 values: sanitizedValues,
             }
 
-            await onFinish(data)
+            await updateProductAttribute({ ...data }, { onSuccess: () => navigate(-1) })
         } catch (error) {
-            console.error('Error submitting form:', error)
             console.error('Failed to submit form')
-        } finally {
-            setLoading(false)
         }
     }
 
-    const handleInputChange =
-        (field: keyof PredefinedProductAttributeValueRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value
-            if (NUMERIC_REGEX.test(value)) {
-                setNewValue({
-                    ...newValue,
-                    [field]: value ? parseFloat(value) : 0,
-                })
-            }
-        }
-
-    const handleInputDisplayOrder =
-        (field: keyof PredefinedProductAttributeValueRequest) => (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value
-            if (DISPLAY_ORDER_REGEX.test(value)) {
-                setNewValue({
-                    ...newValue,
-                    [field]: value ? parseFloat(value) : 0,
-                })
-            }
-        }
+    const columns = getProductAttributeValueColumns(handleEditValue, handleRemoveValue)
 
     return {
-        onFinish,
         productAttributeResponse,
-        isLoading,
-        isPending,
-        handlePageChange,
         current,
+        handlePageChange,
         form,
         formAdd,
         values,
         setValues,
-        isEdit,
-        setIsEdit,
         newValue,
         setNewValue,
-        loading,
-        setLoading,
-        handleAddValue,
-        handleRemoveValue,
-        handleEditValue,
-        handleFinish,
-        NUMERIC_REGEX,
-        handleInputChange,
-        handleInputDisplayOrder,
         isModalOpen,
         setIsModalOpen,
+        handleAddValue,
+        handleFinish,
         handleModalCancel,
+        columns,
+        layout,
     }
 }
 

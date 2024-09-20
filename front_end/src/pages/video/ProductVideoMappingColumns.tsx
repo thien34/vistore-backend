@@ -78,7 +78,7 @@ export const getProductVideoMappingColumns = (
             <div style={{ display: 'flex', gap: '8px' }}>
                 {' '}
                 <Button
-                    className='bg-[#374151] border-[#374151] text-white'
+                    className='default-btn-color'
                     icon={<EditOutlined />}
                     onClick={() => onEditProductVideo(record)}
                 >

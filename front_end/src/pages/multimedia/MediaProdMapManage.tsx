@@ -114,7 +114,7 @@ export default function MediaProdMapManage() {
                                                             <Button
                                                                 icon={<PlusOutlined />}
                                                                 size='large'
-                                                                className='bg-[#374151] border-[#374151] text-white m-1'
+                                                                className='default-btn-color m-1'
                                                                 htmlType='submit'
                                                                 disabled={uploading}
                                                                 loading={uploading}
@@ -254,7 +254,7 @@ export default function MediaProdMapManage() {
                                                                 <Button
                                                                     icon={<PlusOutlined />}
                                                                     size='large'
-                                                                    className='bg-[#374151] border-[#374151] text-white m-1'
+                                                                    className='default-btn-color m-1'
                                                                     htmlType='submit'
                                                                     disabled={uploading}
                                                                     loading={uploading}
@@ -313,7 +313,7 @@ export default function MediaProdMapManage() {
                                                                 <Button
                                                                     icon={<PlusOutlined />}
                                                                     size='large'
-                                                                    className='bg-[#374151] border-[#374151] text-white m-1'
+                                                                    className='default-btn-color m-1'
                                                                     htmlType='submit'
                                                                 >
                                                                     Add video URL

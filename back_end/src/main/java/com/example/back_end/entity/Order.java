@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -54,9 +52,6 @@ public class Order extends Auditable {
     @JoinColumn(name = "shipping_address_id")
     private Address shippingAddress;
 
-    @Column(name = "store_id")
-    private Integer storeId;
-
     @Column(name = "order_guid")
     private UUID orderGuid;
 
@@ -78,17 +73,6 @@ public class Order extends Auditable {
     @Enumerated
     @Column(name = "payment_method_id")
     private PaymentStatusType paymentMethodId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "customer_language_id")
-    private Language language;
-
-    @Column(name = "customer_currency_code", length = Integer.MAX_VALUE)
-    private String customerCurrencyCode;
-
-    @Column(name = "currency_rate", precision = 18, scale = 2)
-    private BigDecimal currencyRate;
 
     @Column(name = "order_subtotal", precision = 18, scale = 2)
     private BigDecimal orderSubtotal;

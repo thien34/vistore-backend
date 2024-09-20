@@ -449,4 +449,38 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle exception when a field with the same name already exists
+     *
+     * @param e the ExistsByNameException
+     * @param request the web request
+     * @return errorResponse
+     */
+    @ExceptionHandler(ExistsByNameException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(mediaType = APPLICATION_JSON_VALUE, examples = @ExampleObject(name = "400 Response",
+                            summary = "Handle exception when field name already exists",
+                            value = """
+                        {
+                          "timestamp": "2024-07-24T07:19:51.110+00:00",
+                          "status": 400,
+                          "path": "/api/v1/...",
+                          "error": "Bad Request",
+                          "message": "Discount with this name already exists"
+                        }
+                        """))
+            })
+    })
+    public ErrorResponse handleExistsByNameException(ExistsByNameException e, WebRequest request) {
+        log.error("Exists By Name Exception: ", e);
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(e.getMessage())
+                .build();
+    }
 }

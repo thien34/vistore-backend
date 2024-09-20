@@ -50,15 +50,11 @@ export const getProductSpecificationAttributeMappingColumns = (
         align: 'center',
         render: (_, record) => (
             <div className='flex flex-wrap justify-around'>
-                <Button
-                    className='bg-[#374151] border-[#374151] text-white m-1'
-                    icon={<EditOutlined />}
-                    onClick={() => handleEdit(record)}
-                >
+                <Button className='default-btn-color m-1' icon={<EditOutlined />} onClick={() => handleEdit(record)}>
                     {AppActions.EDIT}
                 </Button>
                 <Button
-                    className='bg-[#374151] border-[#374151] text-white m-1'
+                    className='default-btn-color m-1'
                     icon={<EditOutlined />}
                     onClick={() => handleDelete(record.id)}
                 >

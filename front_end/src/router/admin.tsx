@@ -20,6 +20,7 @@ import {
 import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
 import ProductCreate from '@/pages/product/ProductCreate'
 import RelatedProductManage from '@/pages/related-products'
+import { DiscountCreate, DiscountManage, DiscountUpdate } from '@/pages/discount'
 
 const routers = [
     {
@@ -148,6 +149,21 @@ const routers = [
         element: <RelatedProductManage />,
         breadcrumbName: 'Related Product',
         pageType: 'related_product',
+    },
+    {
+        path: ManagerPath.DISCOUNT,
+        layout: 'main',
+        element: <DiscountManage />,
+    },
+    {
+        path: ManagerPath.DISCOUNT_ADD,
+        layout: 'main',
+        element: <DiscountCreate />,
+    },
+    {
+        path: ManagerPath.DISCOUNT_UPDATE,
+        layout: 'main',
+        element: <DiscountUpdate />,
     },
 ]
 

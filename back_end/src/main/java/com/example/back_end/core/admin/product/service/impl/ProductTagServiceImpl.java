@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.product.mapper.ProductTagMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductTagUpdateRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;
 import com.example.back_end.core.admin.product.service.ProductTagService;
 import com.example.back_end.core.common.PageResponse;
@@ -23,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +44,18 @@ public class ProductTagServiceImpl implements ProductTagService {
         ProductTag productTag = saveProductTag(request);
 
         saveProductTagMapping(product, productTag);
+    }
+
+    @Override
+    public void updateProductTag(Long id, ProductTagUpdateRequest request) {
+
+        if (!productTagRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product tag with id not found: " + id);
+        }
+
+        ProductTag productTag = productTagMapper.toEntity(request);
+
+        productTagRepository.save(productTag);
     }
 
     @Override
@@ -94,7 +105,7 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     @Override
-    public void createProductTags(List<ProductTag> productTags,Product product) {
+    public void createProductTags(List<ProductTag> productTags, Product product) {
         Set<String> tagNames = productTags.stream()
                 .map(ProductTag::getName)
                 .collect(Collectors.toSet());

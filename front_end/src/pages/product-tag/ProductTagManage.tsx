@@ -1,5 +1,5 @@
-import { Empty, Table } from 'antd'
-import ModalAddUpdate from './ModalAddUpdate'
+import { Table } from 'antd'
+import ModalAddUpdate from './ModalUpdate'
 import useProductTagCreateViewModel from './ProductTag.vm'
 import { ProductTagSearch } from './ProductTagSearch'
 
@@ -10,11 +10,8 @@ export default function ProductTagManage() {
         handleCreate,
         handleDelete,
         rowSelection,
-        showModal,
         isModalOpen,
         selectedTag,
-        title,
-        setTitle,
         setIsModalOpen,
         columns,
         filter,
@@ -24,14 +21,9 @@ export default function ProductTagManage() {
 
     return (
         <div>
-            <ProductTagSearch
-                selectedRowKeys={selectedRowKeys}
-                onSearch={handleSearch}
-                showModal={showModal}
-                handleDelete={handleDelete}
-            />
-            <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
-                {listResponse?.items ? (
+            <ProductTagSearch selectedRowKeys={selectedRowKeys} onSearch={handleSearch} handleDelete={handleDelete} />
+            <div className='bg-[#fff] rounded-lg shadow-md p-6'>
+                {listResponse && (
                     <Table
                         rowKey='id'
                         bordered
@@ -45,8 +37,6 @@ export default function ProductTagManage() {
                             onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
                         }}
                     />
-                ) : (
-                    <Empty />
                 )}
             </div>
             <ModalAddUpdate
@@ -54,8 +44,6 @@ export default function ProductTagManage() {
                 setIsModalOpen={setIsModalOpen}
                 handleCreate={handleCreate}
                 selectedTag={selectedTag}
-                title={title}
-                setTitle={setTitle}
             />
         </div>
     )

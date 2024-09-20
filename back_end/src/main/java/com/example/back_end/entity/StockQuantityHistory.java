@@ -44,4 +44,9 @@ public class StockQuantityHistory extends Auditable {
     @Column(name = "message", length = Integer.MAX_VALUE)
     private String message;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_attribute_combination_id")
+    private ProductAttributeCombination productAttributeCombination;
+
 }

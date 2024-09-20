@@ -25,6 +25,8 @@ class ResourceURL {
     static readonly SPECIFICATION_ATTRIBUTE = apiPath + '/specification-attributes'
     static readonly SPECIFICATION_ATTRIBUTE_OPTION = apiPath + '/specification-attribute-options'
     static readonly USE_GET_UNGROUPED_ATTRIBUTES = apiPath + '/specification-attributes/no-group-or-invalid'
+    // discount
+    static readonly DISCOUNT = apiPath + '/discounts'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = apiPath + '/product-specification-attribute-mappings'
     static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =
         apiPath + '/product-specification-attribute-mappings/by-product'

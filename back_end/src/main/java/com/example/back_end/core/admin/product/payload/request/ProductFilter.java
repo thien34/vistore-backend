@@ -8,10 +8,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductFilter {
+
     private String name;
+
     private Long categoryId;
+
     private Boolean searchSubCategory;
+
     private Long manufacturerId;
+
     private Boolean published;
+
     private String sku;
+
 }

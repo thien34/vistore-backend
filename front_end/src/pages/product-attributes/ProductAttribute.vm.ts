@@ -5,9 +5,7 @@ import useGetAllApi from '@/hooks/use-get-all-api'
 import ProductAttributeConfigs from './ProductAttributeConfigs'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
 import { ProductAttributeResponse } from '@/model/ProductAttribute.ts'
-import { PredefinedProductAttributeValueRequest } from '@/model/PredefinedProductAttributeValue.ts'
-import { Form } from 'antd'
-
+import { getProductAttributeColumns } from './ProductAttributeColumns'
 interface Search extends RequestParams {
     published?: boolean
 }
@@ -15,19 +13,7 @@ interface Search extends RequestParams {
 function useProductAttributeViewModel() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [filter, setFilter] = useState<Search>({})
-    const [isOpenList, setIsOpenList] = useState(false)
-    const [dataDetail, setDataDetail] = useState<Array<PredefinedProductAttributeValueRequest>>([])
-    const [form] = Form.useForm()
-    const [editingKey, setEditingKey] = useState('')
 
-    const isEditing = (record: PredefinedProductAttributeValueRequest) => record.id === Number(editingKey)
-    const cancel = () => {
-        setEditingKey('')
-    }
-    const setShowList = (record: ProductAttributeResponse) => {
-        setIsOpenList(true)
-        setDataDetail(record?.values)
-    }
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
@@ -44,11 +30,7 @@ function useProductAttributeViewModel() {
     }
 
     // RETURN DATA
-    const {
-        data: listResponse,
-        isLoading,
-        refetch,
-    } = useGetAllApi<ProductAttributeResponse>(
+    const { data: listResponse, refetch } = useGetAllApi<ProductAttributeResponse>(
         ProductAttributeConfigs.resourceUrl,
         ProductAttributeConfigs.resourceKey,
         filter,
@@ -68,21 +50,22 @@ function useProductAttributeViewModel() {
 
     // HANDLE TABLE CHANGE
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
-        if (pagination.current > 1 && listResponse?.totalPages < pagination.current) {
-            setFilter((prevFilter) => ({ ...prevFilter, pageNo: listResponse?.totalPages }))
-        } else {
-            setFilter((prevFilter) => ({ ...prevFilter, pageNo: pagination.current }))
-        }
+        setFilter((prevFilter) => ({
+            ...prevFilter,
+            pageNo: pagination.current,
+        }))
     }
 
     // HANDLE SEARCH
-    const handleSearch = (newFilter: { name: string; published: boolean | undefined }) => {
+    const handleSearch = (newFilter: { name: string }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
             ...newFilter,
             pageNo: 1,
         }))
     }
+
+    const columns = getProductAttributeColumns()
 
     return {
         rowSelection,
@@ -92,15 +75,7 @@ function useProductAttributeViewModel() {
         selectedRowKeys,
         filter,
         listResponse,
-        isLoading,
-        isOpenList,
-        setIsOpenList,
-        dataDetail,
-        setDataDetail,
-        form,
-        isEditing,
-        cancel,
-        setShowList,
+        columns,
     }
 }
 export default useProductAttributeViewModel

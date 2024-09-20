@@ -1,7 +1,9 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.AddressType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,5 +41,9 @@ public class CustomerAddressMapping {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @Enumerated
+    @Column(name = "address_type_id", nullable = false)
+    private AddressType addressTypeId;
 
 }

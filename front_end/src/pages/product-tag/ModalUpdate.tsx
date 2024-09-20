@@ -1,16 +1,13 @@
-import { ProductTagRequest, ProductTagResponse } from '@/model/ProductTag'
-import { Modal, Form, Input, Select, Button, Space } from 'antd'
+import { ProductTagResponse, ProductTagUpdateRequest } from '@/model/ProductTag'
+import { Modal, Form, Input, Button, Space } from 'antd'
 import { Dispatch, SetStateAction, useEffect } from 'react'
-
-const { Option } = Select
+import ProductTagConfigs from './ProductTagConfigs'
 
 type Props = {
     isModalOpen: boolean
     setIsModalOpen: Dispatch<SetStateAction<boolean>>
-    handleCreate: (productTag: ProductTagRequest) => void
+    handleCreate: (productTag: ProductTagUpdateRequest) => void
     selectedTag: ProductTagResponse | null
-    title: string
-    setTitle: (title: string) => void
 }
 
 const layout = {
@@ -21,14 +18,7 @@ const tailLayout = {
     wrapperCol: { offset: 16, span: 16 },
 }
 
-export default function ModalAddUpdate({
-    isModalOpen,
-    setIsModalOpen,
-    handleCreate,
-    selectedTag,
-    title,
-    setTitle,
-}: Readonly<Props>) {
+export default function ModalAddUpdate({ isModalOpen, setIsModalOpen, handleCreate, selectedTag }: Readonly<Props>) {
     const [form] = Form.useForm()
 
     useEffect(() => {
@@ -44,20 +34,24 @@ export default function ModalAddUpdate({
         return () => form.resetFields()
     }, [selectedTag, form])
 
-    const onFinish = (value: ProductTagRequest) => {
+    const onFinish = (value: ProductTagUpdateRequest) => {
         handleCreate(value)
         form.resetFields()
-        setTitle('Create Product Tag')
         setIsModalOpen(false)
     }
 
     const handleCancel = () => {
-        setTitle('Create Product Tag')
         setIsModalOpen(false)
     }
 
     return (
-        <Modal closable={true} title={title} open={isModalOpen} onCancel={handleCancel} footer={null}>
+        <Modal
+            closable={true}
+            title={ProductTagConfigs.updateTitle}
+            open={isModalOpen}
+            onCancel={handleCancel}
+            footer={null}
+        >
             <Form {...layout} form={form} name='control-hooks' onFinish={onFinish}>
                 <Form.Item hidden name='id'>
                     <Input />
@@ -69,16 +63,6 @@ export default function ModalAddUpdate({
                 >
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    name='productId'
-                    label='Product'
-                    rules={[{ required: true, message: 'The Product is required.' }]}
-                >
-                    <Select placeholder='Select a option and change input text above' allowClear>
-                        <Option value='1'>Product</Option>
-                    </Select>
-                </Form.Item>
-
                 <Form.Item {...tailLayout}>
                     <Space>
                         <Button type='primary' htmlType='submit'>

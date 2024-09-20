@@ -37,14 +37,8 @@ public class Product extends Auditable {
     @Column(name = "sku", length = Integer.MAX_VALUE)
     private String sku;
 
-    @Column(name = "manufacture_part_number", length = Integer.MAX_VALUE)
-    private String manufacturePartNumber;
-
     @Column(name = "gtin", length = Integer.MAX_VALUE)
     private String gtin;
-
-    @Column(name = "short_description", length = Integer.MAX_VALUE)
-    private String shortDescription;
 
     @Column(name = "full_description", length = Integer.MAX_VALUE)
     private String fullDescription;
@@ -55,29 +49,8 @@ public class Product extends Auditable {
     @Column(name = "allow_customer_reviews")
     private Boolean allowCustomerReviews;
 
-    @Column(name = "approved_rating_sum")
-    private Integer approvedRatingSum;
-
-    @Column(name = "not_approved_rating_sum")
-    private Integer notApprovedRatingSum;
-
-    @Column(name = "approve_total_reviews")
-    private Integer approveTotalReviews;
-
-    @Column(name = "not_approved_total_reviews")
-    private Integer notApprovedTotalReviews;
-
-    @Column(name = "is_ship_enabled")
-    private Boolean isShipEnabled;
-
     @Column(name = "is_free_shipping")
     private Boolean isFreeShipping;
-
-    @Column(name = "manage_inventory_method_id")
-    private Integer manageInventoryMethodId;
-
-    @Column(name = "product_availability_range_id")
-    private Integer productAvailabilityRangeId;
 
     @Column(name = "display_stock_availability")
     private Boolean displayStockAvailability;

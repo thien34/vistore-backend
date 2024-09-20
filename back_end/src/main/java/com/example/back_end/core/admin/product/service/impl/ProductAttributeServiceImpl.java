@@ -15,6 +15,7 @@ import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.utils.PageUtils;
+import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
@@ -46,7 +47,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @Transactional
     public ProductAttribute createProductAttribute(ProductAttributeRequest request) {
 
-        String trimmedName = request.getName().trim().replaceAll("\\s+", " ");
+        String trimmedName = StringUtils.sanitizeText(request.getName());
         if (productAttributeRepository.existsByName(trimmedName)) {
             throw new ExistsByNameException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage());
         }

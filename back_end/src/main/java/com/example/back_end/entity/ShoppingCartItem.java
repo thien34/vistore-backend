@@ -42,11 +42,6 @@ public class ShoppingCartItem {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
     @Enumerated
     @Column(name = "shopping_cart_type_id")
     private ShoppingCartType shoppingCartTypeId;

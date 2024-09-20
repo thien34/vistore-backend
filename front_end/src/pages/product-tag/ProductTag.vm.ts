@@ -1,12 +1,12 @@
-import useCreateApi from '@/hooks/use-create-api'
 import { useState } from 'react'
 import ProductTagConfigs from './ProductTagConfigs'
 import { useQueryClient } from '@tanstack/react-query'
 import { RequestParams } from '@/utils/FetchUtils'
 import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
-import { ProductTagRequest, ProductTagResponse } from '@/model/ProductTag'
+import { ProductTagResponse, ProductTagUpdateRequest } from '@/model/ProductTag'
 import useGetAllApi from '@/hooks/use-get-all-api'
 import getProductTagColumns from './ProductTagColumns'
+import useUpdateApi from '@/hooks/use-update-api'
 
 interface Search extends RequestParams {
     cate?: string
@@ -16,12 +16,15 @@ function useProductTagCreateViewModel() {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedTag, setSelectedTag] = useState<ProductTagResponse | null>(null)
-    const [title, setTitle] = useState(ProductTagConfigs.createTitle)
     const [filter, setFilter] = useState<Search>({})
     const queryClient = useQueryClient()
 
-    const createApi = useCreateApi<ProductTagRequest>(ProductTagConfigs.resourceUrl)
     const deleteApi = useDeleteByIdsApi<number>(ProductTagConfigs.resourceUrl, ProductTagConfigs.resourceKey)
+    const { mutate: updateProductTag } = useUpdateApi<ProductTagUpdateRequest>(
+        ProductTagConfigs.resourceUrl,
+        ProductTagConfigs.resourceKey,
+        selectedTag?.id ?? 0,
+    )
 
     const handleSearch = (term: string) => {
         if (term !== filter?.name) {
@@ -33,8 +36,8 @@ function useProductTagCreateViewModel() {
         }
     }
 
-    const handleCreate = async (productTag: ProductTagRequest) => {
-        createApi.mutate(productTag, {
+    const handleCreate = async (productTag: ProductTagUpdateRequest) => {
+        updateProductTag(productTag, {
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: [ProductTagConfigs.resourceKey, 'getAll'] })
             },
@@ -59,13 +62,8 @@ function useProductTagCreateViewModel() {
         onChange: onSelectChange,
     }
 
-    const showModal = () => {
-        setIsModalOpen(true)
-    }
-
     const handleEdit = (data: ProductTagResponse) => {
         setSelectedTag(data)
-        setTitle(ProductTagConfigs.updateTitle)
         setIsModalOpen(true)
     }
 
@@ -91,11 +89,8 @@ function useProductTagCreateViewModel() {
         handleCreate,
         handleDelete,
         rowSelection,
-        showModal,
         isModalOpen,
         selectedTag,
-        title,
-        setTitle,
         setIsModalOpen,
         columns,
         filter,

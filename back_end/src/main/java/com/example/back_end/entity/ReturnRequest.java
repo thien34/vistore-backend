@@ -45,11 +45,6 @@ public class ReturnRequest extends Auditable {
     @Column(name = "upload_file_id")
     private Integer uploadFileId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
     @Enumerated
     @Column(name = "return_request_status_id")
     private ReturnRequestStatusType returnRequestStatusId;

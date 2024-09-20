@@ -2,9 +2,11 @@ package com.example.back_end.entity;
 
 import com.example.back_end.infrastructure.constant.DiscountLimitationType;
 import com.example.back_end.infrastructure.constant.DiscountType;
+import com.example.back_end.infrastructure.utils.DiscountLimitationTypeConverter;
+import com.example.back_end.infrastructure.utils.DiscountTypeConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,11 +33,11 @@ public class Discount extends Auditable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Enumerated
+    @Convert(converter = DiscountTypeConverter.class)
     @Column(name = "discount_type_id")
     private DiscountType discountTypeId;
 
-    @Enumerated
+    @Convert(converter = DiscountLimitationTypeConverter.class)
     @Column(name = "discount_limitation_id")
     private DiscountLimitationType discountLimitationId;
 

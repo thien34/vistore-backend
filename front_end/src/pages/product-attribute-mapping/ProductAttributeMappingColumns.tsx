@@ -58,14 +58,14 @@ export const getProductAttributeValueColumns = (
         render: (_, record) => (
             <div className='flex flex-wrap justify-around'>
                 <Button
-                    className='bg-[#374151] border-[#374151] text-white m-1'
+                    className='default-btn-color m-1'
                     icon={<EditOutlined />}
                     onClick={() => handleOpenUpdateModal(record)}
                 >
                     {AppActions.EDIT}
                 </Button>
                 <Button
-                    className='bg-[#374151] border-[#374151] text-white m-1'
+                    className='default-btn-color m-1'
                     icon={<EditOutlined />}
                     onClick={() => handleDeleteValue(record.name)}
                 >
@@ -115,7 +115,7 @@ export const getProductAttributeMappingColumns = (): TableColumnsType<ProductPro
         align: 'center',
         render: (_, record) => (
             <Link to={`/admin/products/product-attribute-mapping-update/${record.id}`}>
-                <Button className='bg-[#374151] border-[#374151] text-white' icon={<EditOutlined />}>
+                <Button className='default-btn-color' icon={<EditOutlined />}>
                     {AppActions.EDIT}
                 </Button>
             </Link>

@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductTagUpdateRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;
 import com.example.back_end.core.admin.product.service.ProductTagService;
 import com.example.back_end.core.common.PageResponse;
@@ -11,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +56,17 @@ public class ProductTagController {
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Add product tag success")
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseData<Void> updateProductTag(@PathVariable Long id, @RequestBody @Valid ProductTagUpdateRequest request) {
+
+        productTagService.updateProductTag(id, request);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Update product tag success")
                 .build();
     }
 
