@@ -1,5 +1,5 @@
 import useCreateApi from '@/hooks/use-create-api'
-import { CategoriesResponse, CategoryParentResponse, CategoryRequest } from '@/model/Category'
+import { CategoryNameResponse, CategoryRequest } from '@/model/Category'
 import { Form, GetProp, UploadFile, UploadProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -24,7 +24,7 @@ function useCategoryCreateViewModel() {
         document.title = 'Add a new category - Vítore'
     }, [])
 
-    const data = useGetApi<CategoriesResponse[]>(
+    const data = useGetApi<CategoryNameResponse[]>(
         `${CategoryConfigs.resourceUrl}/list-name`,
         CategoryConfigs.resourceKey,
     ).data
@@ -45,12 +45,19 @@ function useCategoryCreateViewModel() {
         displayOrder: 0,
     }
 
-    // HANDLER NAME PARENT CATEGORY
-    function getCategoryFullName(category: CategoriesResponse | CategoryParentResponse): string {
-        return category.categoryParent
-            ? `${getCategoryFullName(category.categoryParent)} >> ${category.name}`
-            : category.name
+    const getCategoryFullName = (category: CategoryNameResponse, parentName = '') => {
+        const fullName = parentName ? `${parentName} > ${category.name}` : category.name
+        let options = [{ label: fullName, value: category.id }]
+
+        if (category.children && category.children.length > 0) {
+            category.children.forEach((child) => {
+                options = [...options, ...getCategoryFullName(child, fullName)]
+            })
+        }
+        return options
     }
+
+    const categoryOptions = data?.flatMap((item) => getCategoryFullName(item)) ?? []
 
     //
     const getBase64 = (file: FileType): Promise<string> =>
@@ -98,16 +105,14 @@ function useCategoryCreateViewModel() {
         onFinish,
         isPending,
         fileList,
-        setFileList,
         handleChange,
         handlePreview,
         previewOpen,
         setPreviewOpen,
         previewImage,
         setPreviewImage,
-        data,
-        getCategoryFullName,
         initialValues,
+        categoryOptions,
     }
 }
 

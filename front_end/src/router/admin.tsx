@@ -17,7 +17,7 @@ import {
     ProductSpecificationAttributeMappingCreate,
     ProductSpecificationAttributeMappingUpdate,
 } from '@/pages/productSpecificationAttributeMapping'
-import StockQuantityHistoryManage from '@/pages/stockquantityhistory/StockQuantityHistoryManage'
+import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuantityHistoryManage'
 import ProductCreate from '@/pages/product/ProductCreate'
 import RelatedProductManage from '@/pages/related-products'
 import { DiscountCreate, DiscountManage, DiscountUpdate } from '@/pages/discount'
@@ -147,8 +147,6 @@ const routers = [
         path: ManagerPath.RELATED_PRODUCT,
         layout: 'main',
         element: <RelatedProductManage />,
-        breadcrumbName: 'Related Product',
-        pageType: 'related_product',
     },
     {
         path: ManagerPath.DISCOUNT,

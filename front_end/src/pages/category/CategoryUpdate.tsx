@@ -5,7 +5,7 @@ import useCategoryUpdateViewModel from './CategoryUpdate.vm'
 import useCategoryCreateViewModel from './CategoryCreate.vm'
 
 export default function CategoryUpdate() {
-    const { form, layout, data, getCategoryFullName } = useCategoryCreateViewModel()
+    const { form, layout, categoryOptions } = useCategoryCreateViewModel()
 
     const {
         onFinish,
@@ -95,13 +95,7 @@ export default function CategoryUpdate() {
                                     filterOption={(input, option) =>
                                         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                     }
-                                    options={[
-                                        { label: '[None]', value: null },
-                                        ...(data?.map((item) => ({
-                                            label: getCategoryFullName(item),
-                                            value: item.id,
-                                        })) ?? []),
-                                    ]}
+                                    options={[{ label: '[None]', value: 0 }, ...categoryOptions]}
                                 />
                             </Form.Item>
                             <Form.Item name='pictureId' label='Picture'>

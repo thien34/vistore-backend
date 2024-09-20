@@ -15,9 +15,8 @@ export default function CategoryCreate() {
         setPreviewOpen,
         previewImage,
         setPreviewImage,
-        data,
-        getCategoryFullName,
         initialValues,
+        categoryOptions,
     } = useCategoryCreateViewModel()
 
     const uploadButton = (
@@ -69,13 +68,7 @@ export default function CategoryCreate() {
                                     filterOption={(input, option) =>
                                         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                     }
-                                    options={[
-                                        { label: '[None]', value: null },
-                                        ...(data?.map((item) => ({
-                                            label: getCategoryFullName(item),
-                                            value: item.id,
-                                        })) ?? []),
-                                    ]}
+                                    options={[{ label: '[None]', value: 0 }, ...categoryOptions]}
                                 />
                             </Form.Item>
                             <Form.Item name='pictureId' label='Picture'>

@@ -140,9 +140,8 @@ public class ProductTagServiceImpl implements ProductTagService {
         return productProductTagMappingRepository.findByProductId(id)
                 .stream()
                 .map(ProductProductTagMapping::getProductTag)
-                .collect(Collectors.toList());
+                .toList();
     }
-
 
     private Product getProduct(Long productId) {
         return productRepository.findById(productId)

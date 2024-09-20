@@ -14,10 +14,10 @@ interface CategorySearchProps {
 
 export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete }: Readonly<CategorySearchProps>) {
     const [name, setName] = useState<string>('')
-    const [published, setPublished] = useState<boolean | undefined>(undefined)
+    const [published, setPublished] = useState<string | undefined>(undefined)
 
     const handleSearch = () => {
-        onSearch({ name, published })
+        onSearch({ name, published: published === 'true' ? true : published === 'false' ? false : undefined })
     }
 
     return (
@@ -36,13 +36,13 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                         <Select
                             className='w-56'
                             size='large'
-                            defaultValue={null}
+                            defaultValue={'all'}
                             value={published}
                             onChange={(value) => setPublished(value)}
                             options={[
-                                { value: null, label: 'All' },
-                                { value: true, label: 'Published only' },
-                                { value: false, label: 'Unpublished only' },
+                                { value: 'all', label: 'All' },
+                                { value: 'true', label: 'Published only' },
+                                { value: 'false', label: 'Unpublished only' },
                             ]}
                         />
                         <Button
@@ -55,19 +55,18 @@ export default function CategorySearch({ onSearch, selectedRowKeys, handleDelete
                             {AppActions.SEARCH}
                         </Button>
                     </div>
-                    <div className=''>
+                    <div className='flex gap-4 flex-wrap'>
                         <Button
                             disabled={selectedRowKeys.length === 0}
                             onClick={handleDelete}
                             type='primary'
-                            className='me-5'
                             danger
                             size='large'
                         >
                             {AppActions.DELETE}
                         </Button>
                         <Link to={ManagerPath.CATEGORY_ADD}>
-                            <Button className='bg-[#475569] text-white' size='large'>
+                            <Button className='default-btn-color' size='large'>
                                 {AppActions.ADD}
                             </Button>
                         </Link>

@@ -2,16 +2,16 @@ package com.example.back_end.core.admin.product.service.impl;
 
 import com.example.back_end.core.admin.category.mapper.CategoryMapper;
 import com.example.back_end.core.admin.product.mapper.ProductMapper;
-import com.example.back_end.core.admin.product.payload.request.ProductFilter;
 import com.example.back_end.core.admin.product.mapper.ProductTagMapper;
+import com.example.back_end.core.admin.product.payload.request.ProductFilter;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductFakeResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.core.admin.product.service.ProductService;
-import com.example.back_end.core.admin.product.specification.ProductSpecification;
 import com.example.back_end.core.admin.product.service.ProductTagService;
+import com.example.back_end.core.admin.product.specification.ProductSpecification;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Discount;
@@ -30,7 +30,6 @@ import com.example.back_end.repository.ProductManufacturerMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +39,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -164,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(mapping -> ((ProductCategoryMapping) mapping).getCategory())
                 .filter(Objects::nonNull)
                 .map(Category::getId)
-                .collect(Collectors.toList());
+                .toList();
         response.setCategoryIds(categoryIds);
 
         List<Long> manufacturerIds = productManufacturerMappingRepository.findByProductId(product.getId())
@@ -172,7 +170,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(mapping -> ((ProductManufacturerMapping) mapping).getManufacturer())
                 .filter(Objects::nonNull)
                 .map(Manufacturer::getId)
-                .collect(Collectors.toList());
+                .toList();
         response.setManufacturerIds(manufacturerIds);
 
 
@@ -180,7 +178,7 @@ public class ProductServiceImpl implements ProductService {
                 .stream()
                 .filter(Objects::nonNull)
                 .map(ProductTag::getName)
-                .collect(Collectors.toList());
+                .toList();
         response.setProductTags(productTags);
 
         List<Long> discountIds = discountAppliedToProductRepository.findByProductId(product.getId())

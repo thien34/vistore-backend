@@ -51,7 +51,6 @@ function useCategoryViewModel() {
                 if (currentSize === selectedRowKeys.length && currentPage > 1) {
                     newPage = currentPage - 1
                 }
-
                 setFilter((prevFilter) => ({
                     ...prevFilter,
                     pageNo: newPage,

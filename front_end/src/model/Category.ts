@@ -44,4 +44,5 @@ export type CategoryRequest = {
 export type CategoryNameResponse = {
     id: number
     name: string
+    children: CategoryNameResponse[]
 }

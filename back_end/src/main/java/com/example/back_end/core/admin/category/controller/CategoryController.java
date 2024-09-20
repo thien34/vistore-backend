@@ -33,7 +33,7 @@ public class CategoryController {
     public ResponseData<PageResponse<List<CategoriesResponse>>> getAllCategories(
             @RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "published", required = false) Boolean published,
-            @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo, 
             @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
 
         PageResponse<List<CategoriesResponse>> response = categoryService

@@ -19,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +100,27 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryNameResponse> getCategoriesName() {
-        return categoryRepository.findAllCategoriesName();
+        List<Category> categories = categoryRepository.findAll();
+        Map<Long, CategoryNameResponse> categoryMap = new HashMap<>();
+
+        for (Category category : categories) {
+            CategoryNameResponse dto = CategoryNameResponse.toTreeDto(category);
+            categoryMap.put(category.getId(), dto);
+        }
+        List<CategoryNameResponse> roots = new ArrayList<>();
+
+        for (Category category : categories) {
+            Long parentId = category.getCategoryParent() != null ? category.getCategoryParent().getId() : null;
+            if (parentId == null) {
+                roots.add(categoryMap.get(category.getId()));
+            } else {
+                CategoryNameResponse parent = categoryMap.get(parentId);
+                if (parent != null) {
+                    parent.getChildren().add(categoryMap.get(category.getId()));
+                }
+            }
+        }
+        return roots;
     }
 
     private void validateCategoryParent(Long categoryParentId) {
