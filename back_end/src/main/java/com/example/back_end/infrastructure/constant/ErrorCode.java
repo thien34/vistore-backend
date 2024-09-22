@@ -25,6 +25,12 @@ public enum ErrorCode {
     // Product-related errors
     PRODUCT_NOT_FOUND("Product not found", HttpStatus.NOT_FOUND),
 
+    //Customer errors
+    CUSTOMER_NOT_EXISTED("Customer not existed", HttpStatus.NOT_FOUND),
+    CUSTOMER_ROLE_NOT_FOUND("Customer role not found", HttpStatus.NOT_FOUND),
+    CUSTOMER_NOT_FOUND("Customer not found", HttpStatus.NOT_FOUND),
+    CUSTOMER_PASSWORD_NOT_FOUND("Customer password not found",HttpStatus.NOT_FOUND),
+
     //Discounts errors
     DISCOUNT_NOT_FOUND("Discount not found", HttpStatus.NOT_FOUND),
     DISCOUNT_ALREADY_EXISTS("Discount already exists", HttpStatus.BAD_REQUEST),

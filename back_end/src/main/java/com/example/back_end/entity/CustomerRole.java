@@ -31,4 +31,8 @@ public class CustomerRole extends Auditable {
     @Column(name = "active")
     private Boolean active;
 
+    public CustomerRole(Long id) {
+        this.id = id;
+    }
+
 }
