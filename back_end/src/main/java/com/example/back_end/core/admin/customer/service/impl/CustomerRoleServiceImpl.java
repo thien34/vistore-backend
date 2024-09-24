@@ -8,8 +8,8 @@ import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.CustomerRole;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.constant.SortType;
+import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
-import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.CustomerRoleRepository;
 import lombok.AccessLevel;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +31,17 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
     CustomerRoleRepository customerRoleRepository;
     CustomerRoleMapper customerRoleMapper;
 
+    private static final Set<String> PROTECTED_ROLES = Set.of("Administrators", "Guests", "Customers", "Employees");
+
     @Override
     @Transactional
     public CustomerRoleResponse createCustomerRole(CustomerRoleRequest request) {
 
+        // Validate if role name already exists
+        validateRoleNameUnique(request.getName());
+
         CustomerRole customerRole = customerRoleMapper.toEntity(request);
-
         return customerRoleMapper.toResponse(customerRoleRepository.save(customerRole));
-
     }
 
     @Override
@@ -47,10 +51,18 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
         CustomerRole customerRole = customerRoleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_ROLE_NOT_FOUND.getMessage()));
 
+        // Allow the `active` status to be updated for protected roles, but prevent renaming
+        if (PROTECTED_ROLES.contains(customerRole.getName()) && !customerRole.getName().equals(request.getName()))
+            throw new IllegalArgumentException("The system name of system customer roles can't be edited.");
+
+        // Validate if the new name is already in use (excluding current role)
+        if (!customerRole.getName().equals(request.getName()))
+            validateRoleNameUniqueForUpdate(request.getName(), id);
+
+        // Update the role entity (only name if not protected, and `active`)
         customerRoleMapper.updateCustomerRoleFromRequest(request, customerRole);
 
         customerRoleRepository.save(customerRole);
-
     }
 
     @Override
@@ -72,7 +84,6 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
                 .totalPage(customerRolePage.getTotalPages())
                 .items(customerRoleResponses)
                 .build();
-
     }
 
     @Override
@@ -91,10 +102,35 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
     public void deleteCustomerRoles(List<Long> ids) {
         List<CustomerRole> customerRoles = customerRoleRepository.findAllById(ids);
 
-        if (customerRoles.size() != ids.size())
-            throw new ResourceNotFoundException("One or more customer roles not found for the given ids");
+        // Validate if trying to delete protected roles
+        for (CustomerRole role : customerRoles) {
+            if (PROTECTED_ROLES.contains(role.getName())) {
+                throw new IllegalArgumentException("System role could not be deleted");
+            }
+        }
+
+        if (customerRoles.size() != ids.size()) {
+            throw new NotFoundException("One or more customer roles not found for the given ids");
+        }
 
         customerRoleRepository.deleteAll(customerRoles);
     }
 
+    // Method to validate role name uniqueness for create
+    private void validateRoleNameUnique(String roleName) {
+        boolean exists = customerRoleRepository.existsByName(roleName);
+        if (exists) {
+            throw new AlreadyExistsException("Role name already exists: " + roleName);
+        }
+    }
+
+    // Method to validate role name uniqueness for update, excluding the current role
+    private void validateRoleNameUniqueForUpdate(String roleName, Long id) {
+        boolean exists = customerRoleRepository.existsByNameAndIdNot(roleName, id);
+        if (exists) {
+            throw new AlreadyExistsException("Role name already exists for another role: " + roleName);
+        }
+    }
 }
+
+
