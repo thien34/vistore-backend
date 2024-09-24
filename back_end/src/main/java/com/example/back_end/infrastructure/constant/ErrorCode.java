@@ -31,6 +31,9 @@ public enum ErrorCode {
     CUSTOMER_NOT_FOUND("Customer not found", HttpStatus.NOT_FOUND),
     CUSTOMER_PASSWORD_NOT_FOUND("Customer password not found",HttpStatus.NOT_FOUND),
 
+    //Address errors
+    ADDRESS_NOT_FOUND("Address not found", HttpStatus.NOT_FOUND),
+
     //Discounts errors
     DISCOUNT_NOT_FOUND("Discount not found", HttpStatus.NOT_FOUND),
     DISCOUNT_ALREADY_EXISTS("Discount already exists", HttpStatus.BAD_REQUEST),
