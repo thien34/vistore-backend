@@ -62,6 +62,17 @@ public class CustomerRoleController {
                 .data(null)
                 .build();
     }
+    @GetMapping("/list-name")
+    public ResponseData<List<CustomerRoleResponse>> getAllNameCustomerRoles() {
+
+        List<CustomerRoleResponse> response = customerRoleService.getAllCustomerRoleName();
+
+        return ResponseData.<List<CustomerRoleResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get customer roles name success")
+                .data(response)
+                .build();
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get customer role by ID",
@@ -96,14 +107,28 @@ public class CustomerRoleController {
     }
 
     @DeleteMapping
+    @Operation(summary = "Delete a customer role by IDs",
+            description = "Delete an existing customer role using the provided IDs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Customer roles deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer roles not found")
+    })
+    public ResponseData<Void> deleteCustomerRoles(@RequestBody List<Long> id) {
+        customerRoleService.deleteCustomerRoles(id);
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.NO_CONTENT.value())
+                .message("Customer roles deleted successfully")
+                .build();
+    }
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete a customer role by ID",
             description = "Delete an existing customer role using the provided ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Customer role deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Customer role not found")
     })
-    public ResponseData<Void> deleteCustomerRole(@RequestBody List<Long> id) {
-        customerRoleService.deleteCustomerRoles(id);
+    public ResponseData<Void> deleteCustomerRole(@PathVariable Long id) {
+        customerRoleService.deleteCustomerRole(id);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
                 .message("Customer role deleted successfully")

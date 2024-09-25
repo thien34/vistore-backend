@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.customer.controller;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
 import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.core.admin.customer.service.CustomerService;
 import com.example.back_end.core.common.PageResponse;
@@ -39,9 +40,9 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseData<CustomerResponse> getCustomerById(@PathVariable Long id) {
-        CustomerResponse response = customerService.getCustomerById(id);
-        return ResponseData.<CustomerResponse>builder()
+    public ResponseData<CustomerFullResponse> getCustomerById(@PathVariable Long id) {
+        CustomerFullResponse response = customerService.getCustomerById(id);
+        return ResponseData.<CustomerFullResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get customer success")
                 .data(response)
@@ -69,6 +70,14 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public ResponseData<Void> deleteCustomers(@PathVariable Long id) {
         customerService.deleteCustomer(id);
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Customers deleted successfully")
+                .build();
+    }
+    @DeleteMapping
+    public ResponseData<Void> deleteCustomers(@RequestBody List<Long> id) {
+        customerService.deleteCustomers(id);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Customers deleted successfully")

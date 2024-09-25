@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.customer.service;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
 import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.core.common.PageResponse;
 
@@ -13,12 +14,14 @@ public interface CustomerService {
             CustomerSearchCriteria searchCriteria, Integer pageNo, Integer pageSize
     );
 
-    CustomerResponse getCustomerById(Long id);
+    CustomerFullResponse getCustomerById(Long id);
 
     void createCustomer(CustomerFullRequest request);
 
     void updateCustomer(Long id, CustomerFullRequest request);
 
     void deleteCustomer(Long id);
+
+    void deleteCustomers(List<Long> ids);
 
 }

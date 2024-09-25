@@ -30,8 +30,6 @@ public class CustomerSearchCriteria {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastActivityTo;
 
-    private String company;
-
     private List<Long> customerRoles;
 
 }

@@ -19,6 +19,6 @@ public class CustomerResponse {
 
     private Boolean active;
 
-    private List<Long> customerRoles;
+    private List<String> customerRoles;
 
 }

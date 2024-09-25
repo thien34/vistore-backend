@@ -10,6 +10,7 @@ import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
+import com.example.back_end.infrastructure.exception.RoleDeletionException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.CustomerRoleRepository;
 import lombok.AccessLevel;
@@ -102,18 +103,41 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
     public void deleteCustomerRoles(List<Long> ids) {
         List<CustomerRole> customerRoles = customerRoleRepository.findAllById(ids);
 
-        // Validate if trying to delete protected roles
         for (CustomerRole role : customerRoles) {
-            if (PROTECTED_ROLES.contains(role.getName())) {
-                throw new IllegalArgumentException("System role could not be deleted");
-            }
-        }
+            if (PROTECTED_ROLES.contains(role.getName()))
+                throw new RoleDeletionException(ErrorCode.SYSTEM_ROLE_COULD_NOT_BE_DELETED.getMessage());
 
-        if (customerRoles.size() != ids.size()) {
-            throw new NotFoundException("One or more customer roles not found for the given ids");
         }
+        if (customerRoles.size() != ids.size())
+            throw new NotFoundException("One or more customer roles not found for the given ids");
 
         customerRoleRepository.deleteAll(customerRoles);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCustomerRole(Long id) {
+        CustomerRole customerRole = customerRoleRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Could not find customer role with ID: " + id));
+
+        if (PROTECTED_ROLES.contains(customerRole.getName()))
+            throw new RoleDeletionException(ErrorCode.SYSTEM_ROLE_COULD_NOT_BE_DELETED.getMessage());
+
+        customerRoleRepository.delete(customerRole);
+    }
+
+
+    @Override
+    public List<CustomerRoleResponse> getAllCustomerRoleName() {
+            return customerRoleRepository.findAll().stream()
+                    .filter(CustomerRole::getActive)
+                    .map(customerRole -> new CustomerRoleResponse(
+                            customerRole.getId(),
+                            customerRole.getName(),
+                            true)
+                    )
+                    .toList();
+
     }
 
     // Method to validate role name uniqueness for create

@@ -27,9 +27,12 @@ public enum ErrorCode {
 
     //Customer errors
     CUSTOMER_NOT_EXISTED("Customer not existed", HttpStatus.NOT_FOUND),
+    EMAIL_ALREADY_EXISTS("Email already exists.", HttpStatus.BAD_REQUEST),
     CUSTOMER_ROLE_NOT_FOUND("Customer role not found", HttpStatus.NOT_FOUND),
     CUSTOMER_NOT_FOUND("Customer not found", HttpStatus.NOT_FOUND),
     CUSTOMER_PASSWORD_NOT_FOUND("Customer password not found",HttpStatus.NOT_FOUND),
+    //System errors
+    SYSTEM_ROLE_COULD_NOT_BE_DELETED("System role could not be deleted", HttpStatus.BAD_REQUEST),
 
     //Address errors
     ADDRESS_NOT_FOUND("Address not found", HttpStatus.NOT_FOUND),

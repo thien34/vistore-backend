@@ -3,16 +3,20 @@ package com.example.back_end.core.admin.customer.service.impl;
 import com.example.back_end.core.admin.customer.mapper.CustomerMapper;
 import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
 import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.core.admin.customer.service.CustomerService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Customer;
+import com.example.back_end.entity.CustomerPassword;
 import com.example.back_end.entity.CustomerRole;
 import com.example.back_end.entity.CustomerRoleMapping;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.constant.SortType;
+import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CustomerCustomerRoleMappingRepository;
+import com.example.back_end.repository.CustomerPasswordRepository;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.CustomerRoleRepository;
@@ -22,20 +26,23 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerServiceImpl implements CustomerService {
 
     CustomerRepository customerRepository;
     CustomerMapper customerMapper;
     CustomerCustomerRoleMappingRepository customerCustomerRoleMappingRepository;
     CustomerRoleRepository customerRoleRepository;
+    CustomerPasswordRepository customerPasswordRepository;
 
     @Override
     public PageResponse<List<CustomerResponse>> getAllCustomers(
@@ -62,18 +69,20 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse getCustomerById(Long id) {
+    public CustomerFullResponse getCustomerById(Long id) {
 
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
 
-        return customerMapper.toResponse(customer);
+        return customerMapper.toFullResponse(customer);
 
     }
 
     @Override
     @Transactional
     public void createCustomer(CustomerFullRequest request) {
+        if (customerRepository.findByEmail(request.getEmail()).isPresent())
+            throw new AlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
 
         Customer customer = customerMapper.toEntity(request);
         customer.setCustomerGuid(UUID.randomUUID());
@@ -95,11 +104,27 @@ public class CustomerServiceImpl implements CustomerService {
                 .toList();
 
         customerCustomerRoleMappingRepository.saveAll(mappings);
+        String[] passData = hashPasswordAndGenerateSalt(request.getPassword());
+        CustomerPassword customerPassword = CustomerPassword.builder()
+                .customer(customer)
+                .password(passData[0])
+                .passwordSalt(passData[1])
+                .build();
+        customerPasswordRepository.save(customerPassword);
+
+    }
+
+    private String[] hashPasswordAndGenerateSalt(String password) {
+        String salt = BCrypt.gensalt(12);
+        String hashedPassword = BCrypt.hashpw(password, salt);
+        return new String[]{hashedPassword, salt};
     }
 
     @Override
     @Transactional
     public void updateCustomer(Long id, CustomerFullRequest request) {
+        if (customerRepository.existsByEmailAndIdNot(request.getEmail(), id))
+            throw new AlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
 
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
@@ -123,11 +148,21 @@ public class CustomerServiceImpl implements CustomerService {
                 existingMappings.add(newMapping);
             }
         }
-
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            updateCustomerPassword(customer, request.getPassword());
+        }
         customerRepository.save(customer);
 
     }
-
+    private void updateCustomerPassword(Customer customer, String newPassword) {
+        String[] passwordData = hashPasswordAndGenerateSalt(newPassword);
+        CustomerPassword customerPassword = customerPasswordRepository.findByCustomer(customer)
+                .orElseGet(CustomerPassword::new);
+        customerPassword.setCustomer(customer);
+        customerPassword.setPassword(passwordData[0]);
+        customerPassword.setPasswordSalt(passwordData[1]);
+        customerPasswordRepository.save(customerPassword);
+    }
 
 
     @Override
@@ -141,6 +176,13 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerRepository.delete(customer);
 
+    }
+    @Override
+    @Transactional
+    public void deleteCustomers(List<Long> ids) {
+        List<CustomerRole> customerRoles = customerRoleRepository.findAllById(ids);
+
+        customerRoleRepository.deleteAll(customerRoles);
     }
 
 }

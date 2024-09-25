@@ -87,4 +87,7 @@ public class Customer extends Auditable {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerRoleMapping> customerRoles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerAddressMapping> customerAddressMappings;
+
 }

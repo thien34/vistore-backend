@@ -18,4 +18,8 @@ public interface CustomerRoleService {
 
     void deleteCustomerRoles(List<Long> ids);
 
+    void deleteCustomerRole(Long id);
+
+    List<CustomerRoleResponse> getAllCustomerRoleName();
+
 }

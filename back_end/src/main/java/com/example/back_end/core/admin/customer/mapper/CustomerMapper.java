@@ -12,18 +12,28 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
+import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
+
+import org.mapstruct.Named;
+
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
 
+    @Mapping(source = "customerRoles", target = "customerRoles", qualifiedByName = "mapToRoleMappings")
     Customer toEntity(CustomerFullRequest request);
 
+    @Mapping(source = "customerRoles", target = "customerRoles", qualifiedByName = "mapToRoleNames")
     CustomerResponse toResponse(Customer customer);
+
+    @Mapping(source = "customerRoles", target = "customerRoles", qualifiedByName = "mapToRoleIds")
+    CustomerFullResponse toFullResponse(Customer customer);
 
     List<CustomerResponse> toResponseList(List<Customer> customers);
 
-    @Mapping(target = "customerRoles",ignore = true)
+    @Mapping(target = "customerRoles", ignore = true)
     void updateFromFullRequest(CustomerFullRequest request, @MappingTarget Customer customer);
 
+    @Named("mapToRoleMappings")
     default List<CustomerRoleMapping> mapToRoleMappings(List<Long> roleIds) {
         if (roleIds == null) return Collections.emptyList();
 
@@ -36,6 +46,7 @@ public interface CustomerMapper {
                 .toList();
     }
 
+    @Named("mapToRoleIds")
     default List<Long> mapToRoleIds(List<CustomerRoleMapping> roleMappings) {
         if (roleMappings == null) return Collections.emptyList();
 
@@ -44,4 +55,13 @@ public interface CustomerMapper {
                 .toList();
     }
 
+    @Named("mapToRoleNames")
+    default List<String> mapToRoleNames(List<CustomerRoleMapping> roleMappings) {
+        if (roleMappings == null) return Collections.emptyList();
+
+        return roleMappings.stream()
+                .map(roleMapping -> roleMapping.getCustomerRole().getName())
+                .toList();
+    }
 }
+
