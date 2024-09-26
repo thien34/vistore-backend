@@ -483,4 +483,15 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+    @ExceptionHandler(RoleDeletionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleRoleDeletionException(RoleDeletionException e, WebRequest request) {
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error("Role Deletion Error")
+                .message(e.getMessage())
+                .build();
+    }
 }

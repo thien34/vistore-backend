@@ -32,7 +32,7 @@ public class CustomerRoleMapping {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id",nullable = false)
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)

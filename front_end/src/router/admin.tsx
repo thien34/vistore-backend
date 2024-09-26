@@ -21,6 +21,10 @@ import StockQuantityHistoryManage from '@/pages/stockQuantityHistory/StockQuanti
 import ProductCreate from '@/pages/product/ProductCreate'
 import RelatedProductManage from '@/pages/related-products'
 import { DiscountCreate, DiscountManage, DiscountUpdate } from '@/pages/discount'
+import CustomerManage from '@/pages/customer/CustomerManage'
+import { CustomerRoleCreate, CustomerRoleManage, CustomerRoleUpdate } from '@/pages/customer-roles'
+import CustomerCreate from '@/pages/customer/CustomerCreate'
+import { CustomerUpdate } from '@/pages/customer'
 
 const routers = [
     {
@@ -162,6 +166,36 @@ const routers = [
         path: ManagerPath.DISCOUNT_UPDATE,
         layout: 'main',
         element: <DiscountUpdate />,
+    },
+    {
+        path: ManagerPath.CUSTOMER,
+        layout: 'main',
+        element: <CustomerManage />,
+    },
+    {
+        path: ManagerPath.CUSTOMER_ADD,
+        layout: 'main',
+        element: <CustomerCreate />,
+    },
+    {
+        path: ManagerPath.CUSTOMER_EDIT,
+        layout: 'main',
+        element: <CustomerUpdate />,
+    },
+    {
+        path: ManagerPath.CUSTOMER_ROLE,
+        layout: 'main',
+        element: <CustomerRoleManage />,
+    },
+    {
+        path: ManagerPath.CUSTOMER_ROLE_ADD,
+        layout: 'main',
+        element: <CustomerRoleCreate />,
+    },
+    {
+        path: ManagerPath.CUSTOMER_ROLE_UPDATE,
+        layout: 'main',
+        element: <CustomerRoleUpdate />,
     },
 ]
 
