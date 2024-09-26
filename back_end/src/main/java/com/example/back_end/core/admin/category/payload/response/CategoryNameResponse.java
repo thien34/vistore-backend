@@ -21,11 +21,4 @@ public class CategoryNameResponse {
 
     private List<CategoryNameResponse> children = new ArrayList<>();
 
-    public static CategoryNameResponse toTreeDto(Category category) {
-        return new CategoryNameResponse(
-                category.getId(), category.getName(), new ArrayList<>()
-
-        );
-    }
-
 }

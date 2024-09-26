@@ -5,6 +5,7 @@ import { Configs } from '@/types/Configs'
 export default class ProductAttributeMappingConfigs extends Configs {
     static readonly managerPath = ManagerPath.PRODUCT_ATTRIBUTE_MAPPING
     static readonly resourceUrl = ResourceURL.PRODUCT_ATTRIBUTE_MAPPING
+    static readonly resourceUrlValue = ResourceURL.PRODUCT_ATTRIBUTE_VALUE
     static readonly resourceKey = 'Product attributes'
     static readonly createTitle = 'Create Product attributes'
     static readonly updateTitle = 'Update Product attributes'

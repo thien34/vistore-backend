@@ -13,6 +13,8 @@ public class ProductAttributeValueRequest {
 
     private Long id;
 
+    private Long productAttributeMappingId;
+
     @NotBlank
     private String name;
 

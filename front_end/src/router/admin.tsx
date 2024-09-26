@@ -128,7 +128,7 @@ const routers = [
         element: <ProductManage />,
     },
     {
-        path: ManagerPath.PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING,
+        path: ManagerPath.PRODUCT_EDIT,
         layout: 'main',
         element: <ProductUpdate />,
     },

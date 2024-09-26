@@ -11,6 +11,7 @@ export type ProductProductAttributeMappingRequest = {
 
 export type ProductAttributeValueRequest = {
     id?: number | null
+    productAttributeMappingId?: number
     name: string
     colorSquaresRgb: string
     priceAdjustment: number
@@ -20,6 +21,19 @@ export type ProductAttributeValueRequest = {
     isPreSelected: boolean
     displayOrder: number
     productAttributeValuePictureRequests: ProductAttributeValuePictureRequest[]
+}
+
+export type ProductAttributeValueResponse = {
+    id: number
+    name: string
+    colorSquaresRgb: string
+    priceAdjustment: number
+    priceAdjustmentPercentage: boolean
+    weightAdjustment: number
+    cost: number
+    isPreSelected: boolean
+    displayOrder: number
+    imageUrl: string[]
 }
 
 export type ProductAttributeValuePictureRequest = {
@@ -46,17 +60,4 @@ export type ProductProductAttributeMappingDetailResponse = {
     attributeControlTypeId: string
     displayOrder: number
     productAttributeValueResponses: ProductAttributeValueResponse[]
-}
-
-export type ProductAttributeValueResponse = {
-    id: number
-    name: string
-    colorSquaresRgb: string
-    priceAdjustment: number
-    priceAdjustmentPercentage: boolean
-    weightAdjustment: number
-    cost: number
-    isPreSelected: boolean
-    displayOrder: number
-    imageUrl: string[]
 }

@@ -10,6 +10,7 @@ import java.util.List;
 public interface ProductProductTagMappingRepository extends JpaRepository<ProductProductTagMapping, Long> {
 
     boolean existsByProductAndProductTag(Product product, ProductTag productTag);
+
     List<ProductProductTagMapping> findByProductId(Long productId);
 
 }

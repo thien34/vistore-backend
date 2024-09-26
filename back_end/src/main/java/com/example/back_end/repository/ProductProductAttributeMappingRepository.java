@@ -13,6 +13,8 @@ public interface ProductProductAttributeMappingRepository extends JpaRepository<
 
     boolean existsByProductAttributeAndProduct(ProductAttribute productAttribute, Product product);
 
+    boolean existsByProductAttributeAndProductNot(ProductAttribute productAttribute, Product product);
+
     Page<ProductProductAttributeMapping> findAllByProductId(Long productId, Pageable pageable);
 
     List<ProductProductAttributeMapping> findByProductId(Long productId);

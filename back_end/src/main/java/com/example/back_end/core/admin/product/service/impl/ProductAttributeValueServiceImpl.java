@@ -30,7 +30,7 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
 
     @Override
     @Transactional
-    public void createProductAttributeValue(List<ProductAttributeValueRequest> request, Long productAttributeMappingId) {
+    public void createProductAttributeValues(List<ProductAttributeValueRequest> request, Long productAttributeMappingId) {
 
         ProductProductAttributeMapping productProductAttributeMapping = productProductAttributeMappingRepository
                 .findById(productAttributeMappingId)
@@ -58,4 +58,40 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
         productAttributeValuePictureService.createProductAttributePictureValue(picturesMap);
     }
 
+    @Override
+    public void createProductAttributeValue(ProductAttributeValueRequest request) {
+
+        ProductProductAttributeMapping productProductAttributeMapping = productProductAttributeMappingRepository
+                .findById(request.getProductAttributeMappingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product attribute mapping not found: "
+                        + request.getProductAttributeMappingId()));
+
+        ProductAttributeValue productAttributeValue = productAttributeValueMapper.toEntity(request);
+        productAttributeValue.setProductAttributeMapping(productProductAttributeMapping);
+
+        ProductAttributeValue savedAttributeValue = productAttributeValueRepository.save(productAttributeValue);
+
+        if (request.getProductAttributeValuePictureRequests() != null) {
+            Map<Long, List<ProductAttributeValuePictureRequest>> picturesMap = Map.of(savedAttributeValue.getId(),
+                    request.getProductAttributeValuePictureRequests());
+            productAttributeValuePictureService.createProductAttributePictureValue(picturesMap);
+        }
+    }
+
+    @Override
+    public void updateProductAttributeValue(Long id, ProductAttributeValueRequest request) {
+
+        ProductAttributeValue productAttributeValue = productAttributeValueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product attribute value not found: " + id));
+
+        productAttributeValueMapper.updateProdAttrValueFromRequest(request, productAttributeValue);
+
+        productAttributeValueRepository.save(productAttributeValue);
+
+        if (request.getProductAttributeValuePictureRequests() != null) {
+            Map<Long, List<ProductAttributeValuePictureRequest>> picturesMap = Map.of(productAttributeValue.getId(),
+                    request.getProductAttributeValuePictureRequests());
+            productAttributeValuePictureService.createProductAttributePictureValue(picturesMap);
+        }
+    }
 }

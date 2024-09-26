@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.category.mapper;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
+import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.entity.Category;
 import org.mapstruct.Mapper;
@@ -21,6 +22,9 @@ public interface CategoryMapper {
     CategoriesResponse toCategoriesResponse(Category category);
 
     List<CategoriesResponse> toCategoriesResponseList(List<Category> categories);
+
+    @Mapping(target = "children", expression = "java(new ArrayList<>())")
+    CategoryNameResponse toTreeDto(Category category);
 
     @Mapping(target = "deleted", constant = "false")
     @Mapping(target = "name", source = "name", qualifiedByName = "trimName")

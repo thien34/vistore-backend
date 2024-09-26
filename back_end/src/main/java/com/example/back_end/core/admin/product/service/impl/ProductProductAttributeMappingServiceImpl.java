@@ -109,7 +109,7 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
                 productProductAttributeMappingRepository.save(attributeMapping);
 
         if (request.getProductAttributeValueRequests() != null) {
-            productAttributeValueService.createProductAttributeValue(
+            productAttributeValueService.createProductAttributeValues(
                     request.getProductAttributeValueRequests(),
                     attributeMappingSaved.getId()
             );
@@ -124,11 +124,16 @@ public class ProductProductAttributeMappingServiceImpl implements ProductProduct
         getProductOrThrow(request.getProductId());
         validateProductAttribute(request.getProductAttributeId());
 
+        ProductProductAttributeMapping existingEntity = getMappingOrThrow(id);
+        if (!existingEntity.getProductAttribute().getId().equals(request.getProductAttributeId())) {
+            checkProductAttributeExits(request.getProductAttributeId(), request.getProductId());
+        }
+
         ProductProductAttributeMapping attributeMapping = productProductAttributeMappingMapper.toEntity(request);
         productProductAttributeMappingRepository.save(attributeMapping);
 
         if (request.getProductAttributeValueRequests() != null) {
-            productAttributeValueService.createProductAttributeValue(request.getProductAttributeValueRequests(), id);
+            productAttributeValueService.createProductAttributeValues(request.getProductAttributeValueRequests(), id);
         }
     }
 

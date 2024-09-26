@@ -6,6 +6,10 @@ import java.util.List;
 
 public interface ProductAttributeValueService {
 
-    void createProductAttributeValue(List<ProductAttributeValueRequest> requests, Long productAttributeMappingId);
+    void createProductAttributeValues(List<ProductAttributeValueRequest> requests, Long productAttributeMappingId);
+
+    void createProductAttributeValue(ProductAttributeValueRequest request);
+
+    void updateProductAttributeValue(Long id, ProductAttributeValueRequest request);
 
 }

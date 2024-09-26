@@ -95,7 +95,7 @@ export default function CategoryUpdate() {
                                     filterOption={(input, option) =>
                                         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                     }
-                                    options={[{ label: '[None]', value: 0 }, ...categoryOptions]}
+                                    options={[{ label: '[None]', value: '' }, ...categoryOptions]}
                                 />
                             </Form.Item>
                             <Form.Item name='pictureId' label='Picture'>

@@ -20,9 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +51,14 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = findCategoryById(id);
 
         validateCategoryParent(request.getCategoryParentId());
+
+        getCategoriesChild(id).stream()
+                .filter(categoryId -> categoryId.equals(request.getCategoryParentId()))
+                .findFirst()
+                .ifPresent(categoryId -> {
+                    throw new IllegalArgumentException("Category parent cannot be child of itself");
+                });
+
         validatePicture(request.getPictureId());
 
         categoryMapper.updateCategoryFromRequest(request, category);
@@ -100,24 +109,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryNameResponse> getCategoriesName() {
-        List<Category> categories = categoryRepository.findAll();
-        Map<Long, CategoryNameResponse> categoryMap = new HashMap<>();
 
-        for (Category category : categories) {
-            CategoryNameResponse dto = CategoryNameResponse.toTreeDto(category);
-            categoryMap.put(category.getId(), dto);
-        }
+        List<Category> categories = categoryRepository.findAll();
         List<CategoryNameResponse> roots = new ArrayList<>();
+
+        Map<Long, CategoryNameResponse> categoryMap = categories.stream()
+                .collect(Collectors.toMap(Category::getId, categoryMapper::toTreeDto));
 
         for (Category category : categories) {
             Long parentId = category.getCategoryParent() != null ? category.getCategoryParent().getId() : null;
+            CategoryNameResponse currentDto = categoryMap.get(category.getId());
+
+            // check category have parent or not
             if (parentId == null) {
-                roots.add(categoryMap.get(category.getId()));
+                // if is parented, add to roots
+                roots.add(currentDto);
             } else {
-                CategoryNameResponse parent = categoryMap.get(parentId);
-                if (parent != null) {
-                    parent.getChildren().add(categoryMap.get(category.getId()));
-                }
+                // if is child having parent, add to parent's children
+                categoryMap.get(parentId).getChildren().add(currentDto);
             }
         }
         return roots;
@@ -138,6 +147,18 @@ public class CategoryServiceImpl implements CategoryService {
     private Category findCategoryById(Long idCategory) {
         return categoryRepository.findById(idCategory)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + idCategory));
+    }
+
+    private List<Long> getCategoriesChild(Long id) {
+        List<Category> categories = categoryRepository.findAll();
+        List<Long> children = new ArrayList<>();
+        children.add(id);
+        for (Category category : categories) {
+            if (category.getCategoryParent() != null && Objects.equals(category.getCategoryParent().getId(), id)) {
+                children.addAll(getCategoriesChild(category.getId()));
+            }
+        }
+        return children;
     }
 
 }
