@@ -37,7 +37,7 @@ public class ProductProductAttributeMapping {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_attribute_id")
     private ProductAttribute productAttribute;
