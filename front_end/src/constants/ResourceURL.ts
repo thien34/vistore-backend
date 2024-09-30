@@ -27,6 +27,10 @@ class ResourceURL {
     static readonly USE_GET_UNGROUPED_ATTRIBUTES = apiPath + '/specification-attributes/no-group-or-invalid'
     static readonly CUSTOMER = apiPath + '/customers'
     static readonly CUSTOMER_ROLE = apiPath + '/customer-roles'
+    static readonly ADDRESS = apiPath + '/addresses'
+    static readonly PROVINCE = apiPath + '/provinces'
+    static readonly DISTRICT = apiPath + '/districts'
+    static readonly WARD = apiPath + '/wards'
     static readonly DISCOUNT = apiPath + '/discounts'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = apiPath + '/product-specification-attribute-mappings'
     static readonly GET_PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_BY_PRODUCT_ID =

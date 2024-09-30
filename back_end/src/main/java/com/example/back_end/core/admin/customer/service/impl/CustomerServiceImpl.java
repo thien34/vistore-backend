@@ -81,20 +81,29 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public void createCustomer(CustomerFullRequest request) {
-        if (customerRepository.findByEmail(request.getEmail()).isPresent())
-            throw new AlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
+        checkForDuplicateEmail(request.getEmail());
+        checkForDuplicatePhoneNumber(request.getPhone());
 
         Customer customer = customerMapper.toEntity(request);
         customer.setCustomerGuid(UUID.randomUUID());
 
         customerRepository.save(customer);
 
-        List<CustomerRole> roles = request.getCustomerRoles().stream()
+        List<CustomerRoleMapping> mappings = createRoleMappings(request.getCustomerRoles(), customer);
+        customerCustomerRoleMappingRepository.saveAll(mappings);
+
+        CustomerPassword customerPassword = createCustomerPassword(customer, request.getPassword());
+        customerPasswordRepository.save(customerPassword);
+    }
+    private void checkForDuplicatePhoneNumber(String phoneNumber) {
+        if (customerRepository.findByPhone(phoneNumber).isPresent()) {
+            throw new AlreadyExistsException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage());
+        }
+    }
+    private List<CustomerRoleMapping> createRoleMappings(List<Long> roleIds, Customer customer) {
+        return roleIds.stream()
                 .map(roleId -> customerRoleRepository.findById(roleId)
                         .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_ROLE_NOT_FOUND.getMessage())))
-                .toList();
-
-        List<CustomerRoleMapping> mappings = roles.stream()
                 .map(role -> {
                     CustomerRoleMapping mapping = new CustomerRoleMapping();
                     mapping.setCustomer(customer);
@@ -102,16 +111,14 @@ public class CustomerServiceImpl implements CustomerService {
                     return mapping;
                 })
                 .toList();
-
-        customerCustomerRoleMappingRepository.saveAll(mappings);
-        String[] passData = hashPasswordAndGenerateSalt(request.getPassword());
-        CustomerPassword customerPassword = CustomerPassword.builder()
+    }
+    private CustomerPassword createCustomerPassword(Customer customer, String password) {
+        String[] passData = hashPasswordAndGenerateSalt(password);
+        return CustomerPassword.builder()
                 .customer(customer)
                 .password(passData[0])
                 .passwordSalt(passData[1])
                 .build();
-        customerPasswordRepository.save(customerPassword);
-
     }
 
     private String[] hashPasswordAndGenerateSalt(String password) {
@@ -123,23 +130,34 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public void updateCustomer(Long id, CustomerFullRequest request) {
-        if (customerRepository.existsByEmailAndIdNot(request.getEmail(), id))
-            throw new AlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
+        checkForDuplicateEmailAndIdNot(request.getEmail(), id);
+        checkForDuplicatePhoneNumberAndIdNot(request.getPhone(), id);
 
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
 
         customerMapper.updateFromFullRequest(request, customer);
+        updateCustomerRoles(customer, request.getCustomerRoles());
 
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            updateCustomerPassword(customer, request.getPassword());
+        }
+
+        customerRepository.save(customer);
+    }
+    private void checkForDuplicatePhoneNumberAndIdNot(String phoneNumber, Long id) {
+        if (customerRepository.existsByPhoneAndIdNot(phoneNumber, id)) {
+            throw new AlreadyExistsException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage());
+        }
+    }
+    private void updateCustomerRoles(Customer customer, List<Long> newRoleIds) {
         List<CustomerRoleMapping> existingMappings = customer.getCustomerRoles();
-        List<Long> newRoleIds = request.getCustomerRoles();
 
         existingMappings.removeIf(mapping -> !newRoleIds.contains(mapping.getCustomerRole().getId()));
 
         for (Long roleId : newRoleIds) {
             boolean exists = existingMappings.stream()
                     .anyMatch(mapping -> mapping.getCustomerRole().getId().equals(roleId));
-
             if (!exists) {
                 CustomerRoleMapping newMapping = CustomerRoleMapping.builder()
                         .customer(customer)
@@ -148,11 +166,18 @@ public class CustomerServiceImpl implements CustomerService {
                 existingMappings.add(newMapping);
             }
         }
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            updateCustomerPassword(customer, request.getPassword());
-        }
-        customerRepository.save(customer);
+    }
 
+    private void checkForDuplicateEmail(String email) {
+        if (customerRepository.findByEmail(email).isPresent()) {
+            throw new AlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
+        }
+    }
+
+    private void checkForDuplicateEmailAndIdNot(String email, Long id) {
+        if (customerRepository.existsByEmailAndIdNot(email, id)) {
+            throw new AlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
+        }
     }
     private void updateCustomerPassword(Customer customer, String newPassword) {
         String[] passwordData = hashPasswordAndGenerateSalt(newPassword);

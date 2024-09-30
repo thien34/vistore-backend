@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AddressService {
 
-    PageResponse<List<AddressResponse>> getAll(Integer pageNo, Integer pageSize);
+    PageResponse<List<AddressResponse>> getAll(Integer pageNo, Integer pageSize, Long customerId);
 
     void createAddress(AddressRequest request);
 

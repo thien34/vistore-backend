@@ -4,9 +4,12 @@ import com.example.back_end.infrastructure.constant.GenderType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,47 +17,54 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomerFullRequest {
 
-    private UUID customerGuid;
+    UUID customerGuid;
 
     @Email
     @NotBlank(message = "Email must not be empty.")
-    private String email;
+    String email;
 
     @NotBlank
     @Size(min = 6, message = "Password must be at least 6 characters long.")
-    private String password;
+    String password;
 
-    private String firstName;
+    String currentPassword;
 
-    private String lastName;
+    String firstName;
 
-    private GenderType gender;
+    String lastName;
 
-    private Instant dateOfBirth;
+    GenderType gender;
+
+    Instant dateOfBirth;
 
     @NotEmpty(message = "Customer Roles must not be empty.")
-    private List<Long> customerRoles;
+    List<Long> customerRoles;
 
-    private String username;
+    String username;
 
-    private Boolean active;
+    Boolean active;
 
-    private String phone;
+    @Pattern(
+            regexp = "^(0\\d{9}|\\+84\\d{9}|84\\d{9})$",
+            message = "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại Việt Nam hợp lệ"
+    )
+    String phone;
 
-    private Boolean hasShoppingCartItems;
+    Boolean hasShoppingCartItems;
 
-    private Boolean requireReLogin;
+    Boolean requireReLogin;
 
-    private Integer failedLoginAttempts;
+    Integer failedLoginAttempts;
 
-    private Instant cannotLoginUntilDateUtc;
+    Instant cannotLoginUntilDateUtc;
 
-    private Boolean deleted;
+    Boolean deleted;
 
-    private Instant lastLoginDateUtc;
+    Instant lastLoginDateUtc;
 
-    private Instant lastActivityDateUtc;
+    Instant lastActivityDateUtc;
 
 }

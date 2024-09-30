@@ -1,7 +1,8 @@
 import { Form, Input, Button, Radio, DatePicker, Checkbox, Select, Row, Col } from 'antd'
-import { SaveOutlined, EditOutlined } from '@ant-design/icons'
+import { SaveOutlined } from '@ant-design/icons'
 import 'tailwindcss/tailwind.css'
 import useCustomerCreateViewModel from './CustomerCreate.vm'
+import { GenderTypeEnum } from './GenderTypeEnum'
 
 const { Option } = Select
 
@@ -17,13 +18,20 @@ export default function CustomerCreate() {
                         <Form.Item
                             label='Email'
                             name='email'
-                            rules={[{ required: true, message: 'Email must not be empty.' }]}
+                            rules={[
+                                { type: 'email', message: 'Please enter a valid email.' },
+                                { max: 100, message: 'Email cannot exceed 100 characters.' },
+                            ]}
                         >
-                            <Input size='large' />
+                            <Input maxLength={101} size='large' />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label='Password' name='password'>
+                        <Form.Item
+                            label='Password'
+                            name='password'
+                            rules={[{ min: 6, message: 'Password must be at least 6 characters.' }]}
+                        >
                             <Input.Password size='large' />
                         </Form.Item>
                     </Col>
@@ -31,24 +39,38 @@ export default function CustomerCreate() {
 
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item label='First Name' name='firstName'>
-                            <Input size='large' />
+                        <Form.Item
+                            label='First Name'
+                            name='firstName'
+                            rules={[
+                                { required: true, message: 'First Name must not be empty.' },
+                                { max: 100, message: 'Email cannot exceed 100 characters.' },
+                            ]}
+                        >
+                            <Input maxLength={101} size='large' />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label='Last Name' name='lastName'>
-                            <Input size='large' />
+                        <Form.Item
+                            label='Last Name'
+                            name='lastName'
+                            rules={[
+                                { required: true, message: 'Last Name must not be empty.' },
+                                { max: 100, message: 'Email cannot exceed 100 characters.' },
+                            ]}
+                        >
+                            <Input maxLength={101} size='large' />
                         </Form.Item>
                     </Col>
                 </Row>
 
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item initialValue='MALE' label='Gender' name='gender'>
+                        <Form.Item initialValue={GenderTypeEnum.MALE} label='Gender' name='gender'>
                             <Radio.Group onChange={onChange} value={value}>
-                                <Radio value='MALE'>Male</Radio>
-                                <Radio value='FEMALE'>Female</Radio>
-                                <Radio value='OTHER'>Other</Radio>
+                                <Radio value={GenderTypeEnum.MALE}>Male</Radio>
+                                <Radio value={GenderTypeEnum.FEMALE}>Female</Radio>
+                                <Radio value={GenderTypeEnum.OTHER}>Other</Radio>
                             </Radio.Group>
                         </Form.Item>
                     </Col>
@@ -61,7 +83,11 @@ export default function CustomerCreate() {
 
                 <Row gutter={16}>
                     <Col span={24}>
-                        <Form.Item label='Customer Roles' name='customerRoles' rules={[{ required: true }]}>
+                        <Form.Item
+                            label='Customer Roles'
+                            name='customerRoles'
+                            rules={[{ required: true, message: 'At least one customer role must be selected.' }]}
+                        >
                             <Select mode='multiple' placeholder='Select customer roles' size='large'>
                                 {Array.isArray(customerRoles) && customerRoles.length > 0 ? (
                                     customerRoles.map((role) =>
@@ -88,11 +114,13 @@ export default function CustomerCreate() {
                 </Row>
 
                 <div className='flex space-x-2 mt-4'>
-                    <Button type='primary' htmlType='submit' icon={<SaveOutlined />} size='large'>
+                    <Button
+                        className='bg-[#374151] border-[#374151] text-white'
+                        htmlType='submit'
+                        icon={<SaveOutlined />}
+                        size='large'
+                    >
                         Save
-                    </Button>
-                    <Button type='default' icon={<EditOutlined />} size='large'>
-                        Save and Continue Edit
                     </Button>
                 </div>
             </Form>

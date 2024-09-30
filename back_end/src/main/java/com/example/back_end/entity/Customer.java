@@ -84,10 +84,13 @@ public class Customer extends Auditable {
     @Column(name = "last_activity_date_utc")
     private Instant lastActivityDateUtc;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CustomerRoleMapping> customerRoles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CustomerAddressMapping> customerAddressMappings;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CustomerPassword> passwords;
 
 }

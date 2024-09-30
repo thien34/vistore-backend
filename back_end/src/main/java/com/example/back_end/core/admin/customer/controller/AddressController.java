@@ -74,11 +74,12 @@ public class AddressController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all addresses", description = "Retrieve all addresses with optional filtering.")
+    @Operation(summary = "Get all addresses", description = "Retrieve all addresses with optional filtering by customer ID.")
     public ResponseData<PageResponse<List<AddressResponse>>> getAllAddresses(
             @RequestParam(defaultValue = "1") Integer pageNo,
-            @RequestParam(defaultValue = "6") Integer pageSize) {
-        PageResponse<List<AddressResponse>> response = addressService.getAll(pageNo, pageSize);
+            @RequestParam(defaultValue = "6") Integer pageSize,
+            @RequestParam(required = false) Long customerId) {
+        PageResponse<List<AddressResponse>> response = addressService.getAll(pageNo, pageSize, customerId);
         return ResponseData.<PageResponse<List<AddressResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all addresses successfully")

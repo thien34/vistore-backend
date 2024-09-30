@@ -11,6 +11,18 @@ import { useEffect, useState } from 'react'
 import { Form, Modal, RadioChangeEvent } from 'antd'
 import CustomerRoleConfigs from '../customer-roles/CustomerRoleConfigs'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api'
+import getAddressColumns from '../address/AddressColumns.tsx'
+import useGetAllApi from '@/hooks/use-get-all-api'
+import { AddressResponse } from '@/model/Address'
+import AddressConfigs from '../address/AddressConfigs.ts'
+import { RequestParams } from '@/utils/FetchUtils'
+import { TableRowSelection } from 'antd/es/table/interface'
+import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api.ts'
+
+interface Search extends RequestParams {}
+export type ExtendedRequestParams = RequestParams & {
+    customerId?: number
+}
 
 function useCustomerUpdateViewModel() {
     const { id } = useParams<{ id: string }>()
@@ -19,6 +31,8 @@ function useCustomerUpdateViewModel() {
     const [error, setError] = useState<string | null>(null)
     const [value, setValue] = useState('MALE')
     const [customerRoles, setCustomerRoles] = useState<CustomerRoleResponse[]>([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+    const [filter, setFilter] = useState<Search>({})
 
     const { data, isSuccess } = useGetByIdApi<CustomerFullResponse>(
         CustomerConfigs.resourceUrl,
@@ -29,6 +43,15 @@ function useCustomerUpdateViewModel() {
         `${CustomerRoleConfigs.resourceUrl}/list-name`,
         CustomerRoleConfigs.resourceKey,
     )
+    const {
+        data: addressesResponse,
+        isLoading,
+        refetch,
+    } = useGetAllApi<AddressResponse>(AddressConfigs.resourceUrl, AddressConfigs.resourceKey, {
+        customerId: Number(id),
+        ...filter,
+    } as ExtendedRequestParams)
+
     const { mutate: updateApi } = useUpdateApi<CustomerFullRequest>(
         CustomerConfigs.resourceUrl,
         CustomerConfigs.resourceKey,
@@ -38,10 +61,17 @@ function useCustomerUpdateViewModel() {
         CustomerConfigs.resourceUrl,
         CustomerConfigs.resourceKey,
     )
+    const { mutate: deleteApi } = useDeleteByIdsApi<number>(AddressConfigs.resourceUrl, AddressConfigs.resourceKey)
     useEffect(() => {
         document.title = 'Update a new customer - Vítore'
     }, [])
-
+    const handleTableChange = (pagination: { current: number; pageSize: number }) => {
+        setFilter((prevFilter) => ({
+            ...prevFilter,
+            pageNo: pagination.current,
+            pageSize: pagination.pageSize,
+        }))
+    }
     useEffect(() => {
         if (isSuccess && data) {
             form.setFieldsValue({
@@ -88,8 +118,60 @@ function useCustomerUpdateViewModel() {
     const onChange = (e: RadioChangeEvent) => {
         setValue(e.target.value)
     }
+    const handleAddAddress = () => {
+        navigate(`${ManagerPath.ADDRESS_ADD}?customerId=${id}`)
+    }
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+        setSelectedRowKeys(newSelectedRowKeys)
+    }
+    const columns = getAddressColumns()
+    const rowSelection: TableRowSelection<AddressResponse> = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+    }
+    const handleDeleteAddress = async () => {
+        if (selectedRowKeys.length === 0) {
+            Modal.warning({
+                title: 'No addresses selected',
+                content: 'Please select at least one address to delete.',
+                okText: 'OK',
+            })
+            return
+        }
+        Modal.confirm({
+            title: 'Are you sure you want to delete the selected addresses?',
+            content: 'This action cannot be undone. Once deleted, the selected addresses will be permanently removed.',
+            okText: 'Yes, Delete',
+            okType: 'danger',
+            cancelText: 'Cancel',
+            onOk: () => {
+                deleteApi(selectedRowKeys as number[], {
+                    onSuccess: () => {
+                        refetch()
+                        setSelectedRowKeys([])
+                    },
+                })
+            },
+        })
+    }
 
-    return { form, onFinish, error, value, onChange, customerRoles, handleDelete }
+    return {
+        form,
+        onFinish,
+        error,
+        value,
+        columns,
+        onChange,
+        customerRoles,
+        handleDelete,
+        isLoading,
+        rowSelection,
+        filter,
+        addressesResponse,
+        handleTableChange,
+        handleDeleteAddress,
+        handleAddAddress,
+    }
 }
 
 export default useCustomerUpdateViewModel

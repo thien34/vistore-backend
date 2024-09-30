@@ -6,6 +6,8 @@ import com.example.back_end.core.admin.customer.payload.response.AddressResponse
 import com.example.back_end.core.admin.customer.service.AddressService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Address;
+import com.example.back_end.entity.Customer;
+import com.example.back_end.entity.CustomerAddressMapping;
 import com.example.back_end.entity.District;
 import com.example.back_end.entity.Province;
 import com.example.back_end.entity.Ward;
@@ -15,6 +17,8 @@ import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.AddressRepository;
+import com.example.back_end.repository.CustomerAddressMappingRepository;
+import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.WardRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,8 @@ public class AddressServiceImpl implements AddressService {
     AddressRepository addressRepository;
     AddressMapper addressMapper;
     WardRepository wardRepository;
+    CustomerRepository customerRepository;
+    private final CustomerAddressMappingRepository customerAddressMappingRepository;
 
     /**
      * Create new address with Ward, District, Province check
@@ -45,8 +51,15 @@ public class AddressServiceImpl implements AddressService {
     public void createAddress(AddressRequest request) {
         validateLocation(request.getWardId(), request.getDistrictId(), request.getProvinceId());
 
-        Address address = addressMapper.toEntity(request);
-        addressRepository.save(address);
+        Address savedAddress = addressRepository.save(addressMapper.toEntity(request));
+        Customer customer = customerRepository.findById(request.getCustomerId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
+        CustomerAddressMapping customerAddressMapping = CustomerAddressMapping.builder()
+                .address(savedAddress)
+                .customer(customer)
+                .addressTypeId(request.getAddressTypeId())
+                .build();
+        customerAddressMappingRepository.save(customerAddressMapping);
     }
 
     /**
@@ -60,10 +73,18 @@ public class AddressServiceImpl implements AddressService {
     public void updateAddress(Long id, AddressRequest request) {
         validateLocation(request.getWardId(), request.getDistrictId(), request.getProvinceId());
 
+        // Check if the address belongs to the customer
         Address address = findAddressById(id);
+        boolean addressBelongsToCustomer = address.getCustomerAddressMappings()
+                .stream()
+                .anyMatch(mapping -> mapping.getCustomer().getId().equals(request.getCustomerId()));
+        if (!addressBelongsToCustomer)
+            throw new NotExistsException("Address does not belong to the specified Customer");
+
         addressMapper.updateAddressFromRequest(request, address);
         addressRepository.save(address);
     }
+
 
     /**
      * Validate Ward -> District -> Province
@@ -74,13 +95,13 @@ public class AddressServiceImpl implements AddressService {
      */
     private void validateLocation(String wardId, String districtId, String provinceId) {
         // Find commune by wardId
-        Ward ward = wardRepository.findByCode(String.valueOf(wardId));
+        Ward ward = wardRepository.findByCode(wardId);
         if (ward == null)
             throw new NotFoundException("Ward with ID " + wardId + " not found");
 
         //Check if the commune's district matches the districtId
         District district = ward.getDistrictCode();
-        if (district == null || !district.getCode().equals(String.valueOf(districtId)))
+        if (district == null || !district.getCode().equals(districtId))
             throw new NotExistsException("Ward does not belong to the provided District");
 
         //Check if the province of the district matches the provinceId
@@ -91,9 +112,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public PageResponse<List<AddressResponse>> getAll(Integer pageNo, Integer pageSize) {
+    public PageResponse<List<AddressResponse>> getAll(Integer pageNo, Integer pageSize, Long customerId) {
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
-        Page<Address> addressPage = addressRepository.findAll(pageable);
+
+        Page<Address> addressPage = addressRepository.findAllByCustomerId(customerId, pageable);
+
         List<AddressResponse> addressResponses = addressMapper.toResponseList(addressPage.getContent());
         return PageResponse.<List<AddressResponse>>builder()
                 .page(addressPage.getNumber())
@@ -102,6 +125,7 @@ public class AddressServiceImpl implements AddressService {
                 .items(addressResponses)
                 .build();
     }
+
 
     @Override
     public AddressResponse getAddressById(Long id) {
