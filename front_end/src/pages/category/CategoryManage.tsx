@@ -19,7 +19,7 @@ export default function CategoryManage() {
         <>
             <CategorySearch onSearch={handleSearch} selectedRowKeys={selectedRowKeys} handleDelete={handleDelete} />
             {isLoading && <p>Loading ...</p>}
-            <div className='bg-[#fff] rounded-lg shadow-md p-6 '>
+            <div className='default-bg-color'>
                 {listResponse && (
                     <Table
                         rowKey='id'
@@ -27,7 +27,7 @@ export default function CategoryManage() {
                         rowSelection={rowSelection}
                         columns={columns}
                         dataSource={listResponse.items}
-                        scroll={{ x: 650 }}
+                        scroll={{ x: 620 }}
                         pagination={{
                             current: filter.pageNo ?? 1,
                             pageSize: filter.pageSize ?? 6,

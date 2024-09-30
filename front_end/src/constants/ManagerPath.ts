@@ -1,11 +1,12 @@
 class ManagerPath {
     // dashboard
     static readonly DASHBOARD = '/admin/dashboards'
-    static readonly PRODUCT_CREATE = '/admin/products/create'
 
     // product
     static readonly PRODUCT = '/admin/products'
+    static readonly PRODUCT_CREATE = '/admin/products/create'
     static readonly PRODUCT_EDIT = '/admin/products/:productId'
+    static readonly PRODUCT_LIST_NAME = '/admin/products/list-name'
 
     //customer
     static readonly CUSTOMER = '/admin/customers'
@@ -57,11 +58,8 @@ class ManagerPath {
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_UPDATE =
         '/admin/specification-attributes/specification-attribute-group/:id'
 
-    static readonly PRODUCT_UPDATE_SPECIFICATION_ATTRIBUTE_MAPPING = '/admin/products/:productId'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE =
         '/admin/products/product-spec-attribute-mapping/edit/:productId/:id'
-
-    static readonly PRODUCT_LIST_NAME = '/admin/products/list-name'
 
     static readonly PREDEFINED_PRODUCT_ATTRIBUTE_VALUE = '/admin/predefined-product-attribute-values'
 

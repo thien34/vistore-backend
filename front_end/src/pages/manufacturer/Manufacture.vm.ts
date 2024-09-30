@@ -9,7 +9,6 @@ import useGetAllApi from '@/hooks/use-get-all-api'
 
 interface Search extends RequestParams {
     published?: boolean
-    page?: number
 }
 
 export default function useManufactureViewModel() {
@@ -59,7 +58,7 @@ export default function useManufactureViewModel() {
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
         setFilter((prevFilter) => ({
             ...prevFilter,
-            page: pagination.current,
+            pageNo: pagination.current,
         }))
     }
 
@@ -68,7 +67,7 @@ export default function useManufactureViewModel() {
         setFilter((prevFilter) => ({
             ...prevFilter,
             ...newFilter,
-            page: 1,
+            pageNo: 1,
         }))
     }
 

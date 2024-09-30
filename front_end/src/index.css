@@ -5,3 +5,7 @@
 .default-btn-color {
     @apply bg-[#475569] text-white border-[#475569];
 }
+
+.default-bg-color {
+    @apply bg-[#fff] rounded-lg shadow-md p-6;
+}

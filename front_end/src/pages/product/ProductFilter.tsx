@@ -3,13 +3,13 @@ import { Form, Input, Select, Checkbox, Button, Row, Col, Space } from 'antd'
 import { SearchOutlined, CaretUpOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import type { ProductFilter } from '@/model/ProductFilter'
-import { CategoryNameResponse } from '@/model/Category'
-import CategoryConfigs from '../category/CategoryConfigs'
 import useGetApi from '@/hooks/use-get-api'
 import { ManufacturerResponseListName } from '@/model/Manufacturer'
 import ManufactureConfigs from '../manufacturer/ManufactureConfigs'
 import FetchUtils from '@/utils/FetchUtils'
 import ProductConfigs from './ProductConfigs'
+import useCategoryCreateViewModel from '../category/CategoryCreate.vm'
+import ManagerPath from '@/constants/ManagerPath'
 
 const { Option } = Select
 
@@ -24,10 +24,7 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
     const [sku, setSku] = useState('')
     const navigate = useNavigate()
 
-    const { data: categories } = useGetApi<CategoryNameResponse[]>(
-        CategoryConfigs.resourceUrlListName,
-        CategoryConfigs.resourceKey,
-    )
+    const { categoryOptions } = useCategoryCreateViewModel()
 
     const { data: manufacturers } = useGetApi<ManufacturerResponseListName[]>(
         ManufactureConfigs.resourceUrlListName,
@@ -48,34 +45,39 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
         if (sku.trim()) {
             const productId = await FetchUtils.getByIdString<number>(ProductConfigs.resourceUrlBySku, sku)
             if (productId !== -1) {
-                navigate(`/admin/products/${productId}`)
+                navigate(`${ManagerPath.PRODUCT_EDIT.replace(':productId', String(productId))}`)
             }
         }
     }
 
     return (
-        <div className='mb-5 bg-white rounded-lg shadow-md  overflow-hidden'>
+        <div className='mb-5 bg-white rounded-lg shadow-md overflow-hidden'>
             <div className='flex justify-between items-center p-6 cursor-pointer' onClick={toggleCollapse}>
                 <h3 className='text-xl font-bold'>Search</h3>
                 <CaretUpOutlined rotate={isOpen ? 0 : 180} className='text-lg transition-transform duration-300' />
             </div>
             <div ref={contentRef} className='transition-[max-height] duration-300 ease-out overflow-hidden'>
                 <div className='px-12'>
-                    <Form form={form} layout='vertical' onFinish={handleFinish} initialValues={{ published: '' }}>
+                    <Form
+                        form={form}
+                        layout='vertical'
+                        size='large'
+                        onFinish={handleFinish}
+                        initialValues={{ published: '' }}
+                    >
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item label='Product name' name='name'>
-                                    <Input size='large' />
+                                    <Input />
                                 </Form.Item>
                                 <Form.Item label='Category' name='categoryId'>
-                                    <Select size='large'>
-                                        <Option value=''>All</Option>
-                                        {categories?.map(({ id, name }) => (
-                                            <Option key={id} value={id}>
-                                                {name}
-                                            </Option>
-                                        ))}
-                                    </Select>
+                                    <Select
+                                        showSearch
+                                        filterOption={(input, option) =>
+                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        options={[{ label: 'All', value: '' }, ...categoryOptions]}
+                                    />
                                 </Form.Item>
                                 <Form.Item name='searchSubCategory' valuePropName='checked'>
                                     <Checkbox>Search subcategories</Checkbox>
@@ -83,7 +85,7 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
                             </Col>
                             <Col span={12}>
                                 <Form.Item label='Manufacturer' name='manufacturerId'>
-                                    <Select size='large'>
+                                    <Select>
                                         <Option value=''>All</Option>
                                         {manufacturers?.map(({ id, manufacturerName }) => (
                                             <Option key={id} value={id}>
@@ -93,7 +95,7 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label='Published' name='published'>
-                                    <Select size='large'>
+                                    <Select>
                                         <Option value=''>All</Option>
                                         <Option value='true'>Published only</Option>
                                         <Option value='false'>Unpublished only</Option>
@@ -101,8 +103,8 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
                                 </Form.Item>
                                 <Form.Item label='Go directly to product SKU' name='sku'>
                                     <Space.Compact block>
-                                        <Input size='large' value={sku} onChange={(e) => setSku(e.target.value)} />
-                                        <Button size='large' onClick={handleNavigateBySku} type='primary'>
+                                        <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+                                        <Button onClick={handleNavigateBySku} type='primary'>
                                             Go
                                         </Button>
                                     </Space.Compact>
@@ -112,7 +114,7 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ onFilterChange }) => {
                         <Form.Item>
                             <Row justify='center'>
                                 <Col>
-                                    <Button size='large' type='primary' htmlType='submit' icon={<SearchOutlined />}>
+                                    <Button type='primary' htmlType='submit' icon={<SearchOutlined />}>
                                         Search
                                     </Button>
                                 </Col>
