@@ -28,6 +28,11 @@ class ResourceURL {
     //customer
     static readonly CUSTOMER = apiPath + '/customers'
     static readonly CUSTOMER_ROLE = apiPath + '/customer-roles'
+    //address
+    static readonly ADDRESS = apiPath + '/addresses'
+    static readonly PROVINCE = apiPath + '/provinces'
+    static readonly DISTRICT = apiPath + '/districts'
+    static readonly WARD = apiPath + '/wards'
     // discount
     static readonly DISCOUNT = apiPath + '/discounts'
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING = apiPath + '/product-specification-attribute-mappings'

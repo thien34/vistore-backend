@@ -15,6 +15,10 @@ class ManagerPath {
     static readonly CUSTOMER_ROLE = '/admin/customer-roles'
     static readonly CUSTOMER_ROLE_ADD = '/admin/customer-roles/add'
     static readonly CUSTOMER_ROLE_UPDATE = '/admin/customer-roles/:id'
+    //address
+    static readonly ADDRESS = '/admin/addresses'
+    static readonly ADDRESS_ADD = '/admin/customers/addresses-add'
+    static readonly ADDRESS_UPDATE = '/admin/addresses/:id'
 
     // product video mapping
     static readonly PRODUCT_VIDEO_MAPPING = '/admin/product-video-mappings'

@@ -31,6 +31,7 @@ public enum ErrorCode {
     CUSTOMER_ROLE_NOT_FOUND("Customer role not found", HttpStatus.NOT_FOUND),
     CUSTOMER_NOT_FOUND("Customer not found", HttpStatus.NOT_FOUND),
     CUSTOMER_PASSWORD_NOT_FOUND("Customer password not found",HttpStatus.NOT_FOUND),
+    PHONE_NUMBER_ALREADY_EXISTS("Phone number already exists", HttpStatus.BAD_REQUEST),
     //System errors
     SYSTEM_ROLE_COULD_NOT_BE_DELETED("System role could not be deleted", HttpStatus.BAD_REQUEST),
 

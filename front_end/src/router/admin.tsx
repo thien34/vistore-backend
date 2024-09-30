@@ -25,6 +25,8 @@ import CustomerManage from '@/pages/customer/CustomerManage'
 import { CustomerRoleCreate, CustomerRoleManage, CustomerRoleUpdate } from '@/pages/customer-roles'
 import CustomerCreate from '@/pages/customer/CustomerCreate'
 import { CustomerUpdate } from '@/pages/customer'
+import AddressCreate from '@/pages/address/AddressCreate'
+import AddressUpdate from '@/pages/address/AddressUpdate'
 
 const routers = [
     {
@@ -196,6 +198,16 @@ const routers = [
         path: ManagerPath.CUSTOMER_ROLE_UPDATE,
         layout: 'main',
         element: <CustomerRoleUpdate />,
+    },
+    {
+        path: ManagerPath.ADDRESS_ADD,
+        layout: 'main',
+        element: <AddressCreate />,
+    },
+    {
+        path: ManagerPath.ADDRESS_UPDATE,
+        layout: 'main',
+        element: <AddressUpdate />,
     },
 ]
 

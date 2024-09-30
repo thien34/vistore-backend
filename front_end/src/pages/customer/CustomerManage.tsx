@@ -30,7 +30,11 @@ export default function CustomerManage() {
                     />
                 )}
                 <Link to={ManagerPath.CUSTOMER_ADD}>
-                    <Button type='primary' icon={<PlusSquareOutlined />}>
+                    <Button
+                        className='bg-[#374151] border-[#374151] text-white'
+                        size='large'
+                        icon={<PlusSquareOutlined />}
+                    >
                         {CustomerConfigs.createTitle}
                     </Button>
                 </Link>

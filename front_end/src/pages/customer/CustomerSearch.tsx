@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import useGetApi from '@/hooks/use-get-api'
 import { CustomerRoleResponse } from '@/model/CustomerRole'
 import CustomerRoleConfigs from '../customer-roles/CustomerRoleConfigs'
+import CustomerConfigs from './CustomerConfigs'
 
 const { RangePicker } = DatePicker
 const { Option } = Select
@@ -72,7 +73,13 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ search }) => {
             <div className='grid grid-cols-2 gap-4'>
                 <div>
                     <label>Email</label>
-                    <Input placeholder='Enter email' name='email' value={filter.email} onChange={handleInputChange} />
+                    <Input
+                        placeholder='Enter email'
+                        name='email'
+                        value={filter.email}
+                        onChange={handleInputChange}
+                        size='large'
+                    />
                 </div>
 
                 <div>
@@ -82,6 +89,7 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ search }) => {
                         name='firstName'
                         value={filter.firstName}
                         onChange={handleInputChange}
+                        size='large'
                     />
                 </div>
 
@@ -92,19 +100,21 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ search }) => {
                         name='lastName'
                         value={filter.lastName}
                         onChange={handleInputChange}
+                        size='large'
                     />
                 </div>
 
                 <div>
                     <label>Registration Date</label>
                     <RangePicker
-                        style={{ width: '100%' }}
+                        className='w-full'
                         value={[
                             filter.registrationDateFrom ? dayjs(filter.registrationDateFrom) : null,
                             filter.registrationDateTo ? dayjs(filter.registrationDateTo) : null,
                         ]}
                         onChange={handleDateChange}
                         format='YYYY-MM-DD'
+                        size='large'
                     />
                 </div>
 
@@ -112,7 +122,8 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ search }) => {
                     <label>Customer Roles</label>
                     <Select
                         mode='multiple'
-                        style={{ width: '100%' }}
+                        size='large'
+                        className='w-full'
                         value={filter.customerRoles}
                         onChange={(value) => setFilter({ ...filter, customerRoles: value })}
                         loading={isLoading}
@@ -127,8 +138,8 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ search }) => {
             </div>
 
             <div className='mt-6'>
-                <Button type='primary' onClick={handleSearch}>
-                    Search
+                <Button className='bg-[#374151] border-[#374151] text-white' onClick={handleSearch} size='large'>
+                    {CustomerConfigs.searchTitle}
                 </Button>
             </div>
         </div>
