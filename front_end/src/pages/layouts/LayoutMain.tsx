@@ -11,6 +11,7 @@ import {
     ProfileOutlined,
     QuestionCircleOutlined,
     SettingFilled,
+    ShopOutlined,
     ShoppingCartOutlined,
     TagsOutlined,
 } from '@ant-design/icons'
@@ -81,6 +82,7 @@ const items: MenuItem[] = [
     getItem('System', '27', <BranchesOutlined />),
     getItem('Reports', '28', <FundFilled />),
     getItem('Help', '29', <QuestionCircleOutlined />),
+    getItem(<Link to={ManagerPath.RETAIL_SALE_CREATE}>Retail Sales</Link>, '30', <ShopOutlined />),
 ]
 
 const LayoutMain: React.FC = () => {

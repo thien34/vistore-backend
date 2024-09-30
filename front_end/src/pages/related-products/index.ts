@@ -1,3 +1,3 @@
-import RelatedProductManage from "./RelatedProductManage";
+import RelatedProductManage from './RelatedProductManage'
 
-export {RelatedProductManage as default};
+export { RelatedProductManage as default }

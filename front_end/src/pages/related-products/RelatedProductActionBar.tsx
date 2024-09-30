@@ -1,8 +1,8 @@
-import AppActions from "@/constants/AppActions"
-import { SyncOutlined } from "@ant-design/icons"
-import { Button } from "antd"
-import { useParams } from "react-router-dom"
-import RelatedProductConfigs from "./RelatedProductCofigs"
+import AppActions from '@/constants/AppActions'
+import { SyncOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
+import { useParams } from 'react-router-dom'
+import RelatedProductConfigs from './RelatedProductCofigs'
 
 interface RelatedProductSearchProps {
     onSearch: (filter: { productId: string }) => void
@@ -10,8 +10,13 @@ interface RelatedProductSearchProps {
     selectedRows: React.Key[]
     handleCreate: () => void
 }
-export default function RelatedProductAction({ onSearch,handleCreate, handleDelete, selectedRows }: Readonly<RelatedProductSearchProps>) {
-    const { productId = '1' } = useParams();
+export default function RelatedProductAction({
+    onSearch,
+    handleCreate,
+    handleDelete,
+    selectedRows,
+}: Readonly<RelatedProductSearchProps>) {
+    const { productId = '1' } = useParams()
     const handleReload = () => {
         onSearch({ productId: productId })
     }
@@ -31,12 +36,7 @@ export default function RelatedProductAction({ onSearch,handleCreate, handleDele
                 <Button className='bg-[#475569] text-white' size='large' onClick={() => handleCreate()}>
                     {RelatedProductConfigs.ADD_RELATED_PRODUCT}
                 </Button>
-                <Button
-                    onClick={handleReload}
-                    type='primary'
-                    className='bg-[#475569] text-white'
-                    size='large'
-                >
+                <Button onClick={handleReload} type='primary' className='bg-[#475569] text-white' size='large'>
                     <SyncOutlined />
                 </Button>
             </div>

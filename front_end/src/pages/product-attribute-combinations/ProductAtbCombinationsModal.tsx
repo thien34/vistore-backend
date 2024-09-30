@@ -30,7 +30,6 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
 
     const { handleCreate, onFinishFailed, initialValues, error } = useProductAtbCombinationsViewModel()
     const handleCancel = () => {
-        //   form.resetFields()
         setIsModalOpen(false)
     }
 
@@ -39,7 +38,6 @@ export default function ProductAtbCombinationsModal({ isModalOpen, selectedRecor
         ProductAtbCombinationsConfig.resourceUrlByProductIdMapping,
         1,
     )
-    console.log(`<<<<<  data2 >>>>>`, data)
     useEffect(() => {
         if (selectedRecord) {
             const attributes = JSON.parse(selectedRecord.attributesXml).attributes.reduce(

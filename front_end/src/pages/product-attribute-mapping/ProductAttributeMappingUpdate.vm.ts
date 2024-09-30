@@ -50,11 +50,12 @@ function useProductAttributeMappingUpdateViewModel() {
         ProductAttributeMappingConfigs.resourceUrlValue,
     )
 
-    const productAttributeValues: ProductAttributeValueRequest[] =
+    const [productAttributeValues, setProductAttributeValues] = useState<ProductAttributeValueRequest[]>(
         prodAttrMapResponse?.productAttributeValueResponses.map((response) => ({
             ...response,
             productAttributeValuePictureRequests: [],
-        })) || []
+        })) || [],
+    )
 
     const { mutate: updateProductAttributeMappingApi } = useUpdateApi<ProductProductAttributeMappingRequest>(
         ProductAttributeMappingConfigs.resourceUrl,
@@ -84,23 +85,23 @@ function useProductAttributeMappingUpdateViewModel() {
         updateProductAttributeMappingApi(requestData, { onSuccess: () => navigation(-1) })
     }
 
-    // HANDLE ADD VALUE ATTRIBUTE
     const handleAddValue = (newValue: ProductAttributeValueRequest) => {
         newValue.productAttributeMappingId = Number(id)
         createProdAttrValueApi(newValue, {
             onSuccess: () => {
-                navigation(0)
+                setProductAttributeValues((prevValues) => [...prevValues, newValue])
             },
         })
     }
 
-    // HANDLE UPDATE VALUE ATTRIBUTE
-    const handleUpdateValue = (newValue: ProductAttributeValueRequest) => {
-        setIdProdAttrValue(newValue.id || 0)
-        newValue.productAttributeMappingId = Number(id)
-        updateProdAttrValueApi(newValue, {
+    const handleUpdateValue = (updatedValue: ProductAttributeValueRequest) => {
+        setIdProdAttrValue(updatedValue.id || 0)
+        updatedValue.productAttributeMappingId = Number(id)
+        updateProdAttrValueApi(updatedValue, {
             onSuccess: () => {
-                navigation(0)
+                setProductAttributeValues((prevValues) =>
+                    prevValues.map((value) => (value.id === updatedValue.id ? updatedValue : value)),
+                )
             },
         })
     }
@@ -109,6 +110,7 @@ function useProductAttributeMappingUpdateViewModel() {
         prodAttrMapResponse,
         getNumberFromEnum,
         productAttributeValues,
+        setProductAttributeValues,
         form,
         layout,
         onFinish,

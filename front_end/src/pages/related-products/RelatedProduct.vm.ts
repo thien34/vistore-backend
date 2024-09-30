@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
-import { TableRowSelection } from "antd/es/table/interface";
-import { useQueryClient } from "@tanstack/react-query";
-import useDeleteByIdsApi from "@/hooks/use-delete-by-ids-api";
-import useGetAllApi from "@/hooks/use-get-all-api";
-import useUpdateApi from "@/hooks/use-update-api";
-import useCreateApi from "@/hooks/use-create-api";
-import { RelatedProductRequest, RelatedProductResponse } from "@/model/RelatedProduct";
-import { RequestParams } from "@/utils/FetchUtils";
-import RelatedProductConfigs from "./RelatedProductCofigs";
-import getRelatedProductColumns from "./RelatedProductColumns";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import { TableRowSelection } from 'antd/es/table/interface'
+import { useQueryClient } from '@tanstack/react-query'
+import useDeleteByIdsApi from '@/hooks/use-delete-by-ids-api'
+import useGetAllApi from '@/hooks/use-get-all-api'
+import useUpdateApi from '@/hooks/use-update-api'
+import useCreateApi from '@/hooks/use-create-api'
+import { RelatedProductRequest, RelatedProductResponse } from '@/model/RelatedProduct'
+import { RequestParams } from '@/utils/FetchUtils'
+import RelatedProductConfigs from './RelatedProductCofigs'
+import getRelatedProductColumns from './RelatedProductColumns'
+import { useParams } from 'react-router-dom'
 
 interface Search extends RequestParams {
     productId?: string
     page?: number
 }
 export default function useRelatedProductViewModel() {
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalAddOpen, setIsModalAddOpen] = useState(false)
     const [title, setTitle] = useState(RelatedProductConfigs.updateTitle)
     const [selectedRecord, setSelectedRecord] = useState<RelatedProductResponse | null>(null)
     const [filter, setFilter] = useState<Search>({})
-    const [idrecord, setIdRecord] = useState(3);
-    const [lstRelatedProduct, setLstRelatedProduct] = useState<RelatedProductRequest[]>([]);
+    const [idrecord, setIdRecord] = useState(3)
+    const [lstRelatedProduct, setLstRelatedProduct] = useState<RelatedProductRequest[]>([])
     const { mutate: deleteApi } = useDeleteByIdsApi<number>(
         RelatedProductConfigs.resourceUrl,
         RelatedProductConfigs.resourceKey,
@@ -31,23 +31,21 @@ export default function useRelatedProductViewModel() {
     const { mutate: updateApi } = useUpdateApi<RelatedProductRequest>(
         RelatedProductConfigs.resourceUrl,
         RelatedProductConfigs.resourceKey,
-        idrecord
+        idrecord,
     )
-    const { mutate: createApi } = useCreateApi<RelatedProductRequest[]>(
-        RelatedProductConfigs.resourceUrl
-    )
-    const { productId: productIdParam } = useParams(); // Lấy productId từ URL
-    const [productId, setProductId] = useState<string | null>('1');
+    const { mutate: createApi } = useCreateApi<RelatedProductRequest[]>(RelatedProductConfigs.resourceUrl)
+    const { productId: productIdParam } = useParams() // Lấy productId từ URL
+    const [productId, setProductId] = useState<string | null>('1')
     const queryClient = useQueryClient()
     // SET TITLE
     useEffect(() => {
         if (productIdParam) {
-            setProductId(productIdParam);
-            setFilter({ ...filter, productId: productIdParam }); // Update filter with productId
-            queryClient.invalidateQueries({ queryKey: [RelatedProductConfigs.resourceKey, 'getAll'] }); // Invalidate previous queries
+            setProductId(productIdParam)
+            setFilter({ ...filter, productId: productIdParam }) // Update filter with productId
+            queryClient.invalidateQueries({ queryKey: [RelatedProductConfigs.resourceKey, 'getAll'] }) // Invalidate previous queries
         }
         document.title = 'Related Products - Vítore'
-    }, [productIdParam])
+    }, [productIdParam, queryClient, filter])
     // HANDLE EDIT
     const handleEdit = (data: RelatedProductResponse) => {
         setIdRecord(data.id)
@@ -61,17 +59,17 @@ export default function useRelatedProductViewModel() {
     }
     const handleCreateFromModal = (relatedProducts: RelatedProductRequest[]) => {
         if (relatedProducts.length > 0) {
-          createApi(relatedProducts, {
-            onSuccess: () => {
-              queryClient.invalidateQueries({
-                queryKey: [RelatedProductConfigs.resourceKey, 'getAll'],
-              });
-              setIsModalAddOpen(false);
-              setLstRelatedProduct([]);
-            },
-          });
+            createApi(relatedProducts, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({
+                        queryKey: [RelatedProductConfigs.resourceKey, 'getAll'],
+                    })
+                    setIsModalAddOpen(false)
+                    setLstRelatedProduct([])
+                },
+            })
         }
-      };
+    }
     // GET COLUMNS
     const columns = getRelatedProductColumns(handleEdit)
 
@@ -100,7 +98,11 @@ export default function useRelatedProductViewModel() {
         data: listResponse,
         isLoading,
         refetch,
-    } = useGetAllApi<RelatedProductResponse>(RelatedProductConfigs.resourceUrl, RelatedProductConfigs.resourceKey, filter)
+    } = useGetAllApi<RelatedProductResponse>(
+        RelatedProductConfigs.resourceUrl,
+        RelatedProductConfigs.resourceKey,
+        filter,
+    )
     //SHOW MODAL UPDATE
 
     const showModalUpdate = () => {
@@ -120,9 +122,9 @@ export default function useRelatedProductViewModel() {
         })
     }
     // HANDLE SEARCH
-    const handleSearch = (filter :{productId: string}) => {
-        setFilter({ ...filter, productId: filter.productId });
-      };
+    const handleSearch = (filter: { productId: string }) => {
+        setFilter({ ...filter, productId: filter.productId })
+    }
     // HANDLE TABLE CHANGE
     const handleTableChange = (pagination: { current: number; pageSize: number }) => {
         setFilter((prevFilter) => ({

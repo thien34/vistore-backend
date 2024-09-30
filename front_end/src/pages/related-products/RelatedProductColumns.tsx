@@ -6,8 +6,8 @@ import { Button, TableColumnsType } from 'antd'
 import { Link } from 'react-router-dom'
 
 const getRelatedProductColumns = (
-    handleEdit: (record: RelatedProductResponse) => void
-) : TableColumnsType<RelatedProductResponse> => [
+    handleEdit: (record: RelatedProductResponse) => void,
+): TableColumnsType<RelatedProductResponse> => [
     {
         width: '35%',
         title: 'Product',
@@ -19,16 +19,15 @@ const getRelatedProductColumns = (
         title: 'Display Order',
         dataIndex: 'displayOrder',
         key: 'displayOrder',
-        sorter: (a, b) => a.displayOrder - b.displayOrder
+        sorter: (a, b) => a.displayOrder - b.displayOrder,
     },
     {
         width: '20%',
         title: 'View',
         key: 'view',
         render: (_, record) => (
-            <Link to ={`${ManagerPath.PRODUCT_EDIT.replace(':productId',record?.product2Id.toString())}`}>
-                <Button type='link'  icon={<EyeOutlined />}>
-                </Button>
+            <Link to={`${ManagerPath.PRODUCT_EDIT.replace(':productId', record?.product2Id.toString())}`}>
+                <Button type='link' icon={<EyeOutlined />}></Button>
             </Link>
         ),
     },
@@ -37,11 +36,10 @@ const getRelatedProductColumns = (
         title: 'Edit',
         key: 'edit',
         render: (_, record) => (
-                <Button type='primary'   onClick={() => handleEdit(record)} icon={<EditOutlined />}>                  
-                    {AppActions.EDIT}
-                </Button>
+            <Button type='primary' onClick={() => handleEdit(record)} icon={<EditOutlined />}>
+                {AppActions.EDIT}
+            </Button>
         ),
     },
-    
 ]
 export default getRelatedProductColumns

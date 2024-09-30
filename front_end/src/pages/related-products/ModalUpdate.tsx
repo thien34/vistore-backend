@@ -1,6 +1,5 @@
-
 import { RelatedProductRequest, RelatedProductResponse } from '@/model/RelatedProduct'
-import { Modal, Form, Input,  Button, Space, InputNumber } from 'antd'
+import { Modal, Form, Input, Button, Space, InputNumber } from 'antd'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 
 type Props = {
@@ -69,16 +68,13 @@ export default function ModalUpdate({
                 <Form.Item hidden name='product2Id'>
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    name='nameProduct2'
-                    label='Product'
-                >
+                <Form.Item name='nameProduct2' label='Product'>
                     <Input disabled />
                 </Form.Item>
                 <Form.Item
                     name='displayOrder'
                     label='Display order'
-                    rules={[{ required: true, min: 0,max:100, type: 'number' }]}
+                    rules={[{ required: true, min: 0, max: 100, type: 'number' }]}
                 >
                     <InputNumber />
                 </Form.Item>

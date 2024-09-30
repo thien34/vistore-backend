@@ -13,6 +13,7 @@ export default function ProductAttributeMappingUpdate() {
         prodAttrMapResponse,
         getNumberFromEnum,
         productAttributeValues,
+        setProductAttributeValues,
         form,
         layout,
         onFinish,
@@ -28,7 +29,13 @@ export default function ProductAttributeMappingUpdate() {
                 attributeControlTypeId: getNumberFromEnum(prodAttrMapResponse.attributeControlTypeId),
             })
         }
-    }, [prodAttrMapResponse, form, getNumberFromEnum])
+        setProductAttributeValues(
+            prodAttrMapResponse?.productAttributeValueResponses.map((response) => ({
+                ...response,
+                productAttributeValuePictureRequests: [],
+            })) || [],
+        )
+    }, [prodAttrMapResponse, form, getNumberFromEnum, setProductAttributeValues])
 
     return (
         <>
