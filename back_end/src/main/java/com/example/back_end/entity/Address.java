@@ -1,16 +1,21 @@
 package com.example.back_end.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,18 +43,22 @@ public class Address extends Auditable {
     private String company;
 
     @Column(name = "district_id", nullable = false)
-    private int districtId;
+    private String districtId;
 
     @Column(name = "province_id", nullable = false)
-    private int provinceId;
+    private String provinceId;
 
     @Column(name = "ward_id", nullable = false)
-    private int wardId;
+    private String wardId;
 
     @Column(name = "address_name", length = Integer.MAX_VALUE)
     private String addressName;
 
     @Column(name = "phone_number", length = 15)
     private String phoneNumber;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "address", cascade = CascadeType.REMOVE)
+    private List<CustomerAddressMapping> customerAddressMappings;
 
 }
