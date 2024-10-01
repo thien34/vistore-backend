@@ -1,10 +1,11 @@
 import ManagerPath from '@/constants/ManagerPath'
 import { SpecificationAttributeResponse } from '@/model/SpecificationAttribute'
+import { SpecificationAttributeGroupResponse } from '@/model/SpecificationAttributeGroup'
 import { EditOutlined } from '@ant-design/icons'
 import { Button, TableColumnsType } from 'antd'
 import { Link } from 'react-router-dom'
 
-export const getSpecAttrGroupCols: TableColumnsType = [
+export const getSpecAttrGroupCols: TableColumnsType<SpecificationAttributeGroupResponse> = [
     {
         title: 'Name',
         dataIndex: 'name',
@@ -25,7 +26,7 @@ export const getSpecAttrGroupCols: TableColumnsType = [
         title: 'Actions',
         key: 'Detail',
         render: (_, record) => (
-            <Link to={`${ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_UPDATE.replace(':id', record?.id)}`}>
+            <Link to={`${ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_UPDATE.replace(':id', record?.id.toString())}`}>
                 <Button className='default-btn-color' icon={<EditOutlined />} size='middle'>
                     Detail
                 </Button>

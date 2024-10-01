@@ -52,11 +52,11 @@ class ManagerPath {
     // specification attribute
     static readonly SPECIFICATION_ATTRIBUTE = '/admin/specification-attributes'
     static readonly SPECIFICATION_ATTRIBUTE_ADD = '/admin/specification-attributes/specification-attributes-add'
-    static readonly SPECIFICATION_ATTRIBUTE_UPDATE = '/admin/specification-attributes/specification-attributes-edit/:id'
+    static readonly SPECIFICATION_ATTRIBUTE_UPDATE = '/admin/specification-attributes/:id'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_ADD =
         '/admin/specification-attributes/specification-attribute-group-add'
     static readonly SPECIFICATION_ATTRIBUTE_GROUP_UPDATE =
-        '/admin/specification-attributes/specification-attribute-group/:id'
+        '/admin/specification-attributes/specification-attributes-group/:id'
 
     static readonly PRODUCT_SPECIFICATION_ATTRIBUTE_MAPPING_UPDATE =
         '/admin/products/product-spec-attribute-mapping/edit/:productId/:id'

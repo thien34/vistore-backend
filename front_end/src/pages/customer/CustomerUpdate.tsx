@@ -49,7 +49,6 @@ export default function CustomerUpdate() {
                         </Form.Item>
                     </Col>
                 </Row>
-
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item
@@ -76,7 +75,6 @@ export default function CustomerUpdate() {
                         </Form.Item>
                     </Col>
                 </Row>
-
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item label='Gender' name='gender'>
@@ -93,7 +91,6 @@ export default function CustomerUpdate() {
                         </Form.Item>
                     </Col>
                 </Row>
-
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item label='Phone' name='phone'>
@@ -119,7 +116,6 @@ export default function CustomerUpdate() {
                         </Form.Item>
                     </Col>
                 </Row>
-
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item label='Active' name='active' valuePropName='checked'>
@@ -127,7 +123,6 @@ export default function CustomerUpdate() {
                         </Form.Item>
                     </Col>
                 </Row>
-
                 <div className='flex space-x-2 mt-4'>
                     <Button
                         className='bg-[#374151] border-[#374151] text-white'
@@ -168,7 +163,6 @@ export default function CustomerUpdate() {
                             }}
                         />
                     )}
-
                     <Button
                         className='bg-[#374151] border-[#374151] text-white mt-4'
                         icon={<PlusOutlined />}

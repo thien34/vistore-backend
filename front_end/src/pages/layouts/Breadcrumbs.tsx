@@ -9,6 +9,9 @@ const capitalizeChar = (str: string): string => {
 const Breadcrumbs: React.FC = () => {
     const location = useLocation()
     const pathSnippets = location.pathname.split('/').filter((i) => i)
+    const hiddenBreadcrumb = ['admin/specification-attributes/specification-attributes-group']
+    const shouldDisableBreadcrumb = hiddenBreadcrumb.some((path) => location.pathname.includes(path))
+    if (shouldDisableBreadcrumb) return null
 
     const breadcrumbItems = pathSnippets.map((snippet, index) => {
         const url = `/${pathSnippets.slice(0, index + 1).join('/')}`

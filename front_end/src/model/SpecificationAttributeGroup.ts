@@ -1,6 +1,7 @@
 import { SpecificationAttributeRequest, SpecificationAttributeResponse } from '@/model/SpecificationAttribute.ts'
 
 export type SpecificationAttributeGroupRequest = {
+    id: number
     name: string
     displayOrder: number
     specificationAttributes?: SpecificationAttributeRequest

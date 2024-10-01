@@ -1,9 +1,10 @@
 import { Table, Button, Collapse } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import useSpecificationAttributeGroupManageViewModel from '@/pages/specificationAttributeGroup/SpecificationAttributeGroup.vm.ts'
 import ManagerPath from '@/constants/ManagerPath'
 import SpecificationAttributeGroupConfigs from './SpecificationAttributeGroupConfigs'
+import SpecificationAttributeConfigs from '../specificationAttribute/SpecificationAttributeConfigs'
 
 const SpecificationAttributeGroupManage = () => {
     const {
@@ -11,6 +12,12 @@ const SpecificationAttributeGroupManage = () => {
         ungroupedData,
         groupColumns,
         unGroupColumns,
+        rowSelection,
+        handleGroupedDelete,
+        handleDelete,
+        selectedRowKeys,
+        groupedSelectedRowKeys,
+        groupRowSelection,
         groupedFilter,
         ungroupedFilter,
         handleGroupedTableChangeFilter,
@@ -24,6 +31,17 @@ const SpecificationAttributeGroupManage = () => {
                     <div className=''>{SpecificationAttributeGroupConfigs.manageTitle}</div>
                 </div>
                 <div className='flex gap-4 flex-wrap'>
+                    <Button
+                        disabled={groupedSelectedRowKeys.length === 0}
+                        type='primary'
+                        danger
+                        size='large'
+                        icon={<DeleteOutlined />}
+                        onClick={handleGroupedDelete}
+                    >
+                        Delete Group
+                    </Button>
+
                     <Link to={ManagerPath.SPECIFICATION_ATTRIBUTE_GROUP_ADD}>
                         <Button icon={<PlusOutlined />} className='default-btn-color' size='large'>
                             {SpecificationAttributeGroupConfigs.addBtn}
@@ -34,6 +52,16 @@ const SpecificationAttributeGroupManage = () => {
                             Add Attribute
                         </Button>
                     </Link>
+                    <Button
+                        disabled={selectedRowKeys.length === 0}
+                        type='primary'
+                        danger
+                        size='large'
+                        icon={<DeleteOutlined />}
+                        onClick={handleDelete}
+                    >
+                        {SpecificationAttributeConfigs.btnDelete}
+                    </Button>
                 </div>
             </div>
             <div className='mb-5 bg-[#fff] rounded-lg shadow-md p-6'>
@@ -51,6 +79,8 @@ const SpecificationAttributeGroupManage = () => {
                                             columns={groupColumns}
                                             dataSource={groupedData.items}
                                             bordered
+                                            rowSelection={groupRowSelection}
+                                            scroll={{ x: 650 }}
                                             rowKey='id'
                                             pagination={{
                                                 current: groupedFilter?.pageNo ?? 1,
@@ -82,7 +112,9 @@ const SpecificationAttributeGroupManage = () => {
                                             columns={unGroupColumns}
                                             dataSource={ungroupedData.items}
                                             bordered
+                                            scroll={{ x: 650 }}
                                             rowKey='id'
+                                            rowSelection={rowSelection}
                                             pagination={{
                                                 current: ungroupedFilter?.pageNo ?? 1,
                                                 pageSize: ungroupedFilter?.pageSize ?? 6,
