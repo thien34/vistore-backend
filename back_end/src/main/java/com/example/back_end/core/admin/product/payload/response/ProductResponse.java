@@ -22,11 +22,7 @@ public class ProductResponse {
 
     private String sku;
 
-    private String manufacturePartNumber;
-
     private String gtin;
-
-    private String shortDescription;
 
     private String fullDescription;
 
@@ -34,19 +30,7 @@ public class ProductResponse {
 
     private Boolean allowCustomerReviews;
 
-    private Integer approvedRatingSum;
-
-    private Integer notApprovedRatingSum;
-
-    private Integer approveTotalReviews;
-
-    private Integer notApprovedTotalReviews;
-
-    private Boolean isShipEnabled;
-
     private Boolean isFreeShipping;
-
-    private Integer manageInventoryMethodId;
 
     private Integer productAvailabilityRangeId;
 

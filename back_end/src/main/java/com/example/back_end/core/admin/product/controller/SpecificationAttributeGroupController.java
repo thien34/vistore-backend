@@ -3,7 +3,7 @@ package com.example.back_end.core.admin.product.controller;
 import com.example.back_end.core.admin.product.payload.request.SpecificationAttributeGroupRequest;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupNameResponse;
 import com.example.back_end.core.admin.product.payload.response.SpecificationAttributeGroupResponse;
-import com.example.back_end.core.admin.product.service.SpecificationAttributeGroupService;
+import com.example.back_end.service.product.SpecificationAttributeGroupService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;

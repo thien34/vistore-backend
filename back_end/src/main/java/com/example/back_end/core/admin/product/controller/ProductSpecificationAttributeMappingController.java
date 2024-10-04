@@ -6,7 +6,7 @@ import com.example.back_end.core.admin.product.payload.response.ProductSpecifica
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingByProductResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductSpecificationAttributeMappingUpdateResponse;
-import com.example.back_end.core.admin.product.service.ProductSpecificationAttributeMappingService;
+import com.example.back_end.service.product.ProductSpecificationAttributeMappingService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;

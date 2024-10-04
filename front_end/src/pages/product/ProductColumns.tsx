@@ -10,7 +10,7 @@ export const getProductColumns = (): TableColumnsType<ProductResponse> => [
         title: 'Picture',
         dataIndex: 'imageUrl',
         key: 'imageUrl',
-        render: (imageUrl: string) => <Image src={imageUrl || '/public/img/img-default.png'} width={50} height={50} />,
+        render: (imageUrl: string) => <Image src={imageUrl || '/img/img-default.png'} width={50} height={50} />,
     },
     {
         title: 'Product name',

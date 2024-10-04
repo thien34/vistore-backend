@@ -1,7 +1,7 @@
 package com.example.back_end.core.admin.picture.controller;
 
 import com.example.back_end.core.admin.picture.payload.response.PictureResponse;
-import com.example.back_end.core.admin.picture.service.PictureService;
+import com.example.back_end.service.picture.PictureService;
 import com.example.back_end.core.common.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

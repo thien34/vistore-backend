@@ -5,7 +5,7 @@ import com.example.back_end.core.admin.discount.payload.request.DiscountRequest;
 import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountNameResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
-import com.example.back_end.core.admin.discount.service.DiscountService;
+import com.example.back_end.service.discount.DiscountService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;

@@ -9,4 +9,5 @@ public class SpecificationAttributeGroupNameResponse {
     private Long id;
 
     private String name;
+
 }

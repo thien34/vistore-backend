@@ -9,7 +9,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface WardMapper {
-    @Mapping(target = "districtCode",source = "districtCode.code")
+
+    @Mapping(target = "districtCode", source = "districtCode.code")
     WardResponse toResponse(Ward ward);
 
     List<WardResponse> toResponseList(List<Ward> wards);

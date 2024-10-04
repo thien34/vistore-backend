@@ -1,7 +1,7 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeValueRequest;
-import com.example.back_end.core.admin.product.service.impl.ProductAttributeValueServiceImpl;
+import com.example.back_end.service.product.impl.ProductAttributeValueServiceImpl;
 import com.example.back_end.core.common.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

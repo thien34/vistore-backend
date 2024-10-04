@@ -2,7 +2,7 @@ package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeCombinationRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeCombinationResponse;
-import com.example.back_end.core.admin.product.service.ProductAttributeCombinationService;
+import com.example.back_end.service.product.ProductAttributeCombinationService;
 import com.example.back_end.core.common.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

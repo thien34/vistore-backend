@@ -1,20 +1,18 @@
 package com.example.back_end.core.admin.customer.mapper;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
+import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerRole;
 import com.example.back_end.entity.CustomerRoleMapping;
-import java.util.Collections;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-
-import java.util.List;
-
-import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
-
 import org.mapstruct.Named;
+
+import java.util.Collections;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
@@ -63,5 +61,6 @@ public interface CustomerMapper {
                 .map(roleMapping -> roleMapping.getCustomerRole().getName())
                 .toList();
     }
+
 }
 

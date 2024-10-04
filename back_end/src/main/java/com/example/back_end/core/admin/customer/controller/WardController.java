@@ -1,7 +1,7 @@
 package com.example.back_end.core.admin.customer.controller;
 
 import com.example.back_end.core.admin.customer.payload.response.WardResponse;
-import com.example.back_end.core.admin.customer.service.WardService;
+import com.example.back_end.service.customer.WardService;
 import com.example.back_end.core.common.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import java.util.List;
 @RequestMapping("/admin/wards")
 @RequiredArgsConstructor
 public class WardController {
+
     private final WardService wardService;
 
     @GetMapping
@@ -28,4 +29,5 @@ public class WardController {
                 .data(response)
                 .build();
     }
+
 }

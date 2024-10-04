@@ -2,7 +2,7 @@ package com.example.back_end.core.admin.customer.controller;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerRoleRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerRoleResponse;
-import com.example.back_end.core.admin.customer.service.CustomerRoleService;
+import com.example.back_end.service.customer.CustomerRoleService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -62,6 +70,7 @@ public class CustomerRoleController {
                 .data(null)
                 .build();
     }
+
     @GetMapping("/list-name")
     public ResponseData<List<CustomerRoleResponse>> getAllNameCustomerRoles() {
 
@@ -120,6 +129,7 @@ public class CustomerRoleController {
                 .message("Customer roles deleted successfully")
                 .build();
     }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a customer role by ID",
             description = "Delete an existing customer role using the provided ID.")

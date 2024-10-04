@@ -15,7 +15,6 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ProductSpecification {
 
     public static Specification<Product> buildWhere(ProductFilter productFilter) {
@@ -73,4 +72,5 @@ public class ProductSpecification {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
+
 }

@@ -3,7 +3,7 @@ package com.example.back_end.core.admin.manufacturer.controller;
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
-import com.example.back_end.core.admin.manufacturer.service.ManufactureServices;
+import com.example.back_end.service.manufacturer.ManufactureServices;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import jakarta.validation.Valid;

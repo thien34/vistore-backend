@@ -2,7 +2,7 @@ package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.PredefinedProductAttributeValueRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
-import com.example.back_end.core.admin.product.service.PredefinedProductAttributeValueService;
+import com.example.back_end.service.product.PredefinedProductAttributeValueService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import jakarta.validation.Valid;

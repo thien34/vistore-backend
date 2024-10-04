@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DistrictMapper {
 
-    @Mapping(target = "provinceCode",source = "provinceCode.code")
+    @Mapping(target = "provinceCode", source = "provinceCode.code")
     DistrictResponse toResponse(District district);
 
     List<DistrictResponse> toResponseList(List<District> districts);

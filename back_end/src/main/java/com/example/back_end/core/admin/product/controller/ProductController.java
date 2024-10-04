@@ -4,7 +4,7 @@ import com.example.back_end.core.admin.product.payload.request.ProductFilter;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
-import com.example.back_end.core.admin.product.service.ProductService;
+import com.example.back_end.service.product.ProductService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import jakarta.validation.Valid;

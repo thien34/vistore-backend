@@ -1,7 +1,7 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.response.ProductPictureMappingResponse;
-import com.example.back_end.core.admin.product.service.ProductPictureMappingService;
+import com.example.back_end.service.product.ProductPictureMappingService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import lombok.RequiredArgsConstructor;

@@ -1,11 +1,13 @@
 package com.example.back_end.core.admin.customer.controller;
 
 import com.example.back_end.core.admin.customer.payload.response.ProvinceResponse;
-import com.example.back_end.core.admin.customer.service.ProvinceService;
+import com.example.back_end.service.customer.ProvinceService;
 import com.example.back_end.core.common.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @RequestMapping("/admin/provinces")
 @RequiredArgsConstructor
 public class ProvinceController {
+
     private final ProvinceService provinceService;
 
     @GetMapping
@@ -26,4 +29,5 @@ public class ProvinceController {
                 .data(response)
                 .build();
     }
+
 }

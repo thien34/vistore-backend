@@ -4,7 +4,7 @@ import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequ
 import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
-import com.example.back_end.core.admin.customer.service.CustomerService;
+import com.example.back_end.service.customer.CustomerService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import jakarta.validation.Valid;
@@ -12,14 +12,22 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/customers")
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
 
     CustomerService customerService;
@@ -75,6 +83,7 @@ public class CustomerController {
                 .message("Customers deleted successfully")
                 .build();
     }
+
     @DeleteMapping
     public ResponseData<Void> deleteCustomers(@RequestBody List<Long> id) {
         customerService.deleteCustomers(id);

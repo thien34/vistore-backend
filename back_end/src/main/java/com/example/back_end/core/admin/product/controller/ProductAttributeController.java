@@ -3,7 +3,7 @@ package com.example.back_end.core.admin.product.controller;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
-import com.example.back_end.core.admin.product.service.ProductAttributeService;
+import com.example.back_end.service.product.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.entity.ProductAttribute;
