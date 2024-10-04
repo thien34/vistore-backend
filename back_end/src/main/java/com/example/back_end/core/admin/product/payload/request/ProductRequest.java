@@ -27,6 +27,8 @@ public class ProductRequest {
 
     private Boolean allowCustomerReviews;
 
+    private Boolean isShipEnabled;
+
     private Boolean isFreeShipping;
 
     private Integer productAvailabilityRangeId;

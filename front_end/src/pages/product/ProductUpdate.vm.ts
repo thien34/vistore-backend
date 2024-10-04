@@ -9,6 +9,7 @@ import { setProduct } from '@/slice/productSlice'
 import { RootState } from '@/redux/store/productStore'
 import useDeleteByIdApi from '@/hooks/use-delete-by-id-api'
 import { Modal } from 'antd'
+import ManagerPath from '@/constants/ManagerPath'
 
 function useProductUpdateViewModel() {
     const queryClient = useQueryClient()
@@ -50,7 +51,7 @@ function useProductUpdateViewModel() {
                     if (product.id) {
                         deleteProductApi.mutate(product.id, {
                             onSuccess: () => {
-                                navigate('/admin/products')
+                                navigate(ManagerPath.PRODUCT)
                             },
                         })
                     }

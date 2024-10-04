@@ -17,7 +17,6 @@ import moment from 'moment'
 import useProductCreateViewModel from './ProductCreate.vm'
 
 const { Panel } = Collapse
-const { TextArea } = Input
 
 const ProductInfo = (): JSX.Element => {
     const { quill, quillRef } = useQuill({ placeholder: '' })
@@ -73,26 +72,23 @@ const ProductInfo = (): JSX.Element => {
         <Collapse defaultActiveKey={['1']} className='mb-6'>
             <Panel header='Product info' key='1'>
                 <Form layout='vertical'>
-                    <Form.Item label='Product name'>
-                        <Input name='name' value={product.name ?? ''} onChange={handleInputChange} />
+                    <Form.Item label='Title'>
+                        <Input
+                            name='name'
+                            value={product.name ?? ''}
+                            placeholder='Product name'
+                            onChange={handleInputChange}
+                        />
                         {product.errors.name && !product.name && (
                             <p className='mt-1 text-sm text-red-500'>{product.errors.name}</p>
                         )}
                     </Form.Item>
-                    <Form.Item label='Short description'>
-                        <TextArea
-                            name='shortDescription'
-                            rows={2}
-                            value={product.shortDescription ?? ''}
-                            onChange={handleInputChange}
-                        />
-                    </Form.Item>
-                    <Form.Item label='Full description'>
+                    <Form.Item label='Description'>
                         <div style={{ height: 100 }}>
                             <div ref={quillRef} style={{ height: '100%' }} />
                         </div>
                     </Form.Item>
-                    <Form.Item label='SKU' className='mt-14'>
+                    <Form.Item label='SKU' className='mt-20'>
                         <Input name='sku' value={product.sku} onChange={handleInputChange} />
                     </Form.Item>
                     <Form.Item label='Categories'>
@@ -145,13 +141,7 @@ const ProductInfo = (): JSX.Element => {
                     <Form.Item label='GTIN (global trade item number)'>
                         <Input name='gtin' value={product.gtin} onChange={handleInputChange} />
                     </Form.Item>
-                    <Form.Item label='Manufacturer part number'>
-                        <Input
-                            name='manufacturePartNumber'
-                            value={product.manufacturePartNumber}
-                            onChange={handleInputChange}
-                        />
-                    </Form.Item>
+
                     <Form.Item name='showOnHomePage'>
                         <Checkbox
                             name='showOnHomePage'
@@ -187,11 +177,9 @@ const ProductInfo = (): JSX.Element => {
                             value={
                                 product.availableEndDateTimeUtc ? moment(product.availableEndDateTimeUtc) : undefined
                             }
-                            onChange={(_, dateString) => {
-                                if (typeof dateString === 'string') {
-                                    dispatch(setProduct({ availableEndDateTimeUtc: dateString }))
-                                }
-                            }}
+                            onChange={(date) =>
+                                dispatch(setProduct({ availableEndDateTimeUtc: date?.toISOString() || undefined }))
+                            }
                         />
                     </Form.Item>
                     <Form.Item name='markAsNew'>

@@ -14,7 +14,6 @@ export interface ProductNameResponse {
 
 export type ProductDetailResponse = {
     name: string
-    shortDescription: string
     fullDescription: string
     sku: string
     categories: number[]
@@ -22,7 +21,6 @@ export type ProductDetailResponse = {
     published: boolean
     productTags: string[]
     gtin: string
-    manufacturePartNumber: string
     showOnHomePage: boolean
     allowCustomerReviews: boolean
     availableStartDate: string | null

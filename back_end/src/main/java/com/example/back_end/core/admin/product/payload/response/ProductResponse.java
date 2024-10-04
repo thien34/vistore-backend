@@ -30,6 +30,8 @@ public class ProductResponse {
 
     private Boolean allowCustomerReviews;
 
+    private Boolean isShipEnabled;
+
     private Boolean isFreeShipping;
 
     private Integer productAvailabilityRangeId;

@@ -2,13 +2,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface ProductState {
     name: string
-    shortDescription: string
     fullDescription: string
     sku: string
     published: boolean
     productTags: string[]
     gtin: string
-    manufacturePartNumber: string
     showOnHomePage: boolean
     allowCustomerReviews: boolean
     availableStartDateTimeUtc: string | null
@@ -50,14 +48,11 @@ interface ProductState {
 
 export const initialState: ProductState = {
     name: '',
-    shortDescription: '',
     fullDescription: '',
     sku: '',
-
     published: false,
     productTags: [],
     gtin: '',
-    manufacturePartNumber: '',
     showOnHomePage: false,
     allowCustomerReviews: false,
     availableEndDateTimeUtc: null,

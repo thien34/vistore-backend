@@ -24,7 +24,6 @@ export type ProductAttributeNameResponse = {
 
 export interface ProductRequest {
     name: string
-    shortDescription: string
     fullDescription: string
     sku: string
     categories: number[]
@@ -32,7 +31,6 @@ export interface ProductRequest {
     published: boolean
     productTags: string[]
     gtin: string
-    manufacturePartNumber: string
     showOnHomePage: boolean
     allowCustomerReviews: boolean
     availableStartDate: string | null
