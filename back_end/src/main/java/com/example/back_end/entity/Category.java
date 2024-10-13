@@ -33,38 +33,13 @@ public class Category extends Auditable {
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
-    private String description;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "parent_category_id")
     private Category categoryParent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "picture_id")
-    private Picture picture;
 
-    @Column(name = "show_on_home_page")
-    private Boolean showOnHomePage;
 
-    @Column(name = "include_in_top_menu")
-    private Boolean includeInTopMenu;
 
-    @Column(name = "page_size")
-    private Integer pageSize;
-
-    @Column(name = "published")
-    private Boolean published;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "display_order")
-    private Integer displayOrder;
-
-    @Column(name = "price_range_filtering")
-    private Boolean priceRangeFiltering;
 
 }

@@ -2,7 +2,6 @@ package com.example.back_end.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,10 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -26,39 +21,19 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "product_attribute_value")
-public class ProductAttributeValue extends Auditable {
+public class ProductAttributeValue {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_attribute_mapping_id")
-    private ProductProductAttributeMapping productAttributeMapping;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "color_squares_rgb")
-    private String colorSquaresRgb;
-
-    @Column(name = "price_adjustment", precision = 18, scale = 2)
-    private BigDecimal priceAdjustment;
-
-    @Column(name = "price_adjustment_percentage")
-    private Boolean priceAdjustmentPercentage;
-
-    @Column(name = "weight_adjustment", precision = 18, scale = 2)
-    private BigDecimal weightAdjustment;
-
-    @Column(name = "cost", precision = 18, scale = 2)
-    private BigDecimal cost;
-
-    @Column(name = "is_pre_selected")
-    private Boolean isPreSelected;
-
-    @Column(name = "display_order")
-    private Integer displayOrder;
+    @ManyToOne
+    @JoinColumn
+    private ProductAttribute productAttribute;
 
 }

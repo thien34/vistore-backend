@@ -16,7 +16,6 @@ import java.util.List;
 public interface CategoryMapper {
 
     @Mapping(source = "categoryParent.id", target = "categoryParentId")
-    @Mapping(source = "picture.id", target = "pictureId")
     CategoryResponse toDto(Category category);
 
     CategoriesResponse toCategoriesResponse(Category category);
@@ -26,13 +25,10 @@ public interface CategoryMapper {
     @Mapping(target = "children", expression = "java(new ArrayList<>())")
     CategoryNameResponse toTreeDto(Category category);
 
-    @Mapping(target = "deleted", constant = "false")
     @Mapping(target = "name", source = "name", qualifiedByName = "trimName")
-    @Mapping(target = "description", source = "description", qualifiedByName = "trimName")
     Category mapToCategory(CategoryRequest request);
 
     @Mapping(target = "name", source = "name", qualifiedByName = "trimName")
-    @Mapping(target = "description", source = "description", qualifiedByName = "trimName")
     void updateCategoryFromRequest(CategoryRequest request, @MappingTarget Category category);
 
     @Named("trimName")

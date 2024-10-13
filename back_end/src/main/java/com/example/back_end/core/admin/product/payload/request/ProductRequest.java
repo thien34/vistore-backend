@@ -1,11 +1,11 @@
 package com.example.back_end.core.admin.product.payload.request;
 
 import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -23,64 +23,29 @@ public class ProductRequest {
 
     private String fullDescription;
 
-    private Boolean showOnHomePage;
-
-    private Boolean allowCustomerReviews;
-
-    private Boolean isShipEnabled;
-
-    private Boolean isFreeShipping;
-
-    private Integer productAvailabilityRangeId;
-
-    private Boolean displayStockAvailability;
-
-    private Boolean displayStockQuantity;
-
-    private Integer minStockQuantity;
-
-    private Boolean notReturnable;
+    private Integer quantity;
 
     private BigDecimal unitPrice;
 
-    private BigDecimal oldPrice;
-
     private BigDecimal productCost;
 
-    private Boolean markAsNew;
-
-    private Instant markAsNewStartDateTimeUtc;
-
-    private Instant markAsNewEndDateTimeUtc;
-
     private BigDecimal weight;
-
-    private BigDecimal length;
-
-    private BigDecimal width;
-
-    private BigDecimal height;
-
-    private Instant availableStartDateTimeUtc;
-
-    private Instant availableEndDateTimeUtc;
-
-    private Integer displayOrder;
 
     private Boolean published;
 
     private Boolean deleted;
 
-    private List<Long> categoryIds;
+    private Long categoryId;
 
-    private List<Long> manufacturerIds;
+    private Long manufacturerId;
 
-    private List<String> productTags;
+    private List<ProductAttribute> attributes;
 
-    private List<Long> discountIds;
-
-    private Integer minCartQty;
-
-    private Integer maxCartQty;
+    @Data
+    static class ProductAttribute {
+        private Long id;
+        private Long productId;
+        private String value;
+    }
 
 }

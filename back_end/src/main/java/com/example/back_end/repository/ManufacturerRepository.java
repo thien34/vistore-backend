@@ -14,8 +14,9 @@ import java.util.List;
 
 public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
 
-    @Query(value = "select mn from Manufacturer mn  where mn.deleted = false and (:name is null or mn.name like %:name%) and (:published is null or mn.published = :published) ")
-    Page<Manufacturer> findManufacturer(@Param("name") String name, @Param("published") Boolean published, Pageable pageable);
+
+    @Query(value = "select mn from Manufacturer mn where mn.deleted = false and (:name is null or mn.name like %:name%)")
+    Page<Manufacturer> findManufacturer(@Param("name") String name, Pageable pageable);
 
     @Modifying
     @Transactional

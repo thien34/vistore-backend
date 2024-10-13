@@ -15,7 +15,6 @@ public interface ManufacturerMapper {
     @Mapping(target = "deleted", constant = "false")
     Manufacturer maptoManufacturer(ManufacturerRequest manufacturerRequest);
 
-    @Mapping(source = "picture.id", target = "pictureId")
     ManufacturerResponse maptoManufacturerResponse(Manufacturer manufacturer);
 
     List<ManufacturerResponse> maptoManufacturerResponseList(List<Manufacturer> manufacturers);

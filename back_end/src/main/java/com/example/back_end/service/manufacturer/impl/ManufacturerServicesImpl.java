@@ -51,7 +51,7 @@ public class ManufacturerServicesImpl implements ManufactureServices {
             Integer pageSize) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
-        Page<Manufacturer> manufacturerPage = manufacturerRepository.findManufacturer(name, published, pageable);
+        Page<Manufacturer> manufacturerPage = manufacturerRepository.findManufacturer(name, pageable);
 
         List<ManufacturerResponse> manufacturerResponses = manufacturerMapper
                 .maptoManufacturerResponseList(manufacturerPage.getContent());
