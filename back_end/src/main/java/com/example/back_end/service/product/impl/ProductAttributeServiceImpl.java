@@ -2,12 +2,10 @@ package com.example.back_end.service.product.impl;
 
 import com.example.back_end.core.admin.product.mapper.ProductAttributeMapper;
 import com.example.back_end.core.admin.product.payload.request.ProductAttributeRequest;
-import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeNameResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductAttributeResponse;
 import com.example.back_end.service.product.ProductAttributeService;
 import com.example.back_end.core.common.PageResponse;
-import com.example.back_end.entity.PredefinedProductAttributeValue;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.constant.SortType;
@@ -16,7 +14,6 @@ import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.NotExistsException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.StringUtils;
-import com.example.back_end.repository.PredefinedProductAttributeValueRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,7 +32,6 @@ import java.util.stream.Collectors;
 public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     ProductAttributeRepository productAttributeRepository;
-    PredefinedProductAttributeValueRepository predefinedProductAttributeValueRepository;
     ProductAttributeMapper productAttributeMapper;
 
     @Override
@@ -53,24 +44,8 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         }
 
         ProductAttribute productAttribute = productAttributeMapper.toEntity(request);
-        ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
 
-        List<PredefinedProductAttributeValue> values = request.getValues().stream()
-                .map(valueRequest -> PredefinedProductAttributeValue.builder()
-                        .productAttribute(savedProductAttribute)
-                        .cost(valueRequest.getCost())
-                        .displayOrder(valueRequest.getDisplayOrder())
-                        .name(valueRequest.getName())
-                        .priceAdjustment(valueRequest.getPriceAdjustment())
-                        .isPreSelected(valueRequest.getIsPreSelected())
-                        .weightAdjustment(valueRequest.getWeightAdjustment())
-                        .priceAdjustmentUsePercentage(valueRequest.getPriceAdjustmentUsePercentage())
-                        .build())
-                .toList();
-
-        predefinedProductAttributeValueRepository.saveAll(values);
-
-        return savedProductAttribute;
+        return productAttributeRepository.save(productAttribute);
     }
 
     @Override
@@ -80,16 +55,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         Page<ProductAttribute> productAttributePage = productAttributeRepository.findByNameContaining(name, pageable);
 
         List<ProductAttributeResponse> productAttributeResponseList = productAttributePage.stream()
-                .map(productAttribute -> {
-                    ProductAttributeResponse response = productAttributeMapper.toDto(productAttribute);
-
-                    List<PredefinedProductAttributeValueResponse> values = productAttribute.getValues().stream()
-                            .map(PredefinedProductAttributeValueResponse::mapToResponse)
-                            .toList();
-                    response.setValues(values);
-
-                    return response;
-                })
+                .map(productAttributeMapper::toDto)
                 .toList();
 
         return PageResponse.<List<ProductAttributeResponse>>builder()
@@ -106,7 +72,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         ProductAttribute productAttribute = productAttributeRepository.findById(id)
                 .orElseThrow(() -> new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_EXISTED.getMessage()));
 
-        return ProductAttributeResponse.mapToResponse(productAttribute);
+        return productAttributeMapper.toDto(productAttribute);
     }
 
     @Override
@@ -119,39 +85,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         if (productAttributeRepository.existsByNameAndIdNot(request.getName(), id)) {
             throw new AlreadyExistsException(ErrorCode.PRODUCT_ATTRIBUTE_ALREADY_EXISTS.getMessage());
         }
-
         productAttributeMapper.updateEntityFromRequest(request, productAttribute);
-
-        Map<Long, PredefinedProductAttributeValue> existingValuesMap = predefinedProductAttributeValueRepository
-                .findByProductAttributeId(id)
-                .stream()
-                .collect(Collectors.toMap(PredefinedProductAttributeValue::getId, value -> value));
-
-        List<PredefinedProductAttributeValue> updatedValues = request.getValues().stream().map(predefinedRequest -> {
-            PredefinedProductAttributeValue value = existingValuesMap.getOrDefault(predefinedRequest.getId(),
-                    PredefinedProductAttributeValue.builder().productAttribute(productAttribute).build());
-            value.setCost(predefinedRequest.getCost());
-            value.setDisplayOrder(predefinedRequest.getDisplayOrder());
-            value.setName(predefinedRequest.getName());
-            value.setPriceAdjustment(predefinedRequest.getPriceAdjustment());
-            value.setIsPreSelected(predefinedRequest.getIsPreSelected());
-            value.setWeightAdjustment(predefinedRequest.getWeightAdjustment());
-            value.setPriceAdjustmentUsePercentage(predefinedRequest.getPriceAdjustmentUsePercentage());
-            return value;
-        }).toList();
-
-        predefinedProductAttributeValueRepository.saveAll(updatedValues);
-
-        List<Long> updatedValueIds = updatedValues.stream()
-                .map(PredefinedProductAttributeValue::getId)
-                .filter(Objects::nonNull)
-                .toList();
-
-        predefinedProductAttributeValueRepository.deleteAll(existingValuesMap.values().stream()
-                .filter(value -> !updatedValueIds.contains(value.getId()))
-                .toList());
-
-        productAttribute.setValues(new ArrayList<>(updatedValues));
         ProductAttribute savedProductAttribute = productAttributeRepository.save(productAttribute);
 
         return productAttributeMapper.toDto(savedProductAttribute);

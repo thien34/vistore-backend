@@ -22,7 +22,7 @@ import lombok.Setter;
 @Table(name = "customer_role", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name")
 })
-public class CustomerRole extends Auditable {
+public class CustomerRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

@@ -7,17 +7,16 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = PredefinedProductAttributeValueMapper.class)
+@Mapper(componentModel = "spring")
 public interface ProductAttributeMapper {
 
     @Mapping(target = "id", ignore = true)
     ProductAttribute toEntity(ProductAttributeRequest dto);
 
-    @Mapping(target = "values", source = "values")
+
     ProductAttributeResponse toDto(ProductAttribute entity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "values", ignore = true)
     void updateEntityFromRequest(ProductAttributeRequest request, @MappingTarget ProductAttribute entity);
 
 }

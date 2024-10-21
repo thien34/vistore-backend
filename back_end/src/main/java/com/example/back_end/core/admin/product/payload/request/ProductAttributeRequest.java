@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +24,5 @@ public class ProductAttributeRequest {
 
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     String description;
-
-    List<PredefinedProductAttributeValueUpdateRequest> values;
 
 }
