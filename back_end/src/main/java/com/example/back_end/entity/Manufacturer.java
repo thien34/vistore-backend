@@ -39,4 +39,7 @@ public class Manufacturer extends Auditable {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    public Manufacturer(Long manufacturerId) {
+       this.id = manufacturerId;
+    }
 }

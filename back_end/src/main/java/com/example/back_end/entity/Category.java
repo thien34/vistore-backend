@@ -39,7 +39,7 @@ public class Category extends Auditable {
     private Category categoryParent;
 
 
-
-
-
+    public Category(Long categoryId) {
+        this.id = categoryId;
+    }
 }
