@@ -1,91 +1,73 @@
 package com.example.back_end.core.admin.product.payload.response;
 
+import com.example.back_end.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 
-@AllArgsConstructor
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
 @NoArgsConstructor
 @Getter
-@Builder
 @Setter
+@AllArgsConstructor
 public class ProductResponse {
 
     private Long id;
-
     private String name;
-
-    private String sku;
-
-    private String gtin;
-
-    private String fullDescription;
-
-    private Boolean showOnHomePage;
-
-    private Boolean allowCustomerReviews;
-
-    private Boolean isShipEnabled;
-
-    private Boolean isFreeShipping;
-
-    private Integer productAvailabilityRangeId;
-
-    private Boolean displayStockAvailability;
-
-    private Boolean displayStockQuantity;
-
-    private Integer minStockQuantity;
-
-    private Boolean notReturnable;
-
-    private BigDecimal unitPrice;
-
-    private BigDecimal oldPrice;
-
-    private BigDecimal productCost;
-
-    private Boolean markAsNew;
-
-    private Instant markAsNewStartDateTimeUtc;
-
-    private Instant markAsNewEndDateTimeUtc;
-
-    private BigDecimal weight;
-
-    private BigDecimal length;
-
-    private BigDecimal width;
-
-    private BigDecimal height;
-
-    private Instant availableStartDateTimeUtc;
-
-    private Instant availableEndDateTimeUtc;
-
-    private Integer displayOrder;
-
-    private Boolean published;
-
     private Boolean deleted;
+    private Long categoryId;
+    private Long manufacturerId;
+    private String sku;
+    private BigDecimal price;
+    private Integer quantity;
+    private BigDecimal productCost;
+    private List<ProductAttributeValueResponse> attributes;
 
-    private List<Long> categoryIds;
+    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId) {
+        this.id = id;
+        this.name = name;
+        this.deleted = deleted;
+        this.categoryId = categoryId;
+        this.manufacturerId = manufacturerId;
+    }
 
-    private List<Long> manufacturerIds;
+    public static ProductResponse fromProduct(final Product product) {
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDeleted(),
+                product.getCategory() != null ? product.getCategory().getId() : null,
+                product.getManufacturer() != null ? product.getManufacturer().getId() : null
+        );
+    }
 
-    private List<String> productTags;
 
-    private List<Long> discountIds;
+    public static ProductResponse fromProductFull(final Product product, List<ProductAttributeValueResponse> attributes) {
 
-    private Integer minCartQty;
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDeleted(),
+                product.getCategory() != null ? product.getCategory().getId() : null,
+                product.getManufacturer() != null ? product.getManufacturer().getId() : null,
+                product.getSku(),
+                product.getUnitPrice(),
+                product.getQuantity(),
+                product.getProductCost(),
+                attributes
+        );
+    }
 
-    private Integer maxCartQty;
-
-    private String imageUrl;
-
+    @Data
+    static class ProductAttributeValueResponse {
+        private Long id;
+        private String value;
+        private String imageUrl;
+    }
 }

@@ -2,17 +2,15 @@ package com.example.back_end.service.category.impl;
 
 import com.example.back_end.core.admin.category.mapper.CategoryMapper;
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
-import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
+import com.example.back_end.core.admin.category.payload.request.CategorySearchRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
-import com.example.back_end.service.category.CategoryService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Category;
-import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.CategoryRepository;
-import com.example.back_end.repository.PictureRepository;
+import com.example.back_end.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,16 +29,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    private final PictureRepository pictureRepository;
 
     @Override
-    @Transactional
     public void createCategory(CategoryRequest categoryRequest) {
 
         validateCategoryParent(categoryRequest.getCategoryParentId());
-        validatePicture(categoryRequest.getPictureId());
 
-        Category category = categoryMapper.mapToCategory(categoryRequest);
+        Category category = categoryMapper.toEntity(categoryRequest);
+        category.setDeleted(false);
         categoryRepository.save(category);
     }
 
@@ -59,30 +55,29 @@ public class CategoryServiceImpl implements CategoryService {
                     throw new IllegalArgumentException("Category parent cannot be child of itself");
                 });
 
-        validatePicture(request.getPictureId());
 
         categoryMapper.updateCategoryFromRequest(request, category);
         categoryRepository.save(category);
     }
 
     @Override
-    public PageResponse<List<CategoriesResponse>> getAll(
-            String name,
-            Boolean published,
-            Integer pageNo,
-            Integer pageSize) {
+    public PageResponse1<List<CategoryResponse>> getAll(CategorySearchRequest searchRequest) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
+        Pageable pageable = PageUtils.createPageable(
+                searchRequest.getPageNo(),
+                searchRequest.getPageSize(),
+                searchRequest.getSortBy(),
+                searchRequest.getSortDir());
+
         Page<Category> categoryPage = categoryRepository
-                .findAll(CategorySpecification.filterByNameAndPublished(name, published), pageable);
+                .findAll(CategorySpecification.filterByName(searchRequest.getName()), pageable);
 
-        List<CategoriesResponse> categoriesResponses = categoryMapper
-                .toCategoriesResponseList(categoryPage.getContent());
+        List<CategoryResponse> categoriesResponses = categoryMapper
+                .toDtos(categoryPage.getContent());
 
-        return PageResponse.<List<CategoriesResponse>>builder()
-                .page(categoryPage.getNumber())
-                .size(categoryPage.getSize())
-                .totalPage(categoryPage.getTotalPages())
+        return PageResponse1.<List<CategoryResponse>>builder()
+                .totalItems(categoryPage.getTotalElements())
+                .totalPages(categoryPage.getTotalPages())
                 .items(categoriesResponses)
                 .build();
     }
@@ -135,12 +130,6 @@ public class CategoryServiceImpl implements CategoryService {
     private void validateCategoryParent(Long categoryParentId) {
         if (categoryParentId != null && !categoryRepository.existsById(categoryParentId)) {
             throw new ResourceNotFoundException("Category parent with id not found: " + categoryParentId);
-        }
-    }
-
-    private void validatePicture(Long pictureId) {
-        if (pictureId != null && !pictureRepository.existsById(pictureId)) {
-            throw new ResourceNotFoundException("Picture with id not found: " + pictureId);
         }
     }
 

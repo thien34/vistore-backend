@@ -1,9 +1,9 @@
 spring:
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/store_db
+    url: jdbc:postgresql://localhost:5432/dbnew
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1}
+    password: ${DB_PASSWORD:12345678}
 
   mvc:
     log-request-details: true

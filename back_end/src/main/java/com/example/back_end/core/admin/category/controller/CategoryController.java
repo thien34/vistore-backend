@@ -1,14 +1,15 @@
 package com.example.back_end.core.admin.category.controller;
 
 import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
-import com.example.back_end.core.admin.category.payload.response.CategoriesResponse;
+import com.example.back_end.core.admin.category.payload.request.CategorySearchRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
-import com.example.back_end.service.category.CategoryService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,16 +30,11 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping()
-    public ResponseData<PageResponse<List<CategoriesResponse>>> getAllCategories(
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "published", required = false) Boolean published,
-            @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo, 
-            @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
+    public ResponseData<PageResponse1<List<CategoryResponse>>> getAllCategories(@ParameterObject CategorySearchRequest searchRequest) {
 
-        PageResponse<List<CategoriesResponse>> response = categoryService
-                .getAll(name, published, pageNo, pageSize);
+        PageResponse1<List<CategoryResponse>> response = categoryService.getAll(searchRequest);
 
-        return ResponseData.<PageResponse<List<CategoriesResponse>>>builder()
+        return ResponseData.<PageResponse1<List<CategoryResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get categories success")
                 .data(response)

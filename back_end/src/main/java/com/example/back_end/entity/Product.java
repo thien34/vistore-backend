@@ -37,6 +37,9 @@ public class Product extends Auditable {
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
+    @Column(name = "full_name", length = Integer.MAX_VALUE)
+    private String fullName;
+
     @Column(name = "sku", length = Integer.MAX_VALUE)
     private String sku;
 
@@ -63,6 +66,9 @@ public class Product extends Auditable {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "parent_product_id")
+    private Long parentProductId;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

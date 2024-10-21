@@ -5,7 +5,6 @@ import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductPictureMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,7 +16,6 @@ public interface ProductMapper {
 
     List<ProductResponse> toResponseList(List<Product> content);
 
-    @Mapping(target = "imageUrl", expression = "java(getImageUrl(product))")
     ProductResponse toResponse(Product product);
 
     default String getImageUrl(Product product) {

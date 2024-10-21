@@ -30,5 +30,4 @@ public class ProductAttribute {
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
-
 }

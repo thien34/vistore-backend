@@ -28,6 +28,9 @@ public class ProductAttributeValue {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "value")
+    private String value;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -35,5 +38,7 @@ public class ProductAttributeValue {
     @ManyToOne
     @JoinColumn
     private ProductAttribute productAttribute;
+
+    private String imageUrl;
 
 }
