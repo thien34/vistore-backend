@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.category.payload.response;
 
-import com.example.back_end.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
