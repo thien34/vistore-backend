@@ -9,15 +9,12 @@ import java.util.List;
 
 public class CategorySpecification {
 
-    public static Specification<Category> filterByNameAndPublished(String name, Boolean published) {
+    public static Specification<Category> filterByName(String name) {
 
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (name != null && !name.isEmpty()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
-            }
-            if (published != null) {
-                predicates.add(criteriaBuilder.equal(root.get("published"), published));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

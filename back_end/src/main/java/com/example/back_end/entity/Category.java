@@ -38,8 +38,11 @@ public class Category extends Auditable {
     @JoinColumn(name = "parent_category_id")
     private Category categoryParent;
 
+    @Column(name = "deleted")
+    private Boolean deleted;
 
     public Category(Long categoryId) {
         this.id = categoryId;
     }
+
 }
