@@ -74,5 +74,15 @@ public class ProductController {
     }
 
 
+    @GetMapping("/details/{id}")
+    public ResponseData<ProductResponse> getProductDetails(@PathVariable(value = "id") Long id) {
+        ProductResponse productResponse = productService.getProductDetail(id);
+
+        return ResponseData.<ProductResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get product details successfully")
+                .data(productResponse)
+                .build();
+    }
 
 }

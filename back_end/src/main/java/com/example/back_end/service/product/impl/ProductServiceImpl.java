@@ -1,6 +1,7 @@
 package com.example.back_end.service.product.impl;
 
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
+import com.example.back_end.core.admin.product.payload.response.ProductAttributeValueResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Manufacturer;
@@ -84,12 +85,18 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll().stream()
                 .filter(product -> product.getParentProductId() != null && product.getParentProductId().equals(parentId))
                 .toList();
+        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
+        return products.stream().map(product -> {
+            List<ProductResponse.ProductAttributeValueResponse> attributeResponses = getProductAttributeValues(product);
+            return ProductResponse.fromProductFull(product, attributeResponses);
+        }).toList();
+    }
 
-//        List<ProductResponse> productResponses = products.stream()
-//                .map(ProductResponse::fromProductFull)
-//                .toList();
-//        return productResponses;
-        return null;
+    @Override
+    public ProductResponse getProductDetail(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        List<ProductResponse.ProductAttributeValueResponse> attributeResponses = getProductAttributeValues(product);
+        return ProductResponse.fromProductFull(product, attributeResponses);
     }
 
 
@@ -183,4 +190,19 @@ public class ProductServiceImpl implements ProductService {
             }
         }
     }
+
+    private List<ProductResponse.ProductAttributeValueResponse> getProductAttributeValues(Product product) {
+        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
+        return attributeValues.stream()
+                .filter(attributeValue -> attributeValue.getProduct().getId().equals(product.getId()))
+                .map(attributeValue -> {
+                    ProductResponse.ProductAttributeValueResponse attributeResponse =
+                            new ProductResponse.ProductAttributeValueResponse();
+                    attributeResponse.setId(attributeValue.getId());
+                    attributeResponse.setValue(attributeValue.getValue());
+                    attributeResponse.setImageUrl(attributeValue.getImageUrl());
+                    return attributeResponse;
+                }).toList();
+    }
+
 }

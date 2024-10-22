@@ -52,7 +52,7 @@ public class ProductResponse {
 
         return new ProductResponse(
                 product.getId(),
-                product.getName(),
+                product.getFullName(),
                 product.getDeleted(),
                 product.getCategory() != null ? product.getCategory().getId() : null,
                 product.getManufacturer() != null ? product.getManufacturer().getId() : null,
@@ -65,7 +65,7 @@ public class ProductResponse {
     }
 
     @Data
-    static class ProductAttributeValueResponse {
+    public static class ProductAttributeValueResponse {
         private Long id;
         private String value;
         private String imageUrl;
