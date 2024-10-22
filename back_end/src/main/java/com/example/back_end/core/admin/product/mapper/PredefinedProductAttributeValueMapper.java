@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.product.mapper;
 
 import com.example.back_end.core.admin.product.payload.request.PredefinedProductAttributeValueRequest;
 import com.example.back_end.core.admin.product.payload.response.PredefinedProductAttributeValueResponse;
+import com.example.back_end.core.admin.productAttribute.mapper.ProductAttributeMapper;
 import com.example.back_end.entity.PredefinedProductAttributeValue;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
