@@ -13,11 +13,11 @@ import java.util.List;
 public interface ManufacturerMapper {
 
     @Mapping(target = "deleted", constant = "false")
-    Manufacturer maptoManufacturer(ManufacturerRequest manufacturerRequest);
+    Manufacturer toEntity(ManufacturerRequest manufacturerRequest);
 
-    ManufacturerResponse maptoManufacturerResponse(Manufacturer manufacturer);
+    ManufacturerResponse toDto(Manufacturer manufacturer);
 
-    List<ManufacturerResponse> maptoManufacturerResponseList(List<Manufacturer> manufacturers);
+    List<ManufacturerResponse> toDtos(List<Manufacturer> manufacturers);
 
     void updateManufacturer(ManufacturerRequest manufacturerRequest, @MappingTarget Manufacturer manufacturer);
 

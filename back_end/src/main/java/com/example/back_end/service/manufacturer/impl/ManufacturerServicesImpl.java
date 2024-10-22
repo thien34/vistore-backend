@@ -2,15 +2,15 @@ package com.example.back_end.service.manufacturer.impl;
 
 import com.example.back_end.core.admin.manufacturer.mapper.ManufacturerMapper;
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
+import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerSearchRequest;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
-import com.example.back_end.service.manufacturer.ManufactureServices;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Manufacturer;
-import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ManufacturerRepository;
+import com.example.back_end.service.manufacturer.ManufactureServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,36 +30,36 @@ public class ManufacturerServicesImpl implements ManufactureServices {
     @Transactional
     public void createManufacturer(ManufacturerRequest manufacturerRequest) {
 
-        Manufacturer manufacturer = manufacturerMapper.maptoManufacturer(manufacturerRequest);
+        Manufacturer manufacturer = manufacturerMapper.toEntity(manufacturerRequest);
         manufacturerRepository.save(manufacturer);
     }
 
     @Override
-    @Transactional
-    public void updateManufacturer(Long manufacturerId, ManufacturerRequest manufacturerRequest) {
+    public void updateManufacturer(Long id, ManufacturerRequest manufacturerRequest) {
 
-        Manufacturer manufacturer = findManufacturerById(manufacturerId);
+        Manufacturer manufacturer = findManufacturerById(id);
+
         manufacturerMapper.updateManufacturer(manufacturerRequest, manufacturer);
         manufacturerRepository.save(manufacturer);
     }
 
     @Override
-    public PageResponse<List<ManufacturerResponse>> getAll(
-            String name,
-            Boolean published,
-            Integer pageNo,
-            Integer pageSize) {
+    public PageResponse1<List<ManufacturerResponse>> getAll(ManufacturerSearchRequest searchRequest) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
-        Page<Manufacturer> manufacturerPage = manufacturerRepository.findManufacturer(name, pageable);
+        Pageable pageable = PageUtils.createPageable(
+                searchRequest.getPageNo(),
+                searchRequest.getPageSize(),
+                searchRequest.getSortBy(),
+                searchRequest.getSortDir());
+
+        Page<Manufacturer> manufacturerPage = manufacturerRepository.findManufacturer(searchRequest.getName(), pageable);
 
         List<ManufacturerResponse> manufacturerResponses = manufacturerMapper
-                .maptoManufacturerResponseList(manufacturerPage.getContent());
+                .toDtos(manufacturerPage.getContent());
 
-        return PageResponse.<List<ManufacturerResponse>>builder()
-                .page(manufacturerPage.getNumber())
-                .size(manufacturerPage.getSize())
-                .totalPage(manufacturerPage.getTotalPages())
+        return PageResponse1.<List<ManufacturerResponse>>builder()
+                .totalItems(manufacturerPage.getTotalElements())
+                .totalPages(manufacturerPage.getTotalPages())
                 .items(manufacturerResponses)
                 .build();
     }
@@ -68,7 +68,7 @@ public class ManufacturerServicesImpl implements ManufactureServices {
     public ManufacturerResponse getManufacturer(Long manufacturerId) {
 
         Manufacturer manufacturer = findManufacturerById(manufacturerId);
-        return manufacturerMapper.maptoManufacturerResponse(manufacturer);
+        return manufacturerMapper.toDto(manufacturer);
     }
 
     @Override

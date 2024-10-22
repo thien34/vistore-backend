@@ -9,6 +9,7 @@ import java.util.List;
 public interface ProductService {
 
    void createProduct(List<ProductRequest> requests, MultipartFile[] images);
+
    List<ProductResponse> getAllProducts();
 
    ProductResponse getProductById(Long id);

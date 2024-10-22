@@ -1,13 +1,15 @@
 package com.example.back_end.core.admin.manufacturer.controller;
 
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
+import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerSearchRequest;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
-import com.example.back_end.service.manufacturer.ManufactureServices;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.manufacturer.ManufactureServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,20 +25,17 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/manufacturers")
-public class ManufactureController {
+public class ManufacturerController {
 
     private final ManufactureServices manufacturerServices;
 
     @GetMapping()
-    public ResponseData<PageResponse<List<ManufacturerResponse>>> getAllManufacturers(
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "published", defaultValue = "") Boolean published,
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "size", defaultValue = "6") Integer size) {
+    public ResponseData<PageResponse1<List<ManufacturerResponse>>> getAllManufacturers(
+            @ParameterObject ManufacturerSearchRequest searchRequest) {
 
-        PageResponse<List<ManufacturerResponse>> response = manufacturerServices.getAll(name, published, page, size);
+        PageResponse1<List<ManufacturerResponse>> response = manufacturerServices.getAll(searchRequest);
 
-        return ResponseData.<PageResponse<List<ManufacturerResponse>>>builder()
+        return ResponseData.<PageResponse1<List<ManufacturerResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get Manufacturers successfully")
                 .data(response)

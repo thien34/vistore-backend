@@ -1,9 +1,10 @@
 package com.example.back_end.service.manufacturer;
 
 import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerRequest;
+import com.example.back_end.core.admin.manufacturer.payload.request.ManufacturerSearchRequest;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerNameResponse;
 import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 
 import java.util.List;
 
@@ -11,13 +12,13 @@ public interface ManufactureServices {
 
     void createManufacturer(ManufacturerRequest manufacturerRequest);
 
-    void updateManufacturer(Long manufacturerId, ManufacturerRequest manufacturerRequest);
+    void updateManufacturer(Long id, ManufacturerRequest manufacturerRequest);
 
-    PageResponse<List<ManufacturerResponse>> getAll(String name, Boolean published, Integer pageNo, Integer pageSize);
+    PageResponse1<List<ManufacturerResponse>> getAll(ManufacturerSearchRequest searchRequest);
 
-    ManufacturerResponse getManufacturer(Long manufacturerId);
+    ManufacturerResponse getManufacturer(Long id);
 
-    void deleteListManufacturer(List<Long> manufacturerIds);
+    void deleteListManufacturer(List<Long> ids);
 
     List<ManufacturerNameResponse> getAlManufacturersName();
 

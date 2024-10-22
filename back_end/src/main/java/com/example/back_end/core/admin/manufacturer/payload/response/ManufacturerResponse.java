@@ -13,16 +13,4 @@ public class ManufacturerResponse {
 
     private String description;
 
-    private String pictureId;
-
-    private Integer pageSize;
-
-    private Boolean priceRangeFiltering;
-
-    private Boolean published;
-
-    private Boolean deleted;
-
-    private Integer displayOrder;
-
 }

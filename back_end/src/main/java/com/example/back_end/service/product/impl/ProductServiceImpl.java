@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -84,10 +85,11 @@ public class ProductServiceImpl implements ProductService {
                 .filter(product -> product.getParentProductId() != null && product.getParentProductId().equals(parentId))
                 .toList();
 
-        List<ProductResponse> productResponses = products.stream()
-                .map(ProductResponse::fromProductFull)
-                .toList();
-        return productResponses;
+//        List<ProductResponse> productResponses = products.stream()
+//                .map(ProductResponse::fromProductFull)
+//                .toList();
+//        return productResponses;
+        return null;
     }
 
 
