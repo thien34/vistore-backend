@@ -1,14 +1,16 @@
-package com.example.back_end.core.admin.product.controller;
+package com.example.back_end.core.admin.productTag.controller;
 
-import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
-import com.example.back_end.core.admin.product.payload.request.ProductTagUpdateRequest;
-import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;
-import com.example.back_end.service.product.ProductTagService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.admin.productTag.payload.request.ProductTagRequest;
+import com.example.back_end.core.admin.productTag.payload.request.ProductTagSearchRequest;
+import com.example.back_end.core.admin.productTag.payload.request.ProductTagUpdateRequest;
+import com.example.back_end.core.admin.productTag.payload.response.ProductTagsResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.productTag.ProductTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,14 +33,11 @@ public class ProductTagController {
     @Operation(method = "GET", summary = "Get all product tags",
             description = "Send a request via this API to get all product tags")
     @GetMapping
-    public ResponseData<PageResponse<List<ProductTagResponse>>> getAll(
-            @RequestParam(value = "name", defaultValue = "") String name,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+    public ResponseData<PageResponse1<List<ProductTagsResponse>>> getAll(@ParameterObject ProductTagSearchRequest searchRequest) {
 
-        PageResponse<List<ProductTagResponse>> response = productTagService.getAll(name, pageNo, pageSize);
+        PageResponse1<List<ProductTagsResponse>> response = productTagService.getAll(searchRequest);
 
-        return ResponseData.<PageResponse<List<ProductTagResponse>>>builder()
+        return ResponseData.<PageResponse1<List<ProductTagsResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get product tags success")
                 .data(response)

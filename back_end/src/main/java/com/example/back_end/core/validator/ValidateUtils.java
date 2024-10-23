@@ -8,7 +8,7 @@ public class ValidateUtils {
             throw new IllegalArgumentException("Page number cannot be less than zero.");
         }
 
-        if (pageSize < 6) {
+        if (pageSize < 1) {
             throw new IllegalArgumentException("Page size cannot be less than one.");
         }
     }
