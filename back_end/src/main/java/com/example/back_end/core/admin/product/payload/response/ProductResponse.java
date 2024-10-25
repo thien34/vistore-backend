@@ -27,7 +27,7 @@ public class ProductResponse {
     private BigDecimal price;
     private Integer quantity;
     private BigDecimal productCost;
-    private List<ProductAttributeValueResponse> attributes;
+    private List<ProductAttribute> attributes;
 
     public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId) {
         this.id = id;
@@ -48,7 +48,7 @@ public class ProductResponse {
     }
 
 
-    public static ProductResponse fromProductFull(final Product product, List<ProductAttributeValueResponse> attributes) {
+    public static ProductResponse fromProductFull(final Product product, List<ProductAttribute> attributes) {
 
         return new ProductResponse(
                 product.getId(),
@@ -64,10 +64,21 @@ public class ProductResponse {
         );
     }
 
+
+
     @Data
+    @AllArgsConstructor
     public static class ProductAttributeValueResponse {
+
         private Long id;
         private String value;
         private String imageUrl;
+    }
+    @Data
+    @AllArgsConstructor
+    public static class  ProductAttribute {
+        private Long id;
+        private String name;
+        List<ProductAttributeValueResponse> attributes;
     }
 }

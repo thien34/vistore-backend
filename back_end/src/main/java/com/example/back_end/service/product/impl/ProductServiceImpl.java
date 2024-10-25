@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -85,20 +86,33 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll().stream()
                 .filter(product -> product.getParentProductId() != null && product.getParentProductId().equals(parentId))
                 .toList();
-        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
-        return products.stream().map(product -> {
-            List<ProductResponse.ProductAttributeValueResponse> attributeResponses = getProductAttributeValues(product);
-            return ProductResponse.fromProductFull(product, attributeResponses);
-        }).toList();
+        return products.stream().map(product -> ProductResponse.fromProductFull(product, List.of())).toList();
     }
 
     @Override
     public ProductResponse getProductDetail(Long id) {
         Product product = productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        List<ProductResponse.ProductAttributeValueResponse> attributeResponses = getProductAttributeValues(product);
+
+        List<ProductResponse.ProductAttribute> attributeResponses = getProductAttributes(product);
+
         return ProductResponse.fromProductFull(product, attributeResponses);
     }
 
+    private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
+        Map<ProductAttribute, List<ProductAttributeValue>> attributeMap = product.getProductAttributeValues().stream()
+                .collect(Collectors.groupingBy(ProductAttributeValue::getProductAttribute));
+
+        return attributeMap.entrySet().stream().map(entry -> {
+            ProductAttribute attribute = entry.getKey();
+            List<ProductAttributeValue> attributeValues = entry.getValue();
+
+            List<ProductResponse.ProductAttributeValueResponse> values = attributeValues.stream()
+                    .map(value -> new ProductResponse.ProductAttributeValueResponse(value.getId(), value.getValue(), value.getImageUrl()))
+                    .toList();
+
+            return new ProductResponse.ProductAttribute(attribute.getId(), attribute.getName(), values);
+        }).toList();
+    }
 
     private void associateImagesWithRequests(List<ProductRequest> requests, MultipartFile[] images) {
         if (images != null) {
@@ -191,18 +205,18 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    private List<ProductResponse.ProductAttributeValueResponse> getProductAttributeValues(Product product) {
-        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
-        return attributeValues.stream()
-                .filter(attributeValue -> attributeValue.getProduct().getId().equals(product.getId()))
-                .map(attributeValue -> {
-                    ProductResponse.ProductAttributeValueResponse attributeResponse =
-                            new ProductResponse.ProductAttributeValueResponse();
-                    attributeResponse.setId(attributeValue.getId());
-                    attributeResponse.setValue(attributeValue.getValue());
-                    attributeResponse.setImageUrl(attributeValue.getImageUrl());
-                    return attributeResponse;
-                }).toList();
-    }
+//    private List<ProductResponse.ProductAttributeValueResponse> getProductAttributeValues(Product product) {
+//        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
+//        return attributeValues.stream()
+//                .filter(attributeValue -> attributeValue.getProduct().getId().equals(product.getId()))
+//                .map(attributeValue -> {
+//                    ProductResponse.ProductAttributeValueResponse attributeResponse =
+//                            new ProductResponse.ProductAttributeValueResponse();
+//                    attributeResponse.setId(attributeValue.getId());
+//                    attributeResponse.setValue(attributeValue.getValue());
+//                    attributeResponse.setImageUrl(attributeValue.getImageUrl());
+//                    return attributeResponse;
+//                }).toList();
+//    }
 
 }

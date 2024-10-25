@@ -90,4 +90,8 @@ public class Product extends Auditable {
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductPictureMapping> productPictureMappings;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<ProductAttributeValue> productAttributeValues;
+
 }
