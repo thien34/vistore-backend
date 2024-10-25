@@ -1,4 +1,4 @@
-package com.example.back_end.service.customer.impl;
+package com.example.back_end.service.role.impl;
 
 import com.example.back_end.entity.CustomerRole;
 import org.springframework.data.jpa.domain.Specification;

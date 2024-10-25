@@ -1,4 +1,4 @@
-package com.example.back_end.core.admin.product.payload.response;
+package com.example.back_end.core.admin.productTag.payload.response;
 
 import lombok.Getter;
 import lombok.Setter;

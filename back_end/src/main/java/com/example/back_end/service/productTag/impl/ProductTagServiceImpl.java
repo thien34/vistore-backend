@@ -1,20 +1,20 @@
-package com.example.back_end.service.product.impl;
+package com.example.back_end.service.productTag.impl;
 
-import com.example.back_end.core.admin.product.mapper.ProductTagMapper;
-import com.example.back_end.core.admin.product.payload.request.ProductTagRequest;
-import com.example.back_end.core.admin.product.payload.request.ProductTagUpdateRequest;
-import com.example.back_end.core.admin.product.payload.response.ProductTagResponse;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.admin.productTag.mapper.ProductTagMapper;
+import com.example.back_end.core.admin.productTag.payload.request.ProductTagRequest;
+import com.example.back_end.core.admin.productTag.payload.request.ProductTagSearchRequest;
+import com.example.back_end.core.admin.productTag.payload.request.ProductTagUpdateRequest;
+import com.example.back_end.core.admin.productTag.payload.response.ProductTagsResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductProductTagMapping;
 import com.example.back_end.entity.ProductTag;
-import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ProductProductTagMappingRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ProductTagRepository;
-import com.example.back_end.service.product.ProductTagService;
+import com.example.back_end.service.productTag.ProductTagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,10 +40,12 @@ public class ProductTagServiceImpl implements ProductTagService {
     @Override
     public void createProductTag(ProductTagRequest request) {
 
-        Product product = getProduct(request.getProductId());
         ProductTag productTag = saveProductTag(request);
 
-        saveProductTagMapping(product, productTag);
+        if (request.getProductId() != null) {
+            Product product = getProduct(request.getProductId());
+            saveProductTagMapping(product, productTag);
+        }
     }
 
     @Override
@@ -59,20 +61,20 @@ public class ProductTagServiceImpl implements ProductTagService {
     }
 
     @Override
-    public PageResponse<List<ProductTagResponse>> getAll(String name, int pageNo, int pageSize) {
+    public PageResponse1<List<ProductTagsResponse>> getAll(ProductTagSearchRequest searchRequest) {
 
-        // Fetch all matching items with pagination and sort by ID in descending order directly in the query
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
-        Page<ProductTag> productTagPage = productTagRepository.findByNameContaining(name, pageable);
+        Pageable pageable = PageUtils.createPageable(
+                searchRequest.getPageNo(),
+                searchRequest.getPageSize(),
+                searchRequest.getSortBy(),
+                searchRequest.getSortDir());
 
-        // Map to DTO responses
-        List<ProductTagResponse> productTagResponses = productTagMapper.toDtoList(productTagPage.getContent());
+        Page<ProductTagsResponse> productTagsPage = productTagRepository.findAllProductTagsWithCount(searchRequest.getName(), pageable);
 
-        return PageResponse.<List<ProductTagResponse>>builder()
-                .page(productTagPage.getNumber())
-                .size(productTagPage.getSize())
-                .totalPage(productTagPage.getTotalPages())
-                .items(productTagResponses)
+        return PageResponse1.<List<ProductTagsResponse>>builder()
+                .totalItems(productTagsPage.getTotalElements())
+                .totalPages(productTagsPage.getTotalPages())
+                .items(productTagsPage.getContent())
                 .build();
     }
 

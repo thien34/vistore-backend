@@ -1,4 +1,4 @@
-package com.example.back_end.core.admin.product.payload.request;
+package com.example.back_end.core.admin.productTag.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +16,6 @@ public class ProductTagRequest {
     @NotBlank
     private String name;
 
-    @NotNull
     private Long productId;
 
 }
