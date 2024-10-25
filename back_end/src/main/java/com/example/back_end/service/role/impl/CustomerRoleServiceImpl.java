@@ -1,21 +1,20 @@
-package com.example.back_end.service.customer.impl;
+package com.example.back_end.service.role.impl;
 
-import com.example.back_end.core.admin.customer.mapper.CustomerRoleMapper;
-import com.example.back_end.core.admin.customer.payload.request.CustomerRoleRequest;
-import com.example.back_end.core.admin.customer.payload.response.CustomerRoleResponse;
-import com.example.back_end.service.customer.CustomerRoleService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.admin.role.mapper.CustomerRoleMapper;
+import com.example.back_end.core.admin.role.payload.request.CustomerRoleRequest;
+import com.example.back_end.core.admin.role.payload.request.RoleSearchRequest;
+import com.example.back_end.core.admin.role.payload.response.CustomerRoleResponse;
+import com.example.back_end.core.admin.role.payload.response.RoleNameResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.CustomerRole;
 import com.example.back_end.infrastructure.constant.ErrorCode;
-import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.exception.RoleDeletionException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.CustomerRoleRepository;
-import lombok.AccessLevel;
+import com.example.back_end.service.role.CustomerRoleService;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,76 +25,70 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerRoleServiceImpl implements CustomerRoleService {
 
     private static final Set<String> PROTECTED_ROLES = Set.of("Administrators", "Guests", "Customers", "Employees");
-    CustomerRoleRepository customerRoleRepository;
-    CustomerRoleMapper customerRoleMapper;
+    private final CustomerRoleRepository customerRoleRepository;
+    private final CustomerRoleMapper customerRoleMapper;
 
     @Override
-    @Transactional
-    public CustomerRoleResponse createCustomerRole(CustomerRoleRequest request) {
+    public void createCustomerRole(CustomerRoleRequest request) {
 
-        // Validate if role name already exists
         validateRoleNameUnique(request.getName());
 
         CustomerRole customerRole = customerRoleMapper.toEntity(request);
-        return customerRoleMapper.toResponse(customerRoleRepository.save(customerRole));
+        customerRoleRepository.save(customerRole);
     }
 
     @Override
-    @Transactional
     public void updateCustomerRole(Long id, CustomerRoleRequest request) {
 
         CustomerRole customerRole = customerRoleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_ROLE_NOT_FOUND.getMessage()));
 
-        // Allow the `active` status to be updated for protected roles, but prevent renaming
         if (PROTECTED_ROLES.contains(customerRole.getName()) && !customerRole.getName().equals(request.getName()))
             throw new IllegalArgumentException("The system name of system customer roles can't be edited.");
 
-        // Validate if the new name is already in use (excluding current role)
-        if (!customerRole.getName().equals(request.getName()))
+        if (!customerRole.getName().equals(request.getName())) {
             validateRoleNameUniqueForUpdate(request.getName(), id);
+        }
 
-        // Update the role entity (only name if not protected, and `active`)
         customerRoleMapper.updateCustomerRoleFromRequest(request, customerRole);
 
         customerRoleRepository.save(customerRole);
     }
 
     @Override
-    public PageResponse<List<CustomerRoleResponse>> getAll(
-            String name, Boolean active, Integer pageNo, Integer pageSize
-    ) {
+    public PageResponse1<List<CustomerRoleResponse>> getAll(RoleSearchRequest searchRequest) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
+        Pageable pageable = PageUtils.createPageable(
+                searchRequest.getPageNo(),
+                searchRequest.getPageSize(),
+                searchRequest.getSortBy(),
+                searchRequest.getSortDir());
 
         Page<CustomerRole> customerRolePage = customerRoleRepository.findAll(
-                CustomerRoleSpecification.filterByNameAndActive(name, active), pageable);
+                CustomerRoleSpecification.filterByNameAndActive(searchRequest.getName(), searchRequest.getActive()),
+                pageable
+        );
 
         List<CustomerRoleResponse> customerRoleResponses = customerRoleMapper
                 .toResponseList(customerRolePage.getContent());
 
-        return PageResponse.<List<CustomerRoleResponse>>builder()
-                .page(customerRolePage.getNumber())
-                .size(customerRolePage.getSize())
-                .totalPage(customerRolePage.getTotalPages())
+        return PageResponse1.<List<CustomerRoleResponse>>builder()
+                .totalItems(customerRolePage.getTotalElements())
+                .totalPages(customerRolePage.getTotalPages())
                 .items(customerRoleResponses)
                 .build();
     }
 
     @Override
     public CustomerRoleResponse getCustomerRole(Long id) {
+
         CustomerRole customerRole = findCustomerRoleById(id);
-        return customerRoleMapper.toResponse(customerRole);
+        return customerRoleMapper.toDto(customerRole);
     }
 
-    private CustomerRole findCustomerRoleById(Long id) {
-        return customerRoleRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_ROLE_NOT_FOUND.getMessage()));
-    }
 
     @Override
     @Transactional
@@ -114,28 +107,10 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
     }
 
     @Override
-    @Transactional
-    public void deleteCustomerRole(Long id) {
-        CustomerRole customerRole = customerRoleRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Could not find customer role with ID: " + id));
+    public List<RoleNameResponse> getAllCustomerRoleName() {
 
-        if (PROTECTED_ROLES.contains(customerRole.getName()))
-            throw new RoleDeletionException(ErrorCode.SYSTEM_ROLE_COULD_NOT_BE_DELETED.getMessage());
-
-        customerRoleRepository.delete(customerRole);
-    }
-
-
-    @Override
-    public List<CustomerRoleResponse> getAllCustomerRoleName() {
-        return customerRoleRepository.findAll().stream()
-                .filter(CustomerRole::getActive)
-                .map(customerRole -> new CustomerRoleResponse(
-                        customerRole.getId(),
-                        customerRole.getName(),
-                        true)
-                )
-                .toList();
+        List<CustomerRole> customerRoles = customerRoleRepository.findAll();
+        return customerRoleMapper.toRoleNameResponseList(customerRoles);
     }
 
     // Method to validate role name uniqueness for create
@@ -152,6 +127,11 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
         if (exists) {
             throw new AlreadyExistsException("Role name already exists for another role: " + roleName);
         }
+    }
+
+    private CustomerRole findCustomerRoleById(Long id) {
+        return customerRoleRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_ROLE_NOT_FOUND.getMessage()));
     }
 
 }
