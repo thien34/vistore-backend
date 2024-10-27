@@ -19,6 +19,7 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
 
     private final ProductAttributeValueRepository productAttributeValueRepository;
     private final ProductRepository productRepository;
+
     @Override
     public void createProductAttributeValues(List<ProductAttributeValueRequest> requests, Long productAttributeMappingId) {
 

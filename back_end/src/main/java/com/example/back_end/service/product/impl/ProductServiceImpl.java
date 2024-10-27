@@ -3,7 +3,11 @@ package com.example.back_end.service.product.impl;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
-import com.example.back_end.entity.*;
+import com.example.back_end.entity.Category;
+import com.example.back_end.entity.Manufacturer;
+import com.example.back_end.entity.Product;
+import com.example.back_end.entity.ProductAttribute;
+import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.repository.ProductAttributeRepository;
@@ -17,7 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -68,13 +76,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
 
-        List<ProductResponse> productResponses = products.stream()
+        return products.stream()
                 .filter(x -> x.getParentProductId() == null)
                 .map(ProductResponse::fromProduct)
                 .toList();
-
-
-        return productResponses;
     }
 
     @Override
@@ -140,7 +145,6 @@ public class ProductServiceImpl implements ProductService {
         request.toEntity(product);
         productRepository.save(product);
     }
-
 
 
     private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
@@ -291,7 +295,5 @@ public class ProductServiceImpl implements ProductService {
         }
         return String.join("-", skuParts);
     }
-
-
 
 }

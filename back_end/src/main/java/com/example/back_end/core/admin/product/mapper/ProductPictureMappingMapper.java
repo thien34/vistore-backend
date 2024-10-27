@@ -8,7 +8,9 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductPictureMappingMapper {
-    @Mapping(target = "pictureUrl",source = "picture.linkImg")
-    @Mapping(target = "productId",source = "product.id")
+
+    @Mapping(target = "pictureUrl", source = "picture.linkImg")
+    @Mapping(target = "productId", source = "product.id")
     ProductPictureMappingResponse toDto(ProductPictureMapping mapping);
+
 }

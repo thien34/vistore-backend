@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.product.controller;
 
-import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.product.payload.response.AttributeValueResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.product.ProductAttributeValueService;
@@ -33,4 +32,5 @@ public class ProductAttributeValueController {
                 .data(responses)
                 .build();
     }
+
 }

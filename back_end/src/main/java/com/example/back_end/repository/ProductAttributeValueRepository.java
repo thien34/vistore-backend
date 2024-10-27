@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductAttributeValueRepository extends JpaRepository<ProductAttributeValue, Long> {
+
     boolean existsByProductAndProductAttributeAndValue(Product product, ProductAttribute productAttribute, String value);
 
     List<ProductAttributeValue> findByProductAndProductAttributeAndValue(Product product, ProductAttribute productAttribute, String value);
@@ -20,4 +21,5 @@ public interface ProductAttributeValueRepository extends JpaRepository<ProductAt
     List<ProductAttributeValue> findByParentProductIdAndProductIdNot(Long parentProductId, Long productId);
 
     void deleteByProduct(Product product);
+
 }

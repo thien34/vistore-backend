@@ -29,15 +29,6 @@ public class ProductRequestUpdate {
     private List<ProductAttribute> attributes;
     private String imageUrl;
 
-    @Data
-    @AllArgsConstructor
-    public static class ProductAttribute {
-        private Long attributeId;
-        private Long productId;
-        private String value;
-    }
-
-
     public Product toEntity(Product existingProduct) {
         existingProduct.setSku(this.sku);
         existingProduct.setGtin(this.gtin);
@@ -52,6 +43,15 @@ public class ProductRequestUpdate {
 
         return existingProduct;
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class ProductAttribute {
+        private Long attributeId;
+        private Long productId;
+        private String value;
+    }
+
 }
 
 

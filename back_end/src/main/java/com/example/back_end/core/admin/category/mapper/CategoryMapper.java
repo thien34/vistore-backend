@@ -4,7 +4,11 @@ import com.example.back_end.core.admin.category.payload.request.CategoryRequest;
 import com.example.back_end.core.admin.category.payload.response.CategoryNameResponse;
 import com.example.back_end.core.admin.category.payload.response.CategoryResponse;
 import com.example.back_end.entity.Category;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
@@ -34,4 +38,5 @@ public interface CategoryMapper {
         category.setId(categoryParentId);
         return category;
     }
+
 }
