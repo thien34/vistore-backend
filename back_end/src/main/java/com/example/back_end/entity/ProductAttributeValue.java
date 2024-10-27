@@ -39,6 +39,14 @@ public class ProductAttributeValue {
     @JoinColumn
     private ProductAttribute productAttribute;
 
+    @Column(name = "parent_product_id")
+    private Long parentProductId;
+
     private String imageUrl;
 
+    public ProductAttributeValue(Product product, ProductAttribute productAttribute, String value) {
+        this.product = product;
+        this.productAttribute = productAttribute;
+        this.value = value;
+    }
 }

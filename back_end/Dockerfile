@@ -1,4 +1,4 @@
 FROM openjdk:17
-ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ARG WAR_FILE=build/libs/*.war
+COPY ${WAR_FILE} app.war
+ENTRYPOINT ["java","-jar","/app.war"]

@@ -49,6 +49,7 @@ public class ProductRequest {
 
     private MultipartFile image;
 
+
     @Data
     @AllArgsConstructor
     public static class ProductAttribute {

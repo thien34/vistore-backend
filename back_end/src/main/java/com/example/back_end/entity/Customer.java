@@ -84,6 +84,7 @@ public class Customer extends Auditable {
     @Column(name = "last_activity_date_utc")
     private Instant lastActivityDateUtc;
 
+    @Builder.Default
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CustomerRoleMapping> customerRoles = new ArrayList<>();
 

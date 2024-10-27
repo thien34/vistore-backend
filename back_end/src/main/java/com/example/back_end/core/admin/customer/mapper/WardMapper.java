@@ -4,10 +4,11 @@ import com.example.back_end.core.admin.customer.payload.response.WardResponse;
 import com.example.back_end.entity.Ward;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface WardMapper {
 
     @Mapping(target = "districtCode", source = "districtCode.code")

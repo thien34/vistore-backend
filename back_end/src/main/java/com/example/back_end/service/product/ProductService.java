@@ -1,6 +1,7 @@
 package com.example.back_end.service.product;
 
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,4 +18,6 @@ public interface ProductService {
    List<ProductResponse> getAllProductByParentId(Long parentId);
 
    ProductResponse getProductDetail(Long id);
+
+   void updateProduct(ProductRequestUpdate request, Long productId);
 }

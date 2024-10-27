@@ -8,9 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-    @Query("SELECT p.id FROM Product p WHERE p.sku = :sku")
-    Long findIdBySku(@Param("sku") String sku);
-
     boolean existsBySku(String sku);
+    boolean existsByGtin(String gtin);
+
 
 }

@@ -15,7 +15,6 @@ import java.util.Optional;
 @NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 public class ProductResponse {
 
     private Long id;
@@ -28,13 +27,35 @@ public class ProductResponse {
     private Integer quantity;
     private BigDecimal productCost;
     private List<ProductAttribute> attributes;
+    private String imageUrl;
+    private String gtin;
+    private String categoryName;
+    private String manufacturerName;
 
-    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId) {
+    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName) {
         this.id = id;
         this.name = name;
         this.deleted = deleted;
         this.categoryId = categoryId;
         this.manufacturerId = manufacturerId;
+        this.categoryName = categoryName;
+        this.manufacturerName = manufacturerName;
+
+    }
+
+    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin) {
+        this.id = id;
+        this.name = fullName;
+        this.deleted = deleted;
+        this.categoryId = aLong;
+        this.manufacturerId = aLong1;
+        this.sku = sku;
+        this.price = unitPrice;
+        this.quantity = quantity;
+        this.productCost = productCost;
+        this.attributes = attributes;
+        this.imageUrl = image;
+        this.gtin = gtin;
     }
 
     public static ProductResponse fromProduct(final Product product) {
@@ -43,7 +64,9 @@ public class ProductResponse {
                 product.getName(),
                 product.getDeleted(),
                 product.getCategory() != null ? product.getCategory().getId() : null,
-                product.getManufacturer() != null ? product.getManufacturer().getId() : null
+                product.getManufacturer() != null ? product.getManufacturer().getId() : null,
+                product.getCategory() != null ? product.getCategory().getName() : null,
+                product.getManufacturer() != null ? product.getManufacturer().getName() : null
         );
     }
 
@@ -60,10 +83,11 @@ public class ProductResponse {
                 product.getUnitPrice(),
                 product.getQuantity(),
                 product.getProductCost(),
-                attributes
+                attributes,
+                product.getImage(),
+                product.getGtin()
         );
     }
-
 
 
     @Data
@@ -72,13 +96,14 @@ public class ProductResponse {
 
         private Long id;
         private String value;
-        private String imageUrl;
+
     }
+
     @Data
     @AllArgsConstructor
-    public static class  ProductAttribute {
+    public static class ProductAttribute {
         private Long id;
         private String name;
-        List<ProductAttributeValueResponse> attributes;
+        private String value;
     }
 }

@@ -7,14 +7,11 @@ import com.example.back_end.core.admin.discount.payload.response.DiscountRespons
 import com.example.back_end.entity.Discount;
 import com.example.back_end.infrastructure.constant.DiscountLimitationType;
 import com.example.back_end.infrastructure.constant.DiscountType;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DiscountMapper {
 
     DiscountNameResponse toDiscountNameResponse(Discount discount);

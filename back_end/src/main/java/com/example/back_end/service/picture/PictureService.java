@@ -11,4 +11,6 @@ public interface PictureService {
 
     PictureResponse getPictureById(Long id);
 
+    String savePicture(MultipartFile images);
+
 }

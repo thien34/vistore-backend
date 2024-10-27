@@ -6,11 +6,12 @@ import com.example.back_end.entity.RelatedProduct;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RelatedProductMapper {
     @Mapping(target = "nameProduct2", source = "product2.name")
     @Mapping(target = "product2Id", source = "product2.id")

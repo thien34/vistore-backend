@@ -5,10 +5,11 @@ import com.example.back_end.core.admin.productAttribute.payload.response.Product
 import com.example.back_end.entity.ProductAttribute;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductAttributeMapper {
 
     ProductAttribute toEntity(ProductAttributeRequest productAttributeRequest);

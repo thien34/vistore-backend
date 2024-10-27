@@ -1,15 +1,12 @@
 package com.example.back_end.service.product.impl;
 
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
-import com.example.back_end.core.admin.product.payload.response.ProductAttributeValueResponse;
+import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
-import com.example.back_end.entity.Category;
-import com.example.back_end.entity.Manufacturer;
-import com.example.back_end.entity.Product;
-import com.example.back_end.entity.ProductAttribute;
-import com.example.back_end.entity.ProductAttributeValue;
+import com.example.back_end.entity.*;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
+import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.service.product.ProductService;
@@ -20,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductAttributeValueRepository productAttributeValueRepository;
+    private final ProductAttributeRepository productAttributeRepository;
     private final CloudinaryUpload cloudinaryUpload;
 
     @Transactional
@@ -50,11 +45,23 @@ public class ProductServiceImpl implements ProductService {
 
         for (ProductRequest request : requests) {
             Product product = mapRequestToProduct(request, parentProduct);
+            String imageUrl = uploadImage(request).orElse("");
+            product.setImage(imageUrl);
+            String sku = generateSku(request.getName(), request.getCategoryId(), request.getManufacturerId(), product.getId(), request.getAttributes());
+            product.setSku(sku);
+
+            String gtin;
+            do {
+                gtin = String.format("%013d", new Random().nextLong() % 1_000_000_000_0000L);
+                product.setGtin(gtin);
+            } while (checkIfGtinExists(gtin));
             products.add(product);
-            attributeValues.addAll(mapAttributesToValues(product, request.getAttributes(), uploadImage(request).orElse("")));
+
+            attributeValues.addAll(mapAttributesToValues(product, request.getAttributes(), ""));
         }
 
         saveProductsAndAttributes(products, attributeValues);
+
     }
 
     @Override
@@ -98,6 +105,44 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.fromProductFull(product, attributeResponses);
     }
 
+    @Override
+    @Transactional
+    public void updateProduct(ProductRequestUpdate request, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        if (!product.getSku().equals(request.getSku()) && productRepository.existsBySku(request.getSku())) {
+            throw new IllegalArgumentException("SKU already exists.");
+        }
+
+        productAttributeValueRepository.deleteByProduct(product);
+
+        List<ProductAttributeValue> newAttributeValues = new ArrayList<>();
+
+        for (ProductRequestUpdate.ProductAttribute attribute : request.getAttributes()) {
+            ProductAttribute productAttribute = productAttributeRepository.findById(attribute.getAttributeId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            ProductAttributeValue newAttributeValue = new ProductAttributeValue(product, productAttribute, attribute.getValue());
+            newAttributeValues.add(newAttributeValue);
+        }
+
+        productAttributeValueRepository.saveAll(newAttributeValues);
+
+        String attributeValues = request.getAttributes().stream()
+                .map(ProductRequestUpdate.ProductAttribute::getValue)
+                .distinct()
+                .collect(Collectors.joining("-"));
+
+        String fullName = product.getName() + (attributeValues.isEmpty() ? "" : "-" + attributeValues);
+        product.setFullName(fullName);
+
+        request.toEntity(product);
+        productRepository.save(product);
+    }
+
+
+
     private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
         Map<ProductAttribute, List<ProductAttributeValue>> attributeMap = product.getProductAttributeValues().stream()
                 .collect(Collectors.groupingBy(ProductAttributeValue::getProductAttribute));
@@ -105,12 +150,8 @@ public class ProductServiceImpl implements ProductService {
         return attributeMap.entrySet().stream().map(entry -> {
             ProductAttribute attribute = entry.getKey();
             List<ProductAttributeValue> attributeValues = entry.getValue();
-
-            List<ProductResponse.ProductAttributeValueResponse> values = attributeValues.stream()
-                    .map(value -> new ProductResponse.ProductAttributeValueResponse(value.getId(), value.getValue(), value.getImageUrl()))
-                    .toList();
-
-            return new ProductResponse.ProductAttribute(attribute.getId(), attribute.getName(), values);
+            String value = attributeValues.isEmpty() ? null : attributeValues.get(attributeValues.size() - 1).getValue();
+            return new ProductResponse.ProductAttribute(attribute.getId(), attribute.getName(), value);
         }).toList();
     }
 
@@ -189,6 +230,7 @@ public class ProductServiceImpl implements ProductService {
         return productName + (attributeValues.isEmpty() ? "" : " - " + attributeValues);
     }
 
+
     private void saveProductsAndAttributes(List<Product> products, List<ProductAttributeValue> attributeValues) {
         productRepository.saveAll(products);
         productAttributeValueRepository.saveAll(attributeValues);
@@ -205,6 +247,9 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    private boolean checkIfGtinExists(String gtin) {
+        return productRepository.existsByGtin(gtin);
+    }
 //    private List<ProductResponse.ProductAttributeValueResponse> getProductAttributeValues(Product product) {
 //        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
 //        return attributeValues.stream()
@@ -218,5 +263,35 @@ public class ProductServiceImpl implements ProductService {
 //                    return attributeResponse;
 //                }).toList();
 //    }
+
+    private String generateSku(String productName, Long categoryId, Long manufacturerId, Long productId, List<ProductRequest.ProductAttribute> attributes) {
+        String[] words = productName.split(" ");
+        StringBuilder productCodeBuilder = new StringBuilder();
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                productCodeBuilder.append(word.charAt(0));
+            }
+        }
+        List<String> skuParts = new ArrayList<>();
+        skuParts.add(productCodeBuilder.toString().toUpperCase());
+        if (categoryId != null) {
+            skuParts.add(String.valueOf(categoryId));
+        }
+        if (manufacturerId != null) {
+            skuParts.add(String.valueOf(manufacturerId));
+        }
+        if (productId != null) {
+            skuParts.add(String.valueOf(productId));
+        }
+        for (ProductRequest.ProductAttribute attribute : attributes) {
+            if (attribute.getValue() != null) {
+                skuParts.add(attribute.getValue());
+            }
+        }
+        return String.join("-", skuParts);
+    }
+
+
 
 }

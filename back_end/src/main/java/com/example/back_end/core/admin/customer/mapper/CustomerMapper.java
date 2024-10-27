@@ -6,15 +6,12 @@ import com.example.back_end.core.admin.customer.payload.response.CustomerRespons
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerRole;
 import com.example.back_end.entity.CustomerRoleMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CustomerMapper {
 
     @Mapping(source = "customerRoles", target = "customerRoles", qualifiedByName = "mapToRoleMappings")

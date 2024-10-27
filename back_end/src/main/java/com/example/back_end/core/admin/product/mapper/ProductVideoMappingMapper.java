@@ -5,8 +5,9 @@ import com.example.back_end.core.admin.product.payload.response.ProductVideoMapp
 import com.example.back_end.entity.ProductVideoMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductVideoMappingMapper {
 
     @Mapping(source = "videoUrl", target = "video.videoUrl")

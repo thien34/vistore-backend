@@ -1,18 +1,14 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.product.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -82,6 +78,17 @@ public class ProductController {
                 .status(HttpStatus.OK.value())
                 .message("Get product details successfully")
                 .data(productResponse)
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseData<Void> updateProduct(@RequestBody ProductRequestUpdate requestUpdate, @PathVariable Long id) {
+
+        productService.updateProduct(requestUpdate, id);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Update product success")
                 .build();
     }
 

@@ -2,11 +2,11 @@ package com.example.back_end.service.picture.impl;
 
 import com.example.back_end.core.admin.picture.mapper.PictureMapper;
 import com.example.back_end.core.admin.picture.payload.response.PictureResponse;
-import com.example.back_end.service.picture.PictureService;
 import com.example.back_end.entity.Picture;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.repository.PictureRepository;
+import com.example.back_end.service.picture.PictureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +45,12 @@ public class PictureServiceImpl implements PictureService {
                 .orElseThrow(() -> new RuntimeException("Picture not found with id: " + id));
 
         return pictureMapper.toDto(picture);
+    }
+
+    @Override
+    public String savePicture(MultipartFile image) {
+
+        return cloudinaryUpload.uploadFile(image, CloudinaryTypeFolder.PRODUCTS);
     }
 
 }

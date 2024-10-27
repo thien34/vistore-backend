@@ -5,10 +5,11 @@ import com.example.back_end.core.admin.product.payload.response.ProductProductAt
 import com.example.back_end.entity.ProductProductAttributeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductProductAttributeMappingMapper {
 
     @Mapping(source = "productAttribute.name", target = "nameProductAttribute")

@@ -7,10 +7,11 @@ import com.example.back_end.entity.PredefinedProductAttributeValue;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ProductAttributeMapper.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PredefinedProductAttributeValueMapper {
 
     @Mapping(source = "productAttribute", target = "productAttribute.id")

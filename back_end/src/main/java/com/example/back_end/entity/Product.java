@@ -78,6 +78,9 @@ public class Product extends Auditable {
     @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
+    @Column(name = "image")
+    private String image;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductSpecificationAttributeMapping> productSpecificationAttributeMappings;
