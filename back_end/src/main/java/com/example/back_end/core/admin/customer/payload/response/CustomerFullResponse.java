@@ -12,6 +12,8 @@ import java.util.UUID;
 @Setter
 public class CustomerFullResponse {
 
+    private Long id;
+
     private UUID customerGuid;
 
     private String email;
@@ -26,24 +28,6 @@ public class CustomerFullResponse {
 
     private List<Long> customerRoles;
 
-    private String username;
-
     private Boolean active;
-
-    private String phone;
-
-    private Boolean hasShoppingCartItems;
-
-    private Boolean requireReLogin;
-
-    private Integer failedLoginAttempts;
-
-    private Instant cannotLoginUntilDateUtc;
-
-    private Boolean deleted;
-
-    private Instant lastLoginDateUtc;
-
-    private Instant lastActivityDateUtc;
 
 }

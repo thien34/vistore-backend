@@ -1,26 +1,22 @@
 package com.example.back_end.service.customer;
 
-import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
-import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.request.CustomerRequest;
+import com.example.back_end.core.admin.customer.payload.request.CustomerSearchRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    PageResponse<List<CustomerResponse>> getAllCustomers(
-            CustomerSearchCriteria searchCriteria, Integer pageNo, Integer pageSize
-    );
+    void createCustomer(CustomerRequest request);
+
+    void updateCustomer(Long id, CustomerRequest request);
+
+    PageResponse1<List<CustomerResponse>> getAllCustomers(CustomerSearchRequest searchRequest);
 
     CustomerFullResponse getCustomerById(Long id);
-
-    void createCustomer(CustomerFullRequest request);
-
-    void updateCustomer(Long id, CustomerFullRequest request);
-
-    void deleteCustomer(Long id);
 
     void deleteCustomers(List<Long> ids);
 

@@ -2,9 +2,9 @@ package com.example.back_end.core.admin.customer.controller;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerPasswordRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerPasswordResponse;
-import com.example.back_end.service.customer.CustomerPasswordService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.customer.CustomerPasswordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

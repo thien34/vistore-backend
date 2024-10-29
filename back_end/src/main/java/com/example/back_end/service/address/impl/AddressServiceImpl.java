@@ -1,9 +1,9 @@
-package com.example.back_end.service.customer.impl;
+package com.example.back_end.service.address.impl;
 
-import com.example.back_end.core.admin.customer.mapper.AddressMapper;
-import com.example.back_end.core.admin.customer.payload.request.AddressRequest;
-import com.example.back_end.core.admin.customer.payload.response.AddressResponse;
-import com.example.back_end.service.customer.AddressService;
+import com.example.back_end.core.admin.address.mapper.AddressMapper;
+import com.example.back_end.core.admin.address.payload.request.AddressRequest;
+import com.example.back_end.core.admin.address.payload.response.AddressResponse;
+import com.example.back_end.service.address.AddressService;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.Customer;

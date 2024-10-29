@@ -1,10 +1,10 @@
-package com.example.back_end.core.admin.customer.controller;
+package com.example.back_end.core.admin.address.controller;
 
-import com.example.back_end.core.admin.customer.payload.request.AddressRequest;
-import com.example.back_end.core.admin.customer.payload.response.AddressResponse;
-import com.example.back_end.service.customer.AddressService;
+import com.example.back_end.core.admin.address.payload.request.AddressRequest;
+import com.example.back_end.core.admin.address.payload.response.AddressResponse;
 import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.address.AddressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

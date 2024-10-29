@@ -1,16 +1,15 @@
 package com.example.back_end.core.admin.customer.controller;
 
-import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
-import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.request.CustomerRequest;
+import com.example.back_end.core.admin.customer.payload.request.CustomerSearchRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
-import com.example.back_end.service.customer.CustomerService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.customer.CustomerService;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,20 +25,17 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/customers")
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
 
-    CustomerService customerService;
+    private final CustomerService customerService;
 
     @GetMapping
-    public ResponseData<PageResponse<List<CustomerResponse>>> getAllCustomers(
-            CustomerSearchCriteria searchCriteria,
-            @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "6") Integer pageSize) {
+    public ResponseData<PageResponse1<List<CustomerResponse>>> getAllCustomers(
+            @ParameterObject CustomerSearchRequest searchCriteria) {
 
-        PageResponse<List<CustomerResponse>> response = customerService.getAllCustomers(searchCriteria, pageNo, pageSize);
+        PageResponse1<List<CustomerResponse>> response = customerService.getAllCustomers(searchCriteria);
 
-        return ResponseData.<PageResponse<List<CustomerResponse>>>builder()
+        return ResponseData.<PageResponse1<List<CustomerResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get customers success")
                 .data(response)
@@ -58,7 +53,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseData<Void> createCustomer(@RequestBody @Valid CustomerFullRequest request) {
+    public ResponseData<Void> createCustomer(@RequestBody @Valid CustomerRequest request) {
         customerService.createCustomer(request);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
@@ -67,20 +62,11 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseData<Void> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerFullRequest request) {
+    public ResponseData<Void> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerRequest request) {
         customerService.updateCustomer(id, request);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Customer updated successfully")
-                .build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseData<Void> deleteCustomers(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
-        return ResponseData.<Void>builder()
-                .status(HttpStatus.OK.value())
-                .message("Customers deleted successfully")
                 .build();
     }
 

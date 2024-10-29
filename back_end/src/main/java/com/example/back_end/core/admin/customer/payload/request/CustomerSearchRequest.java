@@ -1,13 +1,16 @@
 package com.example.back_end.core.admin.customer.payload.request;
 
-import lombok.Data;
+import com.example.back_end.core.common.PageRequest;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 import java.util.List;
 
-@Data
-public class CustomerSearchCriteria {
+@Getter
+@Setter
+public class CustomerSearchRequest extends PageRequest {
 
     private String email;
 

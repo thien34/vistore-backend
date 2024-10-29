@@ -1,6 +1,6 @@
-package com.example.back_end.core.admin.customer.mapper;
+package com.example.back_end.core.admin.address.mapper;
 
-import com.example.back_end.core.admin.customer.payload.response.DistrictResponse;
+import com.example.back_end.core.admin.address.payload.response.DistrictResponse;
 import com.example.back_end.entity.District;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

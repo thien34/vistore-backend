@@ -1,18 +1,16 @@
 package com.example.back_end.service.customer.impl;
 
 import com.example.back_end.core.admin.customer.mapper.CustomerMapper;
-import com.example.back_end.core.admin.customer.payload.request.CustomerFullRequest;
-import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.request.CustomerRequest;
+import com.example.back_end.core.admin.customer.payload.request.CustomerSearchRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
-import com.example.back_end.service.customer.CustomerService;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerPassword;
 import com.example.back_end.entity.CustomerRole;
 import com.example.back_end.entity.CustomerRoleMapping;
 import com.example.back_end.infrastructure.constant.ErrorCode;
-import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.AlreadyExistsException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
@@ -20,9 +18,8 @@ import com.example.back_end.repository.CustomerCustomerRoleMappingRepository;
 import com.example.back_end.repository.CustomerPasswordRepository;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.CustomerRoleRepository;
-import lombok.AccessLevel;
+import com.example.back_end.service.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,35 +32,30 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerServiceImpl implements CustomerService {
 
-    CustomerRepository customerRepository;
-    CustomerMapper customerMapper;
-    CustomerCustomerRoleMappingRepository customerCustomerRoleMappingRepository;
-    CustomerRoleRepository customerRoleRepository;
-    CustomerPasswordRepository customerPasswordRepository;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
+    private final CustomerCustomerRoleMappingRepository customerCustomerRoleMappingRepository;
+    private final CustomerRoleRepository customerRoleRepository;
+    private final CustomerPasswordRepository customerPasswordRepository;
 
     @Override
-    public PageResponse<List<CustomerResponse>> getAllCustomers(
-            CustomerSearchCriteria searchCriteria,
-            Integer pageNo,
-            Integer pageSize) {
+    public PageResponse1<List<CustomerResponse>> getAllCustomers(CustomerSearchRequest searchRequest) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "id", SortType.DESC.getValue());
-
-        Specification<Customer> specification = CustomerSpecification.filterCustomers(searchCriteria);
+        Pageable pageable = PageUtils.createPageable(
+                searchRequest.getPageNo(),
+                searchRequest.getPageSize(),
+                searchRequest.getSortBy(),
+                searchRequest.getSortDir());
+        Specification<Customer> specification = CustomerSpecification.filterCustomers(searchRequest);
 
         Page<Customer> customerPage = customerRepository.findAll(specification, pageable);
+        List<CustomerResponse> customerResponses = customerMapper.toResponseList(customerPage.getContent());
 
-        List<CustomerResponse> customerResponses = customerPage.getContent().stream()
-                .map(customerMapper::toResponse)
-                .toList();
-
-        return PageResponse.<List<CustomerResponse>>builder()
-                .page(customerPage.getNumber())
-                .size(customerPage.getSize())
-                .totalPage(customerPage.getTotalPages())
+        return PageResponse1.<List<CustomerResponse>>builder()
+                .totalItems(customerPage.getTotalElements())
+                .totalPages(customerPage.getTotalPages())
                 .items(customerResponses)
                 .build();
     }
@@ -79,26 +71,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void createCustomer(CustomerFullRequest request) {
+    public void createCustomer(CustomerRequest request) {
+
         checkForDuplicateEmail(request.getEmail());
-        checkForDuplicatePhoneNumber(request.getPhone());
 
         Customer customer = customerMapper.toEntity(request);
         customer.setCustomerGuid(UUID.randomUUID());
+        customer.setActive(false);
+        customer.setDeleted(false);
 
         customerRepository.save(customer);
 
         List<CustomerRoleMapping> mappings = createRoleMappings(request.getCustomerRoles(), customer);
         customerCustomerRoleMappingRepository.saveAll(mappings);
 
-        CustomerPassword customerPassword = createCustomerPassword(customer, request.getPassword());
-        customerPasswordRepository.save(customerPassword);
-    }
-
-    private void checkForDuplicatePhoneNumber(String phoneNumber) {
-        if (customerRepository.findByPhone(phoneNumber).isPresent()) {
-            throw new AlreadyExistsException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage());
-        }
+//        CustomerPassword customerPassword = createCustomerPassword(customer, request.getPassword());
+//        customerPasswordRepository.save(customerPassword);
     }
 
     private List<CustomerRoleMapping> createRoleMappings(List<Long> roleIds, Customer customer) {
@@ -131,9 +119,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void updateCustomer(Long id, CustomerFullRequest request) {
-        checkForDuplicateEmailAndIdNot(request.getEmail(), id);
-        checkForDuplicatePhoneNumberAndIdNot(request.getPhone(), id);
+    public void updateCustomer(Long id, CustomerRequest request) {
 
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
@@ -141,17 +127,11 @@ public class CustomerServiceImpl implements CustomerService {
         customerMapper.updateFromFullRequest(request, customer);
         updateCustomerRoles(customer, request.getCustomerRoles());
 
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            updateCustomerPassword(customer, request.getPassword());
-        }
+//        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+//            updateCustomerPassword(customer, request.getPassword());
+//        }
 
         customerRepository.save(customer);
-    }
-
-    private void checkForDuplicatePhoneNumberAndIdNot(String phoneNumber, Long id) {
-        if (customerRepository.existsByPhoneAndIdNot(phoneNumber, id)) {
-            throw new AlreadyExistsException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage());
-        }
     }
 
     private void updateCustomerRoles(Customer customer, List<Long> newRoleIds) {
@@ -192,19 +172,6 @@ public class CustomerServiceImpl implements CustomerService {
         customerPassword.setPassword(passwordData[0]);
         customerPassword.setPasswordSalt(passwordData[1]);
         customerPasswordRepository.save(customerPassword);
-    }
-
-
-    @Override
-    @Transactional
-    public void deleteCustomer(Long id) {
-
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
-
-        customerCustomerRoleMappingRepository.deleteAll(customer.getCustomerRoles());
-
-        customerRepository.delete(customer);
     }
 
     @Override

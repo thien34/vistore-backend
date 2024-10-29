@@ -1,7 +1,7 @@
-package com.example.back_end.core.admin.customer.mapper;
+package com.example.back_end.core.admin.address.mapper;
 
-import com.example.back_end.core.admin.customer.payload.request.AddressRequest;
-import com.example.back_end.core.admin.customer.payload.response.AddressResponse;
+import com.example.back_end.core.admin.address.payload.request.AddressRequest;
+import com.example.back_end.core.admin.address.payload.response.AddressResponse;
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.CustomerAddressMapping;
 import com.example.back_end.infrastructure.constant.AddressType;
@@ -40,5 +40,5 @@ public interface AddressMapper {
         }
         return null;
     }
-    
+
 }

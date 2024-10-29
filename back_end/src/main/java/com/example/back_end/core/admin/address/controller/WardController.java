@@ -1,8 +1,8 @@
-package com.example.back_end.core.admin.customer.controller;
+package com.example.back_end.core.admin.address.controller;
 
-import com.example.back_end.core.admin.customer.payload.response.WardResponse;
-import com.example.back_end.service.customer.WardService;
+import com.example.back_end.core.admin.address.payload.response.WardResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.address.WardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

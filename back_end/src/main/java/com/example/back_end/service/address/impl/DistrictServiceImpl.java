@@ -1,7 +1,7 @@
-package com.example.back_end.service.customer.impl;
+package com.example.back_end.service.address.impl;
 
-import com.example.back_end.core.admin.customer.payload.response.DistrictResponse;
-import com.example.back_end.service.customer.DistrictService;
+import com.example.back_end.core.admin.address.payload.response.DistrictResponse;
+import com.example.back_end.service.address.DistrictService;
 import com.example.back_end.repository.DistrictRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

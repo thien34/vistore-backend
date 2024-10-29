@@ -1,7 +1,7 @@
-package com.example.back_end.service.customer;
+package com.example.back_end.service.address;
 
-import com.example.back_end.core.admin.customer.payload.request.AddressRequest;
-import com.example.back_end.core.admin.customer.payload.response.AddressResponse;
+import com.example.back_end.core.admin.address.payload.request.AddressRequest;
+import com.example.back_end.core.admin.address.payload.response.AddressResponse;
 import com.example.back_end.core.common.PageResponse;
 
 import java.util.List;

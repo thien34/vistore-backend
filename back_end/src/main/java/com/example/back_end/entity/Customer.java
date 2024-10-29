@@ -38,9 +38,6 @@ public class Customer extends Auditable {
     @Column(name = "customer_guid")
     private UUID customerGuid;
 
-    @Column(name = "username", length = Integer.MAX_VALUE)
-    private String username;
-
     @Column(name = "email", length = Integer.MAX_VALUE)
     private String email;
 
@@ -54,14 +51,8 @@ public class Customer extends Auditable {
     @Column(name = "gender")
     private GenderType gender;
 
-    @Column(name = "phone", length = 15)
-    private String phone;
-
     @Column(name = "date_of_birth")
     private Instant dateOfBirth;
-
-    @Column(name = "has_shopping_cart_items")
-    private Boolean hasShoppingCartItems;
 
     @Column(name = "require_re_login")
     private Boolean requireReLogin;

@@ -1,4 +1,4 @@
-package com.example.back_end.core.admin.customer.payload.request;
+package com.example.back_end.core.admin.address.payload.request;
 
 import com.example.back_end.infrastructure.constant.AddressType;
 import jakarta.validation.constraints.NotBlank;

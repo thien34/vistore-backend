@@ -1,4 +1,4 @@
-package com.example.back_end.core.admin.customer.payload.response;
+package com.example.back_end.core.admin.address.payload.response;
 
 import com.example.back_end.infrastructure.constant.AddressType;
 import lombok.Getter;

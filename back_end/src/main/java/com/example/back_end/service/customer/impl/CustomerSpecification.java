@@ -1,6 +1,6 @@
 package com.example.back_end.service.customer.impl;
 
-import com.example.back_end.core.admin.customer.payload.request.CustomerSearchCriteria;
+import com.example.back_end.core.admin.customer.payload.request.CustomerSearchRequest;
 import com.example.back_end.entity.Customer;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -20,7 +20,7 @@ public class CustomerSpecification {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static Specification<Customer> filterCustomers(CustomerSearchCriteria criteria) {
+    public static Specification<Customer> filterCustomers(CustomerSearchRequest criteria) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 

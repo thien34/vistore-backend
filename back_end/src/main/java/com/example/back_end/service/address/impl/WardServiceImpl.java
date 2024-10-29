@@ -1,7 +1,7 @@
-package com.example.back_end.service.customer.impl;
+package com.example.back_end.service.address.impl;
 
-import com.example.back_end.core.admin.customer.payload.response.WardResponse;
-import com.example.back_end.service.customer.WardService;
+import com.example.back_end.core.admin.address.payload.response.WardResponse;
+import com.example.back_end.service.address.WardService;
 import com.example.back_end.repository.WardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
