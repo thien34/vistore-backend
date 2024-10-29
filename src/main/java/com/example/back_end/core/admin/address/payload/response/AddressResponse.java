@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.address.payload.response;
 
-import com.example.back_end.infrastructure.constant.AddressType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +15,6 @@ public class AddressResponse {
 
     private String email;
 
-    private String company;
-
     private String districtId;
 
     private String provinceId;
@@ -27,9 +24,5 @@ public class AddressResponse {
     private String addressName;
 
     private String phoneNumber;
-
-    private Long customerId;
-
-    private AddressType addressTypeId;
 
 }

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface WardService {
 
-    List<WardResponse> getAllWard();
+    List<WardResponse> getAllWardByDistrictCode(String districtCode);
 
 }

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface DistrictService {
 
-    List<DistrictResponse> getAllDistrict();
+    List<DistrictResponse> getAllDistrictByID(String codeProvince);
 
 }

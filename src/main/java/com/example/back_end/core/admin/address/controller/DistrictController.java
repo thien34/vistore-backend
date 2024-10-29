@@ -6,6 +6,7 @@ import com.example.back_end.service.address.DistrictService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,10 +19,10 @@ public class DistrictController {
 
     private final DistrictService districtService;
 
-    @GetMapping
-    public ResponseData<List<DistrictResponse>> getAllDistricts() {
+    @GetMapping("/{codeProvince}")
+    public ResponseData<List<DistrictResponse>> getAllDistricts(@PathVariable String codeProvince) {
 
-        List<DistrictResponse> response = districtService.getAllDistrict();
+        List<DistrictResponse> response = districtService.getAllDistrictByID(codeProvince);
 
         return ResponseData.<List<DistrictResponse>>builder()
                 .status(HttpStatus.OK.value())

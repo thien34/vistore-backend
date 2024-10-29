@@ -11,8 +11,6 @@ public class WardResponse {
 
     private String code;
 
-    private String nameEn;
-
-    private String districtCode;
+    private String fullName;
 
 }

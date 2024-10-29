@@ -1,14 +1,15 @@
 package com.example.back_end.service.address;
 
 import com.example.back_end.core.admin.address.payload.request.AddressRequest;
+import com.example.back_end.core.admin.address.payload.request.AddressSearchRequest;
 import com.example.back_end.core.admin.address.payload.response.AddressResponse;
-import com.example.back_end.core.common.PageResponse;
+import com.example.back_end.core.common.PageResponse1;
 
 import java.util.List;
 
 public interface AddressService {
 
-    PageResponse<List<AddressResponse>> getAll(Integer pageNo, Integer pageSize, Long customerId);
+    PageResponse1<List<AddressResponse>> getAllAddressById(AddressSearchRequest searchRequest);
 
     void createAddress(AddressRequest request);
 
@@ -17,7 +18,5 @@ public interface AddressService {
     void deleteAddresses(List<Long> ids);
 
     AddressResponse getAddressById(Long id);
-
-    void deleteAddress(Long id);
 
 }

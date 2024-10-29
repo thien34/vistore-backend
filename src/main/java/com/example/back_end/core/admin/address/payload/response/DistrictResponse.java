@@ -11,8 +11,6 @@ public class DistrictResponse {
 
     private String code;
 
-    private String nameEn;
-
-    private String provinceCode;
+    private String fullName;
 
 }
