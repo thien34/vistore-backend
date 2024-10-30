@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.address.payload.request;
 
-import com.example.back_end.infrastructure.constant.AddressType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -41,8 +40,5 @@ public class AddressRequest {
 
     @NotNull(message = "Customer ID is required")
     private Long customerId;
-
-    @NotNull(message = "Address type ID is required")
-    private AddressType addressTypeId;
 
 }

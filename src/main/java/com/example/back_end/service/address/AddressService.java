@@ -11,12 +11,12 @@ public interface AddressService {
 
     PageResponse1<List<AddressResponse>> getAllAddressById(AddressSearchRequest searchRequest);
 
+    AddressResponse getAddressById(Long id);
+
     void createAddress(AddressRequest request);
 
     void updateAddress(Long id, AddressRequest request);
 
     void deleteAddresses(List<Long> ids);
-
-    AddressResponse getAddressById(Long id);
 
 }

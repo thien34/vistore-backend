@@ -15,6 +15,8 @@ public class AddressResponse {
 
     private String email;
 
+    private String company;
+
     private String districtId;
 
     private String provinceId;

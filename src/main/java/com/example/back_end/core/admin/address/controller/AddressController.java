@@ -29,9 +29,10 @@ public class AddressController {
     private final AddressService addressService;
 
     @PostMapping
-    public ResponseData<Void> createAddress(
-            @Valid @RequestBody AddressRequest addressRequest) {
+    public ResponseData<Void> createAddress(@Valid @RequestBody AddressRequest addressRequest) {
+
         addressService.createAddress(addressRequest);
+
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Address created successfully")
@@ -43,7 +44,9 @@ public class AddressController {
     public ResponseData<Void> updateAddress(
             @PathVariable Long id,
             @Valid @RequestBody AddressRequest addressRequest) {
+
         addressService.updateAddress(id, addressRequest);
+
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Address updated successfully")
@@ -53,7 +56,9 @@ public class AddressController {
 
     @GetMapping("/{id}")
     public ResponseData<AddressResponse> getAddressById(@PathVariable Long id) {
+
         AddressResponse response = addressService.getAddressById(id);
+
         return ResponseData.<AddressResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Address retrieved successfully")
@@ -62,7 +67,8 @@ public class AddressController {
     }
 
     @GetMapping
-    public ResponseData<PageResponse1<List<AddressResponse>>> getAllAddresses(@ParameterObject AddressSearchRequest searchRequest) {
+    public ResponseData<PageResponse1<List<AddressResponse>>> getAllAddresses(
+            @ParameterObject AddressSearchRequest searchRequest) {
 
         PageResponse1<List<AddressResponse>> response = addressService.getAllAddressById(searchRequest);
 
@@ -75,7 +81,9 @@ public class AddressController {
 
     @DeleteMapping
     public ResponseData<Void> deleteAddresses(@RequestBody List<Long> ids) {
+
         addressService.deleteAddresses(ids);
+
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
                 .message("Addresses deleted successfully")
