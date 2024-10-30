@@ -116,9 +116,9 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!product.getSku().equals(request.getSku()) && productRepository.existsBySku(request.getSku())) {
+        if (!product.getSku().equals(request.getSku())
+                && !request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
             throw new IllegalArgumentException("SKU already exists.");
-        }
 
         productAttributeValueRepository.deleteByProduct(product);
 
@@ -204,7 +204,7 @@ public class ProductServiceImpl implements ProductService {
 
         return attributes.stream()
                 .map(attribute -> createAttributeValue(product, attribute, imageUrl))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ProductAttributeValue createAttributeValue(Product product, ProductRequest.ProductAttribute attribute, String imageUrl) {
@@ -245,9 +245,9 @@ public class ProductServiceImpl implements ProductService {
             boolean exists = productAttributeValueRepository.existsByProductAndProductAttributeAndValue(
                     product, new ProductAttribute(attribute.getId()), attribute.getValue());
 
-            if (exists) {
+            if (exists)
                 throw new IllegalArgumentException("Giá trị " + attribute.getValue() + " đã tồn tại cho sản phẩm " + product.getName());
-            }
+
         }
     }
 
@@ -273,25 +273,15 @@ public class ProductServiceImpl implements ProductService {
         StringBuilder productCodeBuilder = new StringBuilder();
 
         for (String word : words) {
-            if (!word.isEmpty()) {
-                productCodeBuilder.append(word.charAt(0));
-            }
+            if (!word.isEmpty()) productCodeBuilder.append(word.charAt(0));
         }
         List<String> skuParts = new ArrayList<>();
         skuParts.add(productCodeBuilder.toString().toUpperCase());
-        if (categoryId != null) {
-            skuParts.add(String.valueOf(categoryId));
-        }
-        if (manufacturerId != null) {
-            skuParts.add(String.valueOf(manufacturerId));
-        }
-        if (productId != null) {
-            skuParts.add(String.valueOf(productId));
-        }
+        if (categoryId != null) skuParts.add(String.valueOf(categoryId));
+        if (manufacturerId != null) skuParts.add(String.valueOf(manufacturerId));
+        if (productId != null) skuParts.add(String.valueOf(productId));
         for (ProductRequest.ProductAttribute attribute : attributes) {
-            if (attribute.getValue() != null) {
-                skuParts.add(attribute.getValue());
-            }
+            if (attribute.getValue() != null) skuParts.add(attribute.getValue());
         }
         return String.join("-", skuParts);
     }
