@@ -3,6 +3,7 @@ package com.example.back_end.core.admin.address.controller;
 import com.example.back_end.core.admin.address.payload.request.AddressRequest;
 import com.example.back_end.core.admin.address.payload.request.AddressSearchRequest;
 import com.example.back_end.core.admin.address.payload.response.AddressResponse;
+import com.example.back_end.core.admin.address.payload.response.AddressesResponse;
 import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.address.AddressService;
@@ -67,12 +68,12 @@ public class AddressController {
     }
 
     @GetMapping
-    public ResponseData<PageResponse1<List<AddressResponse>>> getAllAddresses(
+    public ResponseData<PageResponse1<List<AddressesResponse>>> getAllAddresses(
             @ParameterObject AddressSearchRequest searchRequest) {
 
-        PageResponse1<List<AddressResponse>> response = addressService.getAllAddressById(searchRequest);
+        PageResponse1<List<AddressesResponse>> response = addressService.getAllAddressById(searchRequest);
 
-        return ResponseData.<PageResponse1<List<AddressResponse>>>builder()
+        return ResponseData.<PageResponse1<List<AddressesResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all addresses successfully")
                 .data(response)

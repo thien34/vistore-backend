@@ -47,14 +47,20 @@ public class Address extends Auditable {
     @Column(name = "company", length = Integer.MAX_VALUE)
     private String company;
 
-    @Column(name = "district_id", nullable = false)
-    private String districtId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "district_id")
+    private District district;
 
-    @Column(name = "province_id", nullable = false)
-    private String provinceId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "province_id")
+    private Province province;
 
-    @Column(name = "ward_id", nullable = false)
-    private String wardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
 
     @Column(name = "address_name", length = Integer.MAX_VALUE)
     private String addressName;

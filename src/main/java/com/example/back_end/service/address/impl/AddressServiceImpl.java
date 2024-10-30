@@ -4,11 +4,11 @@ import com.example.back_end.core.admin.address.mapper.AddressMapper;
 import com.example.back_end.core.admin.address.payload.request.AddressRequest;
 import com.example.back_end.core.admin.address.payload.request.AddressSearchRequest;
 import com.example.back_end.core.admin.address.payload.response.AddressResponse;
+import com.example.back_end.core.admin.address.payload.response.AddressesResponse;
 import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.District;
-import com.example.back_end.entity.Province;
 import com.example.back_end.entity.Ward;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.NotExistsException;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public PageResponse1<List<AddressResponse>> getAllAddressById(AddressSearchRequest searchRequest) {
+    public PageResponse1<List<AddressesResponse>> getAllAddressById(AddressSearchRequest searchRequest) {
 
         Pageable pageable = PageUtils.createPageable(
                 searchRequest.getPageNo(),
@@ -67,15 +68,26 @@ public class AddressServiceImpl implements AddressService {
                 searchRequest.getSortBy(),
                 searchRequest.getSortDir());
 
-        Customer customer = searchRequest.getCustomerId() != null
-                ? customerRepository.findById(searchRequest.getCustomerId()).orElse(null)
-                : null;
+        Customer customer = Optional.ofNullable(searchRequest.getCustomerId())
+                .flatMap(customerRepository::findById)
+                .orElse(null);
+
         Specification<Address> spec = AddressSpecification.hasCustomerId(customer);
 
         Page<Address> addressPage = addressRepository.findAll(spec, pageable);
-        List<AddressResponse> addressResponses = addressMapper.toResponseList(addressPage.getContent());
+        List<AddressesResponse> addressResponses = addressPage.getContent().stream()
+                .map(address -> {
+                    AddressesResponse response = addressMapper.toResponses(address);
+                    String addressDetail = address.getProvince().getName() + " " +
+                            address.getDistrict().getName() + " " +
+                            address.getWard().getName() + " " +
+                            address.getAddressName();
+                    response.setAddressDetail(addressDetail);
+                    return response;
+                })
+                .toList();
 
-        return PageResponse1.<List<AddressResponse>>builder()
+        return PageResponse1.<List<AddressesResponse>>builder()
                 .totalItems(addressPage.getTotalElements())
                 .totalPages(addressPage.getTotalPages())
                 .items(addressResponses)
@@ -102,20 +114,16 @@ public class AddressServiceImpl implements AddressService {
 
     private void validateLocation(String wardId, String districtId, String provinceId) {
 
-        Ward ward = wardRepository.findByCode(wardId);
-        if (ward == null) {
-            throw new NotFoundException("Ward with ID " + wardId + " not found");
-        }
+        Ward ward = Optional.ofNullable(wardRepository.findByCode(wardId))
+                .orElseThrow(() -> new NotFoundException("Ward with ID " + wardId + " not found"));
 
-        District district = ward.getDistrictCode();
-        if (district == null || !district.getCode().equals(districtId)) {
-            throw new NotExistsException("Ward does not belong to the provided District");
-        }
+        District district = Optional.ofNullable(ward.getDistrictCode())
+                .filter(d -> d.getCode().equals(districtId))
+                .orElseThrow(() -> new NotExistsException("Ward does not belong to the provided District"));
 
-        Province province = district.getProvinceCode();
-        if (province == null || !province.getCode().equals(provinceId)) {
-            throw new NotExistsException("District does not belong to the provided Province");
-        }
+        Optional.ofNullable(district.getProvinceCode())
+                .filter(p -> p.getCode().equals(provinceId))
+                .orElseThrow(() -> new NotExistsException("District does not belong to the provided Province"));
     }
 
     private Address findAddressById(Long id) {

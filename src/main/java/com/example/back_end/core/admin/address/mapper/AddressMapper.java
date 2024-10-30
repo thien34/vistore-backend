@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.address.mapper;
 
 import com.example.back_end.core.admin.address.payload.request.AddressRequest;
 import com.example.back_end.core.admin.address.payload.response.AddressResponse;
+import com.example.back_end.core.admin.address.payload.response.AddressesResponse;
 import com.example.back_end.entity.Address;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,6 +15,9 @@ import java.util.List;
 public interface AddressMapper {
 
     @Mapping(target = "customer.id", source = "customerId")
+    @Mapping(target = "ward.code", source = "wardId")
+    @Mapping(target = "district.code", source = "districtId")
+    @Mapping(target = "province.code", source = "provinceId")
     Address toEntity(AddressRequest request);
 
     AddressResponse toResponse(Address address);
@@ -21,5 +25,7 @@ public interface AddressMapper {
     List<AddressResponse> toResponseList(List<Address> addresses);
 
     void updateAddressFromRequest(AddressRequest request, @MappingTarget Address address);
+
+    AddressesResponse toResponses(Address address);
 
 }
