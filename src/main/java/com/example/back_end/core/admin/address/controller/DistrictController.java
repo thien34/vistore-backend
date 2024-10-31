@@ -19,10 +19,10 @@ public class DistrictController {
 
     private final DistrictService districtService;
 
-    @GetMapping("/{codeProvince}")
-    public ResponseData<List<DistrictResponse>> getAllDistricts(@PathVariable String codeProvince) {
+    @GetMapping("/{provinceCode}")
+    public ResponseData<List<DistrictResponse>> getAllDistricts(@PathVariable String provinceCode) {
 
-        List<DistrictResponse> response = districtService.getAllDistrictByID(codeProvince);
+        List<DistrictResponse> response = districtService.getAllDistrictByID(provinceCode);
 
         return ResponseData.<List<DistrictResponse>>builder()
                 .status(HttpStatus.OK.value())
