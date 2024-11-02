@@ -50,4 +50,6 @@ public class DiscountFullResponse {
 
     BigDecimal minOderAmount;
 
+    String status;
+
 }

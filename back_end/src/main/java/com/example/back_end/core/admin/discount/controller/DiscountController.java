@@ -75,6 +75,16 @@ public class DiscountController {
                 .data(null)
                 .build();
     }
+    @GetMapping("/by-type/{type}")
+    public ResponseData<List<DiscountResponse>> getDiscountsByType(@PathVariable Integer type) {
+        List<DiscountResponse> responses = discountService.getDiscountsByType(type);
+
+        return ResponseData.<List<DiscountResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Discounts retrieved successfully")
+                .data(responses)
+                .build();
+    }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update discount by ID", description = "Update an existing discount using the provided ID.")

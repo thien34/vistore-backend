@@ -23,4 +23,6 @@ public interface DiscountService {
 
     void deleteDiscount(Long id);
 
+    List<DiscountResponse> getDiscountsByType(Integer discountType);
+
 }

@@ -13,6 +13,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import java.time.Instant;
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -21,6 +22,7 @@ public interface DiscountMapper {
     DiscountNameResponse toDiscountNameResponse(Discount discount);
 
     @Mapping(target = "discountTypeName", source = "discountTypeId", qualifiedByName = "mapDiscountTypeName")
+    @Mapping(target = "status", expression = "java(getDiscountStatus(discount))")
     DiscountResponse toResponse(Discount discount);
 
     List<DiscountResponse> toResponseList(List<Discount> discounts);
@@ -56,6 +58,17 @@ public interface DiscountMapper {
             return null;
         }
         return DiscountLimitationType.getById(discountLimitationId);
+    }
+
+    default String getDiscountStatus(Discount discount) {
+        Instant now = Instant.now();
+        if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            return "UPCOMING";
+        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            return "EXPIRED";
+        } else {
+            return "ACTIVE";
+        }
     }
 
 }

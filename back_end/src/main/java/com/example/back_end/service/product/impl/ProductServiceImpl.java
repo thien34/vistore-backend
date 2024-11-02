@@ -81,6 +81,14 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductResponse::fromProduct)
                 .toList();
     }
+    @Override
+    public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
+        List<Product> products = productRepository.findByParentProductIds(parentIds);
+        return products.stream()
+                .map(product -> ProductResponse.fromProductParentId(product, List.of()))
+                .toList();
+    }
+
 
     @Override
     public ProductResponse getProductById(Long id) {

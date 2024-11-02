@@ -64,6 +64,16 @@ public class ProductController {
                 .data(productResponse)
                 .build();
     }
+    @GetMapping("/by-parent-ids")
+    public ResponseData<List<ProductResponse>> getProductsByParentIds(@RequestParam List<Long> parentIds) {
+        List<ProductResponse> productResponses = productService.getAllProductsByParentIds(parentIds);
+
+        return ResponseData.<List<ProductResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get products successfully")
+                .data(productResponses)
+                .build();
+    }
 
     @GetMapping("/parent/{id}")
     public ResponseData<List<ProductResponse>> getProductByParentId(@PathVariable(value = "id") Long id) {
