@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -51,5 +52,7 @@ public class DiscountFullResponse {
     BigDecimal minOderAmount;
 
     String status;
+
+    List<ProductResponseDetails> appliedProducts;
 
 }

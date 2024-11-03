@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll().stream()
                 .filter(product -> product.getParentProductId() != null && product.getParentProductId().equals(parentId))
                 .toList();
-        return products.stream().map(product -> ProductResponse.fromProductFull(product, List.of())).toList();
+        return products.stream().map(product -> ProductResponse.fromProductParentId(product, List.of())).toList();
     }
 
     @Override

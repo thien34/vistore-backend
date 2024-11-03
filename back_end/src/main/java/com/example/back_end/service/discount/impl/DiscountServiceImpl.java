@@ -6,6 +6,7 @@ import com.example.back_end.core.admin.discount.payload.request.DiscountRequest;
 import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountNameResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
+import com.example.back_end.core.admin.discount.payload.response.ProductResponseDetails;
 import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Product;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
@@ -191,15 +192,39 @@ public class DiscountServiceImpl implements DiscountService {
         validateDiscount(discount);
         updateDiscountStatus(discount);
         discountRepository.save(discount);
+
+        discountAppliedToProductRepository.deleteByDiscountId(id);
+        saveDiscountAppliedToProducts(discount, discountRequest.getSelectedProductVariantIds());
     }
+
+
 
 
     @Override
     public DiscountFullResponse getDiscountById(Long id) {
         Discount discount = findDiscountById(id);
         updateDiscountStatus(discount);
-        return discountMapper.toGetOneResponse(discount);
+
+        List<DiscountAppliedToProduct> appliedProducts = discountAppliedToProductRepository.findByDiscountId(id);
+        List<ProductResponseDetails> productDetails = appliedProducts.stream()
+                .map(appliedProduct -> {
+                    Product product = appliedProduct.getProduct();
+                    return new ProductResponseDetails(
+                            product.getId(),
+                            product.getName(),
+                            product.getCategory().getName(),
+                            product.getManufacturer().getName(),
+                            product.getSku(),
+                            product.getParentProductId()
+                    );
+                })
+                .toList();
+
+        DiscountFullResponse response = discountMapper.toGetOneResponse(discount);
+        response.setAppliedProducts(productDetails);
+        return response;
     }
+
 
     @Override
     @Transactional
