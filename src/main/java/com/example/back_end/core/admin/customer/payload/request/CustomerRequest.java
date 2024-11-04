@@ -29,6 +29,8 @@ public class CustomerRequest {
 
     Instant dateOfBirth;
 
+    Boolean active;
+
     @NotEmpty(message = "Customer Roles must not be empty.")
     List<Long> customerRoles;
 

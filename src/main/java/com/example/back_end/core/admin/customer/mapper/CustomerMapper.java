@@ -25,6 +25,7 @@ public interface CustomerMapper {
     CustomerResponse toResponse(Customer customer);
 
     @Mapping(source = "customerRoles", target = "customerRoles", qualifiedByName = "mapToRoleIds")
+    @Mapping(target = "gender", expression = "java(customer.getGender().getValue())")
     CustomerFullResponse toFullResponse(Customer customer);
 
     List<CustomerResponse> toResponseList(List<Customer> customers);

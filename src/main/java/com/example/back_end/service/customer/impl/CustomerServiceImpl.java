@@ -65,7 +65,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
-
         return customerMapper.toFullResponse(customer);
     }
 
@@ -125,13 +124,13 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
 
         customerMapper.updateFromFullRequest(request, customer);
+        customerRepository.save(customer);
+
         updateCustomerRoles(customer, request.getCustomerRoles());
 
 //        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
 //            updateCustomerPassword(customer, request.getPassword());
 //        }
-
-        customerRepository.save(customer);
     }
 
     private void updateCustomerRoles(Customer customer, List<Long> newRoleIds) {

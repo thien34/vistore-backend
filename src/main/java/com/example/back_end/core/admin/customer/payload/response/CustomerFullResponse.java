@@ -1,6 +1,5 @@
 package com.example.back_end.core.admin.customer.payload.response;
 
-import com.example.back_end.infrastructure.constant.GenderType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +21,7 @@ public class CustomerFullResponse {
 
     private String lastName;
 
-    private GenderType gender;
+    private Integer gender;
 
     private Instant dateOfBirth;
 
