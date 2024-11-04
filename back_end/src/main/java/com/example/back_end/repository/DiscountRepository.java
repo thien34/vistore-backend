@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.List;
 
 public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
@@ -25,12 +26,12 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
             ((cast(:endDate as date) IS NULL) OR d.endDateUtc <= :endDate) AND
             (:isActive IS NULL OR d.isActive = :isActive)
             """)
-    Page<Discount> searchDiscounts(@Param("name") String name,
-                                   @Param("couponCode") String couponCode,
-                                   @Param("discountTypeId") DiscountType discountTypeId,
-                                   @Param("startDate") Instant startDate,
-                                   @Param("endDate") Instant endDate,
-                                   @Param("isActive") Boolean isActive,
-                                   Pageable pageable);
+    List<Discount> searchDiscountsNoPage(@Param("name") String name,
+                                         @Param("couponCode") String couponCode,
+                                         @Param("discountTypeId") DiscountType discountTypeId,
+                                         @Param("startDate") Instant startDate,
+                                         @Param("endDate") Instant endDate,
+                                         @Param("isActive") Boolean isActive);
+
 
 }

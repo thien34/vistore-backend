@@ -5,7 +5,6 @@ import com.example.back_end.core.admin.discount.payload.request.DiscountRequest;
 import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountNameResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
-import com.example.back_end.core.common.PageResponse;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public interface DiscountService {
 
     List<DiscountNameResponse> getAllDiscounts(Integer type);
 
-    PageResponse<List<DiscountResponse>> getAllDiscounts(DiscountFilterRequest filterRequest);
+    List<DiscountResponse> getAllDiscounts(DiscountFilterRequest filterRequest);
 
     void createDiscount(DiscountRequest discountDTO);
 

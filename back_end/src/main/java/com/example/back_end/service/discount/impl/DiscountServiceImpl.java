@@ -12,23 +12,20 @@ import com.example.back_end.entity.Product;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.service.discount.DiscountService;
-import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.entity.Discount;
 import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.constant.ErrorCode;
-import com.example.back_end.infrastructure.constant.SortType;
 import com.example.back_end.infrastructure.exception.ExistsByNameException;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.ConvertEnumTypeUtils;
-import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,33 +60,20 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    public PageResponse<List<DiscountResponse>> getAllDiscounts(DiscountFilterRequest filterRequest) {
-        Pageable pageable = PageUtils.createPageable(
-                filterRequest.getPageNo() != null ? filterRequest.getPageNo() : 1,
-                filterRequest.getPageSize() != null ? filterRequest.getPageSize() : 6,
-                "id",
-                SortType.DESC.getValue()
-        );
-
-        Page<Discount> discountPage = discountRepository.searchDiscounts(
+    public List<DiscountResponse> getAllDiscounts(DiscountFilterRequest filterRequest) {
+        List<Discount> discounts = discountRepository.searchDiscountsNoPage(
                 filterRequest.getName(),
                 filterRequest.getCouponCode(),
                 filterRequest.getDiscountTypeId(),
                 filterRequest.getStartDate(),
                 filterRequest.getEndDate(),
-                filterRequest.getIsActive(),
-                pageable
+                filterRequest.getIsActive()
         );
 
-        List<DiscountResponse> discountResponseList = discountMapper.toResponseList(discountPage.getContent());
-
-        return PageResponse.<List<DiscountResponse>>builder()
-                .page(discountPage.getNumber())
-                .size(discountPage.getSize())
-                .totalPage(discountPage.getTotalPages())
-                .items(discountResponseList)
-                .build();
+        return discountMapper.toResponseList(discounts);
     }
+
+
     @Override
     public List<DiscountResponse> getDiscountsByType(Integer type) {
         DiscountType discountType = ConvertEnumTypeUtils.converDiscountType(type);
@@ -193,12 +177,26 @@ public class DiscountServiceImpl implements DiscountService {
         updateDiscountStatus(discount);
         discountRepository.save(discount);
 
-        discountAppliedToProductRepository.deleteByDiscountId(id);
-        saveDiscountAppliedToProducts(discount, discountRequest.getSelectedProductVariantIds());
+        List<Long> existingProductIds = discountAppliedToProductRepository.findProductIdsByDiscountId(id);
+        List<Long> newProductIds = discountRequest.getSelectedProductVariantIds();
+
+        existingProductIds.stream()
+                .filter(productId -> !newProductIds.contains(productId))
+                .forEach(productId -> discountAppliedToProductRepository.deleteByDiscountIdAndProductId(id, productId));
+
+        newProductIds.stream()
+                .filter(productId -> !existingProductIds.contains(productId))
+                .forEach(productId -> saveDiscountAppliedToProduct(discount, productId));
     }
 
-
-
+    private void saveDiscountAppliedToProduct(Discount discount, Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new EntityNotFoundException("Product not found with id: " + productId));
+        DiscountAppliedToProduct discountAppliedToProduct = new DiscountAppliedToProduct();
+        discountAppliedToProduct.setDiscount(discount);
+        discountAppliedToProduct.setProduct(product);
+        discountAppliedToProductRepository.save(discountAppliedToProduct);
+    }
 
     @Override
     public DiscountFullResponse getDiscountById(Long id) {
