@@ -2,7 +2,6 @@ package com.example.back_end.core.admin.product.payload.response;
 
 import com.example.back_end.entity.Product;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,10 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @NoArgsConstructor
 @Getter
@@ -29,11 +30,12 @@ public class ProductResponse {
     private BigDecimal productCost;
     private List<ProductAttribute> attributes;
     private String imageUrl;
+    private BigDecimal weight;
     private String gtin;
     private String categoryName;
     private String manufacturerName;
 
-    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName) {
+    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName,BigDecimal weight) {
         this.id = id;
         this.name = name;
         this.deleted = deleted;
@@ -41,7 +43,7 @@ public class ProductResponse {
         this.manufacturerId = manufacturerId;
         this.categoryName = categoryName;
         this.manufacturerName = manufacturerName;
-
+        this.weight = weight;
     }
 
     public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin) {
@@ -67,7 +69,8 @@ public class ProductResponse {
                 product.getCategory() != null ? product.getCategory().getId() : null,
                 product.getManufacturer() != null ? product.getManufacturer().getId() : null,
                 product.getCategory() != null ? product.getCategory().getName() : null,
-                product.getManufacturer() != null ? product.getManufacturer().getName() : null
+                product.getManufacturer() != null ? product.getManufacturer().getName() : null,
+                product.getWeight()
         );
     }
 

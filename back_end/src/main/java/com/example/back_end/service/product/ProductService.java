@@ -9,17 +9,18 @@ import java.util.List;
 
 public interface ProductService {
 
-   void createProduct(List<ProductRequest> requests, MultipartFile[] images);
+    void createProduct(List<ProductRequest> requests, MultipartFile[] images);
 
-   List<ProductResponse> getAllProducts();
+    List<ProductResponse> getAllProducts();
 
-   ProductResponse getProductById(Long id);
+    ProductResponse getProductById(Long id);
 
-   List<ProductResponse> getAllProductByParentId(Long parentId);
+    List<ProductResponse> getAllProductByParentId(Long parentId);
 
-   ProductResponse getProductDetail(Long id);
+    ProductResponse getProductDetail(Long id);
 
    void updateProduct(ProductRequestUpdate request, Long productId);
 
    List<ProductResponse> getAllProductDetails();
+
 }

@@ -2,56 +2,61 @@ package com.example.back_end.core.admin.product.payload.request;
 
 import com.example.back_end.entity.Product;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequestUpdate {
-    private Long id;
+    Long id;
 
     @NotEmpty
-    private String name;
-    private String sku;
-    private String gtin;
-    private String fullDescription;
-    private Integer quantity;
-    private BigDecimal unitPrice;
-    private BigDecimal productCost;
-    private BigDecimal weight;
-    private Boolean published;
-    private Boolean deleted;
-    private Long categoryId;
-    private Long manufacturerId;
-    private List<ProductAttribute> attributes;
-    private String imageUrl;
-
-    @Data
-    @AllArgsConstructor
-    public static class ProductAttribute {
-        private Long attributeId;
-        private Long productId;
-        private String value;
-    }
-
+    String name;
+    String sku;
+    String gtin;
+    String fullDescription;
+    Integer quantity;
+    BigDecimal unitPrice;
+    BigDecimal productCost;
+    BigDecimal weight;
+    Boolean published;
+    Boolean deleted;
+    Long categoryId;
+    Long manufacturerId;
+    List<ProductAttribute> attributes;
+    String imageUrl;
 
     public Product toEntity(Product existingProduct) {
-        existingProduct.setSku(this.sku);
-        existingProduct.setGtin(this.gtin);
-        existingProduct.setFullDescription(this.fullDescription);
-        existingProduct.setQuantity(this.quantity);
-        existingProduct.setUnitPrice(this.unitPrice);
-        existingProduct.setProductCost(this.productCost);
-        existingProduct.setWeight(this.weight);
-        existingProduct.setPublished(this.published);
-        existingProduct.setDeleted(this.deleted);
-        existingProduct.setImage(this.imageUrl);
+        if (this.sku != null) existingProduct.setSku(this.sku);
+        if (this.gtin != null) existingProduct.setGtin(this.gtin);
+        if (this.fullDescription != null) existingProduct.setFullDescription(this.fullDescription);
+        if (this.quantity != null) existingProduct.setQuantity(this.quantity);
+        if (this.unitPrice != null) existingProduct.setUnitPrice(this.unitPrice);
+        if (this.productCost != null) existingProduct.setProductCost(this.productCost);
+        if (this.weight != null) existingProduct.setWeight(this.weight);
+        if (this.published != null) existingProduct.setPublished(this.published);
+        if (this.deleted != null) existingProduct.setDeleted(this.deleted);
+        if (this.imageUrl != null) existingProduct.setImage(this.imageUrl);
 
         return existingProduct;
     }
+
+
+    @Data
+    @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class ProductAttribute {
+        Long attributeId;
+        Long productId;
+        String value;
+    }
+
 }
 
 

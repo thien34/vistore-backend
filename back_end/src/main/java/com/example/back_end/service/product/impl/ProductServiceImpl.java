@@ -3,8 +3,16 @@ package com.example.back_end.service.product.impl;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
+
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.entity.*;
+
+
+import com.example.back_end.entity.Category;
+import com.example.back_end.entity.Manufacturer;
+import com.example.back_end.entity.Product;
+import com.example.back_end.entity.ProductAttribute;
+import com.example.back_end.entity.ProductAttributeValue;
+>>>>>>> 3c341a70fd49fd5dd196d778d5e81825ded16ae4
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.repository.ProductAttributeRepository;
@@ -19,7 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -70,13 +82,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
 
-        List<ProductResponse> productResponses = products.stream()
+        return products.stream()
                 .filter(x -> x.getParentProductId() == null)
                 .map(ProductResponse::fromProduct)
                 .toList();
-
-
-        return productResponses;
     }
 
     @Override
@@ -113,9 +122,9 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!product.getSku().equals(request.getSku()) && productRepository.existsBySku(request.getSku())) {
+        if (!product.getSku().equals(request.getSku())
+                && !request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
             throw new IllegalArgumentException("SKU already exists.");
-        }
 
         productAttributeValueRepository.deleteByProduct(product);
 
@@ -154,7 +163,6 @@ public class ProductServiceImpl implements ProductService {
 
         return responses;
     }
-
 
     private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
         Map<ProductAttribute, List<ProductAttributeValue>> attributeMap = product.getProductAttributeValues().stream()
@@ -213,7 +221,7 @@ public class ProductServiceImpl implements ProductService {
 
         return attributes.stream()
                 .map(attribute -> createAttributeValue(product, attribute, imageUrl))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ProductAttributeValue createAttributeValue(Product product, ProductRequest.ProductAttribute attribute, String imageUrl) {
@@ -254,9 +262,9 @@ public class ProductServiceImpl implements ProductService {
             boolean exists = productAttributeValueRepository.existsByProductAndProductAttributeAndValue(
                     product, new ProductAttribute(attribute.getId()), attribute.getValue());
 
-            if (exists) {
+            if (exists)
                 throw new IllegalArgumentException("Giá trị " + attribute.getValue() + " đã tồn tại cho sản phẩm " + product.getName());
-            }
+
         }
     }
 
@@ -282,28 +290,17 @@ public class ProductServiceImpl implements ProductService {
         StringBuilder productCodeBuilder = new StringBuilder();
 
         for (String word : words) {
-            if (!word.isEmpty()) {
-                productCodeBuilder.append(word.charAt(0));
-            }
+            if (!word.isEmpty()) productCodeBuilder.append(word.charAt(0));
         }
         List<String> skuParts = new ArrayList<>();
         skuParts.add(productCodeBuilder.toString().toUpperCase());
-        if (categoryId != null) {
-            skuParts.add(String.valueOf(categoryId));
-        }
-        if (manufacturerId != null) {
-            skuParts.add(String.valueOf(manufacturerId));
-        }
-        if (productId != null) {
-            skuParts.add(String.valueOf(productId));
-        }
+        if (categoryId != null) skuParts.add(String.valueOf(categoryId));
+        if (manufacturerId != null) skuParts.add(String.valueOf(manufacturerId));
+        if (productId != null) skuParts.add(String.valueOf(productId));
         for (ProductRequest.ProductAttribute attribute : attributes) {
-            if (attribute.getValue() != null) {
-                skuParts.add(attribute.getValue());
-            }
+            if (attribute.getValue() != null) skuParts.add(attribute.getValue());
         }
         return String.join("-", skuParts);
     }
-
 
 }

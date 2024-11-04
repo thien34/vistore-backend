@@ -5,7 +5,11 @@ import com.example.back_end.core.admin.customer.payload.response.AddressResponse
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.CustomerAddressMapping;
 import com.example.back_end.infrastructure.constant.AddressType;
-import org.mapstruct.*;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
@@ -36,4 +40,5 @@ public interface AddressMapper {
         }
         return null;
     }
+    
 }

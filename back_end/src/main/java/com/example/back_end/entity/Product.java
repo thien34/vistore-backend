@@ -1,9 +1,5 @@
 package com.example.back_end.entity;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,6 +16,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter

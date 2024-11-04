@@ -13,6 +13,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RelatedProductMapper {
+
     @Mapping(target = "nameProduct2", source = "product2.name")
     @Mapping(target = "product2Id", source = "product2.id")
     @Mapping(target = "product1Id", source = "product1.id")
