@@ -4,15 +4,13 @@ import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 
-import com.example.back_end.core.common.ResponseData;
-
 
 import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Manufacturer;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
->>>>>>> 3c341a70fd49fd5dd196d778d5e81825ded16ae4
+
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.repository.ProductAttributeRepository;
