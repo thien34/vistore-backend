@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
@@ -88,6 +89,27 @@ public class ProductResponse {
                 product.getGtin()
         );
     }
+
+    public ProductResponse(Product product) {
+        this.id = product.getId();
+        this.name = product.getFullName();
+        this.sku = product.getSku();
+        this.price = product.getUnitPrice();
+        this.quantity = product.getQuantity();
+        this.productCost = product.getProductCost();
+        this.imageUrl = product.getImage();
+        this.gtin = product.getGtin();
+        this.categoryName = product.getCategory().getName();
+        this.manufacturerName = product.getManufacturer().getName();
+        this.attributes = product.getProductAttributeValues().stream()
+                .map(attrValue -> new ProductAttribute(
+                        attrValue.getProductAttribute().getId(),
+                        attrValue.getProductAttribute().getName(),
+                        attrValue.getValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
 
     @Data

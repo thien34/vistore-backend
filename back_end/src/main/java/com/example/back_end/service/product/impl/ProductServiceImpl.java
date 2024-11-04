@@ -3,6 +3,7 @@ package com.example.back_end.service.product.impl;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
+import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.entity.*;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -141,6 +143,17 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
+    @Override
+    public List<ProductResponse> getAllProductDetails() {
+        List<Product> products = productRepository.findAll();
+        List<ProductResponse> responses = products
+                .stream()
+                .filter(product -> product.getParentProductId() != null)
+                .map(ProductResponse::new)
+                .toList();
+
+        return responses;
+    }
 
 
     private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
@@ -291,7 +304,6 @@ public class ProductServiceImpl implements ProductService {
         }
         return String.join("-", skuParts);
     }
-
 
 
 }
