@@ -30,16 +30,16 @@ public class ProductRequestUpdate {
     private String imageUrl;
 
     public Product toEntity(Product existingProduct) {
-        existingProduct.setSku(this.sku);
-        existingProduct.setGtin(this.gtin);
-        existingProduct.setFullDescription(this.fullDescription);
-        existingProduct.setQuantity(this.quantity);
-        existingProduct.setUnitPrice(this.unitPrice);
-        existingProduct.setProductCost(this.productCost);
-        existingProduct.setWeight(this.weight);
-        existingProduct.setPublished(this.published);
-        existingProduct.setDeleted(this.deleted);
-        existingProduct.setImage(this.imageUrl);
+        if (this.sku != null) existingProduct.setSku(this.sku);
+        if (this.gtin != null) existingProduct.setGtin(this.gtin);
+        if (this.fullDescription != null) existingProduct.setFullDescription(this.fullDescription);
+        if (this.quantity != null) existingProduct.setQuantity(this.quantity);
+        if (this.unitPrice != null) existingProduct.setUnitPrice(this.unitPrice);
+        if (this.productCost != null) existingProduct.setProductCost(this.productCost);
+        if (this.weight != null) existingProduct.setWeight(this.weight);
+        if (this.published != null) existingProduct.setPublished(this.published);
+        if (this.deleted != null) existingProduct.setDeleted(this.deleted);
+        if (this.imageUrl != null) existingProduct.setImage(this.imageUrl);
 
         return existingProduct;
     }
@@ -53,5 +53,3 @@ public class ProductRequestUpdate {
     }
 
 }
-
-

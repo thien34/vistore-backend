@@ -5,8 +5,8 @@ import com.example.back_end.core.admin.discount.payload.request.DiscountRequest;
 import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountNameResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
-import com.example.back_end.service.discount.DiscountService;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.service.discount.DiscountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -74,6 +74,7 @@ public class DiscountController {
                 .data(null)
                 .build();
     }
+
     @GetMapping("/by-type/{type}")
     public ResponseData<List<DiscountResponse>> getDiscountsByType(@PathVariable Integer type) {
         List<DiscountResponse> responses = discountService.getDiscountsByType(type);
