@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,6 +50,8 @@ public class DiscountRequest {
     Integer maxDiscountedQuantity;
 
     BigDecimal minOderAmount;
+
+    List<Long> selectedProductVariantIds;
 
 }
 

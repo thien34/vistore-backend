@@ -6,7 +6,6 @@ import com.example.back_end.core.admin.discount.payload.response.DiscountFullRes
 import com.example.back_end.core.admin.discount.payload.response.DiscountNameResponse;
 import com.example.back_end.core.admin.discount.payload.response.DiscountResponse;
 import com.example.back_end.service.discount.DiscountService;
-import com.example.back_end.core.common.PageResponse;
 import com.example.back_end.core.common.ResponseData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,12 +47,12 @@ public class DiscountController {
     }
 
     @GetMapping
-    public ResponseData<PageResponse<List<DiscountResponse>>> getAllDiscounts(
+    public ResponseData<List<DiscountResponse>> getAllDiscounts(
             @ModelAttribute DiscountFilterRequest filterRequest) {
 
-        PageResponse<List<DiscountResponse>> response = discountService.getAllDiscounts(filterRequest);
+        List<DiscountResponse> response = discountService.getAllDiscounts(filterRequest);
 
-        return ResponseData.<PageResponse<List<DiscountResponse>>>builder()
+        return ResponseData.<List<DiscountResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all discounts successfully")
                 .data(response)
@@ -73,6 +72,16 @@ public class DiscountController {
                 .status(HttpStatus.CREATED.value())
                 .message("Discount created successfully")
                 .data(null)
+                .build();
+    }
+    @GetMapping("/by-type/{type}")
+    public ResponseData<List<DiscountResponse>> getDiscountsByType(@PathVariable Integer type) {
+        List<DiscountResponse> responses = discountService.getDiscountsByType(type);
+
+        return ResponseData.<List<DiscountResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Discounts retrieved successfully")
+                .data(responses)
                 .build();
     }
 

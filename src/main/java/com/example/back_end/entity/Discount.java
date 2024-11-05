@@ -89,4 +89,7 @@ public class Discount extends Auditable {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "status")
+    private String status;
+
 }

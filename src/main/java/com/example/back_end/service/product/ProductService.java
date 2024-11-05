@@ -19,8 +19,10 @@ public interface ProductService {
 
     ProductResponse getProductDetail(Long id);
 
-   void updateProduct(ProductRequestUpdate request, Long productId);
+    void updateProduct(ProductRequestUpdate request, Long productId);
 
-   List<ProductResponse> getAllProductDetails();
+    List<ProductResponse> getAllProductDetails();
+
+    List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds);
 
 }

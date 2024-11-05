@@ -65,6 +65,17 @@ public class ProductController {
                 .build();
     }
 
+    @GetMapping("/by-parent-ids")
+    public ResponseData<List<ProductResponse>> getProductsByParentIds(@RequestParam List<Long> parentIds) {
+        List<ProductResponse> productResponses = productService.getAllProductsByParentIds(parentIds);
+
+        return ResponseData.<List<ProductResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get products successfully")
+                .data(productResponses)
+                .build();
+    }
+
     @GetMapping("/parent/{id}")
     public ResponseData<List<ProductResponse>> getProductByParentId(@PathVariable(value = "id") Long id) {
         List<ProductResponse> productResponses = productService.getAllProductByParentId(id);
@@ -102,6 +113,6 @@ public class ProductController {
     @GetMapping("/product-details")
     public ResponseData<List<ProductResponse>> getAllProductDetails() {
         List<ProductResponse> responses = productService.getAllProductDetails();
-        return new ResponseData<>(HttpStatus.OK.value(),"Get all products successfully", responses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Get all products successfully", responses);
     }
 }

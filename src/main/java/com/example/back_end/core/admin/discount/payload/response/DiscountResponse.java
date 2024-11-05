@@ -30,4 +30,6 @@ public class DiscountResponse {
 
     Boolean isActive;
 
+    String status;
+
 }

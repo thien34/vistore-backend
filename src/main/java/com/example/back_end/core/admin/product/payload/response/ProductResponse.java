@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @NoArgsConstructor
 @Getter
 @Setter
@@ -57,6 +56,23 @@ public class ProductResponse {
         this.attributes = attributes;
         this.imageUrl = image;
         this.gtin = gtin;
+    }
+
+    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, String s, String s1) {
+        this.id = id;
+        this.name = fullName;
+        this.deleted = deleted;
+        this.categoryId = aLong;
+        this.manufacturerId = aLong1;
+        this.sku = sku;
+        this.price = unitPrice;
+        this.quantity = quantity;
+        this.productCost = productCost;
+        this.attributes = attributes;
+        this.imageUrl = image;
+        this.gtin = gtin;
+        this.categoryName = s;
+        this.manufacturerName = s1;
     }
 
     public ProductResponse(Product product) {
@@ -107,6 +123,27 @@ public class ProductResponse {
                 attributes,
                 product.getImage(),
                 product.getGtin()
+        );
+    }
+
+
+    public static ProductResponse fromProductParentId(final Product product, List<ProductAttribute> attributes) {
+
+        return new ProductResponse(
+                product.getId(),
+                product.getFullName(),
+                product.getDeleted(),
+                product.getCategory() != null ? product.getCategory().getId() : null,
+                product.getManufacturer() != null ? product.getManufacturer().getId() : null,
+                product.getSku(),
+                product.getUnitPrice(),
+                product.getQuantity(),
+                product.getProductCost(),
+                attributes,
+                product.getImage(),
+                product.getGtin(),
+                product.getCategory() != null ? product.getCategory().getName() : null,
+                product.getManufacturer() != null ? product.getManufacturer().getName() : null
         );
     }
 

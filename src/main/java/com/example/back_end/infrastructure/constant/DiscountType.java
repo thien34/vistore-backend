@@ -8,10 +8,7 @@ import lombok.Getter;
 @Getter
 public enum DiscountType implements IdentifiableEnum<Integer> {
     ASSIGNED_TO_ORDER_TOTAL(0),
-    ASSIGNED_TO_PRODUCTS(1),
-    ASSIGNED_TO_CATEGORIES(2),
-    ASSIGNED_TO_MANUFACTURERS(3),
-    ASSIGNED_TO_ORDER_SUBTOTAL(4);
+    ASSIGNED_TO_PRODUCTS(1);
 
     private final int id;
 

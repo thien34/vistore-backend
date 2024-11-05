@@ -83,6 +83,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
+        List<Product> products = productRepository.findByParentProductIds(parentIds);
+        return products.stream()
+                .map(product -> ProductResponse.fromProductParentId(product, List.of()))
+                .toList();
+    }
+
+
+    @Override
     public ProductResponse getProductById(Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
 
@@ -98,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll().stream()
                 .filter(product -> product.getParentProductId() != null && product.getParentProductId().equals(parentId))
                 .toList();
-        return products.stream().map(product -> ProductResponse.fromProductFull(product, List.of())).toList();
+        return products.stream().map(product -> ProductResponse.fromProductParentId(product, List.of())).toList();
     }
 
     @Override
