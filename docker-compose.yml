@@ -16,9 +16,9 @@ services:
   app:
     depends_on:
       - postgresdb
-    build: ./
+    build: back_end
     restart: on-failure
-    env_file: ./.env
+    env_file: .env
     ports:
       - "8080:8080"
     environment:
