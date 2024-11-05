@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @NoArgsConstructor
 @Getter
@@ -31,7 +33,7 @@ public class ProductResponse {
     private String categoryName;
     private String manufacturerName;
 
-    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName,BigDecimal weight) {
+    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName, BigDecimal weight) {
         this.id = id;
         this.name = name;
         this.deleted = deleted;
@@ -57,6 +59,26 @@ public class ProductResponse {
         this.gtin = gtin;
     }
 
+    public ProductResponse(Product product) {
+        this.id = product.getId();
+        this.name = product.getFullName();
+        this.sku = product.getSku();
+        this.price = product.getUnitPrice();
+        this.quantity = product.getQuantity();
+        this.productCost = product.getProductCost();
+        this.imageUrl = product.getImage();
+        this.gtin = product.getGtin();
+        this.categoryName = product.getCategory().getName();
+        this.manufacturerName = product.getManufacturer().getName();
+        this.attributes = product.getProductAttributeValues().stream()
+                .map(attrValue -> new ProductAttribute(
+                        attrValue.getProductAttribute().getId(),
+                        attrValue.getProductAttribute().getName(),
+                        attrValue.getValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
     public static ProductResponse fromProduct(final Product product) {
         return new ProductResponse(
                 product.getId(),
@@ -69,7 +91,6 @@ public class ProductResponse {
                 product.getWeight()
         );
     }
-
 
     public static ProductResponse fromProductFull(final Product product, List<ProductAttribute> attributes) {
 
@@ -88,7 +109,6 @@ public class ProductResponse {
                 product.getGtin()
         );
     }
-
 
     @Data
     @AllArgsConstructor

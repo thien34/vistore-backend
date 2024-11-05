@@ -99,4 +99,9 @@ public class ProductController {
                 .build();
     }
 
+    @GetMapping("/product-details")
+    public ResponseData<List<ProductResponse>> getAllProductDetails() {
+        List<ProductResponse> responses = productService.getAllProductDetails();
+        return new ResponseData<>(HttpStatus.OK.value(),"Get all products successfully", responses);
+    }
 }

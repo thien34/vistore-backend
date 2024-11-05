@@ -52,4 +52,16 @@ public class ShoppingCartItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "cart_uuid")
+    private String cartUUID;
+
+    @Column(name = "is_admin")
+    private Boolean isAdmin;
+
+    @Column(name = "parent_id")
+    private String parentId;
+
+    @Column(name = "bill_quantity")
+    private Long billQuantity;
+
 }
