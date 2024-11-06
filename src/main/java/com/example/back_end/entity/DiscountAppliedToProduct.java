@@ -17,6 +17,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,5 +41,9 @@ public class DiscountAppliedToProduct {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Column(name = "discount_price", precision = 18, scale = 2)
+    private BigDecimal discountPrice;
+
 
 }

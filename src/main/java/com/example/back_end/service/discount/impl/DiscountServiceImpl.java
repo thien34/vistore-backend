@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,35 +120,52 @@ public class DiscountServiceImpl implements DiscountService {
 
 
     private void saveDiscountAppliedToProducts(Discount discount, List<Long> selectedProductVariantIds) {
-        if (selectedProductVariantIds != null && !selectedProductVariantIds.isEmpty()) {
-            List<Long> validProductIds = new ArrayList<>();
-
-            for (Long productId : selectedProductVariantIds) {
-                Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
-
-                if (product.getParentProductId() != null) {
-                    validProductIds.add(productId);
-                }
-            }
-
-            if (validProductIds.isEmpty())
-                throw new InvalidDataException("At least one product variant must have a non-null parent ID to apply the discount.");
-
-            for (Long validProductId : validProductIds) {
-                DiscountAppliedToProduct discountAppliedToProduct = new DiscountAppliedToProduct();
-                discountAppliedToProduct.setDiscount(discount);
-
-                Product validProduct = productRepository.findById(validProductId)
-                        .orElseThrow(() -> new NotFoundException("Product not found with ID: " + validProductId));
-
-                discountAppliedToProduct.setProduct(validProduct);
-                discountAppliedToProductRepository.save(discountAppliedToProduct);
-            }
-        } else {
+        if (selectedProductVariantIds == null || selectedProductVariantIds.isEmpty()) {
             throw new InvalidDataException("At least one product variant must be selected to apply the discount.");
         }
+        List<Long> validProductIds = new ArrayList<>();
+
+        for (Long productId : selectedProductVariantIds) {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
+
+            if (product.getParentProductId() != null) validProductIds.add(productId);
+            
+        }
+        if (validProductIds.isEmpty()) {
+            throw new InvalidDataException(
+                    "At least one product variant must have a non-null parent ID to apply the discount.");
+        }
+
+        for (Long validProductId : validProductIds) {
+            Product validProduct = productRepository.findById(validProductId)
+                    .orElseThrow(() -> new NotFoundException("Product not found with ID: " + validProductId));
+
+            DiscountAppliedToProduct discountAppliedToProduct = getDiscountAppliedToProduct(discount, validProduct);
+
+            discountAppliedToProductRepository.save(discountAppliedToProduct);
+        }
     }
+
+    private static DiscountAppliedToProduct getDiscountAppliedToProduct(Discount discount, Product validProduct) {
+        DiscountAppliedToProduct discountAppliedToProduct = new DiscountAppliedToProduct();
+        discountAppliedToProduct.setDiscount(discount);
+        discountAppliedToProduct.setProduct(validProduct);
+
+        if (discount.getDiscountPercentage() != null) {
+            BigDecimal discountPercentage = discount.getDiscountPercentage();
+            BigDecimal discountAmount = validProduct
+                    .getUnitPrice()
+                    .multiply(discountPercentage)
+                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+            BigDecimal discountPrice = validProduct
+                    .getUnitPrice()
+                    .subtract(discountAmount);
+            discountAppliedToProduct.setDiscountPrice(discountPrice);
+        }
+        return discountAppliedToProduct;
+    }
+
 
     private void updateDiscountStatus(Discount discount) {
         Instant now = Instant.now();
