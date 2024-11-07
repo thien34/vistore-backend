@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "return_items")
+@Table(name = "return_item")
 public class ReturnItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
