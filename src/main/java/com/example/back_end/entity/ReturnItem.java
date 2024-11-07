@@ -1,10 +1,7 @@
 package com.example.back_end.entity;
 
-import com.example.back_end.infrastructure.constant.ReturnRequestStatusType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,14 +18,16 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "return_request")
-public class ReturnRequest extends Auditable {
+@Table(name = "return_items")
+public class ReturnItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -36,31 +35,25 @@ public class ReturnRequest extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "return_request_id")
+    private ReturnRequest returnRequest;
 
     @OneToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "order_item_id")
+    private OrderItem orderItem;
 
-    @Column(name = "reason_for_return", length = Integer.MAX_VALUE)
-    private String reasonForReturn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    @Column(name = "request_action", length = Integer.MAX_VALUE)
-    private String requestAction;
+    @Column(name = "old_unit_price", precision = 18, scale = 2)
+    private BigDecimal oldUnitPrice;
 
-    @Column(name = "total_return_quantity")
-    private Integer totalReturnQuantity;
+    @Column(name = "discount_amount_per_item", precision = 18, scale = 2)
+    private BigDecimal discountAmountPerItem;
 
-    @Column(name = "customer_comments", length = Integer.MAX_VALUE)
-    private String customerComments;
-
-    @Column(name = "staff_notes", length = Integer.MAX_VALUE)
-    private String staffNotes;
-
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "return_request_status_id")
-    private ReturnRequestStatusType returnRequestStatusId;
-
+    @Column(name = "refund_total", precision = 18, scale = 2)
+    private BigDecimal refundTotal;
 }
