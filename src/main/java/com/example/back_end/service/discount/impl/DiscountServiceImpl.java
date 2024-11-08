@@ -113,12 +113,12 @@ public class DiscountServiceImpl implements DiscountService {
 
         discount = discountRepository.save(discount);
 
-        saveDiscountAppliedToProducts(discount, discountRequest.getSelectedProductVariantIds());
-
-        if (discountRequest.getSelectedProductVariantIds() == null || discountRequest.getSelectedProductVariantIds().isEmpty())
+        if (discountRequest.getSelectedProductVariantIds() == null || discountRequest.getSelectedProductVariantIds().isEmpty()) {
             throw new InvalidDataException("At least one product variant must be selected to apply the discount.");
-    }
+        }
 
+        saveDiscountAppliedToProducts(discount, discountRequest.getSelectedProductVariantIds());
+    }
 
     private void saveDiscountAppliedToProducts(Discount discount, List<Long> selectedProductVariantIds) {
         if (selectedProductVariantIds == null || selectedProductVariantIds.isEmpty()) {
@@ -127,20 +127,13 @@ public class DiscountServiceImpl implements DiscountService {
 
         List<Long> validProductIds = new ArrayList<>();
         for (Long productId : selectedProductVariantIds) {
-            long activeDiscountCount = discountAppliedToProductRepository.countActiveDiscountsForProduct(productId);
-            if (activeDiscountCount >= 1) {
-                throw new InvalidDataException("A product can have a maximum of 1 active discounts.");
-            }
-
-            boolean isDiscountApplied = discountAppliedToProductRepository.existsByDiscountIdAndProductId(discount.getId(), productId);
-            if (isDiscountApplied) {
-                throw new InvalidDataException("Discount is already applied to product with ID: " + productId);
-            }
 
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
 
-            if (product.getParentProductId() != null) validProductIds.add(productId);
+            if (product.getParentProductId() != null) {
+                validProductIds.add(productId);
+            }
         }
 
         if (validProductIds.isEmpty()) {
@@ -151,31 +144,32 @@ public class DiscountServiceImpl implements DiscountService {
             Product validProduct = productRepository.findById(validProductId)
                     .orElseThrow(() -> new NotFoundException("Product not found with ID: " + validProductId));
 
-            DiscountAppliedToProduct discountAppliedToProduct = getDiscountAppliedToProduct(discount, validProduct);
-            discountAppliedToProductRepository.save(discountAppliedToProduct);
+            updateProductDiscountPrice(validProduct, discount);
+
+            saveDiscountAppliedToProduct(discount, validProduct);
         }
     }
 
+    private void saveDiscountAppliedToProduct(Discount discount, Product product) {
+        DiscountAppliedToProduct discountAppliedToProduct = DiscountAppliedToProduct.builder()
+                .discount(discount)
+                .product(product)
+                .build();
 
-    private static DiscountAppliedToProduct getDiscountAppliedToProduct(Discount discount, Product validProduct) {
-        DiscountAppliedToProduct discountAppliedToProduct = new DiscountAppliedToProduct();
-        discountAppliedToProduct.setDiscount(discount);
-        discountAppliedToProduct.setProduct(validProduct);
+        discountAppliedToProductRepository.save(discountAppliedToProduct);
+    }
 
+    private void updateProductDiscountPrice(Product product, Discount discount) {
         if (discount.getDiscountPercentage() != null) {
             BigDecimal discountPercentage = discount.getDiscountPercentage();
-            BigDecimal discountAmount = validProduct
-                    .getUnitPrice()
+            BigDecimal discountAmount = product.getUnitPrice()
                     .multiply(discountPercentage)
                     .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-            BigDecimal discountPrice = validProduct
-                    .getUnitPrice()
-                    .subtract(discountAmount);
-            discountAppliedToProduct.setDiscountPrice(discountPrice);
+            BigDecimal discountPrice = product.getUnitPrice().subtract(discountAmount);
+            product.setDiscountPrice(discountPrice);
+            productRepository.save(product);
         }
-        return discountAppliedToProduct;
     }
-
 
     private void updateDiscountStatus(Discount discount) {
         Instant now = Instant.now();

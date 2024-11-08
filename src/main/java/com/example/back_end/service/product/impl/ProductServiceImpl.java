@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -83,32 +84,54 @@ public class ProductServiceImpl implements ProductService {
 
         return products.stream()
                 .filter(x -> x.getParentProductId() == null)
-                .map(ProductResponse::fromProduct)
+                .map(this::mapProductToProductResponse)
                 .toList();
+    }
+
+    private ProductResponse mapProductToProductResponse(Product product) {
+        ProductResponse response = ProductResponse.fromProduct(product);
+        response.setLargestDiscountPercentage(calculateLargestDiscountPercentage(product));
+        return response;
     }
 
     @Override
     public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
         List<Product> products = productRepository.findByParentProductIds(parentIds);
-        List<Product> filteredProducts = products.stream()
-                .filter(product -> !isProductAppliedDiscount(product))
-                .toList();
-        return filteredProducts.stream()
-                .map(product -> ProductResponse.fromProductParentId(product, List.of()))
+
+        return products.stream()
+                .map(product -> {
+                    try {
+                        ProductResponse response = ProductResponse.fromProductParentId(product, List.of());
+
+                        BigDecimal largestDiscount = calculateLargestDiscountPercentage(product);
+                        response.setLargestDiscountPercentage(largestDiscount);
+
+                        return response;
+                    } catch (Exception e) {
+                        log.error("Error processing product with ID {}: {}", product.getId(), e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .toList();
     }
 
-    private boolean isProductAppliedDiscount(Product product) {
-        List<DiscountAppliedToProduct> discounts = discountAppliedToProductRepository.findByProduct(product);
+    private BigDecimal calculateLargestDiscountPercentage(Product product) {
+        List<DiscountAppliedToProduct> discountsApplied = discountAppliedToProductRepository.findByProduct(product);
 
-        return discounts.stream()
-                .anyMatch(discountApplied -> {
-                    Discount discount = discountApplied.getDiscount();
-                    return discount != null &&
-                            (Objects.equals(discount.getStatus(), "ACTIVE") ||
-                                    Objects.equals(discount.getStatus(), "UPCOMING"));
-                });
+        return discountsApplied.stream()
+                .filter(da -> {
+                    Discount discount = da.getDiscount();
+                    return discount != null
+                            && Boolean.TRUE.equals(discount.getIsActive())
+                            && discount.getStatus() != null
+                            && !discount.getStatus().equalsIgnoreCase("EXPIRED");
+                })
+                .map(discountApplied -> discountApplied.getDiscount().getDiscountPercentage())
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
     }
+
 
 
     @Override
