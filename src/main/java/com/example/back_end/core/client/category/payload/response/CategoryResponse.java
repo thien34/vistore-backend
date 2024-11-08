@@ -1,4 +1,4 @@
-package com.example.back_end.core.admin.category.payload.response;
+package com.example.back_end.core.client.category.payload.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,12 +9,12 @@ public class CategoryResponse {
 
     private Long id;
 
+    private String slug;
+
     private String name;
 
     private String description;
 
     private String linkImg;
-
-    private Long categoryParentId;
 
 }

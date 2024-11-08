@@ -46,7 +46,6 @@ public class PictureController {
                 .build();
     }
 
-
     @PostMapping("/upload-image")
     public ResponseData<String> uploadImage(@RequestParam("image") MultipartFile image) {
 

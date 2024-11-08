@@ -17,6 +17,10 @@ public class CategoryRequest {
     @Pattern(regexp = "^[^<>]*$", message = "Name must not contain special characters")
     private String name;
 
+    private String description;
+
+    private String linkImg;
+
     private Long categoryParentId;
 
 }

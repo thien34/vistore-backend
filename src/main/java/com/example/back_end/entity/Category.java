@@ -30,8 +30,14 @@ public class Category extends Auditable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "slug", length = Integer.MAX_VALUE)
+    private String slug;
+
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
+
+    @Column(name = "description", length = Integer.MAX_VALUE)
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -40,6 +46,9 @@ public class Category extends Auditable {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "link_img", length = Integer.MAX_VALUE)
+    private String linkImg;
 
     public Category(Long categoryId) {
         this.id = categoryId;

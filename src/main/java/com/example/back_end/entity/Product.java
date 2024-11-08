@@ -33,6 +33,9 @@ public class Product extends Auditable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "slug", length = Integer.MAX_VALUE)
+    private String slug;
+
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 

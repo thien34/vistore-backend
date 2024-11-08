@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,31 +33,33 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void createCategory(CategoryRequest categoryRequest) {
-
+        validateCategoryNameAndSlug(categoryRequest.getName(), null);
         validateCategoryParent(categoryRequest.getCategoryParentId());
 
         Category category = categoryMapper.toEntity(categoryRequest);
+        String slug = generateSlug(categoryRequest.getName());
+
+        validateSlugUniqueness(slug, null);
+        category.setSlug(slug);
         category.setDeleted(false);
+
         categoryRepository.save(category);
     }
 
     @Override
-    @Transactional
     public void updateCategory(Long id, CategoryRequest request) {
-
         Category category = findCategoryById(id);
 
+        validateCategoryNameAndSlug(request.getName(), category);
         validateCategoryParent(request.getCategoryParentId());
+        validateParentNotChild(id, request.getCategoryParentId());
 
-        getCategoriesChild(id).stream()
-                .filter(categoryId -> categoryId.equals(request.getCategoryParentId()))
-                .findFirst()
-                .ifPresent(categoryId -> {
-                    throw new IllegalArgumentException("Category parent cannot be child of itself");
-                });
-
+        String newSlug = generateSlug(request.getName());
+        validateSlugUniqueness(newSlug, category);
 
         categoryMapper.updateCategoryFromRequest(request, category);
+        category.setSlug(newSlug);
+
         categoryRepository.save(category);
     }
 
@@ -138,6 +141,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + idCategory));
     }
 
+    // Private helper method to get all children of a category
     private List<Long> getCategoriesChild(Long id) {
         List<Category> categories = categoryRepository.findAll();
         List<Long> children = new ArrayList<>();
@@ -148,6 +152,45 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
         return children;
+    }
+
+    // Private helper method for name and slug validation
+    private void validateCategoryNameAndSlug(String name, Category existingCategory) {
+        if (existingCategory == null || !name.equals(existingCategory.getName())) {
+            if (categoryRepository.existsByName(name)) {
+                throw new IllegalArgumentException("Category name already exists");
+            }
+        }
+    }
+
+    // Private helper method to validate slug uniqueness
+    private void validateSlugUniqueness(String slug, Category existingCategory) {
+        if (existingCategory == null || !slug.equals(existingCategory.getSlug())) {
+            if (categoryRepository.existsBySlug(slug)) {
+                throw new IllegalArgumentException("Duplicate slug");
+            }
+        }
+    }
+
+    // Private helper method to ensure the parent is not a child
+    private void validateParentNotChild(Long id, Long parentId) {
+        getCategoriesChild(id).stream()
+                .filter(categoryId -> categoryId.equals(parentId))
+                .findFirst()
+                .ifPresent(categoryId -> {
+                    throw new IllegalArgumentException("Category parent cannot be a child of itself");
+                });
+    }
+
+    // Private helper method to generate slug
+    private String generateSlug(String name) {
+
+        String normalized = Normalizer.normalize(name, java.text.Normalizer.Form.NFD);
+        String slug = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        slug = slug.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-");
+
+        return slug.replaceAll("^-+|-+$", "");
     }
 
 }
