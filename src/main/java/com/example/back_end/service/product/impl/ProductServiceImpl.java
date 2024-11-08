@@ -4,12 +4,15 @@ import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.Category;
+import com.example.back_end.entity.Discount;
+import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Manufacturer;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
+import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -33,6 +37,7 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+    private final DiscountAppliedToProductRepository discountAppliedToProductRepository;
 
     private final ProductRepository productRepository;
     private final ProductAttributeValueRepository productAttributeValueRepository;
@@ -85,9 +90,24 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
         List<Product> products = productRepository.findByParentProductIds(parentIds);
-        return products.stream()
+        List<Product> filteredProducts = products.stream()
+                .filter(product -> !isProductAppliedDiscount(product))
+                .toList();
+        return filteredProducts.stream()
                 .map(product -> ProductResponse.fromProductParentId(product, List.of()))
                 .toList();
+    }
+
+    private boolean isProductAppliedDiscount(Product product) {
+        List<DiscountAppliedToProduct> discounts = discountAppliedToProductRepository.findByProduct(product);
+
+        return discounts.stream()
+                .anyMatch(discountApplied -> {
+                    Discount discount = discountApplied.getDiscount();
+                    return discount != null &&
+                            (Objects.equals(discount.getStatus(), "ACTIVE") ||
+                                    Objects.equals(discount.getStatus(), "UPCOMING"));
+                });
     }
 
 

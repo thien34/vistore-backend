@@ -25,6 +25,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ import java.util.function.Predicate;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class DiscountServiceImpl implements DiscountService {
 
     DiscountRepository discountRepository;
@@ -86,7 +88,6 @@ public class DiscountServiceImpl implements DiscountService {
                 .toList();
     }
 
-
     @Override
     @Transactional
     public void createDiscount(DiscountRequest discountRequest) {
@@ -123,18 +124,27 @@ public class DiscountServiceImpl implements DiscountService {
         if (selectedProductVariantIds == null || selectedProductVariantIds.isEmpty()) {
             throw new InvalidDataException("At least one product variant must be selected to apply the discount.");
         }
-        List<Long> validProductIds = new ArrayList<>();
 
+        List<Long> validProductIds = new ArrayList<>();
         for (Long productId : selectedProductVariantIds) {
+            long activeDiscountCount = discountAppliedToProductRepository.countActiveDiscountsForProduct(productId);
+            if (activeDiscountCount >= 1) {
+                throw new InvalidDataException("A product can have a maximum of 1 active discounts.");
+            }
+
+            boolean isDiscountApplied = discountAppliedToProductRepository.existsByDiscountIdAndProductId(discount.getId(), productId);
+            if (isDiscountApplied) {
+                throw new InvalidDataException("Discount is already applied to product with ID: " + productId);
+            }
+
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
 
             if (product.getParentProductId() != null) validProductIds.add(productId);
-            
         }
+
         if (validProductIds.isEmpty()) {
-            throw new InvalidDataException(
-                    "At least one product variant must have a non-null parent ID to apply the discount.");
+            throw new InvalidDataException("At least one product variant must have a non-null parent ID to apply the discount.");
         }
 
         for (Long validProductId : validProductIds) {
@@ -142,10 +152,10 @@ public class DiscountServiceImpl implements DiscountService {
                     .orElseThrow(() -> new NotFoundException("Product not found with ID: " + validProductId));
 
             DiscountAppliedToProduct discountAppliedToProduct = getDiscountAppliedToProduct(discount, validProduct);
-
             discountAppliedToProductRepository.save(discountAppliedToProduct);
         }
     }
+
 
     private static DiscountAppliedToProduct getDiscountAppliedToProduct(Discount discount, Product validProduct) {
         DiscountAppliedToProduct discountAppliedToProduct = new DiscountAppliedToProduct();
@@ -203,15 +213,23 @@ public class DiscountServiceImpl implements DiscountService {
 
         newProductIds.stream()
                 .filter(productId -> !existingProductIds.contains(productId))
-                .forEach(productId -> saveDiscountAppliedToProduct(discount, productId));
+                .forEach(productId -> {
+                    long activeDiscountCount = discountAppliedToProductRepository.countActiveDiscountsForProduct(productId);
+                    if (activeDiscountCount >= 1) {
+                        throw new InvalidDataException("A product can have a maximum of 1 active discounts.");
+                    }
+                    saveDiscountAppliedToProduct(discount, productId);
+                });
     }
+
 
     private void saveDiscountAppliedToProduct(Discount discount, Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new EntityNotFoundException("Product not found with id: " + productId));
-        DiscountAppliedToProduct discountAppliedToProduct = new DiscountAppliedToProduct();
-        discountAppliedToProduct.setDiscount(discount);
-        discountAppliedToProduct.setProduct(product);
+        DiscountAppliedToProduct discountAppliedToProduct = DiscountAppliedToProduct.builder()
+                .discount(discount)
+                .product(product)
+                .build();
         discountAppliedToProductRepository.save(discountAppliedToProduct);
     }
 
