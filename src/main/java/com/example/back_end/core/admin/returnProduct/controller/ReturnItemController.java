@@ -1,8 +1,6 @@
 package com.example.back_end.core.admin.returnProduct.controller;
 
-import com.example.back_end.core.admin.returnProduct.payload.request.ReturnInvoiceRequest;
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnItemRequest;
-import com.example.back_end.core.admin.returnProduct.payload.response.ReturnInvoiceResponse;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnItemResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.returnProducts.ReturnItemServices;
@@ -30,13 +28,13 @@ public class ReturnItemController {
         List<ReturnItemResponse> responses = services.addReturnItems(requests);
         return ResponseData.<List<ReturnItemResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message(responses.size()+" Return Items saved success!")
+                .message(responses.size() + " Return Items saved success!")
                 .data(responses).build();
     }
 
     @GetMapping("/{id}")
     public ResponseData<ReturnItemResponse> getReturnItem(@PathVariable Long id) {
-        ReturnItemResponse response= services.getReturnItemById(id);
+        ReturnItemResponse response = services.getReturnItemById(id);
         return ResponseData.<ReturnItemResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get Return Item with id: " + id + " success!")
