@@ -57,6 +57,9 @@ public class Product extends Auditable {
     @Column(name = "unit_price", precision = 18, scale = 2)
     private BigDecimal unitPrice;
 
+    @Column(name = "discount_price", precision = 18, scale = 2)
+    private BigDecimal discountPrice;
+
     @Column(name = "product_cost", precision = 18, scale = 2)
     private BigDecimal productCost;
 
