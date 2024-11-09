@@ -5,4 +5,5 @@ public enum CloudinaryTypeFolder {
     PRODUCTS,
     USERS,
     VIDEOS,
+    RETURNPRODUCTS,
 }
