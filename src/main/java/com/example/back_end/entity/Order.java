@@ -1,6 +1,7 @@
 package com.example.back_end.entity;
 
 import com.example.back_end.infrastructure.constant.OrderStatusType;
+import com.example.back_end.infrastructure.constant.PaymentMethodType;
 import com.example.back_end.infrastructure.constant.PaymentStatusType;
 import com.example.back_end.infrastructure.constant.ShippingStatusType;
 import jakarta.persistence.Column;
@@ -63,16 +64,12 @@ public class Order extends Auditable {
     private OrderStatusType orderStatusId;
 
     @Enumerated
-    @Column(name = "shipping_status_id")
-    private ShippingStatusType shippingStatusId;
-
-    @Enumerated
     @Column(name = "payment_status_id")
     private PaymentStatusType paymentStatusId;
 
     @Enumerated
     @Column(name = "payment_method_id")
-    private PaymentStatusType paymentMethodId;
+    private PaymentMethodType paymentMethodId;
 
     @Column(name = "order_subtotal", precision = 18, scale = 2)
     private BigDecimal orderSubtotal;
