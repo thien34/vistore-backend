@@ -23,6 +23,8 @@ public class ProductResponse {
     private Long manufacturerId;
     private String sku;
     private BigDecimal price;
+    private BigDecimal largestDiscountPercentage;
+    private BigDecimal discountPrice;
     private Integer quantity;
     private BigDecimal productCost;
     private List<ProductAttribute> attributes;
@@ -58,7 +60,7 @@ public class ProductResponse {
         this.gtin = gtin;
     }
 
-    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, String s, String s1) {
+    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, String s, String s1,BigDecimal discountPrice) {
         this.id = id;
         this.name = fullName;
         this.deleted = deleted;
@@ -73,6 +75,7 @@ public class ProductResponse {
         this.gtin = gtin;
         this.categoryName = s;
         this.manufacturerName = s1;
+        this.discountPrice = discountPrice;
     }
 
     public ProductResponse(Product product) {
@@ -92,7 +95,7 @@ public class ProductResponse {
                         attrValue.getProductAttribute().getName(),
                         attrValue.getValue()
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static ProductResponse fromProduct(final Product product) {
@@ -143,7 +146,8 @@ public class ProductResponse {
                 product.getImage(),
                 product.getGtin(),
                 product.getCategory() != null ? product.getCategory().getName() : null,
-                product.getManufacturer() != null ? product.getManufacturer().getName() : null
+                product.getManufacturer() != null ? product.getManufacturer().getName() : null,
+                product.getDiscountPrice()
         );
     }
 

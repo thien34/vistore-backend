@@ -4,12 +4,15 @@ import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.Category;
+import com.example.back_end.entity.Discount;
+import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Manufacturer;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
+import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -21,9 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -33,6 +38,7 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+    private final DiscountAppliedToProductRepository discountAppliedToProductRepository;
 
     private final ProductRepository productRepository;
     private final ProductAttributeValueRepository productAttributeValueRepository;
@@ -78,17 +84,54 @@ public class ProductServiceImpl implements ProductService {
 
         return products.stream()
                 .filter(x -> x.getParentProductId() == null)
-                .map(ProductResponse::fromProduct)
+                .map(this::mapProductToProductResponse)
                 .toList();
+    }
+
+    private ProductResponse mapProductToProductResponse(Product product) {
+        ProductResponse response = ProductResponse.fromProduct(product);
+        response.setLargestDiscountPercentage(calculateLargestDiscountPercentage(product));
+        return response;
     }
 
     @Override
     public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
         List<Product> products = productRepository.findByParentProductIds(parentIds);
+
         return products.stream()
-                .map(product -> ProductResponse.fromProductParentId(product, List.of()))
+                .map(product -> {
+                    try {
+                        ProductResponse response = ProductResponse.fromProductParentId(product, List.of());
+
+                        BigDecimal largestDiscount = calculateLargestDiscountPercentage(product);
+                        response.setLargestDiscountPercentage(largestDiscount);
+
+                        return response;
+                    } catch (Exception e) {
+                        log.error("Error processing product with ID {}: {}", product.getId(), e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .toList();
     }
+
+    private BigDecimal calculateLargestDiscountPercentage(Product product) {
+        List<DiscountAppliedToProduct> discountsApplied = discountAppliedToProductRepository.findByProduct(product);
+
+        return discountsApplied.stream()
+                .filter(da -> {
+                    Discount discount = da.getDiscount();
+                    return discount != null
+                            && Boolean.TRUE.equals(discount.getIsActive())
+                            && discount.getStatus() != null
+                            && !discount.getStatus().equalsIgnoreCase("EXPIRED");
+                })
+                .map(discountApplied -> discountApplied.getDiscount().getDiscountPercentage())
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+    }
+
 
 
     @Override
