@@ -12,6 +12,7 @@ import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
+import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
@@ -61,7 +62,12 @@ public class ProductServiceImpl implements ProductService {
             Product product = mapRequestToProduct(request, parentProduct);
             String imageUrl = uploadImage(request).orElse("");
             product.setImage(imageUrl);
-            String sku = generateSku(request.getName(), request.getCategoryId(), request.getManufacturerId(), product.getId(), request.getAttributes());
+            String sku = generateSku(
+                    request.getName(),
+                    request.getCategoryId(),
+                    request.getManufacturerId(),
+                    product.getId(),
+                    request.getAttributes());
             product.setSku(sku);
 
             String gtin;
@@ -131,7 +137,6 @@ public class ProductServiceImpl implements ProductService {
                 .max(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
     }
-
 
 
     @Override
@@ -229,6 +234,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private Product createParentProduct(ProductRequest request) {
+
         Product parentProduct = new Product();
         parentProduct.setName(request.getName());
         parentProduct.setPublished(true);
@@ -237,6 +243,7 @@ public class ProductServiceImpl implements ProductService {
         parentProduct.setCategory(new Category(request.getCategoryId()));
         parentProduct.setManufacturer(new Manufacturer(request.getManufacturerId()));
         parentProduct.setFullDescription(request.getFullDescription());
+        parentProduct.setSlug(StringUtils.generateSlug(request.getName()));
         return productRepository.save(parentProduct);
     }
 

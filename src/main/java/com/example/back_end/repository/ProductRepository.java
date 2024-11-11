@@ -1,5 +1,6 @@
 package com.example.back_end.repository;
 
+import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,5 +17,11 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     @Query("SELECT p FROM Product p WHERE p.parentProductId IN :parentIds")
     List<Product> findByParentProductIds(@Param("parentIds") List<Long> parentIds);
+
+    List<Product> findByParentProductIdIsNull();
+
+    List<Product> findByParentProductIdIsNullAndCategoryIn(List<Category> category);
+
+    List<Product> findByParentProductId(Long parentProductId);
 
 }

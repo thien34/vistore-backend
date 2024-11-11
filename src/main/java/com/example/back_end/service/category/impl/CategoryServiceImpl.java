@@ -9,6 +9,7 @@ import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Category;
 import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
+import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.CategoryRepository;
 import com.example.back_end.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
         validateCategoryParent(categoryRequest.getCategoryParentId());
 
         Category category = categoryMapper.toEntity(categoryRequest);
-        String slug = generateSlug(categoryRequest.getName());
+        String slug = StringUtils.generateSlug(categoryRequest.getName());
 
         validateSlugUniqueness(slug, null);
         category.setSlug(slug);
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
         validateCategoryParent(request.getCategoryParentId());
         validateParentNotChild(id, request.getCategoryParentId());
 
-        String newSlug = generateSlug(request.getName());
+        String newSlug = StringUtils.generateSlug(request.getName());
         validateSlugUniqueness(newSlug, category);
 
         categoryMapper.updateCategoryFromRequest(request, category);
@@ -180,17 +180,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .ifPresent(categoryId -> {
                     throw new IllegalArgumentException("Category parent cannot be a child of itself");
                 });
-    }
-
-    // Private helper method to generate slug
-    private String generateSlug(String name) {
-
-        String normalized = Normalizer.normalize(name, java.text.Normalizer.Form.NFD);
-        String slug = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-        slug = slug.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-");
-
-        return slug.replaceAll("^-+|-+$", "");
     }
 
 }

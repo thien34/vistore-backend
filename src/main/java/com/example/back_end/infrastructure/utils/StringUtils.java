@@ -1,5 +1,7 @@
 package com.example.back_end.infrastructure.utils;
 
+import java.text.Normalizer;
+
 public class StringUtils {
 
     /**
@@ -10,5 +12,15 @@ public class StringUtils {
      */
     public static String sanitizeText(String str) {
         return str.trim().replaceAll("\\s+", " ");
+    }
+
+    public static String generateSlug(String value) {
+
+        String normalized = Normalizer.normalize(value, java.text.Normalizer.Form.NFD);
+        String slug = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        slug = slug.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-");
+
+        return slug.replaceAll("^-+|-+$", "");
     }
 }
