@@ -24,4 +24,10 @@ public interface DiscountService {
 
     List<DiscountResponse> getDiscountsByType(Integer discountType);
 
+    List<DiscountResponse> getDiscountsByProductId(Long productId);
+
+    void updateEndDateToNow(Long id);
+
+    void cancelDiscount(Long id);
+
 }

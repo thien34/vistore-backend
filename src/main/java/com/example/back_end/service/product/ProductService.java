@@ -3,6 +3,7 @@ package com.example.back_end.service.product;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
+import org.apache.coyote.BadRequestException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface ProductService {
 
     ProductResponse getProductDetail(Long id);
 
-    void updateProduct(ProductRequestUpdate request, Long productId);
+    void updateProduct(ProductRequestUpdate request, Long productId) throws BadRequestException;
 
     List<ProductResponse> getAllProductDetails();
 

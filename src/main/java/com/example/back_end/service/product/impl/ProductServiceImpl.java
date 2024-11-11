@@ -123,9 +123,8 @@ public class ProductServiceImpl implements ProductService {
                 .filter(da -> {
                     Discount discount = da.getDiscount();
                     return discount != null
-                            && Boolean.TRUE.equals(discount.getIsActive())
                             && discount.getStatus() != null
-                            && !discount.getStatus().equalsIgnoreCase("EXPIRED");
+                            && discount.getStatus().equalsIgnoreCase("ACTIVE");
                 })
                 .map(discountApplied -> discountApplied.getDiscount().getDiscountPercentage())
                 .max(BigDecimal::compareTo)

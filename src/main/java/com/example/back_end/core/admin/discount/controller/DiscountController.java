@@ -119,7 +119,36 @@ public class DiscountController {
                 .message("Discount deleted successfully")
                 .build();
     }
+    @PutMapping("/{id}/end-date-now")
+    @Operation(summary = "Update endDateUtc to current time", description = "Update the endDateUtc of a discount to the current date and time.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "End date updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Discount not found")
+    })
+    public ResponseData<Void> updateEndDateToNow(@PathVariable Long id) {
+        discountService.updateEndDateToNow(id);
 
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("End date updated to current time successfully")
+                .data(null)
+                .build();
+    }
+    @PutMapping("/{id}/cancel")
+    @Operation(summary = "Cancel discount by ID", description = "Set the status of a discount to 'CANCEL' using the provided ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Discount status set to 'CANCEL' successfully"),
+            @ApiResponse(responseCode = "404", description = "Discount not found")
+    })
+    public ResponseData<Void> cancelDiscount(@PathVariable Long id) {
+        discountService.cancelDiscount(id);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Discount status set to 'CANCEL' successfully")
+                .data(null)
+                .build();
+    }
     @GetMapping("/{id}")
     @Operation(summary = "Get discount by ID", description = "Retrieve discount details using the provided ID.")
     @ApiResponses(value = {
@@ -133,6 +162,21 @@ public class DiscountController {
                 .status(HttpStatus.OK.value())
                 .message("Discount retrieved successfully")
                 .data(discountResponse)
+                .build();
+    }
+    @GetMapping("/by-product/{productId}")
+    @Operation(summary = "Get discounts applied to a specific product", description = "Retrieve all discounts applied to a product using the provided product ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Discounts retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found or no discounts applied to this product")
+    })
+    public ResponseData<List<DiscountResponse>> getDiscountsByProductId(@PathVariable Long productId) {
+        List<DiscountResponse> responses = discountService.getDiscountsByProductId(productId);
+
+        return ResponseData.<List<DiscountResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Discounts applied to product retrieved successfully")
+                .data(responses)
                 .build();
     }
 
