@@ -72,7 +72,7 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
                 pageRequest.getPageSize(),
                 pageRequest.getSortBy(),
                 pageRequest.getSortDir());
-        Page<ReturnRequest> result = repository.findAll(pageable);
+        Page<ReturnRequest> result = repository.findByCustomerId(customerId,pageable);
         List<ReturnRequestResponse> responses = mapper.toResponseList(result.getContent());
         return PageResponse1.<List<ReturnRequestResponse>>builder()
                 .totalItems(result.getTotalElements())
