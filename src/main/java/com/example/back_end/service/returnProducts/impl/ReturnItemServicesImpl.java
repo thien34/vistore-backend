@@ -3,10 +3,15 @@ package com.example.back_end.service.returnProducts.impl;
 import com.example.back_end.core.admin.returnProduct.mapper.ReturnItemMapper;
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnItemRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnItemResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.ReturnItem;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ReturnItemRepository;
 import com.example.back_end.service.returnProducts.ReturnItemServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,9 +37,19 @@ public class ReturnItemServicesImpl implements ReturnItemServices {
     }
 
     @Override
-    public List<ReturnItemResponse> getAllReturnItemsByReturnRequestId(Long returnRequestId) {
-        List<ReturnItem> returnItems = repository.findByReturnRequestId(returnRequestId);
-        return mapper.maptoResponseList(returnItems);
+    public PageResponse1<List<ReturnItemResponse>> getAllReturnItemsByReturnRequestId(Long returnRequestId, PageRequest pageRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                pageRequest.getSortBy(),
+                pageRequest.getSortDir());
+        Page<ReturnItem> result = repository.findByReturnRequestId(returnRequestId, pageable);
+        List<ReturnItemResponse> responses = mapper.maptoResponseList(result.getContent());
+        return PageResponse1.<List<ReturnItemResponse>>builder()
+                .totalItems(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .items(responses)
+                .build();
     }
 
     @Override

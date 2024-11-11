@@ -3,10 +3,15 @@ package com.example.back_end.service.returnProducts.impl;
 import com.example.back_end.core.admin.returnProduct.mapper.ReturnRequestMapper;
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnRequestRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnRequestResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.ReturnRequest;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ReturnRequestRepository;
 import com.example.back_end.service.returnProducts.ReturnRequestServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,12 +50,34 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
     }
 
     @Override
-    public List<ReturnRequestResponse> getAllReturnRequests() {
-        return mapper.toResponseList(repository.findAll());
+    public PageResponse1<List<ReturnRequestResponse>> getAllReturnRequests(PageRequest pageRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                pageRequest.getSortBy(),
+                pageRequest.getSortDir());
+        Page<ReturnRequest> result = repository.findAll(pageable);
+        List<ReturnRequestResponse> responses = mapper.toResponseList(result.getContent());
+        return PageResponse1.<List<ReturnRequestResponse>>builder()
+                .totalItems(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .items(responses)
+                .build();
     }
 
     @Override
-    public List<ReturnRequestResponse> getAllReturnRequestsByCustomerId(Long customerId) {
-        return mapper.toResponseList(repository.findByCustomerId(customerId));
+    public PageResponse1<List<ReturnRequestResponse>> getAllReturnRequestsByCustomerId(Long customerId, PageRequest pageRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                pageRequest.getSortBy(),
+                pageRequest.getSortDir());
+        Page<ReturnRequest> result = repository.findByCustomerId(customerId,pageable);
+        List<ReturnRequestResponse> responses = mapper.toResponseList(result.getContent());
+        return PageResponse1.<List<ReturnRequestResponse>>builder()
+                .totalItems(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .items(responses)
+                .build();
     }
 }

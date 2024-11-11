@@ -2,6 +2,8 @@ package com.example.back_end.service.returnProducts;
 
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnRequestRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnRequestResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ public interface ReturnRequestServices {
 
     ReturnRequestResponse getReturnRequestByOrderId(Long orderId);
 
-    List<ReturnRequestResponse> getAllReturnRequests();
+    PageResponse1<List<ReturnRequestResponse>> getAllReturnRequests(PageRequest pageRequest);
 
-    List<ReturnRequestResponse> getAllReturnRequestsByCustomerId(Long customerId);
+    PageResponse1<List<ReturnRequestResponse>> getAllReturnRequestsByCustomerId(Long customerId, PageRequest pageRequest);
 }

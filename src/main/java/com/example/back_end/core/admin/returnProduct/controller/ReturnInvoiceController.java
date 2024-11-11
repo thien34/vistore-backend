@@ -2,6 +2,8 @@ package com.example.back_end.core.admin.returnProduct.controller;
 
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnInvoiceRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnInvoiceResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.returnProducts.ReturnInvoiceServices;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +51,9 @@ public class ReturnInvoiceController {
     }
 
     @GetMapping("")
-    public ResponseData<List<ReturnInvoiceResponse>> getAllReturnInvoices() {
-        List<ReturnInvoiceResponse> response = returnInvoiceServices.getAllReturnInvoices();
-        return ResponseData.<List<ReturnInvoiceResponse>>builder()
+    public ResponseData<PageResponse1<List<ReturnInvoiceResponse>>> getAllReturnInvoices(PageRequest pageRequest) {
+        PageResponse1<List<ReturnInvoiceResponse>> response = returnInvoiceServices.getAllReturnInvoices(pageRequest);
+        return ResponseData.<PageResponse1<List<ReturnInvoiceResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all return product invoices success!")
                 .data(response).build();

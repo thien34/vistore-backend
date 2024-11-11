@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReturnInvoiceRepository extends JpaRepository<ReturnInvoice, Long> {
     @Query(value = "select ri from ReturnInvoice ri where ri.order.id = :invoiceId  ")
     ReturnInvoice findByOrderId(Long invoiceId);
+
 }
