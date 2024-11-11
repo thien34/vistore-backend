@@ -60,6 +60,21 @@ public class DiscountServiceImpl implements DiscountService {
                 .map(discountMapper::toDiscountNameResponse)
                 .toList();
     }
+    @Override
+    @Transactional
+    public void updateEndDateToNow(Long id) {
+        Discount discount = findDiscountById(id);
+        Instant now = Instant.now();
+        discount.setEndDateUtc(now);
+        updateDiscountStatus(discount);
+        discountRepository.save(discount);
+    }
+    public void cancelDiscount(Long promotionId) {
+        Discount discount = findDiscountById(promotionId);
+        discount.setIsCanceled(Boolean.TRUE);
+        discount.setStatus("CANCEL");
+        discountRepository.save(discount);
+    }
 
     @Override
     public List<DiscountResponse> getAllDiscounts(DiscountFilterRequest filterRequest) {
@@ -68,12 +83,29 @@ public class DiscountServiceImpl implements DiscountService {
                 filterRequest.getCouponCode(),
                 filterRequest.getDiscountTypeId(),
                 filterRequest.getStartDate(),
-                filterRequest.getEndDate(),
-                filterRequest.getIsActive()
+                filterRequest.getEndDate()
         );
-
+        discounts.forEach(this::updateDiscountStatus);
         return discountMapper.toResponseList(discounts);
     }
+    @Override
+    public List<DiscountResponse> getDiscountsByProductId(Long productId) {
+        List<DiscountAppliedToProduct> appliedDiscounts = discountAppliedToProductRepository.findByProductId(productId);
+
+        if (appliedDiscounts.isEmpty()) {
+            throw new NotFoundException("No discounts found for the product with ID: " + productId);
+        }
+
+        List<Discount> discounts = new ArrayList<>();
+        for (DiscountAppliedToProduct discountAppliedToProduct : appliedDiscounts) {
+            discounts.add(discountAppliedToProduct.getDiscount());
+        }
+
+        return discounts.stream()
+                .map(discountMapper::toResponse)
+                .toList();
+    }
+
 
 
     @Override
@@ -160,21 +192,24 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     private void updateProductDiscountPrice(Product product, Discount discount) {
-        if (discount.getDiscountPercentage() != null) {
+        if (!"ACTIVE".equals(discount.getStatus())) {
+            product.setDiscountPrice(BigDecimal.ZERO);
+        } else if (discount.getDiscountPercentage() != null) {
             BigDecimal discountPercentage = discount.getDiscountPercentage();
             BigDecimal discountAmount = product.getUnitPrice()
                     .multiply(discountPercentage)
                     .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             BigDecimal discountPrice = product.getUnitPrice().subtract(discountAmount);
             product.setDiscountPrice(discountPrice);
-            productRepository.save(product);
         }
+        productRepository.save(product);
     }
 
     private void updateDiscountStatus(Discount discount) {
         Instant now = Instant.now();
-
-        if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
+            discount.setStatus("CANCEL");
+        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
             discount.setStatus("EXPIRED");
         } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
             discount.setStatus("UPCOMING");
@@ -207,13 +242,7 @@ public class DiscountServiceImpl implements DiscountService {
 
         newProductIds.stream()
                 .filter(productId -> !existingProductIds.contains(productId))
-                .forEach(productId -> {
-                    long activeDiscountCount = discountAppliedToProductRepository.countActiveDiscountsForProduct(productId);
-                    if (activeDiscountCount >= 1) {
-                        throw new InvalidDataException("A product can have a maximum of 1 active discounts.");
-                    }
-                    saveDiscountAppliedToProduct(discount, productId);
-                });
+                .forEach(productId -> saveDiscountAppliedToProduct(discount, productId));
     }
 
 
@@ -242,7 +271,9 @@ public class DiscountServiceImpl implements DiscountService {
                             product.getCategory().getName(),
                             product.getManufacturer().getName(),
                             product.getSku(),
-                            product.getParentProductId()
+                            product.getParentProductId(),
+                            product.getImage(),
+                            product.getFullName()
                     );
                 })
                 .toList();

@@ -21,15 +21,14 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
             (:couponCode IS NULL OR d.couponCode LIKE %:couponCode%) AND
             (:discountTypeId IS NULL OR d.discountTypeId = :discountTypeId) AND
             ((cast(:startDate as date) IS NULL) OR d.startDateUtc >= :startDate) AND
-            ((cast(:endDate as date) IS NULL) OR d.endDateUtc <= :endDate) AND
-            (:isActive IS NULL OR d.isActive = :isActive)
+            ((cast(:endDate as date) IS NULL) OR d.endDateUtc <= :endDate)
+            ORDER BY d.createdDate desc
             """)
     List<Discount> searchDiscountsNoPage(@Param("name") String name,
                                          @Param("couponCode") String couponCode,
                                          @Param("discountTypeId") DiscountType discountTypeId,
                                          @Param("startDate") Instant startDate,
-                                         @Param("endDate") Instant endDate,
-                                         @Param("isActive") Boolean isActive);
+                                         @Param("endDate") Instant endDate);
 
 
 }

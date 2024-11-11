@@ -21,4 +21,6 @@ public class ProductResponseDetails {
     String manufacturerName;
     String sku;
     Long productParentId;
+    String imageUrl;
+    String fullName;
 }

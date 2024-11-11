@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.log4j.Log4j2;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -448,6 +449,34 @@ public class GlobalExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponses(value = {@ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE,
+                    examples = @ExampleObject(name = "400 Response",
+                            summary = "Handle custom bad request exception",
+                            value = """
+                                {
+                                  "timestamp": "2024-07-14T11:23:14.801+00:00",
+                                  "status": 400,
+                                  "path": "/api/v1/...",
+                                  "error": "Bad Request",
+                                  "message": "Invalid operation requested"
+                                }
+                                """))})})
+    public ErrorResponse handleBadRequestException(BadRequestException e, WebRequest request) {
+        log.error("Bad Request Exception: ", e);
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(BAD_RQ)
+                .message(e.getMessage())
+                .build();
+    }
+
 
     /**
      * Handle exception when a field with the same name already exists

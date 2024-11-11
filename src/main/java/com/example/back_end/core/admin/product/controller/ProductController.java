@@ -7,6 +7,7 @@ import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.product.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,7 +101,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseData<Void> updateProduct(@RequestBody ProductRequestUpdate requestUpdate, @PathVariable Long id) {
+    public ResponseData<Void> updateProduct(@RequestBody ProductRequestUpdate requestUpdate, @PathVariable Long id) throws BadRequestException {
 
         productService.updateProduct(requestUpdate, id);
 

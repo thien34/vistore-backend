@@ -19,12 +19,5 @@ public interface DiscountAppliedToProductRepository extends JpaRepository<Discou
 
     List<DiscountAppliedToProduct> findByProduct(Product product);
 
-    boolean existsByDiscountIdAndProductId(Long discountId, Long productId);
-
-    @Query("SELECT COUNT(dap) FROM DiscountAppliedToProduct dap " +
-            "JOIN dap.discount d " +
-            "WHERE dap.product.id = :productId AND d.status = 'ACTIVE'")
-    long countActiveDiscountsForProduct(@Param("productId") Long productId);
-
-
+    List<DiscountAppliedToProduct> findByProductId(Long productId);
 }
