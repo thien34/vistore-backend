@@ -1,6 +1,5 @@
 package com.example.back_end.service.returnProducts.impl;
 
-import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
 import com.example.back_end.core.admin.returnProduct.mapper.ReturnInvoiceMapper;
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnInvoiceRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnInvoiceResponse;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +25,7 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
 
     @Override
     public ReturnInvoiceResponse saveReturnInvoice(ReturnInvoiceRequest returnInvoiceRequest) {
-        ReturnInvoice returnInvoice =repository.save(mapper.mapReturnInvoice(returnInvoiceRequest)) ;
+        ReturnInvoice returnInvoice = repository.save(mapper.mapReturnInvoice(returnInvoiceRequest));
         return mapper.mapReturnInvoiceResponse(returnInvoice);
     }
 
@@ -41,7 +39,7 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
     @Override
     public ReturnInvoiceResponse getReturnInvoiceByOrderId(Long orderId) {
         Optional<ReturnInvoice> result = Optional.ofNullable(repository.findByOrderId(orderId));
-        ReturnInvoice returnInvoice= result.orElseThrow(() -> new RuntimeException("Return Invoice not found with id: " + orderId));
+        ReturnInvoice returnInvoice = result.orElseThrow(() -> new RuntimeException("Return Invoice not found with id: " + orderId));
         return mapper.mapReturnInvoiceResponse(returnInvoice);
     }
 
@@ -53,7 +51,7 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
                 pageRequest.getSortBy(),
                 pageRequest.getSortDir());
         Page<ReturnInvoice> result = repository.findAll(pageable);
-        List<ReturnInvoiceResponse> responses= mapper.mapReturnInvoices(result.getContent());
+        List<ReturnInvoiceResponse> responses = mapper.mapReturnInvoices(result.getContent());
         return PageResponse1.<List<ReturnInvoiceResponse>>builder()
                 .totalItems(result.getTotalElements())
                 .totalPages(result.getTotalPages())

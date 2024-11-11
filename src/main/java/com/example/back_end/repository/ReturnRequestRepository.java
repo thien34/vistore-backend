@@ -1,6 +1,7 @@
 package com.example.back_end.repository;
 
 import com.example.back_end.entity.ReturnRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,5 +12,5 @@ public interface ReturnRequestRepository extends JpaRepository<ReturnRequest, Lo
     ReturnRequest findByOrderId(Long orderId);
 
     @Query(value = "select rq from ReturnRequest  rq where rq.customer.id = :customerId")
-    List<ReturnRequest> findByCustomerId(Long customerId);
+    List<ReturnRequest> findByCustomerId(Long customerId, Pageable pageable);
 }

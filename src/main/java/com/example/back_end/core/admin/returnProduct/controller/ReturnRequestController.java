@@ -2,6 +2,8 @@ package com.example.back_end.core.admin.returnProduct.controller;
 
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnRequestRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnRequestResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.returnProducts.ReturnRequestServices;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +26,18 @@ public class ReturnRequestController {
     private final ReturnRequestServices returnRequestServices;
 
     @GetMapping("")
-    public ResponseData<List<ReturnRequestResponse>> getAllReturnRequests() {
-        List<ReturnRequestResponse> response = returnRequestServices.getAllReturnRequests();
-        return ResponseData.<List<ReturnRequestResponse>>builder()
+    public ResponseData<PageResponse1<List<ReturnRequestResponse>>> getAllReturnRequests(PageRequest pageRequest) {
+        PageResponse1<List<ReturnRequestResponse>> response = returnRequestServices.getAllReturnRequests(pageRequest);
+        return ResponseData.<PageResponse1<List<ReturnRequestResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all return requests success!")
                 .data(response).build();
     }
 
     @GetMapping("/customer")
-    public ResponseData<List<ReturnRequestResponse>> getAllReturnRequestsByCustomerId(@RequestParam Long customerId) {
-        List<ReturnRequestResponse> response = returnRequestServices.getAllReturnRequestsByCustomerId(customerId);
-        return ResponseData.<List<ReturnRequestResponse>>builder()
+    public ResponseData<PageResponse1<List<ReturnRequestResponse>>> getAllReturnRequestsByCustomerId(@RequestParam Long customerId, PageRequest pageRequest) {
+        PageResponse1<List<ReturnRequestResponse>> response = returnRequestServices.getAllReturnRequestsByCustomerId(customerId,pageRequest);
+        return ResponseData.<PageResponse1<List<ReturnRequestResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all return requests by CustomerId: " + customerId + " success!")
                 .data(response).build();

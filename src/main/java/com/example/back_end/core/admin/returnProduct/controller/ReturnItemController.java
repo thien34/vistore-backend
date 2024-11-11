@@ -2,6 +2,8 @@ package com.example.back_end.core.admin.returnProduct.controller;
 
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnItemRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnItemResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.returnProducts.ReturnItemServices;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +44,9 @@ public class ReturnItemController {
     }
 
     @GetMapping("")
-    public ResponseData<List<ReturnItemResponse>> getReturnItemByReturnRequestId(@RequestParam Long returnRequestId) {
-        List<ReturnItemResponse> responses = services.getAllReturnItemsByReturnRequestId(returnRequestId);
-        return ResponseData.<List<ReturnItemResponse>>builder()
+    public ResponseData<PageResponse1<List<ReturnItemResponse>>> getReturnItemByReturnRequestId(@RequestParam Long returnRequestId, PageRequest pageRequest) {
+        PageResponse1<List<ReturnItemResponse>> responses = services.getAllReturnItemsByReturnRequestId(returnRequestId, pageRequest);
+        return ResponseData.<PageResponse1<List<ReturnItemResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get Return Items with Return Request Id : " + returnRequestId + " success!")
                 .data(responses).build();

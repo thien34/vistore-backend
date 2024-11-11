@@ -10,6 +10,5 @@ public interface ReturnInvoiceRepository extends JpaRepository<ReturnInvoice, Lo
     @Query(value = "select ri from ReturnInvoice ri where ri.order.id = :invoiceId  ")
     ReturnInvoice findByOrderId(Long invoiceId);
 
-    @Override
     Page<ReturnInvoice> findAll(Pageable pageable);
 }
