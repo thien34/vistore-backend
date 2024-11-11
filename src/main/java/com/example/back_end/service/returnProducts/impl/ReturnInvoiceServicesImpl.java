@@ -1,14 +1,21 @@
 package com.example.back_end.service.returnProducts.impl;
 
+import com.example.back_end.core.admin.manufacturer.payload.response.ManufacturerResponse;
 import com.example.back_end.core.admin.returnProduct.mapper.ReturnInvoiceMapper;
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnInvoiceRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnInvoiceResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.ReturnInvoice;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ReturnInvoiceRepository;
 import com.example.back_end.service.returnProducts.ReturnInvoiceServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +46,18 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
     }
 
     @Override
-    public List<ReturnInvoiceResponse> getAllReturnInvoices() {
-        return mapper.mapReturnInvoices(repository.findAll());
+    public PageResponse1<List<ReturnInvoiceResponse>> getAllReturnInvoices(PageRequest pageRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                pageRequest.getSortBy(),
+                pageRequest.getSortDir());
+        Page<ReturnInvoice> result = repository.findAll(pageable);
+        List<ReturnInvoiceResponse> responses= mapper.mapReturnInvoices(result.getContent());
+        return PageResponse1.<List<ReturnInvoiceResponse>>builder()
+                .totalItems(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .items(responses)
+                .build();
     }
 }
