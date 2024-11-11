@@ -192,15 +192,17 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     private void updateProductDiscountPrice(Product product, Discount discount) {
-        if (discount.getDiscountPercentage() != null) {
+        if (!"ACTIVE".equals(discount.getStatus())) {
+            product.setDiscountPrice(BigDecimal.ZERO);
+        } else if (discount.getDiscountPercentage() != null) {
             BigDecimal discountPercentage = discount.getDiscountPercentage();
             BigDecimal discountAmount = product.getUnitPrice()
                     .multiply(discountPercentage)
                     .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             BigDecimal discountPrice = product.getUnitPrice().subtract(discountAmount);
             product.setDiscountPrice(discountPrice);
-            productRepository.save(product);
         }
+        productRepository.save(product);
     }
 
     private void updateDiscountStatus(Discount discount) {
