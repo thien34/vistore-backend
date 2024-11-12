@@ -21,6 +21,7 @@ import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.service.discount.DiscountService;
+import com.example.back_end.service.product.impl.ProductServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -206,16 +207,7 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     private void updateDiscountStatus(Discount discount) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
+        ProductServiceImpl.discountStatus(discount, discountRepository);
     }
 
     @Override
