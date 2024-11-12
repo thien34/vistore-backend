@@ -14,6 +14,7 @@ import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
+import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductAttributeValueRepository productAttributeValueRepository;
     private final ProductAttributeRepository productAttributeRepository;
     private final CloudinaryUpload cloudinaryUpload;
+    private final DiscountRepository discountRepository;
 
     @Transactional
     public void createProduct(List<ProductRequest> requests, MultipartFile[] images) {
@@ -111,7 +114,12 @@ public class ProductServiceImpl implements ProductService {
 
                         BigDecimal largestDiscount = calculateLargestDiscountPercentage(product);
                         response.setLargestDiscountPercentage(largestDiscount);
-
+                        if (largestDiscount.compareTo(BigDecimal.ZERO) > 0) {
+                            BigDecimal discountPrice = product.getUnitPrice().multiply(BigDecimal.ONE.subtract(largestDiscount.divide(BigDecimal.valueOf(100))));
+                            response.setDiscountPrice(discountPrice);
+                        } else {
+                            response.setDiscountPrice(product.getUnitPrice());
+                        }
                         return response;
                     } catch (Exception e) {
                         log.error("Error processing product with ID {}: {}", product.getId(), e.getMessage());
@@ -121,10 +129,32 @@ public class ProductServiceImpl implements ProductService {
                 .filter(Objects::nonNull)
                 .toList();
     }
+    private void updateDiscountStatus(Discount discount) {
+        discountStatus(discount, discountRepository);
+    }
+
+    public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
+        Instant now = Instant.now();
+        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
+            discount.setStatus("CANCEL");
+        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            discount.setStatus("EXPIRED");
+        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            discount.setStatus("UPCOMING");
+        } else {
+            discount.setStatus("ACTIVE");
+        }
+        discountRepository.save(discount);
+    }
 
     private BigDecimal calculateLargestDiscountPercentage(Product product) {
         List<DiscountAppliedToProduct> discountsApplied = discountAppliedToProductRepository.findByProduct(product);
-
+        discountsApplied.stream()
+                .map(da -> {
+                    Discount discount = da.getDiscount();
+                    updateDiscountStatus(discount);
+                    return discount;
+                }).forEach(discountRepository::save);
         return discountsApplied.stream()
                 .filter(da -> {
                     Discount discount = da.getDiscount();
