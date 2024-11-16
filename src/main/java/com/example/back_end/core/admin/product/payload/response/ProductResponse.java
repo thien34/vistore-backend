@@ -45,7 +45,7 @@ public class ProductResponse {
         this.weight = weight;
     }
 
-    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin) {
+    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, BigDecimal discountPrice) {
         this.id = id;
         this.name = fullName;
         this.deleted = deleted;
@@ -58,6 +58,7 @@ public class ProductResponse {
         this.attributes = attributes;
         this.imageUrl = image;
         this.gtin = gtin;
+        this.discountPrice = discountPrice;
     }
 
     public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, String s, String s1,BigDecimal discountPrice) {
@@ -125,7 +126,8 @@ public class ProductResponse {
                 product.getProductCost(),
                 attributes,
                 product.getImage(),
-                product.getGtin()
+                product.getGtin(),
+                product.getDiscountPrice()
         );
     }
 
