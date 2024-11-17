@@ -1,9 +1,11 @@
 package com.example.back_end.entity;
 
+import com.example.back_end.infrastructure.constant.DeliveryStatusType;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
 import com.example.back_end.infrastructure.constant.PaymentMethodType;
+import com.example.back_end.infrastructure.constant.PaymentMode;
 import com.example.back_end.infrastructure.constant.PaymentStatusType;
-import com.example.back_end.infrastructure.constant.ShippingStatusType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -13,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +25,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -71,6 +75,16 @@ public class Order extends Auditable {
     @Column(name = "payment_method_id")
     private PaymentMethodType paymentMethodId;
 
+    @Column(name = "bill_code")
+    private String billCode;
+
+    @Enumerated
+    @Column(name = "payment_mode")
+    private PaymentMode paymentMode;
+
+    @Enumerated
+    private DeliveryStatusType deliveryStatusType;
+
     @Column(name = "order_subtotal", precision = 18, scale = 2)
     private BigDecimal orderSubtotal;
 
@@ -94,5 +108,8 @@ public class Order extends Auditable {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
+    private List<OrderItem> orderItems;
 
 }
