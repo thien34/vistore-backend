@@ -68,6 +68,7 @@ public class GlobalExceptionHandler {
                                      }
                                     """))})})
     public ErrorResponse handleValidationException(Exception e, WebRequest request) {
+        log.error(e.getMessage(), e);
         ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(BAD_REQUEST.value())
@@ -304,6 +305,7 @@ public class GlobalExceptionHandler {
                                     }
                                     """))})})
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e, WebRequest request) {
+        log.error(e.getMessage(), e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -441,6 +443,7 @@ public class GlobalExceptionHandler {
             })
     })
     public ErrorResponse handleUnexpectedTypeException(UnexpectedTypeException e, WebRequest request) {
+        log.error(e.getMessage(), e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -515,6 +518,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RoleDeletionException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleRoleDeletionException(RoleDeletionException e, WebRequest request) {
+        log.error(e.getMessage(), e);
         return ErrorResponse.builder()
                 .timestamp(new Date())
                 .status(HttpStatus.BAD_REQUEST.value())

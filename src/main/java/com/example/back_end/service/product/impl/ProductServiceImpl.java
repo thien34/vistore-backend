@@ -129,6 +129,7 @@ public class ProductServiceImpl implements ProductService {
                 .filter(Objects::nonNull)
                 .toList();
     }
+
     private void updateDiscountStatus(Discount discount) {
         discountStatus(discount, discountRepository);
     }
@@ -236,12 +237,17 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> getAllProductDetails() {
         List<Product> products = productRepository.findAll();
 
-        return products
-                .stream()
+        return products.stream()
                 .filter(product -> product.getParentProductId() != null)
-                .map(ProductResponse::new)
-                .toList();
+                .map(product -> {
+                    ProductResponse response = ProductResponse.fromProductFull(product, List.of());
+                    BigDecimal largestDiscount = calculateLargestDiscountPercentage(product);
+                    response.setLargestDiscountPercentage(largestDiscount);
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
+
 
     private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
         Map<ProductAttribute, List<ProductAttributeValue>> attributeMap = product.getProductAttributeValues().stream()

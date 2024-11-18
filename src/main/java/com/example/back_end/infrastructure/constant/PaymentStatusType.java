@@ -1,8 +1,10 @@
 package com.example.back_end.infrastructure.constant;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum PaymentStatusType {
     PENDING(0),            // Chờ thanh toán
     PAID(1),               // Đã thanh toán

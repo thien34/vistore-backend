@@ -5,9 +5,13 @@ import com.example.back_end.core.admin.cart.payload.response.BillCountResponse;
 import com.example.back_end.core.admin.cart.payload.response.CartResponse;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.BillCount;
+import com.example.back_end.entity.Discount;
+import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.repository.BillCountRepository;
+import com.example.back_end.repository.DiscountAppliedToProductRepository;
+import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.service.cart.ShoppingCartService;
@@ -16,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,16 +32,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final BillCountRepository billCountRepository;
+    private final DiscountAppliedToProductRepository discountAppliedToProductRepository;
 
     @Override
-    public void addProduct(CartRequest cartRequest, String parenId) {
+    public void addProduct(CartRequest cartRequest, String parentId) {
         Product product = productRepository.findById(cartRequest.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartRequest.getProductId()));
-        List<ShoppingCartItem> existingCartItems = cartItemRepository.findByParentId(parenId);
+
+        List<ShoppingCartItem> existingCartItems = cartItemRepository.findByParentId(parentId);
         boolean productExistsInCart = false;
+
         for (ShoppingCartItem existingCartItem : existingCartItems) {
             if (existingCartItem.getProduct().getId().equals(product.getId())) {
-                existingCartItem.setQuantity(existingCartItem.getQuantity() + cartRequest.getQuantity());
+                int newQuantity = existingCartItem.getQuantity() + cartRequest.getQuantity();
+                if (newQuantity > product.getQuantity()) {
+                    throw new RuntimeException("Cannot add more than available stock for product: " + product.getName());
+                }
+                existingCartItem.setQuantity(newQuantity);
                 cartItemRepository.save(existingCartItem);
                 productExistsInCart = true;
                 break;
@@ -44,11 +56,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
 
         if (!productExistsInCart) {
+            if (cartRequest.getQuantity() > product.getQuantity()) {
+                throw new RuntimeException("Cannot add more than available stock for product: " + product.getName());
+            }
             ShoppingCartItem newCartItem = cartRequest.toShoppingCartItem(product, null);
-            newCartItem.setParentId(parenId);
+            newCartItem.setParentId(parentId);
             cartItemRepository.save(newCartItem);
         }
     }
+
 
     @Override
     public void addBill(String id) {
@@ -103,9 +119,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void updateQuantity(Long id, Integer quantity) {
+
         ShoppingCartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
         cartItem.setQuantity(quantity);
+        Product product = productRepository.findById(cartItem.getProduct().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartItem.getProduct().getId()));
+        if(cartItem.getQuantity() > product.getQuantity()) {
+            throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
+        }
         cartItemRepository.save(cartItem);
     }
 
@@ -138,9 +160,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         response.setParentId(item.getParentId());
         response.setQuantity(item.getQuantity());
         ProductResponse productResponse = new ProductResponse(item.getProduct());
+        BigDecimal largestDiscountPercentage = calculateLargestDiscountPercentage(item.getProduct());
+        productResponse.setLargestDiscountPercentage(largestDiscountPercentage);
         response.setProductResponse(productResponse);
         return response;
     }
 
+    private BigDecimal calculateLargestDiscountPercentage(Product product) {
+        List<DiscountAppliedToProduct> discountsApplied = discountAppliedToProductRepository.findByProduct(product);
+
+        return discountsApplied.stream()
+                .filter(da -> {
+                    Discount discount = da.getDiscount();
+                    return discount != null
+                            && discount.getStatus() != null
+                            && discount.getStatus().equalsIgnoreCase("ACTIVE");
+                })
+                .map(discountApplied -> discountApplied.getDiscount().getDiscountPercentage())
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+    }
 }
 

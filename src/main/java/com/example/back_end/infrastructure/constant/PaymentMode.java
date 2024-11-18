@@ -5,10 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum PaymentMethodType {
-    CASH(0),
-    TRANSFER(1),
-    COD(2);
-
+public enum PaymentMode {
+    ONLINE(1),
+    IN_STORE(2);
     public final int value;
 }
