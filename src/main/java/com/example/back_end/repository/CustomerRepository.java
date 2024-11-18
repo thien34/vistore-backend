@@ -10,6 +10,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSp
 
     Optional<Customer> findByEmail(String email);
 
-    boolean existsByEmailAndIdNot(String email, Long id);
+    Optional<Customer> findByEmailAndDeletedFalse(String email);
 
 }

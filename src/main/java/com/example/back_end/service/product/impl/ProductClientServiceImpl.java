@@ -1,12 +1,16 @@
 package com.example.back_end.service.product.impl;
 
 import com.example.back_end.core.client.product.mapper.ProductClientMapper;
+import com.example.back_end.core.client.product.payload.reponse.ProductDetailResponse;
 import com.example.back_end.core.client.product.payload.reponse.ProductResponse;
 import com.example.back_end.entity.Category;
 import com.example.back_end.entity.Product;
+import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
+import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CategoryRepository;
 import com.example.back_end.repository.OrderItemRepository;
+import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.service.product.ProductClientService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,7 @@ public class ProductClientServiceImpl implements ProductClientService {
     private final ProductClientMapper productClientMapper;
     private final OrderItemRepository orderItemRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductAttributeValueRepository productAttributeValueRepository;
 
     @Override
     public List<ProductResponse> getRootProducts() {
@@ -73,6 +78,63 @@ public class ProductClientServiceImpl implements ProductClientService {
 
         return responseList;
     }
+
+    @Override
+    public ProductDetailResponse getProductBySlug(String productSlug) {
+        Product product = productRepository.findBySlug(productSlug);
+        if (product == null) {
+            throw new NotFoundException("Product not found");
+        }
+
+        ProductDetailResponse response = productClientMapper.toDetailDto(product);
+
+        List<Product> childProducts = productRepository.findByParentProductId(product.getId());
+        if (childProducts.isEmpty()) {
+            throw new NotFoundException("Product child not found");
+        }
+
+        Product cheapestProduct = childProducts.stream()
+                .min(Comparator.comparing(Product::getUnitPrice))
+                .orElseThrow(() -> new NotFoundException("No child product with valid price"));
+
+        response.setUnitPrice(cheapestProduct.getUnitPrice());
+        response.setDiscountPrice(cheapestProduct.getDiscountPrice());
+
+        List<String> images = childProducts.stream()
+                .map(Product::getImage)
+                .filter(image -> image != null && !image.isEmpty())
+                .toList();
+        response.setImages(images);
+
+        int quantitySum = childProducts.stream()
+                .mapToInt(Product::getQuantity)
+                .sum();
+        response.setQuantitySum(quantitySum);
+
+        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findByParentProductId(product.getId());
+        List<ProductDetailResponse.ProductVariantResponse> productVariants = childProducts.stream()
+                .map(childProduct -> {
+                    // Lấy các thuộc tính của biến thể này
+                    List<ProductDetailResponse.AttributeValue> attributes = attributeValues.stream()
+                            .filter(value -> value.getProduct().getId().equals(childProduct.getId()))
+                            .map(value -> new ProductDetailResponse.AttributeValue(
+                                    value.getProductAttribute().getName(),
+                                    value.getValue()
+                            ))
+                            .toList();
+
+                    return new ProductDetailResponse.ProductVariantResponse(
+                            childProduct.getId(),
+                            attributes,
+                            childProduct.getQuantity()
+                    );
+                })
+                .toList();
+
+        response.setProductVariants(productVariants);
+        return response;
+    }
+
 
     private List<Category> getAllSubCategories(Category category) {
         List<Category> subCategories = categoryRepository.findByCategoryParent(category);

@@ -49,6 +49,20 @@ public class ProductServiceImpl implements ProductService {
     private final CloudinaryUpload cloudinaryUpload;
     private final DiscountRepository discountRepository;
 
+    public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
+        Instant now = Instant.now();
+        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
+            discount.setStatus("CANCEL");
+        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            discount.setStatus("EXPIRED");
+        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            discount.setStatus("UPCOMING");
+        } else {
+            discount.setStatus("ACTIVE");
+        }
+        discountRepository.save(discount);
+    }
+
     @Transactional
     public void createProduct(List<ProductRequest> requests, MultipartFile[] images) {
         associateImagesWithRequests(requests, images);
@@ -80,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
             } while (checkIfGtinExists(gtin));
             products.add(product);
 
-            attributeValues.addAll(mapAttributesToValues(product, request.getAttributes(), ""));
+            attributeValues.addAll(mapAttributesToValues(product, request.getAttributes()));
         }
 
         saveProductsAndAttributes(products, attributeValues);
@@ -132,20 +146,6 @@ public class ProductServiceImpl implements ProductService {
 
     private void updateDiscountStatus(Discount discount) {
         discountStatus(discount, discountRepository);
-    }
-
-    public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
-        discountRepository.save(discount);
     }
 
     private BigDecimal calculateLargestDiscountPercentage(Product product) {
@@ -215,7 +215,11 @@ public class ProductServiceImpl implements ProductService {
             ProductAttribute productAttribute = productAttributeRepository.findById(attribute.getAttributeId())
                     .orElseThrow(EntityNotFoundException::new);
 
-            ProductAttributeValue newAttributeValue = new ProductAttributeValue(product, productAttribute, attribute.getValue());
+            ProductAttributeValue newAttributeValue = ProductAttributeValue.builder()
+                    .product(product)
+                    .productAttribute(productAttribute)
+                    .value(attribute.getValue())
+                    .build();
             newAttributeValues.add(newAttributeValue);
         }
 
@@ -301,22 +305,22 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    private List<ProductAttributeValue> mapAttributesToValues(Product product, List<ProductRequest.ProductAttribute> attributes, String imageUrl) {
+    private List<ProductAttributeValue> mapAttributesToValues(Product product, List<ProductRequest.ProductAttribute> attributes) {
         if (attributes == null || attributes.isEmpty()) {
             return new ArrayList<>();
         }
 
         return attributes.stream()
-                .map(attribute -> createAttributeValue(product, attribute, imageUrl))
+                .map(attribute -> createAttributeValue(product, attribute))
                 .toList();
     }
 
-    private ProductAttributeValue createAttributeValue(Product product, ProductRequest.ProductAttribute attribute, String imageUrl) {
+    private ProductAttributeValue createAttributeValue(Product product, ProductRequest.ProductAttribute attribute) {
         ProductAttributeValue productAttribute = new ProductAttributeValue();
         productAttribute.setProduct(product);
+        productAttribute.setParentProductId(product.getParentProductId());
         productAttribute.setValue(attribute.getValue());
         productAttribute.setProductAttribute(new ProductAttribute(attribute.getId()));
-        productAttribute.setImageUrl(imageUrl);
         return productAttribute;
     }
 
@@ -358,19 +362,6 @@ public class ProductServiceImpl implements ProductService {
     private boolean checkIfGtinExists(String gtin) {
         return productRepository.existsByGtin(gtin);
     }
-//    private List<ProductResponse.ProductAttributeValueResponse> getProductAttributeValues(Product product) {
-//        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findAll();
-//        return attributeValues.stream()
-//                .filter(attributeValue -> attributeValue.getProduct().getId().equals(product.getId()))
-//                .map(attributeValue -> {
-//                    ProductResponse.ProductAttributeValueResponse attributeResponse =
-//                            new ProductResponse.ProductAttributeValueResponse();
-//                    attributeResponse.setId(attributeValue.getId());
-//                    attributeResponse.setValue(attributeValue.getValue());
-//                    attributeResponse.setImageUrl(attributeValue.getImageUrl());
-//                    return attributeResponse;
-//                }).toList();
-//    }
 
     private String generateSku(String productName, Long categoryId, Long manufacturerId, Long productId, List<ProductRequest.ProductAttribute> attributes) {
         String[] words = productName.split(" ");

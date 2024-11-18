@@ -1,5 +1,6 @@
 package com.example.back_end.core.client.product.mapper;
 
+import com.example.back_end.core.client.product.payload.reponse.ProductDetailResponse;
 import com.example.back_end.core.client.product.payload.reponse.ProductResponse;
 import com.example.back_end.entity.Product;
 import org.mapstruct.Mapper;
@@ -15,5 +16,9 @@ public interface ProductClientMapper {
     ProductResponse toDto(Product product);
 
     List<ProductResponse> toDto(List<Product> products);
+
+    @Mapping(target = "categoryName", source = "category.name")
+    @Mapping(target = "images", ignore = true)
+    ProductDetailResponse toDetailDto(Product product);
 
 }
