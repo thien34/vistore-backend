@@ -92,4 +92,10 @@ public class Discount extends Auditable {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "is_published")
+    private Boolean isPublished = false;
+
+    @Column(name = "per_customer_limit")
+    private Integer perCustomerLimit;
+
 }

@@ -7,11 +7,12 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DiscountResponse {
+public class VoucherResponse {
 
     Long id;
 
@@ -31,4 +32,21 @@ public class DiscountResponse {
 
     String status;
 
+    Boolean requiresCouponCode;
+
+    String couponCode;
+
+    BigDecimal maxDiscountAmount;
+
+    Integer maxDiscountedQuantity;
+
+    BigDecimal minOderAmount;
+
+    Boolean usePercentage;
+
+    Boolean isCumulative;
+
+    List<Long> appliedCustomerIds;
+
+    Boolean isPublished;
 }

@@ -124,10 +124,6 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     @Transactional
     public void createDiscount(DiscountRequest discountRequest) {
-        String discountName = StringUtils.sanitizeText(discountRequest.getName()).trim();
-        if (discountRepository.existsByName(discountName))
-            throw new ExistsByNameException(ErrorCode.DISCOUNT_WITH_THIS_NAME_ALREADY_EXISTS.getMessage());
-
         Discount discount = discountMapper.toEntity(discountRequest);
         validateDiscount(discount);
 
