@@ -18,6 +18,7 @@ import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
+import com.example.back_end.service.discount.impl.VoucherServiceImpl;
 import com.example.back_end.service.product.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -134,17 +135,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
-        discountRepository.save(discount);
+        VoucherServiceImpl.updateStatusVoucher(discount, discountRepository);
     }
 
     private BigDecimal calculateLargestDiscountPercentage(Product product) {

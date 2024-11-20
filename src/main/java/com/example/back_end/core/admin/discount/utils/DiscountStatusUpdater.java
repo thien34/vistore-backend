@@ -14,7 +14,7 @@ import java.util.List;
 public class DiscountStatusUpdater {
     private final DiscountRepository discountRepository;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "0 0 * * * *")
     public void updateDiscountStatuses() {
         Instant now = Instant.now();
         List<Discount> discounts = discountRepository.findAll();
