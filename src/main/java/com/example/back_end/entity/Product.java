@@ -76,10 +76,12 @@ public class Product extends Auditable {
     private Long parentProductId;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 

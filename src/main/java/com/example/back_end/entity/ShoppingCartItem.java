@@ -26,7 +26,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @Entity
 @Table(name = "shopping_cart_item")
-public class ShoppingCartItem {
+public class ShoppingCartItem extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

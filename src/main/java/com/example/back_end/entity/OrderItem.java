@@ -1,5 +1,6 @@
 package com.example.back_end.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,6 +42,7 @@ public class OrderItem extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Product product;
 
     @Column(name = "order_item_guid")
@@ -64,8 +66,8 @@ public class OrderItem extends Auditable {
     @Column(name = "attribute_description", length = Integer.MAX_VALUE)
     private String attributeDescription;
 
-    @Column(name = "attributes_json", length = Integer.MAX_VALUE)
-    private String attributesJson;
+    @Column(name = "product_json", length = Integer.MAX_VALUE)
+    private String productJson;
 
     @Column(name = "item_weight", precision = 18, scale = 2)
     private BigDecimal itemWeight;

@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
@@ -45,7 +44,7 @@ public class ProductResponse {
         this.weight = weight;
     }
 
-    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin) {
+    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, BigDecimal discountPrice, String categoryName, String manufacturerName) {
         this.id = id;
         this.name = fullName;
         this.deleted = deleted;
@@ -58,9 +57,12 @@ public class ProductResponse {
         this.attributes = attributes;
         this.imageUrl = image;
         this.gtin = gtin;
+        this.discountPrice = discountPrice;
+        this.categoryName = categoryName;
+        this.manufacturerName = manufacturerName;
     }
 
-    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, String s, String s1,BigDecimal discountPrice) {
+    public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, String s, String s1, BigDecimal discountPrice) {
         this.id = id;
         this.name = fullName;
         this.deleted = deleted;
@@ -96,6 +98,7 @@ public class ProductResponse {
                         attrValue.getValue()
                 ))
                 .toList();
+        this.discountPrice = product.getDiscountPrice();
     }
 
     public static ProductResponse fromProduct(final Product product) {
@@ -123,9 +126,19 @@ public class ProductResponse {
                 product.getUnitPrice(),
                 product.getQuantity(),
                 product.getProductCost(),
-                attributes,
+                product.getProductAttributeValues().stream()
+                        .map(attrValue -> new ProductAttribute(
+                                attrValue.getProductAttribute().getId(),
+                                attrValue.getProductAttribute().getName(),
+                                attrValue.getValue()
+                        ))
+                        .toList(),
                 product.getImage(),
-                product.getGtin()
+                product.getGtin(),
+                product.getDiscountPrice(),
+                product.getCategory() != null ? product.getCategory().getName() : null,
+                product.getManufacturer() != null ? product.getManufacturer().getName() : null
+
         );
     }
 

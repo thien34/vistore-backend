@@ -38,7 +38,4 @@ public class CustomerPassword extends Auditable {
     @Column(name = "password", length = Integer.MAX_VALUE)
     private String password;
 
-    @Column(name = "password_salt", length = Integer.MAX_VALUE)
-    private String passwordSalt;
-
 }

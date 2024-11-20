@@ -87,7 +87,7 @@ public class Discount extends Auditable {
     private BigDecimal minOderAmount;
 
     @Column(name = "is_canceled")
-    private Boolean isCanceled = false;
+    private Boolean isCanceled;
 
     @Column(name = "status")
     private String status;
