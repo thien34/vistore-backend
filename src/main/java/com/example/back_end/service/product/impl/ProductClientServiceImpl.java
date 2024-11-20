@@ -40,6 +40,7 @@ public class ProductClientServiceImpl implements ProductClientService {
         responseList.forEach(product -> {
             List<Product> childProducts = productRepository.findByParentProductId(product.getId());
             if (!childProducts.isEmpty()) {
+//                todo: check  case tất cả giá bằng nhau
                 Product cheapestProduct = childProducts.stream().min(Comparator.comparing(Product::getUnitPrice)).orElse(null);
                 product.setUnitPrice(cheapestProduct.getUnitPrice());
                 product.setDiscountPrice(cheapestProduct.getDiscountPrice() != null ? cheapestProduct.getDiscountPrice() : BigDecimal.valueOf(0));
