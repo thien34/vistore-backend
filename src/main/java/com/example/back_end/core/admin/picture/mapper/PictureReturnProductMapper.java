@@ -10,9 +10,11 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PictureReturnProductMapper {
+
     @Mapping(source = "id", target = "returnItemId")
     PictureReturnProductResponse toDto(PictureReturnProduct picture);
 
     @Mapping(source = "id", target = "returnItemId")
     List<PictureReturnProductResponse> toDtos(List<PictureReturnProduct> picture);
+
 }
