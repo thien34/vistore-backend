@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,17 +50,7 @@ public class ProductServiceImpl implements ProductService {
     private final DiscountRepository discountRepository;
 
     public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
-        discountRepository.save(discount);
+        VoucherServiceImpl.updateStatusVoucher(discount, discountRepository);
     }
 
     @Transactional
@@ -72,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
             return;
         }
 
-        Product parentProduct = createParentProduct(requests.get(0));
+        Product parentProduct = createParentProduct(requests.getFirst());
         List<Product> products = new ArrayList<>();
         List<ProductAttributeValue> attributeValues = new ArrayList<>();
 
@@ -147,10 +136,6 @@ public class ProductServiceImpl implements ProductService {
 
     private void updateDiscountStatus(Discount discount) {
         discountStatus(discount, discountRepository);
-    }
-
-    public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
-        VoucherServiceImpl.updateStatusVoucher(discount, discountRepository);
     }
 
     private BigDecimal calculateLargestDiscountPercentage(Product product) {
@@ -265,7 +250,7 @@ public class ProductServiceImpl implements ProductService {
         return attributeMap.entrySet().stream().map(entry -> {
             ProductAttribute attribute = entry.getKey();
             List<ProductAttributeValue> attributeValues = entry.getValue();
-            String value = attributeValues.isEmpty() ? null : attributeValues.get(attributeValues.size() - 1).getValue();
+            String value = attributeValues.isEmpty() ? null : attributeValues.getLast().getValue();
             return new ProductResponse.ProductAttribute(attribute.getId(), attribute.getName(), value);
         }).toList();
     }

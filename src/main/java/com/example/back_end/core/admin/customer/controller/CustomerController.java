@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/customers")
+@RequestMapping(
+        value = "/admin/customers",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -44,7 +48,9 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseData<CustomerFullResponse> getCustomerById(@PathVariable Long id) {
+
         CustomerFullResponse response = customerService.getCustomerById(id);
+
         return ResponseData.<CustomerFullResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get customer success")
@@ -54,7 +60,9 @@ public class CustomerController {
 
     @PostMapping
     public ResponseData<Void> createCustomer(@RequestBody @Valid CustomerRequest request) {
+
         customerService.createCustomer(request);
+
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Customer created successfully")
@@ -63,7 +71,9 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseData<Void> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerRequest request) {
+
         customerService.updateCustomer(id, request);
+
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Customer updated successfully")
@@ -72,7 +82,9 @@ public class CustomerController {
 
     @DeleteMapping
     public ResponseData<Void> deleteCustomers(@RequestBody List<Long> id) {
+
         customerService.deleteCustomers(id);
+
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Customers deleted successfully")
