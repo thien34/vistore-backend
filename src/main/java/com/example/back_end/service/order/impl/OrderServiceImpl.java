@@ -22,13 +22,17 @@ import com.example.back_end.repository.OrderStatusHistoryRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.service.order.OrderService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,13 +99,24 @@ public class OrderServiceImpl implements OrderService {
 
     private void updateOrderStatusHistory(Order order, Integer orderStatusId, LocalDateTime createdDate) {
         Instant instant = createdDate.atZone(ZoneId.systemDefault()).toInstant();
+        OrderStatusType statusType = EnumAdaptor.valueOf(orderStatusId, OrderStatusType.class);
+        OrderStatusHistory paidHistory = createOrderStatusHistory(order, statusType, instant, "");
+        orderStatusHistoryRepository.save(paidHistory);
 
+        if (statusType == OrderStatusType.PAID) {
+            OrderStatusHistory completedHistory = createOrderStatusHistory(order, OrderStatusType.COMPLETED, instant, "");
+            orderStatusHistoryRepository.save(completedHistory);
+        }
+
+    }
+
+    private OrderStatusHistory createOrderStatusHistory(Order order, OrderStatusType statusType, Instant paidDate, String notes) {
         OrderStatusHistory statusHistory = new OrderStatusHistory();
-        statusHistory.setPaidDate(instant);
-        statusHistory.setStatus(EnumAdaptor.valueOf(orderStatusId, OrderStatusType.class));
-        statusHistory.setNotes("");
+        statusHistory.setPaidDate(paidDate);
+        statusHistory.setStatus(statusType);
+        statusHistory.setNotes(notes);
         statusHistory.setOrder(order);
-        orderStatusHistoryRepository.save(statusHistory);
+        return statusHistory;
     }
 
     private List<OrderItem> createOrderItems(OrderRequest request, Order order) {
@@ -118,22 +133,30 @@ public class OrderServiceImpl implements OrderService {
                     product.setQuantity(newQuantity);
                     productRepository.save(product);
 
-                    OrderItem item = new OrderItem();
-                    item.setOrder(order);
-                    item.setProduct(Product.builder().id(itemRequest.getProductId()).build());
-                    item.setOrderItemGuid(UUID.fromString(String.valueOf(order.getOrderGuid())));
-                    item.setQuantity(itemRequest.getQuantity());
-                    item.setUnitPrice(itemRequest.getUnitPrice());
-                    item.setPriceTotal(itemRequest.getPriceTotal());
-                    item.setDiscountAmount(itemRequest.getDiscountAmount());
-                    item.setOriginalProductCost(itemRequest.getOriginalProductCost());
-                    item.setAttributeDescription(itemRequest.getAttributeDescription());
-                    String productJson = convertProductToJson(product);
-                    item.setProductJson(productJson);
+                    OrderItem item = createOrderItem(order, itemRequest, product);
+
                     return item;
                 })
                 .toList();
     }
+
+
+    private OrderItem createOrderItem(Order order, OrderRequest.OrderItemRequest itemRequest, Product product) {
+        OrderItem item = new OrderItem();
+        item.setOrder(order);
+        item.setProduct(Product.builder().id(itemRequest.getProductId()).build());
+        item.setOrderItemGuid(UUID.fromString(String.valueOf(order.getOrderGuid())));
+        item.setQuantity(itemRequest.getQuantity());
+        item.setUnitPrice(itemRequest.getUnitPrice());
+        item.setPriceTotal(itemRequest.getPriceTotal());
+        item.setDiscountAmount(itemRequest.getDiscountAmount());
+        item.setOriginalProductCost(itemRequest.getOriginalProductCost());
+        item.setAttributeDescription(itemRequest.getAttributeDescription());
+        String productJson = convertProductToJson(product);
+        item.setProductJson(productJson);
+        return item;
+    }
+
 
     public String convertProductToJson(Product product) {
         try {
@@ -181,10 +204,59 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderStatusHistoryResponse> getOrderStatusHistory(Long orderId) {
         List<OrderStatusHistory> statusHistories = orderStatusHistoryRepository.
                 findByOrderId(orderId);
-        List<OrderStatusHistoryResponse> responses = statusHistories
-                .stream().map(OrderStatusHistoryResponse::fromOrderStatusHistoryResponse)
+        return statusHistories.stream()
+                .sorted(Comparator.comparing(OrderStatusHistory::getPaidDate))
+                .map(OrderStatusHistoryResponse::fromOrderStatusHistoryResponse)
                 .toList();
-        return responses;
     }
+
+    @Override
+    @Transactional
+    public void updateQuantity(Long id, Integer quantity) {
+        OrderItem orderItem = orderItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
+        Integer oldQuantity = orderItem.getQuantity();
+        orderItem.setQuantity(quantity);
+
+        orderItem.setQuantity(quantity);
+
+        Product product = productRepository.findById(orderItem.getProduct().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + orderItem.getProduct().getId()));
+        if (quantity < oldQuantity) {
+            product.setQuantity(product.getQuantity() + (oldQuantity - quantity));
+        } else {
+            product.setQuantity(product.getQuantity() - (quantity - oldQuantity));
+        }
+        product = productRepository.save(product);
+
+        if (orderItem.getQuantity() > product.getQuantity()) {
+            throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
+        }
+
+        orderItem.setQuantity(quantity);
+        orderItem.setPriceTotal(orderItem.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
+        orderItemRepository.save(orderItem);
+
+        Order order = orderRepository.findById(orderItem.getOrder().getId()).orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
+        BigDecimal newOrderSubtotal = BigDecimal.ZERO;
+        BigDecimal newOrderDiscount = BigDecimal.ZERO;
+        BigDecimal newOrderTotal = BigDecimal.ZERO;
+
+        for (OrderItem item : order.getOrderItems()) {
+            newOrderSubtotal = newOrderSubtotal.add(item.getPriceTotal());
+        }
+
+        if (order.getOrderSubtotalDiscount() != null) {
+            newOrderDiscount = order.getOrderSubtotalDiscount();
+        }
+
+        BigDecimal orderShipping = order.getOrderShipping() != null ? order.getOrderShipping() : BigDecimal.ZERO;
+        newOrderTotal = newOrderSubtotal.subtract(newOrderDiscount).add(orderShipping);
+        order.setOrderSubtotal(newOrderSubtotal);
+        order.setOrderTotal(newOrderTotal);
+        orderRepository.save(order);
+
+    }
+
 
 }
