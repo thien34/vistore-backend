@@ -9,6 +9,8 @@ import com.example.back_end.entity.Discount;
 import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ShoppingCartItem;
+import com.example.back_end.infrastructure.constant.EnumAdaptor;
+import com.example.back_end.infrastructure.constant.ShoppingCartType;
 import com.example.back_end.repository.BillCountRepository;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -107,7 +109,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return billCounts;
     }
 
-    @Override
     @Transactional
     public void deleteBill(String id) {
         cartItemRepository.deleteByParentId(id);

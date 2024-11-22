@@ -15,7 +15,6 @@ import com.example.back_end.infrastructure.constant.PaymentStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.jms.JmsProperties;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -60,7 +59,12 @@ public class OrderRequest {
         order.setCustomer(Customer.builder()
                 .id(orderRequest.getCustomerId())
                 .build());
-        order.setOrderStatusId(EnumAdaptor.valueOf(orderRequest.getOrderStatusId(), OrderStatusType.class));
+        OrderStatusType statusType = EnumAdaptor.valueOf(orderRequest.getOrderStatusId(), OrderStatusType.class);
+        if (statusType == OrderStatusType.PAID) {
+            order.setOrderStatusId(OrderStatusType.COMPLETED);
+        } else {
+            order.setOrderStatusId(EnumAdaptor.valueOf(orderRequest.getOrderStatusId(), OrderStatusType.class));
+        }
         order.setPaymentStatusId(EnumAdaptor.valueOf(orderRequest.getPaymentStatusId(), PaymentStatusType.class));
         order.setPaymentMethodId(EnumAdaptor.valueOf(orderRequest.getPaymentMethodId(), PaymentMethodType.class));
         order.setPaidDateUtc(Instant.now());

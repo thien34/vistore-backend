@@ -13,4 +13,8 @@ public interface OrderService {
     List<OrderResponse> getOrders(OrderFilter filter);
     List<OrderItemsResponse> getOrderItemsByOrderId(Long orderId);
     List<OrderStatusHistoryResponse> getOrderStatusHistory(Long orderId);
+
+    void updateQuantity(Long id, Integer quantity);
+
+
 }
