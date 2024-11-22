@@ -7,11 +7,14 @@ import com.example.back_end.core.admin.discount.payload.response.VoucherResponse
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
 import com.example.back_end.entity.Discount;
+import com.example.back_end.entity.Order;
+import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.CustomerVoucherRepository;
 import com.example.back_end.repository.DiscountRepository;
+import com.example.back_end.repository.OrderRepository;
 import com.example.back_end.service.discount.EmailService;
 import com.example.back_end.service.discount.VoucherService;
 import jakarta.mail.MessagingException;
@@ -40,6 +43,7 @@ public class VoucherServiceImpl implements VoucherService {
     CustomerRepository customerRepository;
     CustomerVoucherRepository customerVoucherRepository;
     EmailService emailService;
+    OrderRepository orderRepository;
 
     private static final Random RANDOM = new Random();
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -56,6 +60,7 @@ public class VoucherServiceImpl implements VoucherService {
         discounts.forEach(this::updateVoucherStatus);
         return voucherMapper.toResponseList(discounts);
     }
+
     public static String generateVoucherCode(String prefix, Long id) {
         StringBuilder randomPart = new StringBuilder();
         for (int i = 0; i < 5; i++) {
@@ -85,6 +90,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     @Transactional
     public void createDiscount(VoucherRequest voucherRequest) {
+        checkDuplicateCouponCode(voucherRequest.getCouponCode());
         Discount discount = voucherMapper.toEntity(voucherRequest);
         validateDiscount(discount);
 
@@ -96,13 +102,21 @@ public class VoucherServiceImpl implements VoucherService {
 
         updateVoucherStatus(discount);
         discount = discountRepository.save(discount);
-
-        if (voucherRequest.getSelectedCustomerIds() == null || voucherRequest.getSelectedCustomerIds().isEmpty()) {
-            throw new InvalidDataException("At least one customer must be selected to apply the discount.");
-        }
-
         saveDiscountAppliedToCustomers(discount, voucherRequest.getSelectedCustomerIds());
-        sendVoucherEmailsToCustomers(voucherRequest.getSelectedCustomerIds(), discount.getCouponCode(), discount.getName(), discount.getStartDateUtc(), discount.getEndDateUtc(), discount.getDiscountPercentage(), discount.getDiscountAmount());
+        sendVoucherEmailsToCustomers(
+                voucherRequest.getSelectedCustomerIds(),
+                discount.getCouponCode(),
+                discount.getName(),
+                discount.getStartDateUtc(),
+                discount.getEndDateUtc(),
+                discount.getDiscountPercentage(),
+                discount.getDiscountAmount());
+    }
+
+    private void checkDuplicateCouponCode(String couponCode) {
+        if (discountRepository.existsByCouponCode(couponCode)) {
+            throw new InvalidDataException("Coupon code already exists: " + couponCode);
+        }
     }
 
     private void sendVoucherEmailsToCustomers(List<Long> customerIds, String voucherCode, String discountDetails, Instant startDate, Instant endDate, BigDecimal discountPercentage, BigDecimal discountAmount) {
@@ -149,10 +163,17 @@ public class VoucherServiceImpl implements VoucherService {
         Instant endDate = startDate.plusSeconds(86400L * 5);
         VoucherRequest voucherRequest = VoucherRequest.builder()
                 .name("Birthday Voucher for " + customer.getFirstName() + " " + customer.getLastName())
-                .couponCode(generateVoucherCode("BDAY_",customer.getId()))
+                .couponCode(generateVoucherCode("BDAY_", customer.getId()))
                 .discountPercentage(discountPercent)
                 .startDateUtc(startDate)
                 .endDateUtc(endDate)
+                .limitationTimes(1)
+                .comment("Chúc mừng sinh nhật")
+                .isPublished(false)
+                .minOderAmount(BigDecimal.ZERO)
+                .isCumulative(false)
+                .maxDiscountAmount(BigDecimal.valueOf(100000))
+                .discountTypeId(DiscountType.ASSIGNED_TO_ORDER_TOTAL)
                 .usePercentage(true)
                 .selectedCustomerIds(List.of(customer.getId()))
                 .requiresCouponCode(true)
@@ -222,9 +243,6 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     private void saveDiscountAppliedToCustomers(Discount discount, List<Long> selectedCustomerIds) {
-        if (selectedCustomerIds == null || selectedCustomerIds.isEmpty()) {
-            throw new InvalidDataException("At least one customer must be selected to apply the discount.");
-        }
 
         for (Long customerId : selectedCustomerIds) {
             Customer customer = customerRepository.findById(customerId)
@@ -239,26 +257,74 @@ public class VoucherServiceImpl implements VoucherService {
         }
     }
 
-//    private void saveDiscountAppliedToProduct(Discount discount, Product product) {
-//        DiscountAppliedToProduct discountAppliedToProduct = DiscountAppliedToProduct.builder()
-//                .discount(discount)
-//                .product(product)
-//                .build();
-//
-//        discountAppliedToProductRepository.save(discountAppliedToProduct);
-//    }
-//    private void updateProductDiscountPrice(Product product, Discount discount) {
-//        if (!"ACTIVE".equals(discount.getStatus())) {
-//            product.setDiscountPrice(BigDecimal.ZERO);
-//        } else if (discount.getDiscountPercentage() != null) {
-//            BigDecimal discountPercentage = discount.getDiscountPercentage();
-//            BigDecimal discountAmount = product.getUnitPrice()
-//                    .multiply(discountPercentage)
-//                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-//            BigDecimal discountPrice = product.getUnitPrice().subtract(discountAmount);
-//            product.setDiscountPrice(discountPrice);
-//        }
-//        productRepository.save(product);
-//    }
+    //voucher applied to order
+    @Override
+    @Transactional
+    public Order applyVoucher(Long orderId, Long voucherId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found with ID: " + orderId));
+        Discount discount = discountRepository.findById(voucherId)
+                .orElseThrow(() -> new NotFoundException("Voucher not found with ID: " + voucherId));
+        validateVoucherApplicability(order, discount);
+
+        BigDecimal discountAmount = calculateDiscount(order, discount);
+
+        order.setOrderDiscount(discountAmount);
+        order.setOrderTotal(order.getOrderSubtotal().subtract(discountAmount).add(order.getOrderShipping()));
+        orderRepository.save(order);
+
+        decrementVoucherUsage(discount);
+
+        return order;
+    }
+
+    private void validateVoucherApplicability(Order order, Discount discount) {
+        if (discount.getStatus() == null || !discount.getStatus().equalsIgnoreCase("ACTIVE")) {
+            throw new InvalidDataException("Voucher is not active.");
+        }
+
+        Instant now = Instant.now();
+        if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            throw new InvalidDataException("Voucher has expired.");
+        }
+
+        if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            throw new InvalidDataException("Voucher is not yet valid.");
+        }
+
+        if (discount.getMinOderAmount() != null &&
+                order.getOrderSubtotal().compareTo(discount.getMinOderAmount()) < 0) {
+            throw new InvalidDataException("Order does not meet the minimum amount for the voucher.");
+        }
+
+        if (discount.getLimitationTimes() != null
+                && discount.getLimitationTimes() <= 0) {
+            throw new InvalidDataException("Voucher usage limit has been reached.");
+        }
+    }
+
+    private BigDecimal calculateDiscount(Order order, Discount discount) {
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
+        if (discount.getUsePercentage() != null && discount.getUsePercentage()) {
+            discountAmount = order.getOrderSubtotal()
+                    .multiply(discount.getDiscountPercentage().divide(BigDecimal.valueOf(100)));
+        } else if (discount.getDiscountAmount() != null) {
+            discountAmount = discount.getDiscountAmount();
+        }
+
+        if (discount.getMaxDiscountAmount() != null) {
+            discountAmount = discountAmount.min(discount.getMaxDiscountAmount());
+        }
+
+        return discountAmount;
+    }
+
+    private void decrementVoucherUsage(Discount discount) {
+        if (discount.getLimitationTimes() != null && discount.getLimitationTimes() > 0) {
+            discount.setLimitationTimes(discount.getLimitationTimes() - 1);
+            discountRepository.save(discount);
+        }
+    }
 
 }

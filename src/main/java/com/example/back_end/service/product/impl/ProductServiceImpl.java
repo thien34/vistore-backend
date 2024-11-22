@@ -50,19 +50,7 @@ public class ProductServiceImpl implements ProductService {
     private final CloudinaryUpload cloudinaryUpload;
     private final DiscountRepository discountRepository;
 
-    public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
-        discountRepository.save(discount);
-    }
+
 
     @Transactional
     public void createProduct(List<ProductRequest> requests, MultipartFile[] images) {

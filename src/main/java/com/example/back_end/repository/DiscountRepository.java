@@ -15,6 +15,8 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
     boolean existsByNameAndIdNot(String name, Long id);
 
+    boolean existsByCouponCode(String couponCode);
+
     @Query("""
             SELECT d FROM Discount d WHERE
             (:name IS NULL OR d.name LIKE %:name%) AND

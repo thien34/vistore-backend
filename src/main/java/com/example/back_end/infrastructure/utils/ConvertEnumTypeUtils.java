@@ -12,7 +12,6 @@ public class ConvertEnumTypeUtils {
         return switch (type) {
             case 0 -> DiscountType.ASSIGNED_TO_ORDER_TOTAL;
             case 1 -> DiscountType.ASSIGNED_TO_PRODUCTS;
-            case 2 -> DiscountType.ASSIGNED_TO_CUSTOMERS;
             default -> throw new IllegalStateException("Unexpected value: " + type);
         };
 
