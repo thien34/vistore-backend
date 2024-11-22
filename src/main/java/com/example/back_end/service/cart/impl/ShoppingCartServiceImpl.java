@@ -11,7 +11,6 @@ import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.repository.BillCountRepository;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
-import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.service.cart.ShoppingCartService;
@@ -65,7 +64,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
 
-
     @Override
     public void addBill(String id) {
         BillCount billCount = billCountRepository.findFirstByOrderByIdAsc();
@@ -83,7 +81,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItem.setBillQuantity(billCount.getCount() + 1);
 
         cartItemRepository.save(cartItem);
-
     }
 
     @Override
@@ -124,8 +121,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
         cartItem.setQuantity(quantity);
         Product product = productRepository.findById(cartItem.getProduct().getId())
-                        .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartItem.getProduct().getId()));
-        if(cartItem.getQuantity() > product.getQuantity()) {
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartItem.getProduct().getId()));
+        if (cartItem.getQuantity() > product.getQuantity()) {
             throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
         }
         cartItemRepository.save(cartItem);
@@ -180,5 +177,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .max(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
     }
+
 }
 
