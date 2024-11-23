@@ -38,4 +38,8 @@ public class CustomerVoucher {
 
     @Column(name = "usage_count")
     private Integer usageCount;
+
+    @Column(name = "usage_count_per_customer")
+    private Integer usageCountPerCustomer;
+
 }

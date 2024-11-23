@@ -3,6 +3,7 @@ package com.example.back_end.service.discount.impl;
 import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
+import com.example.back_end.core.admin.discount.payload.response.VoucherListApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -168,7 +170,7 @@ public class VoucherServiceImpl implements VoucherService {
                 .startDateUtc(startDate)
                 .endDateUtc(endDate)
                 .limitationTimes(1)
-                .comment("Chúc mừng sinh nhật")
+                .comment("Happy birthday")
                 .isPublished(false)
                 .minOderAmount(BigDecimal.ZERO)
                 .isCumulative(false)
@@ -251,6 +253,7 @@ public class VoucherServiceImpl implements VoucherService {
             CustomerVoucher customerVoucher = CustomerVoucher.builder()
                     .customer(customer)
                     .discount(discount)
+                    .usageCount(discount.getLimitationTimes())
                     .build();
 
             customerVoucherRepository.save(customerVoucher);
@@ -273,7 +276,7 @@ public class VoucherServiceImpl implements VoucherService {
         order.setOrderTotal(order.getOrderSubtotal().subtract(discountAmount).add(order.getOrderShipping()));
         orderRepository.save(order);
 
-        decrementVoucherUsage(discount);
+        decrementVoucherUsage(order, discount);
 
         return order;
     }
@@ -320,11 +323,103 @@ public class VoucherServiceImpl implements VoucherService {
         return discountAmount;
     }
 
-    private void decrementVoucherUsage(Discount discount) {
-        if (discount.getLimitationTimes() != null && discount.getLimitationTimes() > 0) {
-            discount.setLimitationTimes(discount.getLimitationTimes() - 1);
-            discountRepository.save(discount);
+    private void decrementVoucherUsage(Order order, Discount discount) {
+        CustomerVoucher customerVoucher = customerVoucherRepository
+                .findByCustomerAndDiscount(order.getCustomer(), discount)
+                .orElseThrow(() -> new NotFoundException("Voucher not assigned to this customer or invalid voucher."));
+
+        if (customerVoucher.getUsageCount() != null && customerVoucher.getUsageCount() > 0) {
+            customerVoucher.setUsageCount(customerVoucher.getUsageCount() - 1);
+            customerVoucherRepository.save(customerVoucher);
+        } else {
+            throw new InvalidDataException("Voucher usage limit has been reached for this customer.");
         }
+    }
+
+    @Override
+    @Transactional
+    public List<VoucherListApplyResponse> getApplicableVouchers(BigDecimal subTotal, List<String> couponCodes, String email) {
+        Instant now = Instant.now();
+        List<VoucherListApplyResponse> applicableVouchers = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (String code : couponCodes) {
+            try {
+                Discount discount = discountRepository.findByCouponCode(code);
+
+                if (discount == null) {
+                    String errorMessage = "Coupon code '" + code + "' not found.";
+                    errors.add(errorMessage);
+                    log.error(errorMessage);
+                    continue;
+                }
+                if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished()) && email != null) {
+                    validatePrivateVoucherForEmail(email, discount);
+                } else if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished())) {
+                    errors.add("Voucher '" + code + "' is private. You need to provide an email.");
+                    continue;
+                }
+
+                validateVoucherApplicability(subTotal, discount, now);
+
+                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
+
+                applicableVouchers.add(new VoucherListApplyResponse(code, discountAmount));
+            } catch (InvalidDataException | NotFoundException e) {
+                errors.add("Voucher '" + code + "' is invalid: " + e.getMessage());
+            }
+        }
+        for (String error : errors) {
+            log.error(error);
+        }
+        return applicableVouchers;
+    }
+
+
+    private void validatePrivateVoucherForEmail(String email, Discount discount) {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Customer not found with email: " + email));
+        boolean isVoucherAssignedToCustomer = customerVoucherRepository.existsByCustomerAndDiscount(customer, discount);
+        if (!isVoucherAssignedToCustomer) {
+            throw new InvalidDataException("Voucher is private and not assigned to this email.");
+        }
+    }
+
+
+    private void validateVoucherApplicability(BigDecimal subTotal, Discount discount, Instant now) {
+        if (Boolean.TRUE.equals(discount.getIsCanceled())) {
+            throw new InvalidDataException("Voucher has been canceled.");
+        }
+
+        if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            throw new InvalidDataException("Voucher has expired.");
+        }
+
+        if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            throw new InvalidDataException("Voucher is not yet valid.");
+        }
+
+        if (discount.getMinOderAmount() != null &&
+                subTotal.compareTo(discount.getMinOderAmount()) < 0) {
+            throw new InvalidDataException("Order does not meet the minimum amount for the voucher.");
+        }
+    }
+
+    private BigDecimal calculateDiscount(BigDecimal subTotal, Discount discount) {
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
+        if (discount.getUsePercentage() != null && discount.getUsePercentage()) {
+            discountAmount = subTotal
+                    .multiply(discount.getDiscountPercentage().divide(BigDecimal.valueOf(100)));
+        } else if (discount.getDiscountAmount() != null) {
+            discountAmount = discount.getDiscountAmount();
+        }
+
+        if (discount.getMaxDiscountAmount() != null) {
+            discountAmount = discountAmount.min(discount.getMaxDiscountAmount());
+        }
+
+        return discountAmount;
     }
 
 }

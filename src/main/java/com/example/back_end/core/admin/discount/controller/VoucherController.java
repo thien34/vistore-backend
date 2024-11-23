@@ -2,11 +2,9 @@ package com.example.back_end.core.admin.discount.controller;
 
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
+import com.example.back_end.core.admin.discount.payload.response.VoucherListApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.entity.Order;
-import com.example.back_end.infrastructure.exception.InvalidDataException;
-import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.service.discount.VoucherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -59,52 +57,33 @@ public class VoucherController {
         }
     }
 
-    /**
-     * Apply a voucher to an order.
-     *
-     * @param orderId   ID of the order.
-     * @param voucherId ID of the voucher.
-     * @return ResponseEntity with the updated order details or error message.
-     */
-    @PostMapping("/apply")
-    @Operation(summary = "Apply a voucher to an order", description = "Apply a voucher to a specified order by providing orderId and voucherId.")
+    @PostMapping("/applicable-vouchers")
+    @Operation(summary = "Get applicable vouchers", description = "Retrieve applicable vouchers for a given subtotal, coupon codes, and email.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Voucher applied successfully"),
-            @ApiResponse(responseCode = "404", description = "Order or voucher not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid voucher or order details"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Applicable vouchers retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
     })
-    public ResponseEntity<?> applyVoucherToOrder(
-            @RequestParam Long orderId,
-            @RequestParam Long voucherId) {
+    public ResponseEntity<?> getApplicableVouchers(
+            @RequestParam BigDecimal subTotal,
+            @RequestParam List<String> couponCodes,
+            @RequestParam(required = false) String email) {
         try {
-            Order updatedOrder = voucherService.applyVoucher(orderId, voucherId);
+            List<VoucherListApplyResponse> vouchers = voucherService.getApplicableVouchers(subTotal, couponCodes, email);
 
-            return ResponseEntity.ok(ResponseData.<Order>builder()
+            return ResponseEntity.ok(ResponseData.<List<VoucherListApplyResponse>>builder()
                     .status(HttpStatus.OK.value())
-                    .message("Voucher applied successfully")
-                    .data(updatedOrder)
+                    .message("Applicable vouchers retrieved successfully")
+                    .data(vouchers)
                     .build());
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    ResponseData.builder()
-                            .status(HttpStatus.NOT_FOUND.value())
-                            .message(e.getMessage())
-                            .build());
-        } catch (InvalidDataException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     ResponseData.builder()
                             .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ResponseData.builder()
-                            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                            .message("An error occurred: " + e.getMessage())
+                            .message("Bad request: " + e.getMessage())
                             .build());
         }
     }
+
 
     @PostMapping
     @Operation(summary = "Create a new voucher", description = "Create a new voucher with the provided details.")
