@@ -1,5 +1,6 @@
 package com.example.back_end.service.product.impl;
 
+import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
@@ -12,6 +13,7 @@ import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
+import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
@@ -22,6 +24,7 @@ import com.example.back_end.service.product.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -142,6 +146,77 @@ public class ProductServiceImpl implements ProductService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateParentProduct(ProductParentRequest request, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        request.toEntity(request, product);
+        productRepository.save(product);
+
+        List<Product> products = productRepository.findByParentProductId(productId)
+                .stream().map(productUpdate -> {
+                    List<ProductRequest.ProductAttribute> attributes = productUpdate
+                            .getProductAttributeValues().stream().map(productAttributeValue -> {
+                                ProductRequest.ProductAttribute productAttribute = new ProductRequest.ProductAttribute();
+                                productAttribute.setId(productAttributeValue.getId());
+                                productAttribute.setValue(productAttributeValue.getValue());
+                                productAttribute.setProductId(productAttributeValue.getProduct().getId());
+                                return productAttribute;
+                            }).toList();
+                    productUpdate.setFullName(generateFullName(request.getName(), attributes));
+
+                    return productUpdate;
+                }).toList();
+
+        productRepository.saveAll(products);
+    }
+
+    @Override
+    @Transactional
+    public void addChildProduct(ProductRequestUpdate request, Long productId) {
+        Product productParent = productRepository.findById(productId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        Product product = new Product();
+        product.setName(request.getName());
+
+
+        if (!request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
+            throw new IllegalArgumentException("SKU already exists.");
+
+
+        List<ProductAttributeValue> newAttributeValues = new ArrayList<>();
+
+        for (ProductRequestUpdate.ProductAttribute attribute : request.getAttributes()) {
+            ProductAttribute productAttribute = productAttributeRepository.findById(attribute.getAttributeId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            ProductAttributeValue newAttributeValue = ProductAttributeValue.builder()
+                    .product(product)
+                    .productAttribute(productAttribute)
+                    .value(attribute.getValue())
+                    .build();
+            newAttributeValues.add(newAttributeValue);
+        }
+
+        productAttributeValueRepository.saveAll(newAttributeValues);
+
+        String attributeValues = request.getAttributes().stream()
+                .map(ProductRequestUpdate.ProductAttribute::getValue)
+                .distinct()
+                .collect(Collectors.joining("-"));
+
+        String fullName = product.getName() + (attributeValues.isEmpty() ? "" : "-" + attributeValues);
+        product.setFullName(fullName);
+
+        request.toEntity(product);
+        product.setParentProductId(productParent.getId());
+        product.setGtin(UUID.randomUUID().toString());
+        productRepository.save(product);
     }
 
     private void updateDiscountStatus(Discount discount) {
