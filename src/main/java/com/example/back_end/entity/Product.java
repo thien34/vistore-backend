@@ -85,7 +85,7 @@ public class Product extends Auditable {
     @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
-    //    @Column(name = "image")
+    @Column(name = "image")
     private String image;
 
     @JsonManagedReference
