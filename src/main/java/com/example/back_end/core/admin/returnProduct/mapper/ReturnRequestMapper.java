@@ -16,12 +16,11 @@ public interface ReturnRequestMapper {
     @Mapping(target = "order.id", source = "orderId")
     ReturnRequest toRequest(ReturnRequestRequest request);
 
-    @Mapping(source = "customer.id", target = "customerId")
+    @Mapping(source = "customer.firstName", target = "firstName")
+    @Mapping(source = "customer.lastName", target = "lastName")
     @Mapping(source = "order.id", target = "orderId")
     ReturnRequestResponse toResponse(ReturnRequest returnRequest);
 
-    @Mapping(source = "customer.id", target = "customerId")
-    @Mapping(source = "order.id", target = "orderId")
     List<ReturnRequestResponse> toResponseList(List<ReturnRequest> returnRequestList);
 
     void updateReturnRequest(ReturnRequestRequest request, @MappingTarget ReturnRequest returnRequest);

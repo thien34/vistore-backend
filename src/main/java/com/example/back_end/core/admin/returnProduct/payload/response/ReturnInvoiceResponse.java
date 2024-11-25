@@ -13,6 +13,10 @@ public class ReturnInvoiceResponse {
 
     private  Long returnRequestId;
 
+    private String firstName;
+
+    private String lastName;
+
     private Long orderId;
 
     private BigDecimal refundAmount;
