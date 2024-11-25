@@ -1,8 +1,9 @@
 package com.example.back_end.core.admin.discount.controller;
 
+import com.example.back_end.core.admin.discount.payload.request.CouponRequest;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
-import com.example.back_end.core.admin.discount.payload.response.VoucherListApplyResponse;
+import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.discount.VoucherService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/vouchers")
@@ -57,34 +59,27 @@ public class VoucherController {
         }
     }
 
-    @PostMapping("/applicable-vouchers")
-    @Operation(summary = "Get applicable vouchers", description = "Retrieve applicable vouchers for a given subtotal, coupon codes, and email.")
+    @PostMapping("/validate-coupons")
+    @Operation(summary = "Validate and Calculate Discounts", description = "Check the validity of multiple coupon codes and calculate discount amounts.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Applicable vouchers retrieved successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "200", description = "Validation completed"),
+            @ApiResponse(responseCode = "400", description = "Validation failed")
     })
-    public ResponseEntity<?> getApplicableVouchers(
-            @RequestParam BigDecimal subTotal,
-            @RequestParam List<String> couponCodes,
+    public ResponseEntity<?> validateCoupons(
+            @RequestParam("subTotal") BigDecimal subTotal,
+            @RequestBody CouponRequest couponRequest,
             @RequestParam(required = false) String email) {
         try {
-            List<VoucherListApplyResponse> vouchers = voucherService.getApplicableVouchers(subTotal, couponCodes, email);
+            List<String> couponCodes = couponRequest.getCouponCodes();
 
-            return ResponseEntity.ok(ResponseData.<List<VoucherListApplyResponse>>builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Applicable vouchers retrieved successfully")
-                    .data(vouchers)
-                    .build());
+            List<VoucherApplyResponse> responses = voucherService.validateAndCalculateDiscounts(subTotal, couponCodes, email);
+            return ResponseEntity.ok(responses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    ResponseData.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message("Bad request: " + e.getMessage())
-                            .build());
+                    Map.of("message", e.getMessage())
+            );
         }
     }
-
-
     @PostMapping
     @Operation(summary = "Create a new voucher", description = "Create a new voucher with the provided details.")
     @ApiResponses(value = {

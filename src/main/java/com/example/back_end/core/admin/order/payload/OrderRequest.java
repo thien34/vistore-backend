@@ -46,6 +46,7 @@ public class OrderRequest {
     private AddressRequest addressRequest;
     private Integer paymentMode;
     private Integer deliveryMode;
+    private List<Long> idVouchers;
 
 
     public static Order toEntity(OrderRequest orderRequest) {

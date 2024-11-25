@@ -3,19 +3,18 @@ package com.example.back_end.service.discount.impl;
 import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
+import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherListApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
 import com.example.back_end.entity.Discount;
-import com.example.back_end.entity.Order;
 import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.CustomerVoucherRepository;
 import com.example.back_end.repository.DiscountRepository;
-import com.example.back_end.repository.OrderRepository;
 import com.example.back_end.service.discount.EmailService;
 import com.example.back_end.service.discount.VoucherService;
 import jakarta.mail.MessagingException;
@@ -45,7 +44,6 @@ public class VoucherServiceImpl implements VoucherService {
     CustomerRepository customerRepository;
     CustomerVoucherRepository customerVoucherRepository;
     EmailService emailService;
-    OrderRepository orderRepository;
 
     private static final Random RANDOM = new Random();
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -261,80 +259,6 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     //voucher applied to order
-    @Override
-    @Transactional
-    public Order applyVoucher(Long orderId, Long voucherId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order not found with ID: " + orderId));
-        Discount discount = discountRepository.findById(voucherId)
-                .orElseThrow(() -> new NotFoundException("Voucher not found with ID: " + voucherId));
-        validateVoucherApplicability(order, discount);
-
-        BigDecimal discountAmount = calculateDiscount(order, discount);
-
-        order.setOrderDiscount(discountAmount);
-        order.setOrderTotal(order.getOrderSubtotal().subtract(discountAmount).add(order.getOrderShipping()));
-        orderRepository.save(order);
-
-        decrementVoucherUsage(order, discount);
-
-        return order;
-    }
-
-    private void validateVoucherApplicability(Order order, Discount discount) {
-        if (discount.getStatus() == null || !discount.getStatus().equalsIgnoreCase("ACTIVE")) {
-            throw new InvalidDataException("Voucher is not active.");
-        }
-
-        Instant now = Instant.now();
-        if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            throw new InvalidDataException("Voucher has expired.");
-        }
-
-        if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            throw new InvalidDataException("Voucher is not yet valid.");
-        }
-
-        if (discount.getMinOderAmount() != null &&
-                order.getOrderSubtotal().compareTo(discount.getMinOderAmount()) < 0) {
-            throw new InvalidDataException("Order does not meet the minimum amount for the voucher.");
-        }
-
-        if (discount.getLimitationTimes() != null
-                && discount.getLimitationTimes() <= 0) {
-            throw new InvalidDataException("Voucher usage limit has been reached.");
-        }
-    }
-
-    private BigDecimal calculateDiscount(Order order, Discount discount) {
-        BigDecimal discountAmount = BigDecimal.ZERO;
-
-        if (discount.getUsePercentage() != null && discount.getUsePercentage()) {
-            discountAmount = order.getOrderSubtotal()
-                    .multiply(discount.getDiscountPercentage().divide(BigDecimal.valueOf(100)));
-        } else if (discount.getDiscountAmount() != null) {
-            discountAmount = discount.getDiscountAmount();
-        }
-
-        if (discount.getMaxDiscountAmount() != null) {
-            discountAmount = discountAmount.min(discount.getMaxDiscountAmount());
-        }
-
-        return discountAmount;
-    }
-
-    private void decrementVoucherUsage(Order order, Discount discount) {
-        CustomerVoucher customerVoucher = customerVoucherRepository
-                .findByCustomerAndDiscount(order.getCustomer(), discount)
-                .orElseThrow(() -> new NotFoundException("Voucher not assigned to this customer or invalid voucher."));
-
-        if (customerVoucher.getUsageCount() != null && customerVoucher.getUsageCount() > 0) {
-            customerVoucher.setUsageCount(customerVoucher.getUsageCount() - 1);
-            customerVoucherRepository.save(customerVoucher);
-        } else {
-            throw new InvalidDataException("Voucher usage limit has been reached for this customer.");
-        }
-    }
 
     @Override
     @Transactional
@@ -375,7 +299,6 @@ public class VoucherServiceImpl implements VoucherService {
         return applicableVouchers;
     }
 
-
     private void validatePrivateVoucherForEmail(String email, Discount discount) {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Customer not found with email: " + email));
@@ -384,7 +307,6 @@ public class VoucherServiceImpl implements VoucherService {
             throw new InvalidDataException("Voucher is private and not assigned to this email.");
         }
     }
-
 
     private void validateVoucherApplicability(BigDecimal subTotal, Discount discount, Instant now) {
         if (Boolean.TRUE.equals(discount.getIsCanceled())) {
@@ -414,12 +336,50 @@ public class VoucherServiceImpl implements VoucherService {
         } else if (discount.getDiscountAmount() != null) {
             discountAmount = discount.getDiscountAmount();
         }
-
         if (discount.getMaxDiscountAmount() != null) {
             discountAmount = discountAmount.min(discount.getMaxDiscountAmount());
         }
-
         return discountAmount;
+    }
+    @Override
+    @Transactional
+    public List<VoucherApplyResponse> validateAndCalculateDiscounts(BigDecimal subTotal, List<String> couponCodes, String email) {
+        Instant now = Instant.now();
+        List<VoucherApplyResponse> responses = new ArrayList<>();
+
+        for (String code : couponCodes) {
+            VoucherApplyResponse response = new VoucherApplyResponse();
+            response.setCouponCode(code);
+            try {
+                Discount discount = discountRepository.findByCouponCode(code);
+                if (discount == null) {
+                    response.setIsApplicable(false);
+                    response.setReason("Coupon code not found.");
+                    continue;
+                }
+                if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished())) {
+                    if (email != null) {
+                        validatePrivateVoucherForEmail(email, discount);
+                    } else {
+                        response.setIsApplicable(false);
+                        response.setReason("Voucher is private. Please provide an email.");
+                        continue;
+                    }
+                }
+                validateVoucherApplicability(subTotal, discount, now);
+                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
+                response.setIsApplicable(true);
+                response.setDiscountAmount(discountAmount);
+
+            } catch (InvalidDataException | NotFoundException e) {
+                response.setIsApplicable(false);
+                response.setReason(e.getMessage());
+            }
+
+            responses.add(response);
+        }
+
+        return responses;
     }
 
 }
