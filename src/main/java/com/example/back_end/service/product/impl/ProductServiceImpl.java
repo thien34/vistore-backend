@@ -155,8 +155,9 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
         request.toEntity(request, product);
-        productRepository.save(product);
+        product = productRepository.save(product);
 
+        Product finalProduct = product;
         List<Product> products = productRepository.findByParentProductId(productId)
                 .stream().map(productUpdate -> {
                     List<ProductRequest.ProductAttribute> attributes = productUpdate
@@ -168,7 +169,8 @@ public class ProductServiceImpl implements ProductService {
                                 return productAttribute;
                             }).toList();
                     productUpdate.setFullName(generateFullName(request.getName(), attributes));
-
+                    productUpdate.setCategory(finalProduct.getCategory());
+                    productUpdate.setManufacturer(finalProduct.getManufacturer());
                     return productUpdate;
                 }).toList();
 
