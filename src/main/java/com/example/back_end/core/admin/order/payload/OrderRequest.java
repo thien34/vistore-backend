@@ -13,6 +13,7 @@ import com.example.back_end.infrastructure.constant.PaymentMethodType;
 import com.example.back_end.infrastructure.constant.PaymentMode;
 import com.example.back_end.infrastructure.constant.PaymentStatusType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -87,6 +88,7 @@ public class OrderRequest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class OrderItemRequest {
         private Long productId;
         private String orderItemGuid;

@@ -25,7 +25,6 @@ import com.example.back_end.service.order.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,6 +38,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final AddressRepository addressRepository;
@@ -107,7 +107,6 @@ public class OrderServiceImpl implements OrderService {
             OrderStatusHistory completedHistory = createOrderStatusHistory(order, OrderStatusType.COMPLETED, instant, "");
             orderStatusHistoryRepository.save(completedHistory);
         }
-
     }
 
     private OrderStatusHistory createOrderStatusHistory(Order order, OrderStatusType statusType, Instant paidDate, String notes) {
@@ -120,26 +119,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<OrderItem> createOrderItems(OrderRequest request, Order order) {
-        return request.getOrderItems().stream()
-                .map(itemRequest -> {
-                    Product product = productRepository.findById(itemRequest.getProductId())
-                            .orElseThrow(() -> new NotFoundException("Product not found"));
 
-                    int newQuantity = product.getQuantity() - itemRequest.getQuantity();
-                    if (newQuantity < 0) {
-                        throw new RuntimeException("Not enough stock for product: " + product.getId());
-                    }
-
-                    product.setQuantity(newQuantity);
-                    productRepository.save(product);
-
-                    OrderItem item = createOrderItem(order, itemRequest, product);
-
-                    return item;
-                })
+        return request.getOrderItems()
+                .stream()
+                .map(itemRequest -> createOrderItem(itemRequest, order))
                 .toList();
     }
 
+    private OrderItem createOrderItem(OrderRequest.OrderItemRequest request, Order order) {
+
+        Product product = findProductById(request.getProductId());
+
+        int newQuantity = product.getQuantity() - request.getQuantity();
+        if (newQuantity < 0) {
+            throw new RuntimeException("Not enough stock for product: " + product.getId());
+        }
+        product.setQuantity(newQuantity);
+        productRepository.save(product);
+
+        return createOrderItem(order, request, product);
+    }
 
     private OrderItem createOrderItem(Order order, OrderRequest.OrderItemRequest itemRequest, Product product) {
         OrderItem item = new OrderItem();
@@ -156,7 +155,6 @@ public class OrderServiceImpl implements OrderService {
         item.setProductJson(productJson);
         return item;
     }
-
 
     public String convertProductToJson(Product product) {
         try {
@@ -178,7 +176,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderItemsResponse> getOrderItemsByOrderId(Long orderId) {
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("Order not found" + orderId));
+        Order order = findOrderById(orderId);
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
         Address address;
@@ -194,10 +192,9 @@ public class OrderServiceImpl implements OrderService {
         } else {
             address = null;
         }
-        List<OrderItemsResponse> orderItemsResponses = orderItems
-                .stream().map(orderItem -> OrderItemsResponse.fromOrderItemsResponse(orderItem, address)).toList();
 
-        return orderItemsResponses;
+        return orderItems
+                .stream().map(orderItem -> OrderItemsResponse.fromOrderItemsResponse(orderItem, address)).toList();
     }
 
     @Override
@@ -220,8 +217,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderItem.setQuantity(quantity);
 
-        Product product = productRepository.findById(orderItem.getProduct().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + orderItem.getProduct().getId()));
+        Product product = findProductById(orderItem.getProduct().getId());
         if (quantity < oldQuantity) {
             product.setQuantity(product.getQuantity() + (oldQuantity - quantity));
         } else {
@@ -237,10 +233,10 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setPriceTotal(orderItem.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
         orderItemRepository.save(orderItem);
 
-        Order order = orderRepository.findById(orderItem.getOrder().getId()).orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
+        Order order = findOrderById(orderItem.getOrder().getId());
         BigDecimal newOrderSubtotal = BigDecimal.ZERO;
         BigDecimal newOrderDiscount = BigDecimal.ZERO;
-        BigDecimal newOrderTotal = BigDecimal.ZERO;
+        BigDecimal newOrderTotal;
 
         for (OrderItem item : order.getOrderItems()) {
             newOrderSubtotal = newOrderSubtotal.add(item.getPriceTotal());
@@ -255,8 +251,37 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderSubtotal(newOrderSubtotal);
         order.setOrderTotal(newOrderTotal);
         orderRepository.save(order);
-
     }
 
+    @Override
+    public void addProductToOrder(OrderRequest.OrderItemRequest itemRequest, Long orderId) {
+
+        Order order = findOrderById(orderId);
+        Product product = findProductById(itemRequest.getProductId());
+
+        if (itemRequest.getQuantity() > product.getQuantity()) {
+            throw new RuntimeException("Insufficient stock for product: " + product.getName());
+        }
+
+        OrderItem orderItem = createOrderItem(itemRequest, order);
+        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+        orderItems.forEach(orderItem1 -> {
+            if (orderItem1.getProduct().getId().equals(itemRequest.getProductId())) {
+                orderItem.setId(orderItem1.getId());
+                orderItem.setQuantity(orderItem1.getQuantity() + itemRequest.getQuantity());
+            }
+        });
+        orderItemRepository.save(orderItem);
+    }
+
+    private Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+    }
+
+    private Order findOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+    }
 
 }

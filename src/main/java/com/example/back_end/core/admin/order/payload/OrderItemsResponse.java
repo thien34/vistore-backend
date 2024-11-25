@@ -29,6 +29,7 @@ public class OrderItemsResponse {
     private Integer deliveryStatus;
     private CustomerOrder customerOrder;
     private ProductResponse productResponse;
+
     public static OrderItemsResponse fromOrderItemsResponse(OrderItem orderItem, Address address) {
 
         OrderItemsResponse orderItemsResponse = new OrderItemsResponse();
@@ -47,7 +48,6 @@ public class OrderItemsResponse {
         orderItemsResponse.setCustomerOrder(CustomerOrder.fromCustomerOrder(address));
         return orderItemsResponse;
     }
-
 
 
     @Data

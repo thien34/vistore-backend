@@ -29,7 +29,6 @@ public class OrderController {
     @PostMapping
     public ResponseData<Void> saveOrder(@RequestBody OrderRequest orderRequest) {
         orderService.saveOrder(orderRequest);
-
         return new ResponseData<>(HttpStatus.OK.value(), "Save order success");
     }
 
@@ -51,9 +50,16 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.OK.value(), "Fetch order status history success", responses);
     }
 
-    @PutMapping("/updateQuantity/{id}")
+    @PutMapping("/updateQuantity/{id}") 
     public ResponseData<Void> updateOrderItem(@RequestParam Integer quantity, @PathVariable Long id) {
         orderService.updateQuantity(id, quantity);
         return new ResponseData<>(HttpStatus.OK.value(), "Update order item success");
     }
+
+    @PutMapping("/addMoreProduct/{id}")
+    public ResponseData<Void> addProductToOrder(@RequestBody OrderRequest.OrderItemRequest itemRequest, @PathVariable Long id) {
+        orderService.addProductToOrder(itemRequest, id);
+        return new ResponseData<>(HttpStatus.OK.value(), "Add product to order success");
+    }
+
 }
