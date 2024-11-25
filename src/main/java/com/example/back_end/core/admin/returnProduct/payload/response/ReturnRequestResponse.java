@@ -9,7 +9,9 @@ import lombok.Setter;
 public class ReturnRequestResponse {
     private Long id;
 
-    private Long customerId;
+    private String firstName;
+
+    private String lastName;
 
     private Long orderId;
 

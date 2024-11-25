@@ -1,10 +1,15 @@
 package com.example.back_end.service.order.impl;
 
+import com.example.back_end.core.admin.order.mapper.OrderMapper;
+import com.example.back_end.core.admin.order.payload.CustomerOrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
+import com.example.back_end.core.admin.order.payload.OrderItemSummary;
 import com.example.back_end.core.admin.order.payload.OrderItemsResponse;
 import com.example.back_end.core.admin.order.payload.OrderRequest;
 import com.example.back_end.core.admin.order.payload.OrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderStatusHistoryResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.Order;
 import com.example.back_end.entity.OrderItem;
@@ -14,6 +19,7 @@ import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
 import com.example.back_end.infrastructure.exception.NotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.repository.AddressRepository;
 import com.example.back_end.repository.OrderItemRepository;
@@ -25,6 +31,8 @@ import com.example.back_end.service.order.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -33,6 +41,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+    private final OrderMapper orderMapper;
 
     @Override
     @Transactional
@@ -64,6 +74,16 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItem> orderItems = createOrderItems(request, savedOrder);
             orderItemRepository.saveAll(orderItems);
         }
+    }
+
+    @Override
+    public void updateOrder(Order order) {
+        orderRepository.save(order);
+    }
+
+    @Override
+    public Optional<Order> getOrderById(Long orderId) {
+        return orderRepository.findById(orderId);
     }
 
     private Address resolveAddress(OrderRequest request) {
@@ -282,6 +302,27 @@ public class OrderServiceImpl implements OrderService {
     private Order findOrderById(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
+    }
+
+    @Override
+    public PageResponse1<List<CustomerOrderResponse>> getCustomerOrders(PageRequest pageRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                pageRequest.getSortBy(),
+                pageRequest.getSortDir());
+        Page<Order> result = orderRepository.findAll(pageable);
+        List<CustomerOrderResponse> customerOrderRespons = orderMapper.toOrderResponses(result.getContent());
+        return PageResponse1.<List<CustomerOrderResponse>>builder()
+                .totalItems(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .items(customerOrderRespons)
+                .build();
+    }
+
+    @Override
+    public List<OrderItemSummary> getAllOrderItemSummaryByOrderId(Long orderId) {
+        return orderMapper.mapToSummaries(orderItemRepository.findByOrderId(orderId));
     }
 
 }
