@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PictureReturnProductServiceImpl implements PictureReturnProductService {
+
     private final PictureReturnProductRepository pictureRepository;
     private final CloudinaryUpload cloudinaryUpload;
     private final PictureReturnProductMapper pictureMapper;
@@ -24,6 +25,7 @@ public class PictureReturnProductServiceImpl implements PictureReturnProductServ
 
     @Override
     public List<Long> savePicture(List<MultipartFile> images, long returnItemId) {
+
         return images.stream().map(image -> {
             String url = cloudinaryUpload.uploadFile(image, CloudinaryTypeFolder.RETURNPRODUCTS);
 
@@ -38,6 +40,7 @@ public class PictureReturnProductServiceImpl implements PictureReturnProductServ
 
     @Override
     public PictureReturnProductResponse getPictureById(Long id) {
+
         PictureReturnProduct picture = pictureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Picture Return Product not found with id: " + id));
 
@@ -51,13 +54,15 @@ public class PictureReturnProductServiceImpl implements PictureReturnProductServ
 
     @Override
     public String savePicture(MultipartFile images, long returnItemId) {
+
         String url = cloudinaryUpload.uploadFile(images, CloudinaryTypeFolder.RETURNPRODUCTS);
+
         PictureReturnProduct picture = PictureReturnProduct.builder()
                 .linkImg(url)
                 .returnItem(returnItemRepository.getById(returnItemId))
                 .mimeType(images.getContentType())
                 .build();
-        return pictureRepository.save(picture).getLinkImg();
 
+        return pictureRepository.save(picture).getLinkImg();
     }
 }

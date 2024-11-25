@@ -1,5 +1,6 @@
 package com.example.back_end.service.product;
 
+import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
@@ -25,5 +26,9 @@ public interface ProductService {
     List<ProductResponse> getAllProductDetails();
 
     List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds);
+
+    void updateParentProduct(ProductParentRequest request, Long productId);
+
+    void addChildProduct(ProductRequestUpdate request, Long productId) throws BadRequestException;
 
 }

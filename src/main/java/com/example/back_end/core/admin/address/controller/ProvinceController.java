@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/provinces")
 @RequiredArgsConstructor
+@RequestMapping(value = "/admin/provinces")
 public class ProvinceController {
 
     private final ProvinceService provinceService;

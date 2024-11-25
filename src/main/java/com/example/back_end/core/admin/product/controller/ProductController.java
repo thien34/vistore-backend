@@ -1,5 +1,6 @@
 package com.example.back_end.core.admin.product.controller;
 
+import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
@@ -115,5 +116,22 @@ public class ProductController {
     public ResponseData<List<ProductResponse>> getAllProductDetails() {
         List<ProductResponse> responses = productService.getAllProductDetails();
         return new ResponseData<>(HttpStatus.OK.value(), "Get all products successfully", responses);
+    }
+
+    @PutMapping("/parent-update/{id}")
+    public ResponseData<Void> updateParentProduct(@RequestBody ProductParentRequest requestUpdate, @PathVariable Long id)  {
+        productService.updateParentProduct(requestUpdate, id);
+        return new ResponseData<>(HttpStatus.OK.value(), "Update product successfully");
+    }
+
+    @PutMapping("/add-child/{id}")
+    public ResponseData<Void> addChildProduct(@RequestBody ProductRequestUpdate requestUpdate, @PathVariable Long id) throws BadRequestException {
+
+        productService.addChildProduct(requestUpdate, id);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Update product success")
+                .build();
     }
 }

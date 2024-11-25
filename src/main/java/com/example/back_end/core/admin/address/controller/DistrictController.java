@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/districts")
 @RequiredArgsConstructor
+@RequestMapping(value = "/admin/districts")
 public class DistrictController {
 
     private final DistrictService districtService;

@@ -24,13 +24,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/categories")
+@RequestMapping(value = "/admin/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @GetMapping()
-    public ResponseData<PageResponse1<List<CategoryResponse>>> getAllCategories(@ParameterObject CategorySearchRequest searchRequest) {
+    public ResponseData<PageResponse1<List<CategoryResponse>>> getAllCategories(
+            @ParameterObject CategorySearchRequest searchRequest) {
 
         PageResponse1<List<CategoryResponse>> response = categoryService.getAll(searchRequest);
 

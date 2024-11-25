@@ -14,4 +14,7 @@ public interface ShoppingCartItemRepository extends JpaRepository<ShoppingCartIt
     void deleteByCartUUID(String cartUUID);
 
     void deleteByParentId(String parentId);
+
+    List<ShoppingCartItem> findAllByCustomerId(Long idCustomer);
+
 }

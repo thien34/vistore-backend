@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/admin/picture-return-product")
 public class PictureReturnProductController {
+
     private final PictureReturnProductService pictureReturnProductService;
 
     @PostMapping
@@ -47,11 +48,13 @@ public class PictureReturnProductController {
     @GetMapping("/return-item/{returnItemId}")
     public ResponseData<List<PictureReturnProductResponse>> getPictureByReturnItemId(@PathVariable Long returnItemId) {
 
-        List<PictureReturnProductResponse> picture =  pictureReturnProductService.getAllPictureByReturnItem(returnItemId);
+        List<PictureReturnProductResponse> picture = pictureReturnProductService.getAllPictureByReturnItem(returnItemId);
+
         return ResponseData.<List<PictureReturnProductResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get images of return item id " + returnItemId + " success!")
                 .data(picture)
                 .build();
     }
+
 }

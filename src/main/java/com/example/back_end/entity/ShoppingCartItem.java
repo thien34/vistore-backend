@@ -26,7 +26,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @Entity
 @Table(name = "shopping_cart_item")
-public class ShoppingCartItem extends Auditable{
+public class ShoppingCartItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -45,9 +45,6 @@ public class ShoppingCartItem extends Auditable{
     @Enumerated
     @Column(name = "shopping_cart_type_id")
     private ShoppingCartType shoppingCartTypeId;
-
-    @Column(name = "attribute_json", length = Integer.MAX_VALUE)
-    private String attributeJson;
 
     @Column(name = "quantity")
     private Integer quantity;

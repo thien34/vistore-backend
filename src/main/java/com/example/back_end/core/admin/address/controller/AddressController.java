@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/addresses")
+@RequestMapping(value = "/admin/addresses")
 public class AddressController {
 
     private final AddressService addressService;
@@ -37,21 +37,17 @@ public class AddressController {
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Address created successfully")
-                .data(null)
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseData<Void> updateAddress(
-            @PathVariable Long id,
-            @Valid @RequestBody AddressRequest addressRequest) {
+    public ResponseData<Void> updateAddress(@PathVariable Long id, @Valid @RequestBody AddressRequest addressRequest) {
 
         addressService.updateAddress(id, addressRequest);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
                 .message("Address updated successfully")
-                .data(null)
                 .build();
     }
 
@@ -74,7 +70,6 @@ public class AddressController {
         PageResponse1<List<AddressesResponse>> response = addressService.getAllAddressById(searchRequest);
 
         return ResponseData.<PageResponse1<List<AddressesResponse>>>builder()
-                .status(HttpStatus.OK.value())
                 .message("Get all addresses successfully")
                 .data(response)
                 .build();
