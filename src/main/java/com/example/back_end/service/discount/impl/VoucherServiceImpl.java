@@ -3,10 +3,13 @@ package com.example.back_end.service.discount.impl;
 import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
+import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
+import com.example.back_end.core.admin.discount.payload.response.VoucherListApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
 import com.example.back_end.entity.Discount;
+import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CustomerRepository;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -56,6 +60,7 @@ public class VoucherServiceImpl implements VoucherService {
         discounts.forEach(this::updateVoucherStatus);
         return voucherMapper.toResponseList(discounts);
     }
+
     public static String generateVoucherCode(String prefix, Long id) {
         StringBuilder randomPart = new StringBuilder();
         for (int i = 0; i < 5; i++) {
@@ -85,6 +90,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     @Transactional
     public void createDiscount(VoucherRequest voucherRequest) {
+        checkDuplicateCouponCode(voucherRequest.getCouponCode());
         Discount discount = voucherMapper.toEntity(voucherRequest);
         validateDiscount(discount);
 
@@ -96,13 +102,21 @@ public class VoucherServiceImpl implements VoucherService {
 
         updateVoucherStatus(discount);
         discount = discountRepository.save(discount);
-
-        if (voucherRequest.getSelectedCustomerIds() == null || voucherRequest.getSelectedCustomerIds().isEmpty()) {
-            throw new InvalidDataException("At least one customer must be selected to apply the discount.");
-        }
-
         saveDiscountAppliedToCustomers(discount, voucherRequest.getSelectedCustomerIds());
-        sendVoucherEmailsToCustomers(voucherRequest.getSelectedCustomerIds(), discount.getCouponCode(), discount.getName(), discount.getStartDateUtc(), discount.getEndDateUtc(), discount.getDiscountPercentage(), discount.getDiscountAmount());
+        sendVoucherEmailsToCustomers(
+                voucherRequest.getSelectedCustomerIds(),
+                discount.getCouponCode(),
+                discount.getName(),
+                discount.getStartDateUtc(),
+                discount.getEndDateUtc(),
+                discount.getDiscountPercentage(),
+                discount.getDiscountAmount());
+    }
+
+    private void checkDuplicateCouponCode(String couponCode) {
+        if (discountRepository.existsByCouponCode(couponCode)) {
+            throw new InvalidDataException("Coupon code already exists: " + couponCode);
+        }
     }
 
     private void sendVoucherEmailsToCustomers(List<Long> customerIds, String voucherCode, String discountDetails, Instant startDate, Instant endDate, BigDecimal discountPercentage, BigDecimal discountAmount) {
@@ -149,10 +163,17 @@ public class VoucherServiceImpl implements VoucherService {
         Instant endDate = startDate.plusSeconds(86400L * 5);
         VoucherRequest voucherRequest = VoucherRequest.builder()
                 .name("Birthday Voucher for " + customer.getFirstName() + " " + customer.getLastName())
-                .couponCode(generateVoucherCode("BDAY_",customer.getId()))
+                .couponCode(generateVoucherCode("BDAY_", customer.getId()))
                 .discountPercentage(discountPercent)
                 .startDateUtc(startDate)
                 .endDateUtc(endDate)
+                .limitationTimes(1)
+                .comment("Happy birthday")
+                .isPublished(false)
+                .minOderAmount(BigDecimal.ZERO)
+                .isCumulative(false)
+                .maxDiscountAmount(BigDecimal.valueOf(100000))
+                .discountTypeId(DiscountType.ASSIGNED_TO_ORDER_TOTAL)
                 .usePercentage(true)
                 .selectedCustomerIds(List.of(customer.getId()))
                 .requiresCouponCode(true)
@@ -222,9 +243,6 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     private void saveDiscountAppliedToCustomers(Discount discount, List<Long> selectedCustomerIds) {
-        if (selectedCustomerIds == null || selectedCustomerIds.isEmpty()) {
-            throw new InvalidDataException("At least one customer must be selected to apply the discount.");
-        }
 
         for (Long customerId : selectedCustomerIds) {
             Customer customer = customerRepository.findById(customerId)
@@ -233,32 +251,135 @@ public class VoucherServiceImpl implements VoucherService {
             CustomerVoucher customerVoucher = CustomerVoucher.builder()
                     .customer(customer)
                     .discount(discount)
+                    .usageCount(discount.getLimitationTimes())
                     .build();
 
             customerVoucherRepository.save(customerVoucher);
         }
     }
 
-//    private void saveDiscountAppliedToProduct(Discount discount, Product product) {
-//        DiscountAppliedToProduct discountAppliedToProduct = DiscountAppliedToProduct.builder()
-//                .discount(discount)
-//                .product(product)
-//                .build();
-//
-//        discountAppliedToProductRepository.save(discountAppliedToProduct);
-//    }
-//    private void updateProductDiscountPrice(Product product, Discount discount) {
-//        if (!"ACTIVE".equals(discount.getStatus())) {
-//            product.setDiscountPrice(BigDecimal.ZERO);
-//        } else if (discount.getDiscountPercentage() != null) {
-//            BigDecimal discountPercentage = discount.getDiscountPercentage();
-//            BigDecimal discountAmount = product.getUnitPrice()
-//                    .multiply(discountPercentage)
-//                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-//            BigDecimal discountPrice = product.getUnitPrice().subtract(discountAmount);
-//            product.setDiscountPrice(discountPrice);
-//        }
-//        productRepository.save(product);
-//    }
+    //voucher applied to order
+
+    @Override
+    @Transactional
+    public List<VoucherListApplyResponse> getApplicableVouchers(BigDecimal subTotal, List<String> couponCodes, String email) {
+        Instant now = Instant.now();
+        List<VoucherListApplyResponse> applicableVouchers = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (String code : couponCodes) {
+            try {
+                Discount discount = discountRepository.findByCouponCode(code);
+
+                if (discount == null) {
+                    String errorMessage = "Coupon code '" + code + "' not found.";
+                    errors.add(errorMessage);
+                    log.error(errorMessage);
+                    continue;
+                }
+                if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished()) && email != null) {
+                    validatePrivateVoucherForEmail(email, discount);
+                } else if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished())) {
+                    errors.add("Voucher '" + code + "' is private. You need to provide an email.");
+                    continue;
+                }
+
+                validateVoucherApplicability(subTotal, discount, now);
+
+                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
+
+                applicableVouchers.add(new VoucherListApplyResponse(code, discountAmount));
+            } catch (InvalidDataException | NotFoundException e) {
+                errors.add("Voucher '" + code + "' is invalid: " + e.getMessage());
+            }
+        }
+        for (String error : errors) {
+            log.error(error);
+        }
+        return applicableVouchers;
+    }
+
+    private void validatePrivateVoucherForEmail(String email, Discount discount) {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Customer not found with email: " + email));
+        boolean isVoucherAssignedToCustomer = customerVoucherRepository.existsByCustomerAndDiscount(customer, discount);
+        if (!isVoucherAssignedToCustomer) {
+            throw new InvalidDataException("Voucher is private and not assigned to this email.");
+        }
+    }
+
+    private void validateVoucherApplicability(BigDecimal subTotal, Discount discount, Instant now) {
+        if (Boolean.TRUE.equals(discount.getIsCanceled())) {
+            throw new InvalidDataException("Voucher has been canceled.");
+        }
+
+        if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            throw new InvalidDataException("Voucher has expired.");
+        }
+
+        if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            throw new InvalidDataException("Voucher is not yet valid.");
+        }
+
+        if (discount.getMinOderAmount() != null &&
+                subTotal.compareTo(discount.getMinOderAmount()) < 0) {
+            throw new InvalidDataException("Order does not meet the minimum amount for the voucher.");
+        }
+    }
+
+    private BigDecimal calculateDiscount(BigDecimal subTotal, Discount discount) {
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
+        if (discount.getUsePercentage() != null && discount.getUsePercentage()) {
+            discountAmount = subTotal
+                    .multiply(discount.getDiscountPercentage().divide(BigDecimal.valueOf(100)));
+        } else if (discount.getDiscountAmount() != null) {
+            discountAmount = discount.getDiscountAmount();
+        }
+        if (discount.getMaxDiscountAmount() != null) {
+            discountAmount = discountAmount.min(discount.getMaxDiscountAmount());
+        }
+        return discountAmount;
+    }
+    @Override
+    @Transactional
+    public List<VoucherApplyResponse> validateAndCalculateDiscounts(BigDecimal subTotal, List<String> couponCodes, String email) {
+        Instant now = Instant.now();
+        List<VoucherApplyResponse> responses = new ArrayList<>();
+
+        for (String code : couponCodes) {
+            VoucherApplyResponse response = new VoucherApplyResponse();
+            response.setCouponCode(code);
+            try {
+                Discount discount = discountRepository.findByCouponCode(code);
+                if (discount == null) {
+                    response.setIsApplicable(false);
+                    response.setReason("Coupon code not found.");
+                    continue;
+                }
+                if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished())) {
+                    if (email != null) {
+                        validatePrivateVoucherForEmail(email, discount);
+                    } else {
+                        response.setIsApplicable(false);
+                        response.setReason("Voucher is private. Please provide an email.");
+                        continue;
+                    }
+                }
+                validateVoucherApplicability(subTotal, discount, now);
+                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
+                response.setIsApplicable(true);
+                response.setDiscountAmount(discountAmount);
+
+            } catch (InvalidDataException | NotFoundException e) {
+                response.setIsApplicable(false);
+                response.setReason(e.getMessage());
+            }
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
 
 }

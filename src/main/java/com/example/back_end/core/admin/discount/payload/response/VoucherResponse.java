@@ -38,7 +38,7 @@ public class VoucherResponse {
 
     BigDecimal maxDiscountAmount;
 
-    Integer maxDiscountedQuantity;
+//    Integer maxDiscountedQuantity;
 
     BigDecimal minOderAmount;
 

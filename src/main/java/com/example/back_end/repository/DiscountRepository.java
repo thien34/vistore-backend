@@ -12,8 +12,11 @@ import java.util.List;
 public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
     boolean existsByName(String name);
+    Discount findByCouponCode(String couponCode);
 
     boolean existsByNameAndIdNot(String name, Long id);
+
+    boolean existsByCouponCode(String couponCode);
 
     @Query("""
             SELECT d FROM Discount d WHERE

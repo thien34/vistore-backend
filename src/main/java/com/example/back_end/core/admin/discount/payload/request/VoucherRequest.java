@@ -47,12 +47,14 @@ public class VoucherRequest {
 
     Integer limitationTimes;
 
-    Integer maxDiscountedQuantity;
+//    Integer maxDiscountedQuantity;
 
     BigDecimal minOderAmount;
 
     List<Long> selectedCustomerIds;
 
     Boolean isPublished;
+
+    Integer perCustomerLimit;
 
 }
