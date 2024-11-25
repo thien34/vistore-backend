@@ -16,8 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -68,4 +70,17 @@ public class OrderController {
                 .message("Get All Order success!")
                 .data(response).build();
     }
+
+    @PutMapping("/updateQuantity/{id}")
+    public ResponseData<Void> updateOrderItem(@RequestParam Integer quantity, @PathVariable Long id) {
+        orderService.updateQuantity(id, quantity);
+        return new ResponseData<>(HttpStatus.OK.value(), "Update order item success");
+    }
+
+    @PutMapping("/addMoreProduct/{id}")
+    public ResponseData<Void> addProductToOrder(@RequestBody OrderRequest.OrderItemRequest itemRequest, @PathVariable Long id) {
+        orderService.addProductToOrder(itemRequest, id);
+        return new ResponseData<>(HttpStatus.OK.value(), "Add product to order success");
+    }
+
 }

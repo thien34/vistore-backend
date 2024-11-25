@@ -15,17 +15,24 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
+
     void saveOrder(OrderRequest request);
 
     void updateOrder(Order order);
 
     Optional<Order> getOrderById(Long orderId);
 
+
     List<OrderResponse> getOrders(OrderFilter filter);
 
     List<OrderItemsResponse> getOrderItemsByOrderId(Long orderId);
 
     List<OrderStatusHistoryResponse> getOrderStatusHistory(Long orderId);
+
+    void updateQuantity(Long id, Integer quantity);
+
+    void addProductToOrder(OrderRequest.OrderItemRequest itemRequest, Long orderId);
+
 
     PageResponse1<List<CustomerOrderResponse>> getCustomerOrders(PageRequest pageRequest);
 
