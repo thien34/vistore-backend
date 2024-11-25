@@ -51,6 +51,7 @@ public class ProductRequest {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ProductAttribute {
         private Long id;
         private Long productId;
