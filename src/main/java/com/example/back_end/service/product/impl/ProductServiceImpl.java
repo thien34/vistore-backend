@@ -12,6 +12,7 @@ import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
+import com.example.back_end.infrastructure.utils.CollectionUtil;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
@@ -29,11 +30,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -64,42 +68,60 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transactional
+    @Override
     public void createProduct(List<ProductRequest> requests, MultipartFile[] images) {
-        associateImagesWithRequests(requests, images);
-
         if (requests.isEmpty()) {
             return;
         }
 
         Product parentProduct = createParentProduct(requests.get(0));
-        List<Product> products = new ArrayList<>();
-        List<ProductAttributeValue> attributeValues = new ArrayList<>();
 
-        for (ProductRequest request : requests) {
-            Product product = mapRequestToProduct(request, parentProduct);
-            String imageUrl = uploadImage(request).orElse("");
-            product.setImage(imageUrl);
-            String sku = generateSku(
-                    request.getName(),
-                    request.getCategoryId(),
-                    request.getManufacturerId(),
-                    product.getId(),
-                    request.getAttributes());
-            product.setSku(sku);
+        final AtomicInteger imageIndex = new AtomicInteger(0);
 
-            String gtin;
-            do {
-                gtin = String.format("%013d", new Random().nextLong() % 1_000_000_000_0000L);
-                product.setGtin(gtin);
-            } while (checkIfGtinExists(gtin));
-            products.add(product);
+        CollectionUtil.split(requests, 50, batch -> {
+            int startIndex = imageIndex.get();
+            int endIndex = Math.min(startIndex + batch.size(), images != null ? images.length : 0);
+            List<MultipartFile> batchImages = images != null
+                    ? Arrays.asList(images).subList(startIndex, endIndex)
+                    : Collections.emptyList();
 
-            attributeValues.addAll(mapAttributesToValues(product, request.getAttributes()));
-        }
+            imageIndex.addAndGet(batch.size());
 
-        saveProductsAndAttributes(products, attributeValues);
+            associateImagesWithRequests(batch, batchImages.toArray(new MultipartFile[0]));
 
+            List<Product> products = new ArrayList<>();
+            List<ProductAttributeValue> attributeValues = new ArrayList<>();
+
+            for (ProductRequest request : batch) {
+                Product product = mapRequestToProduct(request, parentProduct);
+                String imageUrl = uploadImage(request).orElse("");
+                product.setImage(imageUrl);
+                String sku = generateSku(
+                        request.getName(),
+                        request.getCategoryId(),
+                        request.getManufacturerId(),
+                        product.getId(),
+                        request.getAttributes());
+
+                while (checkIfSkuExists(sku)) {
+                    sku = appendRandomSuffixToSku(sku);
+                }
+                product.setSku(sku);
+
+                String gtin;
+                do {
+                    gtin = String.format("%013d", new Random().nextLong() % 1_000_000_000_0000L);
+                    product.setGtin(gtin);
+                } while (checkIfGtinExists(gtin));
+                products.add(product);
+
+                attributeValues.addAll(mapAttributesToValues(product, request.getAttributes()));
+            }
+
+            saveProductsAndAttributes(products, attributeValues);
+        });
     }
+
 
     @Override
     public List<ProductResponse> getAllProducts() {
@@ -380,5 +402,15 @@ public class ProductServiceImpl implements ProductService {
         }
         return String.join("-", skuParts);
     }
+
+    private boolean checkIfSkuExists(String sku) {
+        return productRepository.existsBySku(sku);
+    }
+
+    private String appendRandomSuffixToSku(String sku) {
+        String suffix = "-" + new Random().nextInt(1000);
+        return sku + suffix;
+    }
+
 
 }
