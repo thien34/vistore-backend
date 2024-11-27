@@ -40,6 +40,7 @@ public class ProductClientServiceImpl implements ProductClientService {
         responseList.forEach(product -> {
             List<Product> childProducts = productRepository.findByParentProductId(product.getId());
             if (!childProducts.isEmpty()) {
+//                todo: check  case tất cả giá bằng nhau
                 Product cheapestProduct = childProducts.stream().min(Comparator.comparing(Product::getUnitPrice)).orElse(null);
                 product.setUnitPrice(cheapestProduct.getUnitPrice());
                 product.setDiscountPrice(cheapestProduct.getDiscountPrice() != null ? cheapestProduct.getDiscountPrice() : BigDecimal.valueOf(0));
@@ -98,7 +99,7 @@ public class ProductClientServiceImpl implements ProductClientService {
                 .orElseThrow(() -> new NotFoundException("No child product with valid price"));
 
         response.setUnitPrice(cheapestProduct.getUnitPrice());
-        response.setDiscountPrice(cheapestProduct.getDiscountPrice());
+        response.setDiscountPrice(cheapestProduct.getDiscountPrice() == null ? BigDecimal.valueOf(0) : cheapestProduct.getDiscountPrice());
 
         List<String> images = childProducts.stream()
                 .map(Product::getImage)
@@ -126,7 +127,9 @@ public class ProductClientServiceImpl implements ProductClientService {
                     return new ProductDetailResponse.ProductVariantResponse(
                             childProduct.getId(),
                             attributes,
-                            childProduct.getQuantity()
+                            childProduct.getQuantity(),
+                            childProduct.getUnitPrice(),
+                            childProduct.getDiscountPrice() == null ? BigDecimal.valueOf(0) : childProduct.getDiscountPrice()
                     );
                 })
                 .toList();

@@ -47,13 +47,17 @@ public class ProductDetailResponse {
         private List<AttributeValue> attributes; // Danh sách các thuộc tính và giá trị của biến thể
 
         private Integer quantity; // Số lượng của biến thể
+
+        private BigDecimal unitPrice;
+
+        private BigDecimal discountPrice;
     }
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-        public static class AttributeValue {
+    public static class AttributeValue {
 
         private String attributeName; // Tên thuộc tính, ví dụ: Màu sắc, Kích thước
 

@@ -19,6 +19,8 @@ public class ReturnItemRequest {
 
     private Long productId;
 
+    private Integer quantity;
+
     private BigDecimal oldUnitPrice;
 
     private BigDecimal discountAmountPerItem;

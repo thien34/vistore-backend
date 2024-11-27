@@ -1,5 +1,6 @@
 package com.example.back_end.service.product.impl;
 
+import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
@@ -13,22 +14,24 @@ import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.infrastructure.utils.CollectionUtil;
+import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
+import com.example.back_end.service.discount.impl.VoucherServiceImpl;
 import com.example.back_end.service.product.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +41,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -54,17 +58,7 @@ public class ProductServiceImpl implements ProductService {
     private final DiscountRepository discountRepository;
 
     public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
-        discountRepository.save(discount);
+        VoucherServiceImpl.updateStatusVoucher(discount, discountRepository);
     }
 
     @Transactional
@@ -74,7 +68,9 @@ public class ProductServiceImpl implements ProductService {
             return;
         }
 
-        Product parentProduct = createParentProduct(requests.get(0));
+        Product parentProduct = createParentProduct(requests.getFirst());
+        List<Product> products = new ArrayList<>();
+        List<ProductAttributeValue> attributeValues = new ArrayList<>();
 
         final AtomicInteger imageIndex = new AtomicInteger(0);
 
@@ -122,7 +118,6 @@ public class ProductServiceImpl implements ProductService {
         });
     }
 
-
     @Override
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -151,7 +146,8 @@ public class ProductServiceImpl implements ProductService {
                         BigDecimal largestDiscount = calculateLargestDiscountPercentage(product);
                         response.setLargestDiscountPercentage(largestDiscount);
                         if (largestDiscount.compareTo(BigDecimal.ZERO) > 0) {
-                            BigDecimal discountPrice = product.getUnitPrice().multiply(BigDecimal.ONE.subtract(largestDiscount.divide(BigDecimal.valueOf(100))));
+                            BigDecimal discountPrice = product.getUnitPrice()
+                                    .multiply(BigDecimal.ONE.subtract(largestDiscount.divide(BigDecimal.valueOf(100))));
                             response.setDiscountPrice(discountPrice);
                         } else {
                             response.setDiscountPrice(product.getUnitPrice());
@@ -164,6 +160,78 @@ public class ProductServiceImpl implements ProductService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateParentProduct(ProductParentRequest request, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        request.toEntity(request, product);
+        product = productRepository.save(product);
+
+        Product finalProduct = product;
+        List<Product> products = productRepository.findByParentProductId(productId)
+                .stream().map(productUpdate -> {
+                    List<ProductRequest.ProductAttribute> attributes = productUpdate
+                            .getProductAttributeValues().stream().map(productAttributeValue -> {
+                                ProductRequest.ProductAttribute productAttribute = new ProductRequest.ProductAttribute();
+                                productAttribute.setId(productAttributeValue.getId());
+                                productAttribute.setValue(productAttributeValue.getValue());
+                                productAttribute.setProductId(productAttributeValue.getProduct().getId());
+                                return productAttribute;
+                            }).toList();
+                    productUpdate.setFullName(generateFullName(request.getName(), attributes));
+                    productUpdate.setCategory(finalProduct.getCategory());
+                    productUpdate.setManufacturer(finalProduct.getManufacturer());
+                    return productUpdate;
+                }).toList();
+
+        productRepository.saveAll(products);
+
+    }
+
+    @Override
+    @Transactional
+    public void addChildProduct(ProductRequestUpdate request, Long productId) {
+        Product productParent = productRepository.findById(productId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        Product product = new Product();
+        product.setName(request.getName());
+
+        if (!request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
+            throw new IllegalArgumentException("SKU already exists.");
+
+        List<ProductAttributeValue> newAttributeValues = new ArrayList<>();
+
+        for (ProductRequestUpdate.ProductAttribute attribute : request.getAttributes()) {
+            ProductAttribute productAttribute = productAttributeRepository.findById(attribute.getAttributeId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            ProductAttributeValue newAttributeValue = ProductAttributeValue.builder()
+                    .product(product)
+                    .productAttribute(productAttribute)
+                    .value(attribute.getValue())
+                    .build();
+            newAttributeValues.add(newAttributeValue);
+        }
+
+        productAttributeValueRepository.saveAll(newAttributeValues);
+
+        String attributeValues = request.getAttributes().stream()
+                .map(ProductRequestUpdate.ProductAttribute::getValue)
+                .distinct()
+                .collect(Collectors.joining("-"));
+
+        String fullName = product.getName() + (attributeValues.isEmpty() ? "" : "-" + attributeValues);
+        product.setFullName(fullName);
+
+        request.toEntity(product);
+        product.setParentProductId(productParent.getId());
+        product.setGtin(UUID.randomUUID().toString());
+        productRepository.save(product);
     }
 
     private void updateDiscountStatus(Discount discount) {
@@ -190,7 +258,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElse(BigDecimal.ZERO);
     }
 
-
     @Override
     public ProductResponse getProductById(Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
@@ -205,7 +272,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getAllProductByParentId(Long parentId) {
         List<Product> products = productRepository.findAll().stream()
-                .filter(product -> product.getParentProductId() != null && product.getParentProductId().equals(parentId))
+                .filter(product -> product.getParentProductId() != null
+                        && product.getParentProductId().equals(parentId))
                 .toList();
         return products.stream().map(product -> ProductResponse.fromProductParentId(product, List.of())).toList();
     }
@@ -274,7 +342,6 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
-
     private List<ProductResponse.ProductAttribute> getProductAttributes(Product product) {
         Map<ProductAttribute, List<ProductAttributeValue>> attributeMap = product.getProductAttributeValues().stream()
                 .collect(Collectors.groupingBy(ProductAttributeValue::getProductAttribute));
@@ -282,7 +349,7 @@ public class ProductServiceImpl implements ProductService {
         return attributeMap.entrySet().stream().map(entry -> {
             ProductAttribute attribute = entry.getKey();
             List<ProductAttributeValue> attributeValues = entry.getValue();
-            String value = attributeValues.isEmpty() ? null : attributeValues.get(attributeValues.size() - 1).getValue();
+            String value = attributeValues.isEmpty() ? null : attributeValues.getLast().getValue();
             return new ProductResponse.ProductAttribute(attribute.getId(), attribute.getName(), value);
         }).toList();
     }
@@ -327,7 +394,8 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    private List<ProductAttributeValue> mapAttributesToValues(Product product, List<ProductRequest.ProductAttribute> attributes) {
+    private List<ProductAttributeValue> mapAttributesToValues(Product product,
+            List<ProductRequest.ProductAttribute> attributes) {
         if (attributes == null || attributes.isEmpty()) {
             return new ArrayList<>();
         }
@@ -364,7 +432,6 @@ public class ProductServiceImpl implements ProductService {
         return productName + (attributeValues.isEmpty() ? "" : " - " + attributeValues);
     }
 
-
     private void saveProductsAndAttributes(List<Product> products, List<ProductAttributeValue> attributeValues) {
         productRepository.saveAll(products);
         productAttributeValueRepository.saveAll(attributeValues);
@@ -376,7 +443,8 @@ public class ProductServiceImpl implements ProductService {
                     product, new ProductAttribute(attribute.getId()), attribute.getValue());
 
             if (exists)
-                throw new IllegalArgumentException("Giá trị " + attribute.getValue() + " đã tồn tại cho sản phẩm " + product.getName());
+                throw new IllegalArgumentException(
+                        "Giá trị " + attribute.getValue() + " đã tồn tại cho sản phẩm " + product.getName());
 
         }
     }
@@ -385,20 +453,26 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.existsByGtin(gtin);
     }
 
-    private String generateSku(String productName, Long categoryId, Long manufacturerId, Long productId, List<ProductRequest.ProductAttribute> attributes) {
+    private String generateSku(String productName, Long categoryId, Long manufacturerId, Long productId,
+            List<ProductRequest.ProductAttribute> attributes) {
         String[] words = productName.split(" ");
         StringBuilder productCodeBuilder = new StringBuilder();
 
         for (String word : words) {
-            if (!word.isEmpty()) productCodeBuilder.append(word.charAt(0));
+            if (!word.isEmpty())
+                productCodeBuilder.append(word.charAt(0));
         }
         List<String> skuParts = new ArrayList<>();
         skuParts.add(productCodeBuilder.toString().toUpperCase());
-        if (categoryId != null) skuParts.add(String.valueOf(categoryId));
-        if (manufacturerId != null) skuParts.add(String.valueOf(manufacturerId));
-        if (productId != null) skuParts.add(String.valueOf(productId));
+        if (categoryId != null)
+            skuParts.add(String.valueOf(categoryId));
+        if (manufacturerId != null)
+            skuParts.add(String.valueOf(manufacturerId));
+        if (productId != null)
+            skuParts.add(String.valueOf(productId));
         for (ProductRequest.ProductAttribute attribute : attributes) {
-            if (attribute.getValue() != null) skuParts.add(attribute.getValue());
+            if (attribute.getValue() != null)
+                skuParts.add(attribute.getValue());
         }
         return String.join("-", skuParts);
     }
@@ -411,6 +485,5 @@ public class ProductServiceImpl implements ProductService {
         String suffix = "-" + new Random().nextInt(1000);
         return sku + suffix;
     }
-
 
 }

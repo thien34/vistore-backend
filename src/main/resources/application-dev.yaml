@@ -1,9 +1,21 @@
 spring:
+  main:
+    allow-circular-references: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kiennkph42576@fpt.edu.vn
+    password: zxnswhfbtzvvyfok
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: smtp.gmail.com
+    default-encoding: UTF-8
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/store_db
+    url: jdbc:postgresql://localhost:5432/db_empty
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1}
+    password: ${DB_PASSWORD:12345678}
 
   mvc:
     log-request-details: true

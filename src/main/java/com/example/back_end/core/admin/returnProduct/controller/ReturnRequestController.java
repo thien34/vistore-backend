@@ -36,7 +36,7 @@ public class ReturnRequestController {
 
     @GetMapping("/customer")
     public ResponseData<PageResponse1<List<ReturnRequestResponse>>> getAllReturnRequestsByCustomerId(@RequestParam Long customerId, PageRequest pageRequest) {
-        PageResponse1<List<ReturnRequestResponse>> response = returnRequestServices.getAllReturnRequestsByCustomerId(customerId,pageRequest);
+        PageResponse1<List<ReturnRequestResponse>> response = returnRequestServices.getAllReturnRequestsByCustomerId(customerId, pageRequest);
         return ResponseData.<PageResponse1<List<ReturnRequestResponse>>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Get all return requests by CustomerId: " + customerId + " success!")

@@ -1,10 +1,15 @@
 package com.example.back_end.service.order.impl;
 
+import com.example.back_end.core.admin.order.mapper.OrderMapper;
+import com.example.back_end.core.admin.order.payload.CustomerOrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
+import com.example.back_end.core.admin.order.payload.OrderItemSummary;
 import com.example.back_end.core.admin.order.payload.OrderItemsResponse;
 import com.example.back_end.core.admin.order.payload.OrderRequest;
 import com.example.back_end.core.admin.order.payload.OrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderStatusHistoryResponse;
+import com.example.back_end.core.common.PageRequest;
+import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.Order;
 import com.example.back_end.entity.OrderItem;
@@ -14,6 +19,7 @@ import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
 import com.example.back_end.infrastructure.exception.NotFoundException;
+import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.repository.AddressRepository;
 import com.example.back_end.repository.OrderItemRepository;
@@ -22,25 +28,33 @@ import com.example.back_end.repository.OrderStatusHistoryRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.service.order.OrderService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final AddressRepository addressRepository;
     private final ShoppingCartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+    private final OrderMapper orderMapper;
 
     @Override
     @Transactional
@@ -60,6 +74,16 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItem> orderItems = createOrderItems(request, savedOrder);
             orderItemRepository.saveAll(orderItems);
         }
+    }
+
+    @Override
+    public void updateOrder(Order order) {
+        orderRepository.save(order);
+    }
+
+    @Override
+    public Optional<Order> getOrderById(Long orderId) {
+        return orderRepository.findById(orderId);
     }
 
     private Address resolveAddress(OrderRequest request) {
@@ -95,44 +119,61 @@ public class OrderServiceImpl implements OrderService {
 
     private void updateOrderStatusHistory(Order order, Integer orderStatusId, LocalDateTime createdDate) {
         Instant instant = createdDate.atZone(ZoneId.systemDefault()).toInstant();
+        OrderStatusType statusType = EnumAdaptor.valueOf(orderStatusId, OrderStatusType.class);
+        OrderStatusHistory paidHistory = createOrderStatusHistory(order, statusType, instant, "");
+        orderStatusHistoryRepository.save(paidHistory);
 
+        if (statusType == OrderStatusType.PAID) {
+            OrderStatusHistory completedHistory = createOrderStatusHistory(order, OrderStatusType.COMPLETED, instant, "");
+            orderStatusHistoryRepository.save(completedHistory);
+        }
+    }
+
+    private OrderStatusHistory createOrderStatusHistory(Order order, OrderStatusType statusType, Instant paidDate, String notes) {
         OrderStatusHistory statusHistory = new OrderStatusHistory();
-        statusHistory.setPaidDate(instant);
-        statusHistory.setStatus(EnumAdaptor.valueOf(orderStatusId, OrderStatusType.class));
-        statusHistory.setNotes("");
+        statusHistory.setPaidDate(paidDate);
+        statusHistory.setStatus(statusType);
+        statusHistory.setNotes(notes);
         statusHistory.setOrder(order);
-        orderStatusHistoryRepository.save(statusHistory);
+        return statusHistory;
     }
 
     private List<OrderItem> createOrderItems(OrderRequest request, Order order) {
-        return request.getOrderItems().stream()
-                .map(itemRequest -> {
-                    Product product = productRepository.findById(itemRequest.getProductId())
-                            .orElseThrow(() -> new NotFoundException("Product not found"));
 
-                    int newQuantity = product.getQuantity() - itemRequest.getQuantity();
-                    if (newQuantity < 0) {
-                        throw new RuntimeException("Not enough stock for product: " + product.getId());
-                    }
-
-                    product.setQuantity(newQuantity);
-                    productRepository.save(product);
-
-                    OrderItem item = new OrderItem();
-                    item.setOrder(order);
-                    item.setProduct(Product.builder().id(itemRequest.getProductId()).build());
-                    item.setOrderItemGuid(UUID.fromString(String.valueOf(order.getOrderGuid())));
-                    item.setQuantity(itemRequest.getQuantity());
-                    item.setUnitPrice(itemRequest.getUnitPrice());
-                    item.setPriceTotal(itemRequest.getPriceTotal());
-                    item.setDiscountAmount(itemRequest.getDiscountAmount());
-                    item.setOriginalProductCost(itemRequest.getOriginalProductCost());
-                    item.setAttributeDescription(itemRequest.getAttributeDescription());
-                    String productJson = convertProductToJson(product);
-                    item.setProductJson(productJson);
-                    return item;
-                })
+        return request.getOrderItems()
+                .stream()
+                .map(itemRequest -> createOrderItem(itemRequest, order))
                 .toList();
+    }
+
+    private OrderItem createOrderItem(OrderRequest.OrderItemRequest request, Order order) {
+
+        Product product = findProductById(request.getProductId());
+
+        int newQuantity = product.getQuantity() - request.getQuantity();
+        if (newQuantity < 0) {
+            throw new RuntimeException("Not enough stock for product: " + product.getId());
+        }
+        product.setQuantity(newQuantity);
+        productRepository.save(product);
+
+        return createOrderItem(order, request, product);
+    }
+
+    private OrderItem createOrderItem(Order order, OrderRequest.OrderItemRequest itemRequest, Product product) {
+        OrderItem item = new OrderItem();
+        item.setOrder(order);
+        item.setProduct(Product.builder().id(itemRequest.getProductId()).build());
+        item.setOrderItemGuid(UUID.fromString(String.valueOf(order.getOrderGuid())));
+        item.setQuantity(itemRequest.getQuantity());
+        item.setUnitPrice(itemRequest.getUnitPrice());
+        item.setPriceTotal(itemRequest.getPriceTotal());
+        item.setDiscountAmount(itemRequest.getDiscountAmount());
+        item.setOriginalProductCost(itemRequest.getOriginalProductCost());
+        item.setAttributeDescription(itemRequest.getAttributeDescription());
+        String productJson = convertProductToJson(product);
+        item.setProductJson(productJson);
+        return item;
     }
 
     public String convertProductToJson(Product product) {
@@ -155,7 +196,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderItemsResponse> getOrderItemsByOrderId(Long orderId) {
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("Order not found" + orderId));
+        Order order = findOrderById(orderId);
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
         Address address;
@@ -171,20 +212,117 @@ public class OrderServiceImpl implements OrderService {
         } else {
             address = null;
         }
-        List<OrderItemsResponse> orderItemsResponses = orderItems
-                .stream().map(orderItem -> OrderItemsResponse.fromOrderItemsResponse(orderItem, address)).toList();
 
-        return orderItemsResponses;
+        return orderItems
+                .stream().map(orderItem -> OrderItemsResponse.fromOrderItemsResponse(orderItem, address)).toList();
     }
 
     @Override
     public List<OrderStatusHistoryResponse> getOrderStatusHistory(Long orderId) {
         List<OrderStatusHistory> statusHistories = orderStatusHistoryRepository.
                 findByOrderId(orderId);
-        List<OrderStatusHistoryResponse> responses = statusHistories
-                .stream().map(OrderStatusHistoryResponse::fromOrderStatusHistoryResponse)
+        return statusHistories.stream()
+                .sorted(Comparator.comparing(OrderStatusHistory::getPaidDate))
+                .map(OrderStatusHistoryResponse::fromOrderStatusHistoryResponse)
                 .toList();
-        return responses;
+    }
+
+    @Override
+    @Transactional
+    public void updateQuantity(Long id, Integer quantity) {
+        OrderItem orderItem = orderItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
+        Integer oldQuantity = orderItem.getQuantity();
+        orderItem.setQuantity(quantity);
+
+        orderItem.setQuantity(quantity);
+
+        Product product = findProductById(orderItem.getProduct().getId());
+        if (quantity < oldQuantity) {
+            product.setQuantity(product.getQuantity() + (oldQuantity - quantity));
+        } else {
+            product.setQuantity(product.getQuantity() - (quantity - oldQuantity));
+        }
+        product = productRepository.save(product);
+
+        if (orderItem.getQuantity() > product.getQuantity()) {
+            throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
+        }
+
+        orderItem.setQuantity(quantity);
+        orderItem.setPriceTotal(orderItem.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
+        orderItemRepository.save(orderItem);
+
+        Order order = findOrderById(orderItem.getOrder().getId());
+        BigDecimal newOrderSubtotal = BigDecimal.ZERO;
+        BigDecimal newOrderDiscount = BigDecimal.ZERO;
+        BigDecimal newOrderTotal;
+
+        for (OrderItem item : order.getOrderItems()) {
+            newOrderSubtotal = newOrderSubtotal.add(item.getPriceTotal());
+        }
+
+        if (order.getOrderSubtotalDiscount() != null) {
+            newOrderDiscount = order.getOrderSubtotalDiscount();
+        }
+
+        BigDecimal orderShipping = order.getOrderShipping() != null ? order.getOrderShipping() : BigDecimal.ZERO;
+        newOrderTotal = newOrderSubtotal.subtract(newOrderDiscount).add(orderShipping);
+        order.setOrderSubtotal(newOrderSubtotal);
+        order.setOrderTotal(newOrderTotal);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void addProductToOrder(OrderRequest.OrderItemRequest itemRequest, Long orderId) {
+
+        Order order = findOrderById(orderId);
+        Product product = findProductById(itemRequest.getProductId());
+
+        if (itemRequest.getQuantity() > product.getQuantity()) {
+            throw new RuntimeException("Insufficient stock for product: " + product.getName());
+        }
+
+        OrderItem orderItem = createOrderItem(itemRequest, order);
+        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+        orderItems.forEach(orderItem1 -> {
+            if (orderItem1.getProduct().getId().equals(itemRequest.getProductId())) {
+                orderItem.setId(orderItem1.getId());
+                orderItem.setQuantity(orderItem1.getQuantity() + itemRequest.getQuantity());
+            }
+        });
+        orderItemRepository.save(orderItem);
+    }
+
+    private Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+    }
+
+    private Order findOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+    }
+
+    @Override
+    public PageResponse1<List<CustomerOrderResponse>> getCustomerOrders(PageRequest pageRequest) {
+        Pageable pageable = PageUtils.createPageable(
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                pageRequest.getSortBy(),
+                pageRequest.getSortDir());
+        Page<Order> result = orderRepository.findAll(pageable);
+        List<CustomerOrderResponse> customerOrderRespons = orderMapper.toOrderResponses(result.getContent());
+        return PageResponse1.<List<CustomerOrderResponse>>builder()
+                .totalItems(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .items(customerOrderRespons)
+                .build();
+    }
+
+    @Override
+    public List<OrderItemSummary> getAllOrderItemSummaryByOrderId(Long orderId) {
+        return orderMapper.mapToSummaries(orderItemRepository.findByOrderId(orderId));
     }
 
 }

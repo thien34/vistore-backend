@@ -1,15 +1,13 @@
 package com.example.back_end.core.admin.order.payload;
 
+import com.example.back_end.core.admin.product.payload.response.ProductResponse;
 import com.example.back_end.entity.Address;
 import com.example.back_end.entity.OrderItem;
-import com.example.back_end.entity.OrderStatusHistory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -30,6 +28,7 @@ public class OrderItemsResponse {
     private BigDecimal itemWeight;
     private Integer deliveryStatus;
     private CustomerOrder customerOrder;
+    private ProductResponse productResponse;
 
     public static OrderItemsResponse fromOrderItemsResponse(OrderItem orderItem, Address address) {
 
@@ -45,11 +44,10 @@ public class OrderItemsResponse {
         orderItemsResponse.setProductJson(orderItem.getProductJson());
         orderItemsResponse.setItemWeight(orderItem.getItemWeight());
         orderItemsResponse.setDeliveryStatus(orderItem.getOrder().getDeliveryStatusType().value);
-
+        orderItemsResponse.setProductResponse(ProductResponse.fromProduct(orderItem.getProduct()));
         orderItemsResponse.setCustomerOrder(CustomerOrder.fromCustomerOrder(address));
         return orderItemsResponse;
     }
-
 
 
     @Data

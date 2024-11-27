@@ -45,11 +45,6 @@ public class CartController {
         return new ResponseData<>(HttpStatus.OK.value(), "Get cart successfully", responses);
     }
 
-//    @GetMapping("/get-bills")
-//    public ResponseData<Map<String, Long>> getBills() {
-//        return new ResponseData<>(HttpStatus.OK.value(), "Get bills successfully", shoppingCartService.getBillIds());
-//    }
-
     @DeleteMapping("/{billId}")
     public ResponseData<Void> deleteBill(@PathVariable String billId) {
         shoppingCartService.deleteBill(billId);

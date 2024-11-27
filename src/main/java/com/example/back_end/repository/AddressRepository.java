@@ -24,5 +24,6 @@ public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpec
                                            @Param("wardId") String wardId);
 
     List<Address> findByCustomerId(Long customerId);
+
 }
 

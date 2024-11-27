@@ -12,11 +12,11 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReturnInvoiceMapper {
     @Mapping(source = "returnRequest.id", target = "returnRequestId")
+    @Mapping(source = "order.customer.firstName", target = "firstName")
+    @Mapping(source = "order.customer.lastName", target = "lastName")
     @Mapping(source = "order.id", target = "orderId")
     ReturnInvoiceResponse mapReturnInvoiceResponse(ReturnInvoice returnInvoice);
 
-    @Mapping(source = "returnRequest.id", target = "returnRequestId")
-    @Mapping(source = "order.id", target = "orderId")
     List<ReturnInvoiceResponse> mapReturnInvoices(List<ReturnInvoice> returnInvoices);
 
     @Mapping(source = "returnRequestId", target = "returnRequest.id")

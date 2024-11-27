@@ -44,6 +44,7 @@ public class Category extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "parent_category_id")
+    @ToString.Exclude
     private Category categoryParent;
 
     @Column(name = "deleted")
