@@ -67,11 +67,7 @@ public class ProductServiceImpl implements ProductService {
         if (requests.isEmpty()) {
             return;
         }
-
         Product parentProduct = createParentProduct(requests.getFirst());
-        List<Product> products = new ArrayList<>();
-        List<ProductAttributeValue> attributeValues = new ArrayList<>();
-
         final AtomicInteger imageIndex = new AtomicInteger(0);
 
         CollectionUtil.split(requests, 50, batch -> {
