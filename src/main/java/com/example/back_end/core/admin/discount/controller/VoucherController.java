@@ -1,9 +1,9 @@
 package com.example.back_end.core.admin.discount.controller;
 
-import com.example.back_end.core.admin.discount.payload.request.CouponRequest;
+import com.example.back_end.core.admin.discount.payload.request.ValidateCouponsRequest;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
-import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
+import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponseWrapper;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.discount.VoucherService;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -49,6 +48,7 @@ public class VoucherController {
                 .build();
     }
 
+
     @PostMapping("/generate-birthday-vouchers")
     public ResponseEntity<String> generateBirthdayVouchers() {
         try {
@@ -65,21 +65,21 @@ public class VoucherController {
             @ApiResponse(responseCode = "200", description = "Validation completed"),
             @ApiResponse(responseCode = "400", description = "Validation failed")
     })
-    public ResponseEntity<?> validateCoupons(
-            @RequestParam("subTotal") BigDecimal subTotal,
-            @RequestBody CouponRequest couponRequest,
-            @RequestParam(required = false) String email) {
+    public ResponseEntity<?> validateCoupons(@RequestBody ValidateCouponsRequest request) {
         try {
-            List<String> couponCodes = couponRequest.getCouponCodes();
-
-            List<VoucherApplyResponse> responses = voucherService.validateAndCalculateDiscounts(subTotal, couponCodes, email);
-            return ResponseEntity.ok(responses);
+            BigDecimal subTotal = request.getSubTotal();
+            List<String> couponCodes = request.getCouponCodes();
+            String email = request.getEmail();
+            VoucherApplyResponseWrapper response = voucherService.validateAndCalculateDiscounts(subTotal, couponCodes, email);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("message", e.getMessage())
             );
         }
     }
+
+
     @PostMapping
     @Operation(summary = "Create a new voucher", description = "Create a new voucher with the provided details.")
     @ApiResponses(value = {

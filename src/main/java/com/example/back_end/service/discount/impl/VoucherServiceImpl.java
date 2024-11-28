@@ -4,7 +4,7 @@ import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
-import com.example.back_end.core.admin.discount.payload.response.VoucherListApplyResponse;
+import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponseWrapper;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
@@ -55,7 +55,8 @@ public class VoucherServiceImpl implements VoucherService {
                 filterRequest.getCouponCode(),
                 filterRequest.getDiscountTypeId(),
                 filterRequest.getStartDate(),
-                filterRequest.getEndDate()
+                filterRequest.getEndDate(),
+                filterRequest.getIsPublished()
         );
         discounts.forEach(this::updateVoucherStatus);
         return voucherMapper.toResponseList(discounts);
@@ -90,7 +91,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     @Transactional
     public void createDiscount(VoucherRequest voucherRequest) {
-        checkDuplicateCouponCode(voucherRequest.getCouponCode());
+        checkDuplicateCouponCode(voucherRequest.getCouponCode(), voucherRequest.getIsPublished());
         Discount discount = voucherMapper.toEntity(voucherRequest);
         validateDiscount(discount);
 
@@ -113,11 +114,17 @@ public class VoucherServiceImpl implements VoucherService {
                 discount.getDiscountAmount());
     }
 
-    private void checkDuplicateCouponCode(String couponCode) {
-        if (discountRepository.existsByCouponCode(couponCode)) {
-            throw new InvalidDataException("Coupon code already exists: " + couponCode);
+    private void checkDuplicateCouponCode(String couponCode, Boolean isPublished) {
+        if (Boolean.FALSE.equals(isPublished)) {
+            if (couponCode == null || couponCode.trim().isEmpty()) {
+                throw new InvalidDataException("Coupon code must not be null or empty for unpublished vouchers.");
+            }
+            if (discountRepository.existsByCouponCode(couponCode)) {
+                throw new InvalidDataException("Coupon code already exists: " + couponCode);
+            }
         }
     }
+
 
     private void sendVoucherEmailsToCustomers(List<Long> customerIds, String voucherCode, String discountDetails, Instant startDate, Instant endDate, BigDecimal discountPercentage, BigDecimal discountAmount) {
         if (voucherCode == null || voucherCode.trim().isEmpty()) {
@@ -243,61 +250,28 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     private void saveDiscountAppliedToCustomers(Discount discount, List<Long> selectedCustomerIds) {
-
+        initializeUsageCount(discount);
         for (Long customerId : selectedCustomerIds) {
             Customer customer = customerRepository.findById(customerId)
                     .orElseThrow(() -> new NotFoundException("Customer not found with ID: " + customerId));
-
             CustomerVoucher customerVoucher = CustomerVoucher.builder()
                     .customer(customer)
                     .discount(discount)
-                    .usageCount(discount.getLimitationTimes())
                     .build();
-
             customerVoucherRepository.save(customerVoucher);
         }
     }
 
-    //voucher applied to order
-
-    @Override
-    @Transactional
-    public List<VoucherListApplyResponse> getApplicableVouchers(BigDecimal subTotal, List<String> couponCodes, String email) {
-        Instant now = Instant.now();
-        List<VoucherListApplyResponse> applicableVouchers = new ArrayList<>();
-        List<String> errors = new ArrayList<>();
-
-        for (String code : couponCodes) {
-            try {
-                Discount discount = discountRepository.findByCouponCode(code);
-
-                if (discount == null) {
-                    String errorMessage = "Coupon code '" + code + "' not found.";
-                    errors.add(errorMessage);
-                    log.error(errorMessage);
-                    continue;
-                }
-                if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished()) && email != null) {
-                    validatePrivateVoucherForEmail(email, discount);
-                } else if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished())) {
-                    errors.add("Voucher '" + code + "' is private. You need to provide an email.");
-                    continue;
-                }
-
-                validateVoucherApplicability(subTotal, discount, now);
-
-                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
-
-                applicableVouchers.add(new VoucherListApplyResponse(code, discountAmount));
-            } catch (InvalidDataException | NotFoundException e) {
-                errors.add("Voucher '" + code + "' is invalid: " + e.getMessage());
-            }
+    private void initializeUsageCount(Discount discount) {
+        if (discount.getUsageCount() == null) {
+            discount.setUsageCount(discount.getLimitationTimes());
+            discountRepository.save(discount);
+        } else if (discount.getUsageCount() <= 0) {
+            throw new InvalidDataException("Voucher has been fully redeemed.");
         }
-        for (String error : errors) {
-            log.error(error);
-        }
-        return applicableVouchers;
     }
+
+    //voucher applied to order
 
     private void validatePrivateVoucherForEmail(String email, Discount discount) {
         Customer customer = customerRepository.findByEmail(email)
@@ -341,36 +315,70 @@ public class VoucherServiceImpl implements VoucherService {
         }
         return discountAmount;
     }
+
     @Override
     @Transactional
-    public List<VoucherApplyResponse> validateAndCalculateDiscounts(BigDecimal subTotal, List<String> couponCodes, String email) {
+    public VoucherApplyResponseWrapper validateAndCalculateDiscounts(BigDecimal subTotal, List<String> couponCodes, String email) {
         Instant now = Instant.now();
         List<VoucherApplyResponse> responses = new ArrayList<>();
+        BigDecimal totalDiscount = BigDecimal.ZERO;
+        List<Long> applicableVoucherIds = new ArrayList<>();
+
+        boolean hasNonCumulativeVoucher = false;
 
         for (String code : couponCodes) {
-            VoucherApplyResponse response = new VoucherApplyResponse();
-            response.setCouponCode(code);
+            VoucherApplyResponse response = VoucherApplyResponse.builder()
+                    .couponCode(code)
+                    .build();
             try {
                 Discount discount = discountRepository.findByCouponCode(code);
                 if (discount == null) {
                     response.setIsApplicable(false);
                     response.setReason("Coupon code not found.");
+                    responses.add(response);
                     continue;
                 }
-                if (Boolean.TRUE.equals(discount.getRequiresCouponCode() && !discount.getIsPublished())) {
+
+                if (Boolean.TRUE.equals(!discount.getIsCumulative()) && !applicableVoucherIds.isEmpty()) {
+                    response.setIsApplicable(false);
+                    response.setReason("This voucher cannot be combined with others.");
+                    responses.add(response);
+                    continue;
+                }
+
+                if (hasNonCumulativeVoucher) {
+                    response.setIsApplicable(false);
+                    response.setReason("Cannot add more vouchers because a non-cumulative voucher is already applied.");
+                    responses.add(response);
+                    continue;
+                }
+
+                if (Boolean.TRUE.equals(!discount.getIsCumulative())) {
+                    hasNonCumulativeVoucher = true;
+                }
+
+                if (Boolean.TRUE.equals(discount.getRequiresCouponCode()) && Boolean.TRUE.equals(!discount.getIsPublished())) {
                     if (email != null) {
                         validatePrivateVoucherForEmail(email, discount);
                     } else {
                         response.setIsApplicable(false);
                         response.setReason("Voucher is private. Please provide an email.");
+                        responses.add(response);
                         continue;
                     }
                 }
-                validateVoucherApplicability(subTotal, discount, now);
-                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
-                response.setIsApplicable(true);
-                response.setDiscountAmount(discountAmount);
 
+                validateVoucherApplicability(subTotal, discount, now);
+
+                BigDecimal discountAmount = calculateDiscount(subTotal, discount);
+                totalDiscount = totalDiscount.add(discountAmount);
+                response.setIsApplicable(true);
+                response.setDiscountAmount(Boolean.TRUE.equals(discount.getUsePercentage()) ? null : discountAmount);
+                response.setDiscountPercent(Boolean.TRUE.equals(discount.getUsePercentage()) ? discount.getDiscountPercentage() : null);
+                response.setId(discount.getId());
+                response.setMaxDiscountAmount(discount.getMaxDiscountAmount());
+
+                applicableVoucherIds.add(discount.getId());
             } catch (InvalidDataException | NotFoundException e) {
                 response.setIsApplicable(false);
                 response.setReason(e.getMessage());
@@ -379,7 +387,12 @@ public class VoucherServiceImpl implements VoucherService {
             responses.add(response);
         }
 
-        return responses;
+        return VoucherApplyResponseWrapper.builder()
+                .totalDiscount(totalDiscount)
+                .voucherResponses(responses)
+                .applicableVoucherIds(applicableVoucherIds)
+                .build();
     }
+
 
 }

@@ -12,6 +12,7 @@ import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
 import com.example.back_end.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +33,11 @@ public class OrderController {
 
     @PostMapping
     public ResponseData<Void> saveOrder(@RequestBody OrderRequest orderRequest) {
-        orderService.saveOrder(orderRequest);
-
+        try {
+            orderService.saveOrder(orderRequest);
+        } catch (BadRequestException e) {
+            throw new RuntimeException(e);
+        }
         return new ResponseData<>(HttpStatus.OK.value(), "Save order success");
     }
 
