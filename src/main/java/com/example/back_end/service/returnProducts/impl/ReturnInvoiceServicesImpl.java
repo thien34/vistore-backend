@@ -5,9 +5,11 @@ import com.example.back_end.core.admin.returnProduct.payload.request.ReturnInvoi
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnInvoiceResponse;
 import com.example.back_end.core.common.PageRequest;
 import com.example.back_end.core.common.PageResponse1;
+import com.example.back_end.entity.Order;
 import com.example.back_end.entity.ReturnInvoice;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ReturnInvoiceRepository;
+import com.example.back_end.service.order.OrderService;
 import com.example.back_end.service.returnProducts.ReturnInvoiceServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,10 +24,17 @@ import java.util.Optional;
 public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
     private final ReturnInvoiceRepository repository;
     private final ReturnInvoiceMapper mapper;
+    private final OrderService orderService;
 
     @Override
     public ReturnInvoiceResponse saveReturnInvoice(ReturnInvoiceRequest returnInvoiceRequest) {
         ReturnInvoice returnInvoice = repository.save(mapper.mapReturnInvoice(returnInvoiceRequest));
+        Optional<Order> order = orderService.getOrderById(returnInvoice.getOrder().getId());
+        if (order.isPresent()) {
+            Order orderReq = order.get();
+            orderReq.setRefundedAmount(returnInvoice.getRefundAmount());
+            orderService.updateOrder(orderReq);
+        }
         return mapper.mapReturnInvoiceResponse(returnInvoice);
     }
 

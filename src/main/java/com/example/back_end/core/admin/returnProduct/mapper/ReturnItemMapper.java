@@ -22,13 +22,12 @@ public interface ReturnItemMapper {
     @Mapping(source = "productId", target = "product.id")
     List<ReturnItem> maptoEntities(List<ReturnItemRequest> requests);
 
-    @Mapping(source = "orderItem.id", target = "orderItemId")
-    @Mapping(source = "returnRequest.id", target = "returnRequestId")
+
+    @Mapping(source = "orderItem.quantity", target = "quantity")
+    @Mapping(source = "product.name", target = "productName")
     @Mapping(source = "product.id", target = "productId")
     ReturnItemResponse maptoResponse(ReturnItem returnItem);
 
-    @Mapping(source = "orderItem.id", target = "orderItemId")
-    @Mapping(source = "returnRequest.id", target = "returnRequestId")
-    @Mapping(source = "product.id", target = "productId")
+
     List<ReturnItemResponse> maptoResponseList(List<ReturnItem> returnItemList);
 }

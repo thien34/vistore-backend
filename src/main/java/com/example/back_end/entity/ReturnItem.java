@@ -54,6 +54,9 @@ public class ReturnItem extends Auditable {
     @Column(name = "discount_amount_per_item", precision = 18, scale = 2)
     private BigDecimal discountAmountPerItem;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
     @Column(name = "refund_total", precision = 18, scale = 2)
     private BigDecimal refundTotal;
 }

@@ -11,11 +11,11 @@ public class ReturnItemResponse {
 
     private Long id;
 
-    private Long orderItemId;
-
-    private Long returnRequestId;
+    private String productName;
 
     private Long productId;
+
+    private Integer quantity;
 
     private BigDecimal oldUnitPrice;
 
