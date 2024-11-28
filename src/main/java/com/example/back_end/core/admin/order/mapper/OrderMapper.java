@@ -14,6 +14,7 @@ import java.util.List;
 public interface OrderMapper {
 
     @Mapping(source = "id", target = "orderId")
+    @Mapping(source = "lastModifiedDate", target = "orderDate")
     @Mapping(source = "customer.firstName", target = "firstName")
     @Mapping(source = "customer.id", target = "customerId")
     @Mapping(source = "customer.lastName", target = "lastName")
@@ -23,7 +24,7 @@ public interface OrderMapper {
 
     @Mapping(source = "id", target = "orderItemId")
     @Mapping(source = "product.id", target = "productId")
-    @Mapping(source = "product.name", target = "productName")
+    @Mapping(source = "product.fullName", target = "productName")
     @Mapping(source = "product.unitPrice", target = "productPrice")
     OrderItemSummary mapToSummary(OrderItem orderItem);
 

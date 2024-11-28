@@ -4,6 +4,8 @@ import com.example.back_end.infrastructure.constant.ReturnRequestStatusType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class ReturnRequestResponse {
@@ -22,6 +24,8 @@ public class ReturnRequestResponse {
     private Integer totalReturnQuantity;
 
     private String customerComments;
+
+    private BigDecimal returnFee;
 
     private String staffNotes;
 

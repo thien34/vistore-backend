@@ -44,6 +44,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -397,7 +399,11 @@ public class OrderServiceImpl implements OrderService {
                 pageRequest.getPageSize(),
                 pageRequest.getSortBy(),
                 pageRequest.getSortDir());
-        Page<Order> result = orderRepository.findAll(pageable);
+        Page<Order> result = orderRepository.findAllOrderNotReturn(pageable);
+        List<Order> filteredCompletedOrders = result.getContent().stream()
+                .filter(x -> x.getOrderStatusId() == OrderStatusType.COMPLETED)
+                .collect(Collectors.toList());
+        result = new PageImpl<>(filteredCompletedOrders, pageable, filteredCompletedOrders.size());
         List<CustomerOrderResponse> customerOrderRespons = orderMapper.toOrderResponses(result.getContent());
         return PageResponse1.<List<CustomerOrderResponse>>builder()
                 .totalItems(result.getTotalElements())

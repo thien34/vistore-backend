@@ -3,6 +3,7 @@ package com.example.back_end.service.returnProducts.impl;
 import com.example.back_end.core.admin.returnProduct.mapper.ReturnInvoiceMapper;
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnInvoiceRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnInvoiceResponse;
+import com.example.back_end.core.admin.returnProduct.payload.response.ReturnItemResponse;
 import com.example.back_end.core.common.PageRequest;
 import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Order;
@@ -11,6 +12,7 @@ import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.repository.ReturnInvoiceRepository;
 import com.example.back_end.service.order.OrderService;
 import com.example.back_end.service.returnProducts.ReturnInvoiceServices;
+import com.example.back_end.service.returnProducts.ReturnItemServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
     private final ReturnInvoiceRepository repository;
+    private final ReturnItemServices returnItemServices;
     private final ReturnInvoiceMapper mapper;
     private final OrderService orderService;
 
@@ -35,21 +38,27 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
             orderReq.setRefundedAmount(returnInvoice.getRefundAmount());
             orderService.updateOrder(orderReq);
         }
-        return mapper.mapReturnInvoiceResponse(returnInvoice);
+        ReturnInvoiceResponse returnInvoiceResponse = mapper.mapReturnInvoiceResponse(returnInvoice);
+        returnInvoiceResponse.setReturnItems(returnItemServices.getListReturnItemsByReturnRequestId(returnInvoiceResponse.getReturnRequestId()));
+        return returnInvoiceResponse;
     }
 
     @Override
     public ReturnInvoiceResponse getReturnInvoiceById(Long id) {
         ReturnInvoice returnInvoice = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Return Invoice not found with id: " + id));
-        return mapper.mapReturnInvoiceResponse(returnInvoice);
+        ReturnInvoiceResponse returnInvoiceResponse = mapper.mapReturnInvoiceResponse(returnInvoice);
+        returnInvoiceResponse.setReturnItems(returnItemServices.getListReturnItemsByReturnRequestId(returnInvoiceResponse.getReturnRequestId()));
+        return returnInvoiceResponse;
     }
 
     @Override
     public ReturnInvoiceResponse getReturnInvoiceByOrderId(Long orderId) {
         Optional<ReturnInvoice> result = Optional.ofNullable(repository.findByOrderId(orderId));
         ReturnInvoice returnInvoice = result.orElseThrow(() -> new RuntimeException("Return Invoice not found with id: " + orderId));
-        return mapper.mapReturnInvoiceResponse(returnInvoice);
+        ReturnInvoiceResponse returnInvoiceResponse = mapper.mapReturnInvoiceResponse(returnInvoice);
+        returnInvoiceResponse.setReturnItems(returnItemServices.getListReturnItemsByReturnRequestId(returnInvoiceResponse.getReturnRequestId()));
+        return returnInvoiceResponse;
     }
 
     @Override
@@ -60,11 +69,17 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
                 pageRequest.getSortBy(),
                 pageRequest.getSortDir());
         Page<ReturnInvoice> result = repository.findAll(pageable);
-        List<ReturnInvoiceResponse> responses = mapper.mapReturnInvoices(result.getContent());
+        List<ReturnInvoiceResponse> responses = mapper.mapReturnInvoices(result.toList());
+        List<ReturnInvoiceResponse> enrichedInvoices = responses.stream()
+                .peek(invoice -> {
+                    List<ReturnItemResponse> returnItems = returnItemServices.getListReturnItemsByReturnRequestId(invoice.getReturnRequestId());
+                    invoice.setReturnItems(returnItems);
+                }).toList();
+
         return PageResponse1.<List<ReturnInvoiceResponse>>builder()
                 .totalItems(result.getTotalElements())
                 .totalPages(result.getTotalPages())
-                .items(responses)
+                .items(enrichedInvoices)
                 .build();
     }
 }

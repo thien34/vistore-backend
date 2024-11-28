@@ -24,7 +24,7 @@ public interface ReturnItemMapper {
 
 
     @Mapping(source = "orderItem.quantity", target = "quantity")
-    @Mapping(source = "product.name", target = "productName")
+    @Mapping(source = "product.fullName", target = "productName")
     @Mapping(source = "product.id", target = "productId")
     ReturnItemResponse maptoResponse(ReturnItem returnItem);
 

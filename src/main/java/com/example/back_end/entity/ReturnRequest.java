@@ -21,6 +21,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -52,6 +54,9 @@ public class ReturnRequest extends Auditable {
 
     @Column(name = "total_return_quantity")
     private Integer totalReturnQuantity;
+
+    @Column(name = "return_fee", precision = 18, scale = 2)
+    private BigDecimal returnFee;
 
     @Column(name = "customer_comments", length = Integer.MAX_VALUE)
     private String customerComments;
