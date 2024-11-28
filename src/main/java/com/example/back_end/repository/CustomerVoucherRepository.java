@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface CustomerVoucherRepository extends JpaRepository<CustomerVoucher, Long> {
-    Optional<CustomerVoucher> findByCustomerAndDiscount(Customer customer, Discount discount);
+    Optional<CustomerVoucher> findByCustomerIdAndDiscountId(Long customerId, Long discountId);
     boolean existsByCustomerAndDiscount(Customer customer, Discount discount);
 
 }

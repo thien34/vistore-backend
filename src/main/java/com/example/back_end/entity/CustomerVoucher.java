@@ -36,9 +36,6 @@ public class CustomerVoucher {
     @JoinColumn(name = "discount_id", nullable = false)
     private Discount discount;
 
-    @Column(name = "usage_count")
-    private Integer usageCount;
-
     @Column(name = "usage_count_per_customer")
     private Integer usageCountPerCustomer;
 

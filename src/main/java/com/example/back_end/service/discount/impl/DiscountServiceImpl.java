@@ -84,7 +84,8 @@ public class DiscountServiceImpl implements DiscountService {
                 filterRequest.getCouponCode(),
                 filterRequest.getDiscountTypeId(),
                 filterRequest.getStartDate(),
-                filterRequest.getEndDate()
+                filterRequest.getEndDate(),
+                filterRequest.getIsPublished()
         );
         discounts.forEach(this::updateDiscountStatus);
         return discountMapper.toResponseList(discounts);

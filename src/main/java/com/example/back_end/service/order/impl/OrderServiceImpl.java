@@ -6,25 +6,37 @@ import com.example.back_end.core.admin.order.payload.OrderRequest;
 import com.example.back_end.core.admin.order.payload.OrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderStatusHistoryResponse;
 import com.example.back_end.entity.Address;
+import com.example.back_end.entity.Customer;
+import com.example.back_end.entity.CustomerVoucher;
+import com.example.back_end.entity.Discount;
+import com.example.back_end.entity.DiscountUsageHistory;
 import com.example.back_end.entity.Order;
 import com.example.back_end.entity.OrderItem;
 import com.example.back_end.entity.OrderStatusHistory;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ShoppingCartItem;
+import com.example.back_end.entity.Ward;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.repository.AddressRepository;
+import com.example.back_end.repository.CustomerVoucherRepository;
+import com.example.back_end.repository.DiscountRepository;
+import com.example.back_end.repository.DiscountUsageHistoryRepository;
 import com.example.back_end.repository.OrderItemRepository;
 import com.example.back_end.repository.OrderRepository;
 import com.example.back_end.repository.OrderStatusHistoryRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
+import com.example.back_end.repository.WardRepository;
 import com.example.back_end.service.order.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,26 +49,85 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderServiceImpl implements OrderService {
 
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final AddressRepository addressRepository;
-    private final ShoppingCartItemRepository cartItemRepository;
-    private final ProductRepository productRepository;
-    private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+    OrderRepository orderRepository;
+    OrderItemRepository orderItemRepository;
+    AddressRepository addressRepository;
+    ShoppingCartItemRepository cartItemRepository;
+    ProductRepository productRepository;
+    OrderStatusHistoryRepository orderStatusHistoryRepository;
+    DiscountUsageHistoryRepository discountUsageHistoryRepository;
+    DiscountRepository discountRepository;
+    WardRepository wardRepository;
+    CustomerVoucherRepository customerVoucherRepository;
 
     @Override
     @Transactional
     public void saveOrder(OrderRequest request) {
         ShoppingCartItem cartItem = cartItemRepository.findByCartUUID(request.getOrderGuid());
-        Order order = OrderRequest.toEntity(request);
+        if (cartItem == null) {
+            throw new NotFoundException("Shopping cart item not found for order GUID: " + request.getOrderGuid());
+        }
 
+        Order order = OrderRequest.toEntity(request);
         Address address = resolveAddress(request);
         order.setShippingAddress(address);
         order.setCreatedDate(cartItem.getCreatedDate());
-
         Order savedOrder = orderRepository.save(order);
+        if (request.getIdVouchers() != null && !request.getIdVouchers().isEmpty()) {
+            List<Long> voucherIds = request.getIdVouchers();
+
+            List<Discount> discounts = discountRepository.findAllById(voucherIds);
+
+            for (Discount discount : discounts) {
+                if (discount.getUsageCount() != null && discount.getUsageCount() > 0) {
+                    discount.setUsageCount(discount.getUsageCount() - 1);
+                } else {
+                    try {
+                        throw new BadRequestException("Voucher đã hết số lần sử dụng: " + discount.getCouponCode());
+                    } catch (BadRequestException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                CustomerVoucher customerVoucher = customerVoucherRepository.findByCustomerIdAndDiscountId(
+                        request.getCustomerId(), discount.getId()
+                ).orElseGet(() -> CustomerVoucher.builder()
+                        .customer(Customer.builder().id(request.getCustomerId()).build())
+                        .discount(discount)
+                        .usageCountPerCustomer(0)
+                        .build()
+                );
+                if (customerVoucher.getUsageCountPerCustomer() != null) {
+                    if (discount.getPerCustomerLimit() != null &&
+                            customerVoucher.getUsageCountPerCustomer() >= discount.getPerCustomerLimit()) {
+                        try {
+                            throw new BadRequestException("Voucher đã vượt giới hạn sử dụng cho khách hàng: " + discount.getCouponCode());
+                        } catch (BadRequestException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    customerVoucher.setUsageCountPerCustomer(customerVoucher.getUsageCountPerCustomer() + 1);
+                } else {
+                    customerVoucher.setUsageCountPerCustomer(1);
+                }
+                customerVoucherRepository.save(customerVoucher);
+            }
+
+            discountRepository.saveAll(discounts);
+
+            List<DiscountUsageHistory> discountUsageHistories = voucherIds.stream()
+                    .map(discountId -> {
+                        Discount discount = findDiscountById(discountId);
+                        DiscountUsageHistory usageHistory = new DiscountUsageHistory();
+                        usageHistory.setDiscount(discount);
+                        usageHistory.setOrder(order);
+                        return usageHistory;
+                    }).toList();
+            discountUsageHistoryRepository.saveAll(discountUsageHistories);
+        }
+
         createOrderStatusHistory(savedOrder, cartItem.getCreatedDate());
         updateOrderStatusHistory(savedOrder, request.getOrderStatusId(), cartItem.getCreatedDate());
 
@@ -64,6 +135,11 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItem> orderItems = createOrderItems(request, savedOrder);
             orderItemRepository.saveAll(orderItems);
         }
+    }
+
+    private Discount findDiscountById(Long discountId) {
+        return discountRepository.findById(discountId)
+                .orElseThrow(() -> new NotFoundException("Discount not found with ID: " + discountId));
     }
 
     private Address resolveAddress(OrderRequest request) {
@@ -83,7 +159,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Address address = request.getAddressRequest().toEntity();
-        return address != null ? addressRepository.save(address) : null;
+        if (address.getWard() != null && address.getWard().getCode() != null) {
+            Ward ward = wardRepository.findById(address.getWard().getCode())
+                    .orElseThrow(() -> new NotFoundException("Ward not found with ID: " + address.getWard().getCode()));
+            address.setWard(ward);
+        }
+        return addressRepository.save(address);
     }
 
     private void createOrderStatusHistory(Order order, LocalDateTime createdDate) {

@@ -5,12 +5,13 @@ import com.example.back_end.core.admin.order.payload.OrderItemsResponse;
 import com.example.back_end.core.admin.order.payload.OrderRequest;
 import com.example.back_end.core.admin.order.payload.OrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderStatusHistoryResponse;
+import org.apache.coyote.BadRequestException;
 
 import java.util.List;
 
 public interface OrderService {
 
-    void saveOrder(OrderRequest request);
+    void saveOrder(OrderRequest request) throws BadRequestException;
 
     List<OrderResponse> getOrders(OrderFilter filter);
 
