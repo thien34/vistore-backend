@@ -15,5 +15,7 @@ public interface ReturnItemServices {
 
     PageResponse1<List<ReturnItemResponse>> getAllReturnItemsByReturnRequestId(Long returnRequestId, PageRequest pageRequest);
 
+    List<ReturnItemResponse> getListReturnItemsByReturnRequestId(Long returnRequestId);
+
     ReturnItemResponse getReturnItemById(Long id);
 }
