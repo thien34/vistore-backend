@@ -73,14 +73,7 @@ public class OrderServiceImpl implements OrderService {
     DiscountRepository discountRepository;
     WardRepository wardRepository;
     CustomerVoucherRepository customerVoucherRepository;
-  
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final AddressRepository addressRepository;
-    private final ShoppingCartItemRepository cartItemRepository;
-    private final ProductRepository productRepository;
-    private final OrderStatusHistoryRepository orderStatusHistoryRepository;
-    private final OrderMapper orderMapper;
+    OrderMapper orderMapper;
 
     @Override
     @Transactional
@@ -159,6 +152,8 @@ public class OrderServiceImpl implements OrderService {
     private Discount findDiscountById(Long discountId) {
         return discountRepository.findById(discountId)
                 .orElseThrow(() -> new NotFoundException("Discount not found with ID: " + discountId));
+    }
+
     @Override
     public void updateOrder(Order order) {
         orderRepository.save(order);
@@ -217,7 +212,8 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private OrderStatusHistory createOrderStatusHistory(Order order, OrderStatusType statusType, Instant paidDate, String notes) {
+    private OrderStatusHistory createOrderStatusHistory(Order order, OrderStatusType statusType, Instant
+            paidDate, String notes) {
         OrderStatusHistory statusHistory = new OrderStatusHistory();
         statusHistory.setPaidDate(paidDate);
         statusHistory.setStatus(statusType);
