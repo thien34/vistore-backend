@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.customer.mapper;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerRequest;
+import com.example.back_end.core.admin.customer.payload.request.CustomerUpdateRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.entity.Customer;
@@ -33,6 +34,8 @@ public interface CustomerMapper {
     @Mapping(target = "customerRoles", ignore = true)
     void updateFromFullRequest(CustomerRequest request, @MappingTarget Customer customer);
 
+    void updateProfileInfo(CustomerUpdateRequest request, @MappingTarget Customer customer);
+
     @Named("mapToRoleMappings")
     default List<CustomerRoleMapping> mapToRoleMappings(List<Long> roleIds) {
         if (roleIds == null) return Collections.emptyList();
@@ -63,6 +66,5 @@ public interface CustomerMapper {
                 .map(roleMapping -> roleMapping.getCustomerRole().getName())
                 .toList();
     }
-
 }
 

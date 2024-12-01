@@ -31,4 +31,6 @@ public class DiscountFilterRequest {
 
     private Integer pageSize;
 
+    private String status;
+
 }
