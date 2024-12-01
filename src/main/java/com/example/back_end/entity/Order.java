@@ -112,4 +112,7 @@ public class Order extends Auditable {
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     private List<OrderItem> orderItems;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
+    private List<OrderStatusHistory> statusHistories;
+
 }

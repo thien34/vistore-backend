@@ -2,6 +2,7 @@ package com.example.back_end.service.order.impl;
 
 import com.example.back_end.core.admin.order.mapper.OrderMapper;
 import com.example.back_end.core.admin.order.payload.CustomerOrderResponse;
+import com.example.back_end.core.admin.order.payload.OrderCustomerResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
 import com.example.back_end.core.admin.order.payload.OrderItemSummary;
 import com.example.back_end.core.admin.order.payload.OrderItemsResponse;
@@ -11,6 +12,7 @@ import com.example.back_end.core.admin.order.payload.OrderStatusHistoryResponse;
 import com.example.back_end.core.common.PageRequest;
 import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Address;
+import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.Order;
 import com.example.back_end.entity.OrderItem;
 import com.example.back_end.entity.OrderStatusHistory;
@@ -18,6 +20,7 @@ import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
+import com.example.back_end.infrastructure.constant.PaymentStatusType;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
@@ -312,11 +315,11 @@ public class OrderServiceImpl implements OrderService {
                 pageRequest.getSortBy(),
                 pageRequest.getSortDir());
         Page<Order> result = orderRepository.findAll(pageable);
-        List<CustomerOrderResponse> customerOrderRespons = orderMapper.toOrderResponses(result.getContent());
+        List<CustomerOrderResponse> customerOrderResponse = orderMapper.toOrderResponses(result.getContent());
         return PageResponse1.<List<CustomerOrderResponse>>builder()
                 .totalItems(result.getTotalElements())
                 .totalPages(result.getTotalPages())
-                .items(customerOrderRespons)
+                .items(customerOrderResponse)
                 .build();
     }
 
@@ -324,5 +327,63 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItemSummary> getAllOrderItemSummaryByOrderId(Long orderId) {
         return orderMapper.mapToSummaries(orderItemRepository.findByOrderId(orderId));
     }
+
+    @Override
+    @Transactional
+    public void changeStatus(Integer status, String note, Long orderId) {
+        Order order = findOrderById(orderId);
+        LocalDateTime createdDate = LocalDateTime.now();
+        Instant instant = createdDate.atZone(ZoneId.systemDefault()).toInstant();
+
+        OrderStatusHistory orderStatusHistory = new OrderStatusHistory();
+        OrderStatusType statusType = EnumAdaptor.valueOf(status, OrderStatusType.class);
+        orderStatusHistory.setStatus(statusType);
+        orderStatusHistory.setNotes(note);
+        orderStatusHistory.setOrder(order);
+        orderStatusHistory.setPaidDate(instant);
+
+        order.setOrderStatusId(statusType);
+        orderStatusHistoryRepository.save(orderStatusHistory);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public OrderCustomerResponse getCustomerById(Long orderId) {
+        Order order = findOrderById(orderId);
+
+        Customer customer = order.getCustomer();
+        OrderCustomerResponse customerResponse = new OrderCustomerResponse();
+//        PaymentStatusType statusType = EnumAdaptor.valueOf(order.getPaymentStatusId().value, PaymentStatusType.class);
+        if (order.getShippingAddress() != null) {
+            Address address = order.getShippingAddress();
+            customerResponse.setFirstName(address.getFirstName());
+            customerResponse.setLastName(address.getLastName());
+            customerResponse.setPhoneNumber(address.getPhoneNumber());
+            customerResponse.setBillId(order.getBillCode());
+            customerResponse.setDelivery("Delivery");
+            customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
+            return customerResponse;
+        }
+
+        if (customer.getId() == 1) {
+            customerResponse.setFirstName("Retail");
+            customerResponse.setDelivery("At Repair");
+            customerResponse.setBillId(order.getBillCode());
+            customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
+
+
+            return customerResponse;
+        }
+
+        customerResponse.setFirstName(customer.getFirstName());
+        customerResponse.setLastName(customer.getLastName());
+        customerResponse.setPhoneNumber(customerResponse.getPhoneNumber());
+        customerResponse.setBillId(customerResponse.getBillId());
+//        customerResponse.setDelivery("Delivery");
+        customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
+
+        return customerResponse;
+    }
+
 
 }
