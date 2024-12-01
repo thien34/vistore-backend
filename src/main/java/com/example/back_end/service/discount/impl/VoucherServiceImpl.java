@@ -56,6 +56,7 @@ public class VoucherServiceImpl implements VoucherService {
                 filterRequest.getDiscountTypeId(),
                 filterRequest.getStartDate(),
                 filterRequest.getEndDate(),
+                filterRequest.getStatus(),
                 filterRequest.getIsPublished()
         );
         discounts.forEach(this::updateVoucherStatus);
