@@ -1,5 +1,6 @@
 package com.example.back_end.core.admin.order.controller;
 
+import com.example.back_end.core.admin.order.payload.OrderCustomerResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
 import com.example.back_end.core.admin.order.payload.OrderItemSummary;
 import com.example.back_end.core.admin.order.payload.OrderItemsResponse;
@@ -85,6 +86,20 @@ public class OrderController {
     public ResponseData<Void> addProductToOrder(@RequestBody OrderRequest.OrderItemRequest itemRequest, @PathVariable Long id) {
         orderService.addProductToOrder(itemRequest, id);
         return new ResponseData<>(HttpStatus.OK.value(), "Add product to order success");
+    }
+
+    @GetMapping("/change-status/{status}")
+    public ResponseData<Void> changeStatus(@PathVariable Integer status,
+                                           @RequestParam(name = "reason") String reason,
+                                           @RequestParam(name = "orderId") Long orderId) {
+        orderService.changeStatus(status, reason, orderId);
+        return new ResponseData<>(HttpStatus.OK.value(), "Change order status success");
+    }
+
+
+    @GetMapping("/customer/order/{orderId}")
+    public ResponseData<OrderCustomerResponse> getCustomerOrder(@PathVariable Long orderId) {
+        return new ResponseData<>(HttpStatus.OK.value(), "Fetch customer order success", orderService.getCustomerById(orderId));
     }
 
 }
