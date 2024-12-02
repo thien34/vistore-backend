@@ -1,6 +1,7 @@
 package com.example.back_end.service.cart.impl;
 
 import com.example.back_end.core.client.cart.mapper.CartClientMapper;
+import com.example.back_end.core.client.cart.payload.request.CartPaymentRequest;
 import com.example.back_end.core.client.cart.payload.request.CartRequest;
 import com.example.back_end.core.client.cart.payload.response.CartResponse;
 import com.example.back_end.entity.Product;
@@ -42,7 +43,6 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
                 if (newQuantity > product.getQuantity()) {
                     throw new IllegalArgumentException("Cannot add more than available stock for product: " + product.getName());
                 }
-                existingCartItem.setQuantity(newQuantity);
                 cartItemRepository.save(existingCartItem);
                 productExistsInCart = true;
                 break;
@@ -63,6 +63,25 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
     public List<CartResponse> getAllCartByCustomerId(Long idCustomer) {
 
         List<ShoppingCartItem> shoppingCartItems = cartItemRepository.findAllByCustomerId(idCustomer);
+
+        return shoppingCartItems.stream()
+                .map(cartClientMapper::toDto)
+                .peek(cartResponse -> {
+                    Product product = productRepository.findById(cartResponse.getIdProduct())
+                            .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartResponse.getIdProduct()));
+                    Product productParent = productRepository.findById(product.getParentProductId())
+                            .orElseThrow(() -> new EntityNotFoundException("Product parent not found with ID: " + product.getParentProductId()));
+                    cartResponse.setSlug(productParent.getSlug());
+                    cartResponse.setAttributeProduct(getAttributeProduct(product));
+                })
+                .sorted(Comparator.comparing(CartResponse::getId))
+                .toList();
+    }
+
+    @Override
+    public List<CartResponse> getCartsByCustomerId(Long idCustomer, CartPaymentRequest CartPaymentRequest) {
+
+        List<ShoppingCartItem> shoppingCartItems = cartItemRepository.findAllByCustomerIdAndIdIn(idCustomer, CartPaymentRequest.getIdCarts());
 
         return shoppingCartItems.stream()
                 .map(cartClientMapper::toDto)

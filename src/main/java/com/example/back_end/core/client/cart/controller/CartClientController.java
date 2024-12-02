@@ -1,5 +1,6 @@
 package com.example.back_end.core.client.cart.controller;
 
+import com.example.back_end.core.client.cart.payload.request.CartPaymentRequest;
 import com.example.back_end.core.client.cart.payload.request.CartRequest;
 import com.example.back_end.core.client.cart.payload.request.CartUpdateRequest;
 import com.example.back_end.core.client.cart.payload.response.CartResponse;
@@ -28,8 +29,16 @@ public class CartClientController {
 
     @GetMapping("/{idCustomer}")
     public ResponseData<List<CartResponse>> getAllCartByCustomerId(@PathVariable Long idCustomer) {
-
+    
         List<CartResponse> cartResponses = shoppingCartClientService.getAllCartByCustomerId(idCustomer);
+
+        return new ResponseData<>(HttpStatus.OK.value(), "Get all cart by customer ID successfully", cartResponses);
+    }
+
+    @PostMapping("/{idCustomer}")
+    public ResponseData<List<CartResponse>> getCartsByCustomerId(@PathVariable Long idCustomer, @RequestBody CartPaymentRequest cartPaymentRequest) {
+
+        List<CartResponse> cartResponses = shoppingCartClientService.getCartsByCustomerId(idCustomer, cartPaymentRequest);
 
         return new ResponseData<>(HttpStatus.OK.value(), "Get all cart by customer ID successfully", cartResponses);
     }
