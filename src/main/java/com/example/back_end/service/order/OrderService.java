@@ -8,6 +8,7 @@ import com.example.back_end.core.admin.order.payload.OrderItemsResponse;
 import com.example.back_end.core.admin.order.payload.OrderRequest;
 import com.example.back_end.core.admin.order.payload.OrderResponse;
 import com.example.back_end.core.admin.order.payload.OrderStatusHistoryResponse;
+import org.apache.coyote.BadRequestException;
 import com.example.back_end.core.common.PageRequest;
 import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.entity.Order;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 public interface OrderService {
 
-    void saveOrder(OrderRequest request);
+    void saveOrder(OrderRequest request) throws BadRequestException;
 
     void updateOrder(Order order);
 
@@ -42,4 +43,7 @@ public interface OrderService {
     void changeStatus(Integer status, String note, Long orderId);
 
     OrderCustomerResponse getCustomerById(Long orderId);
+  
+    String getProductJsonByOrderId(Long orderId);
+
 }

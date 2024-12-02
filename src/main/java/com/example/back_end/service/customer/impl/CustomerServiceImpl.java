@@ -4,6 +4,7 @@ import com.example.back_end.core.admin.customer.mapper.CustomerMapper;
 import com.example.back_end.core.admin.customer.payload.request.CustomerPasswordRequest;
 import com.example.back_end.core.admin.customer.payload.request.CustomerRequest;
 import com.example.back_end.core.admin.customer.payload.request.CustomerSearchRequest;
+import com.example.back_end.core.admin.customer.payload.request.CustomerUpdateRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.core.common.PageResponse1;
@@ -111,6 +112,17 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
 
         updateCustomerRoles(customer, request.getCustomerRoles());
+    }
+
+    @Override
+    @Transactional
+    public void updateProfileInfo(Long id, CustomerUpdateRequest request) {
+
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_NOT_FOUND.getMessage()));
+
+        customerMapper.updateProfileInfo(request, customer);
+        customerRepository.save(customer);
     }
 
     private void updateCustomerRoles(Customer customer, List<Long> newRoleIds) {

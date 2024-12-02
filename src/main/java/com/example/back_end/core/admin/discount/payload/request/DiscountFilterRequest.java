@@ -25,10 +25,12 @@ public class DiscountFilterRequest {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant endDate;
 
-    private Boolean isActive;
+    private Boolean isPublished;
 
     private Integer pageNo;
 
     private Integer pageSize;
+
+    private String status;
 
 }

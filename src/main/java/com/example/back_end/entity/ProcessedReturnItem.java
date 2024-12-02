@@ -1,10 +1,8 @@
 package com.example.back_end.entity;
 
-import com.example.back_end.infrastructure.constant.ReturnRequestStatusType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,30 +20,32 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@AllArgsConstructor
 @Builder
-@Table(name = "return_time_line",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"return_request_id", "status"})
-        }
+@Entity
+@Table(
+        name = "processed_return_item",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"return_request_id", "product_json", "status"})
 )
-public class ReturnTimeLine extends Auditable {
+public class ProcessedReturnItem extends Auditable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "return_request_id")
+    @JoinColumn(name = "return_request_id", nullable = false)
     private ReturnRequest returnRequest;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "status")
-    private ReturnRequestStatusType status;
+    @Column(name = "product_json", columnDefinition = "TEXT", nullable = false)
+    private String productJson;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
+    @Column(name = "status", length = 50, nullable = false)
+    private String status;
 
 }

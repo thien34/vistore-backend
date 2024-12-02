@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.customer.controller;
 
 import com.example.back_end.core.admin.customer.payload.request.CustomerRequest;
 import com.example.back_end.core.admin.customer.payload.request.CustomerSearchRequest;
+import com.example.back_end.core.admin.customer.payload.request.CustomerUpdateRequest;
 import com.example.back_end.core.admin.customer.payload.response.CustomerFullResponse;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.core.common.PageResponse1;
@@ -69,6 +70,17 @@ public class CustomerController {
     public ResponseData<Void> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerRequest request) {
 
         customerService.updateCustomer(id, request);
+
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Customer updated successfully")
+                .build();
+    }
+
+    @PutMapping("/profile-info/{id}")
+    public ResponseData<Void> updateProfileInfo(@PathVariable Long id, @RequestBody @Valid CustomerUpdateRequest request) {
+
+        customerService.updateProfileInfo(id, request);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())

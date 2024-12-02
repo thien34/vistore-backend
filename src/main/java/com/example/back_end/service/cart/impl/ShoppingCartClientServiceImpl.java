@@ -4,7 +4,9 @@ import com.example.back_end.core.client.cart.mapper.CartClientMapper;
 import com.example.back_end.core.client.cart.payload.request.CartRequest;
 import com.example.back_end.core.client.cart.payload.response.CartResponse;
 import com.example.back_end.entity.Product;
+import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.entity.ShoppingCartItem;
+import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.service.cart.ShoppingCartClientService;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
     private final ShoppingCartItemRepository cartItemRepository;
     private final CartClientMapper cartClientMapper;
     private final ProductRepository productRepository;
+    private final ProductAttributeValueRepository productAttributeValueRepository;
 
     @Override
     public void addCart(CartRequest cartRequest) {
@@ -61,16 +65,25 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
         List<ShoppingCartItem> shoppingCartItems = cartItemRepository.findAllByCustomerId(idCustomer);
 
         return shoppingCartItems.stream()
-                .map(cartClientMapper::toDto)  // Method reference thay cho lambda: cartItem -> cartClientMapper.toDto(cartItem)
+                .map(cartClientMapper::toDto)
                 .peek(cartResponse -> {
                     Product product = productRepository.findById(cartResponse.getIdProduct())
                             .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartResponse.getIdProduct()));
                     Product productParent = productRepository.findById(product.getParentProductId())
                             .orElseThrow(() -> new EntityNotFoundException("Product parent not found with ID: " + product.getParentProductId()));
                     cartResponse.setSlug(productParent.getSlug());
+                    cartResponse.setAttributeProduct(getAttributeProduct(product));
                 })
                 .sorted(Comparator.comparing(CartResponse::getId))
                 .toList();
+    }
+
+    public String getAttributeProduct(Product product) {
+        List<ProductAttributeValue> attributeValues = productAttributeValueRepository.findByProduct(product);
+
+        return attributeValues.stream()
+                .map(ProductAttributeValue::getValue)
+                .collect(Collectors.joining(" - "));
     }
 
     @Override
@@ -99,7 +112,6 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
 
         cartItemRepository.deleteById(id);
     }
-
 
 }
 

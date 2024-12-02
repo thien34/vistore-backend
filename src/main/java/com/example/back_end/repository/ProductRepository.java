@@ -26,4 +26,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     Product findBySlug(String slug);
 
+
 }

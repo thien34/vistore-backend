@@ -14,29 +14,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Table(name = "customer_voucher")
-public class CustomerVoucher {
+@Entity
+@Table(name = "pending_return_item")
+public class PendingReturnItem extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "return_request_id", nullable = false)
+    private ReturnRequest returnRequest;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_id", nullable = false)
-    private Discount discount;
+    @Column(name = "product_json", columnDefinition = "TEXT", nullable = false)
+    private String productJson;
 
-    @Column(name = "usage_count_per_customer")
-    private Integer usageCountPerCustomer;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
 }
