@@ -1,5 +1,6 @@
 package com.example.back_end.core.admin.product.controller;
 
+import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
@@ -67,6 +68,15 @@ public class ProductController {
                 .build();
     }
 
+    @PostMapping("/restock-product")
+    public ResponseData<Void> saveReturnItems(@RequestBody List<ReStockQuanityProductRequest> requests) {
+        productService.reStockQuantityProduct(requests);
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Restock product successfully")
+                .build();
+    }
+
     @GetMapping("/by-parent-ids")
     public ResponseData<List<ProductResponse>> getProductsByParentIds(@RequestParam List<Long> parentIds) {
         List<ProductResponse> productResponses = productService.getAllProductsByParentIds(parentIds);
@@ -119,7 +129,7 @@ public class ProductController {
     }
 
     @PutMapping("/parent-update/{id}")
-    public ResponseData<Void> updateParentProduct(@RequestBody ProductParentRequest requestUpdate, @PathVariable Long id)  {
+    public ResponseData<Void> updateParentProduct(@RequestBody ProductParentRequest requestUpdate, @PathVariable Long id) {
         productService.updateParentProduct(requestUpdate, id);
         return new ResponseData<>(HttpStatus.OK.value(), "Update product successfully");
     }

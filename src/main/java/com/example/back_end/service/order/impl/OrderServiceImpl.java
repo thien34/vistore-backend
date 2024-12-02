@@ -413,4 +413,12 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.mapToSummaries(orderItemRepository.findByOrderId(orderId));
     }
 
+    @Override
+    public String getProductJsonByOrderId(Long orderId) {
+        Optional<OrderItem> orderItem = orderItemRepository.findById(orderId);
+        if (orderItem.isPresent()) {
+            return orderItem.get().getProductJson();
+        } else return "";
+    }
+
 }
