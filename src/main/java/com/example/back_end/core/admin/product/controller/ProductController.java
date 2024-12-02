@@ -5,11 +5,7 @@ import com.example.back_end.core.admin.product.payload.request.ProductParentRequ
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
-import com.example.back_end.core.admin.returnProduct.payload.request.ReturnItemRequest;
-import com.example.back_end.core.admin.returnProduct.payload.response.ReturnItemResponse;
 import com.example.back_end.core.common.ResponseData;
-import com.example.back_end.entity.Product;
-import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.service.product.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -133,7 +129,7 @@ public class ProductController {
     }
 
     @PutMapping("/parent-update/{id}")
-    public ResponseData<Void> updateParentProduct(@RequestBody ProductParentRequest requestUpdate, @PathVariable Long id)  {
+    public ResponseData<Void> updateParentProduct(@RequestBody ProductParentRequest requestUpdate, @PathVariable Long id) {
         productService.updateParentProduct(requestUpdate, id);
         return new ResponseData<>(HttpStatus.OK.value(), "Update product successfully");
     }

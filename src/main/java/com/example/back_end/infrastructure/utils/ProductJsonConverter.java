@@ -1,8 +1,6 @@
 package com.example.back_end.infrastructure.utils;
 
 import com.example.back_end.entity.Product;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -76,14 +74,5 @@ public class ProductJsonConverter {
         Set<Object> processedObjects = new HashSet<>();
         return convertToJson(product, processedObjects);
     }
-    public Product convertJsonToProduct(String json) throws JSONException {
-        if (json == null || json.isEmpty()) {
-            throw new IllegalArgumentException("json is null or empty");
-        }
-        JSONObject jsonObject = new JSONObject(json);
-        Product product = new Product();
-        JSONObject productId= jsonObject.getJSONObject("id");
-        product.setId(Long.parseLong(productId.toString()));
-        return product;
-    }
+
 }

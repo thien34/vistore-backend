@@ -18,5 +18,4 @@ public interface ReturnProductServices {
 
     PageResponse1<List<PendingReturnItemResponse>> getPendingReturnItems(PageRequest pageRequest);
 
-    void createReturnTimeLine();
 }

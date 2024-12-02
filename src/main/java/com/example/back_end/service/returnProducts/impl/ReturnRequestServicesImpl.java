@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,10 +29,11 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
     private final ReturnTimeLineRepository timeLineRepository;
     private final ReturnTimeLineMapper timeLineMapper;
     private final ReturnRequestMapper mapper;
+
     @Override
     public ReturnRequestResponse createReturnRequest(ReturnRequestRequest request) {
         ReturnRequest savedReturnRequest = repository.save(mapper.toRequest(request));
-        ReturnTimeLineRequest timeLineRequest= timeLineMapper.mapToReturnTimeLineRequest(savedReturnRequest);
+        ReturnTimeLineRequest timeLineRequest = timeLineMapper.mapToReturnTimeLineRequest(savedReturnRequest);
         timeLineRepository.save(timeLineMapper.mapToReturnTimeLine(timeLineRequest));
         return mapper.toResponse(savedReturnRequest);
     }
@@ -42,7 +42,7 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
     public void updateReturnRequest(Long id, ReturnRequestRequest request) {
         ReturnRequest savedReturnRequest = repository.findById(id).orElseThrow(() -> new RuntimeException("Return Request not found with id: " + id));
         mapper.updateReturnRequest(request, savedReturnRequest);
-        ReturnTimeLineRequest timeLineRequest= timeLineMapper.mapToReturnTimeLineRequest(savedReturnRequest);
+        ReturnTimeLineRequest timeLineRequest = timeLineMapper.mapToReturnTimeLineRequest(savedReturnRequest);
         timeLineRepository.save(timeLineMapper.mapToReturnTimeLine(timeLineRequest));
         repository.save(savedReturnRequest);
     }
@@ -83,7 +83,7 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
                 pageRequest.getPageSize(),
                 pageRequest.getSortBy(),
                 pageRequest.getSortDir());
-        Page<ReturnRequest> result = repository.findByCustomerId(customerId,pageable);
+        Page<ReturnRequest> result = repository.findByCustomerId(customerId, pageable);
         List<ReturnRequestResponse> responses = mapper.toResponseList(result.getContent());
         return PageResponse1.<List<ReturnRequestResponse>>builder()
                 .totalItems(result.getTotalElements())
@@ -107,6 +107,6 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
     @Override
     public List<ReturnTimeLineResponse> getReturnTimeLineByRequestId(Long requestId) {
         List<ReturnTimeLine> result = timeLineRepository.getAllReturnTimeLinesByReturnRequestId(requestId);
-        return  timeLineMapper.mapToReturnTimeLineResponses(result);
+        return timeLineMapper.mapToReturnTimeLineResponses(result);
     }
 }
