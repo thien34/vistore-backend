@@ -1,5 +1,6 @@
 package com.example.back_end.service.product.impl;
 
+import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
@@ -14,6 +15,7 @@ import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.infrastructure.exception.NotFoundException;
+import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
@@ -22,10 +24,10 @@ import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.service.discount.impl.VoucherServiceImpl;
 import com.example.back_end.service.product.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -210,6 +212,30 @@ public class ProductServiceImpl implements ProductService {
         product.setGtin(UUID.randomUUID().toString());
         productRepository.save(product);
     }
+
+
+
+    @Override
+    public void reStockQuantityProduct(List<ReStockQuanityProductRequest> requests) {
+        if(requests.isEmpty()){
+            throw new IllegalArgumentException("List Restock is empty!");
+        }
+        List<Product> listProduct = new ArrayList<>();
+        requests.forEach(
+                request -> {
+                    Optional<Product> product = productRepository.findById(request.getProductId());
+                    if(product.isPresent()) {
+                        Product productRequest = product.get();
+                        Integer newQuantity = productRequest.getQuantity()+ request.getQuantity();
+                        productRequest.setQuantity(newQuantity);
+                        listProduct.add(productRequest);
+                }
+        });
+        if(listProduct.isEmpty()){
+            throw new IllegalArgumentException("List Product is empty!");
+        } else productRepository.saveAll(listProduct);
+    }
+
 
     private void updateDiscountStatus(Discount discount) {
         discountStatus(discount, discountRepository);

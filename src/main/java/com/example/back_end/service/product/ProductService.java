@@ -1,5 +1,6 @@
 package com.example.back_end.service.product;
 
+import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
@@ -30,5 +31,7 @@ public interface ProductService {
     void updateParentProduct(ProductParentRequest request, Long productId);
 
     void addChildProduct(ProductRequestUpdate request, Long productId) throws BadRequestException;
+
+    void reStockQuantityProduct(List<ReStockQuanityProductRequest> requests);
 
 }

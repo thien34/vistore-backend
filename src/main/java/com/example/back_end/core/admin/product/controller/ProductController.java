@@ -1,10 +1,15 @@
 package com.example.back_end.core.admin.product.controller;
 
+import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
 import com.example.back_end.core.admin.product.payload.response.ProductResponse;
+import com.example.back_end.core.admin.returnProduct.payload.request.ReturnItemRequest;
+import com.example.back_end.core.admin.returnProduct.payload.response.ReturnItemResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.entity.Product;
+import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.service.product.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +69,15 @@ public class ProductController {
                 .status(HttpStatus.OK.value())
                 .message("Get product successfully")
                 .data(productResponse)
+                .build();
+    }
+
+    @PostMapping("/restock-product")
+    public ResponseData<Void> saveReturnItems(@RequestBody List<ReStockQuanityProductRequest> requests) {
+        productService.reStockQuantityProduct(requests);
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Restock product successfully")
                 .build();
     }
 

@@ -1,7 +1,9 @@
 package com.example.back_end.core.admin.returnProduct.controller;
 
 import com.example.back_end.core.admin.returnProduct.payload.request.ReturnRequestRequest;
+import com.example.back_end.core.admin.returnProduct.payload.request.ReturnTimeLineRequest;
 import com.example.back_end.core.admin.returnProduct.payload.response.ReturnRequestResponse;
+import com.example.back_end.core.admin.returnProduct.payload.response.ReturnTimeLineResponse;
 import com.example.back_end.core.common.PageRequest;
 import com.example.back_end.core.common.PageResponse1;
 import com.example.back_end.core.common.ResponseData;
@@ -77,5 +79,32 @@ public class ReturnRequestController {
                 .status(HttpStatus.OK.value())
                 .message("Return request with id: " + id + " updated success!")
                 .build();
+    }
+
+    @PostMapping("/time-line")
+    public ResponseData<Void> createReturnRequestTimeLine(@RequestBody ReturnTimeLineRequest request) {
+        returnRequestServices.createReturnTimeLine(request);
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Create ReturnTimeLine Of Return Request Id : " + request.getReturnRequestId() + " successfully!")
+                .build();
+    }
+
+    @PostMapping("/time-lines")
+    public ResponseData<Void> createReturnRequestTimeLines(@RequestBody List<ReturnTimeLineRequest> requests) {
+        returnRequestServices.createReturnTimeLines(requests);
+        return ResponseData.<Void>builder()
+                .status(HttpStatus.OK.value())
+                .message("Create all ReturnTimeLines Of Return Request Id : " + requests.getFirst().getReturnRequestId() + " successfully!")
+                .build();
+    }
+
+    @GetMapping("/time-line/{returnRequestId}")
+    public ResponseData<List<ReturnTimeLineResponse>> getAllReturnTimeLineByReturnRequestId(@PathVariable Long returnRequestId) {
+        List<ReturnTimeLineResponse> response = returnRequestServices.getReturnTimeLineByRequestId(returnRequestId);
+        return ResponseData.<List<ReturnTimeLineResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Get all  timeline of Return Request has Id: "+ returnRequestId+" successfully!")
+                .data(response).build();
     }
 }

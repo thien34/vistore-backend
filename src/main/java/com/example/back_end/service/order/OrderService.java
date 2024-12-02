@@ -37,4 +37,6 @@ public interface OrderService {
     PageResponse1<List<CustomerOrderResponse>> getCustomerOrders(PageRequest pageRequest);
 
     List<OrderItemSummary> getAllOrderItemSummaryByOrderId(Long orderId);
+
+    String getProductJsonByOrderId(Long orderId);
 }
