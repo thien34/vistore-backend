@@ -403,7 +403,7 @@ public class OrderServiceImpl implements OrderService {
                 .filter(x -> x.getOrderStatusId() == OrderStatusType.COMPLETED)
                 .collect(Collectors.toList());
         result = new PageImpl<>(filteredCompletedOrders, pageable, filteredCompletedOrders.size());
-        List<CustomerOrderResponse> customerOrderRespons = orderMapper.toOrderResponses(result.getContent());
+        List<CustomerOrderResponse> customerOrderResponse = orderMapper.toOrderResponses(result.getContent());
       
         return PageResponse1.<List<CustomerOrderResponse>>builder()
                 .totalItems(result.getTotalElements())
