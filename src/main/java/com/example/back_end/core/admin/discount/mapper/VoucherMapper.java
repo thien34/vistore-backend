@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.discount.mapper;
 
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
+import com.example.back_end.core.admin.discount.payload.response.VoucherFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.entity.Discount;
 import com.example.back_end.infrastructure.constant.DiscountLimitationType;
@@ -16,6 +17,17 @@ public interface VoucherMapper {
     @Mapping(target = "discountTypeName", source = "discountTypeId", qualifiedByName = "mapDiscountTypeName")
     VoucherResponse toResponse(Discount discount);
 
+    @Mapping(source = "discountTypeId", target = "discountTypeId")
+    @Mapping(source = "discountLimitationId", target = "discountLimitationId")
+    VoucherFullResponse toFullResponse(Discount discount);
+
+    default Integer map(DiscountType value) {
+        return value != null ? value.getId() : null;
+    }
+
+    default Integer map(DiscountLimitationType value) {
+        return value != null ? value.getId() : null;
+    }
     List<VoucherResponse> toResponseList(List<Discount> discounts);
     @Mapping(target = "discountLimitationId", source = "discountLimitationId", qualifiedByName = "mapDiscountLimitationType")
     Discount toEntity(VoucherRequest request);

@@ -1,19 +1,29 @@
 package com.example.back_end.service.discount.impl;
 
+import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
+import com.example.back_end.core.admin.discount.mapper.DiscountMapper;
 import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
+import com.example.back_end.core.admin.discount.payload.request.VoucherUpdateRequest;
+import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
+import com.example.back_end.core.admin.discount.payload.response.ProductResponseDetails;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponseWrapper;
+import com.example.back_end.core.admin.discount.payload.response.VoucherFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
 import com.example.back_end.entity.Discount;
+import com.example.back_end.entity.DiscountAppliedToProduct;
+import com.example.back_end.entity.Product;
 import com.example.back_end.infrastructure.constant.DiscountType;
+import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.CustomerVoucherRepository;
+import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.service.discount.EmailService;
 import com.example.back_end.service.discount.VoucherService;
@@ -44,7 +54,7 @@ public class VoucherServiceImpl implements VoucherService {
     CustomerRepository customerRepository;
     CustomerVoucherRepository customerVoucherRepository;
     EmailService emailService;
-
+    DiscountMapper discountMapper;
     private static final Random RANDOM = new Random();
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -271,6 +281,74 @@ public class VoucherServiceImpl implements VoucherService {
             throw new InvalidDataException("Voucher has been fully redeemed.");
         }
     }
+
+    @Transactional
+    @Override
+    public void updateVoucher(Long voucherId, VoucherUpdateRequest request) {
+        Discount discount = discountRepository.findById(voucherId)
+                .orElseThrow(() -> new NotFoundException("Voucher not found with ID: " + voucherId));
+
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            validateDiscountNameLength(request.getName());
+            discount.setName(request.getName());
+        }
+
+        if (request.getStartDate() != null && request.getEndDate() != null) {
+            validateDate(request.getStartDate(), request.getEndDate());
+            discount.setStartDateUtc(request.getStartDate());
+            discount.setEndDateUtc(request.getEndDate());
+        }
+
+        if (request.getMaxUsageCount() != null) {
+            if (discount.getUsageCount() != null && request.getMaxUsageCount() < discount.getUsageCount()) {
+                throw new InvalidDataException(
+                        "Cannot reduce max usage count below the current usage count (" + discount.getUsageCount() + ")."
+                );
+            }
+            if ("ACTIVE".equals(discount.getStatus()) && request.getMaxUsageCount() < discount.getLimitationTimes()) {
+                throw new InvalidDataException(
+                        "Cannot reduce max usage count while the voucher is ACTIVE."
+                );
+            }
+            discount.setLimitationTimes(request.getMaxUsageCount());
+            initializeUsageCount(discount);
+        }
+        discountRepository.save(discount);
+        log.info("Updated voucher with ID: {}", voucherId);
+    }
+
+    @Override
+    public VoucherFullResponse getVoucherById(Long id) {
+        Discount discount = findDiscountById(id);
+        updateStatusVoucher(discount, discountRepository);
+
+        // Lấy danh sách khách hàng được áp dụng
+        List<CustomerVoucher> customerVouchers = customerVoucherRepository.findByDiscount(discount);
+        List<CustomerResponse> appliedCustomers = customerVouchers.stream()
+                .map(customerVoucher -> {
+                    Customer customer = customerVoucher.getCustomer();
+                    return CustomerResponse.builder()
+                            .id(customer.getId())
+                            .firstName(customer.getFirstName())
+                            .lastName(customer.getLastName())
+                            .email(customer.getEmail())
+                            .build();
+                })
+                .toList();
+
+        // Tạo response
+        VoucherFullResponse response = voucherMapper.toFullResponse(discount);
+        response.setAppliedCustomers(appliedCustomers);
+
+        return response;
+    }
+
+
+    private Discount findDiscountById(Long id) {
+        return discountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.DISCOUNT_NOT_FOUND.getMessage()));
+    }
+
 
     //voucher applied to order
 
