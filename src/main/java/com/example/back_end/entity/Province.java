@@ -35,8 +35,7 @@ public class Province {
     private String nameEn;
 
     @Size(max = 255)
-    @NotNull
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "full_name")
     private String fullName;
 
     @Size(max = 255)

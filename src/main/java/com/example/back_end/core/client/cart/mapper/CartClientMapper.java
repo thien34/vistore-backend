@@ -19,6 +19,7 @@ public interface CartClientMapper {
 
     @Mapping(target = "product.id", source = "productId")
     @Mapping(target = "customer.id", source = "customerId")
+    @Mapping(target = "isAdmin", constant = "false")
     ShoppingCartItem toEntity(CartRequest cartRequest);
 
 }

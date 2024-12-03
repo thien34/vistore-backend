@@ -2,6 +2,7 @@ package com.example.back_end.service.address.impl;
 
 import com.example.back_end.core.admin.address.mapper.WardMapper;
 import com.example.back_end.core.admin.address.payload.response.WardResponse;
+import com.example.back_end.core.client.address.WardApiResponse;
 import com.example.back_end.entity.District;
 import com.example.back_end.entity.Ward;
 import com.example.back_end.repository.DistrictRepository;
@@ -29,4 +30,23 @@ public class WardServiceImpl implements WardService {
         return wardMapper.toResponseList(wards);
     }
 
+    @Override
+    public void syncWard(List<WardApiResponse> wardApiResponses) {
+        List<Ward> wards = wardApiResponses.stream()
+                .map(apiResponse -> {
+                    District district = districtRepository.findById(apiResponse.getDistrictId())
+                            .orElseThrow(() -> new IllegalArgumentException("District not found"));
+                    return convertToWard(apiResponse, district);
+                })
+                .toList();
+        wardRepository.saveAll(wards);
+    }
+
+    private Ward convertToWard(WardApiResponse wardApiResponse, District district) {
+        Ward ward = new Ward();
+        ward.setCode(wardApiResponse.getWardCode());
+        ward.setName(wardApiResponse.getWardName());
+        ward.setDistrictCode(district);
+        return ward;
+    }
 }
