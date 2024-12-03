@@ -40,8 +40,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -54,7 +57,6 @@ public class VoucherServiceImpl implements VoucherService {
     CustomerRepository customerRepository;
     CustomerVoucherRepository customerVoucherRepository;
     EmailService emailService;
-    DiscountMapper discountMapper;
     private static final Random RANDOM = new Random();
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -322,7 +324,6 @@ public class VoucherServiceImpl implements VoucherService {
         Discount discount = findDiscountById(id);
         updateStatusVoucher(discount, discountRepository);
 
-        // Lấy danh sách khách hàng được áp dụng
         List<CustomerVoucher> customerVouchers = customerVoucherRepository.findByDiscount(discount);
         List<CustomerResponse> appliedCustomers = customerVouchers.stream()
                 .map(customerVoucher -> {
@@ -336,7 +337,6 @@ public class VoucherServiceImpl implements VoucherService {
                 })
                 .toList();
 
-        // Tạo response
         VoucherFullResponse response = voucherMapper.toFullResponse(discount);
         response.setAppliedCustomers(appliedCustomers);
 
@@ -402,10 +402,16 @@ public class VoucherServiceImpl implements VoucherService {
         List<VoucherApplyResponse> responses = new ArrayList<>();
         BigDecimal totalDiscount = BigDecimal.ZERO;
         List<Long> applicableVoucherIds = new ArrayList<>();
+        Set<String> processedCoupons = new HashSet<>();
 
         boolean hasNonCumulativeVoucher = false;
 
         for (String code : couponCodes) {
+            if (processedCoupons.contains(code)) {
+                continue;
+            }
+            processedCoupons.add(code);
+
             VoucherApplyResponse response = VoucherApplyResponse.builder()
                     .couponCode(code)
                     .build();
@@ -465,6 +471,7 @@ public class VoucherServiceImpl implements VoucherService {
 
             responses.add(response);
         }
+        applicableVoucherIds = new ArrayList<>(new LinkedHashSet<>(applicableVoucherIds));
 
         return VoucherApplyResponseWrapper.builder()
                 .totalDiscount(totalDiscount)

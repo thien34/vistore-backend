@@ -43,7 +43,6 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -95,14 +94,8 @@ public class OrderServiceImpl implements OrderService {
             List<Discount> discounts = discountRepository.findAllById(voucherIds);
 
             for (Discount discount : discounts) {
-                if (discount.getUsageCount() != null && discount.getUsageCount() > 0) {
-                    discount.setUsageCount(discount.getUsageCount() - 1);
-                } else {
-                    try {
-                        throw new BadRequestException("Voucher đã hết số lần sử dụng: " + discount.getCouponCode());
-                    } catch (BadRequestException e) {
-                        throw new RuntimeException(e);
-                    }
+                if (discount.getUsageCount() != null && discount.getUsageCount() <= 0) {
+                    throw new IllegalArgumentException("Voucher đã hết số lần sử dụng: " + discount.getCouponCode());
                 }
                 CustomerVoucher customerVoucher = customerVoucherRepository.findByCustomerIdAndDiscountId(
                         request.getCustomerId(), discount.getId()
@@ -115,11 +108,7 @@ public class OrderServiceImpl implements OrderService {
                 if (customerVoucher.getUsageCountPerCustomer() != null) {
                     if (discount.getPerCustomerLimit() != null &&
                             customerVoucher.getUsageCountPerCustomer() >= discount.getPerCustomerLimit()) {
-                        try {
-                            throw new BadRequestException("Voucher đã vượt giới hạn sử dụng cho khách hàng: " + discount.getCouponCode());
-                        } catch (BadRequestException e) {
-                            throw new RuntimeException(e);
-                        }
+                        throw new IllegalArgumentException("Voucher đã vượt giới hạn sử dụng cho khách hàng: " + discount.getCouponCode());
                     }
                     customerVoucher.setUsageCountPerCustomer(customerVoucher.getUsageCountPerCustomer() + 1);
                 } else {
@@ -403,7 +392,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
         result = new PageImpl<>(filteredCompletedOrders, pageable, filteredCompletedOrders.size());
         List<CustomerOrderResponse> customerOrderResponse = orderMapper.toOrderResponses(result.getContent());
-      
+
         return PageResponse1.<List<CustomerOrderResponse>>builder()
                 .totalItems(result.getTotalElements())
                 .totalPages(result.getTotalPages())
@@ -515,14 +504,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
     @Override
     public List<String> getDiscountByOrderId(Long orderId) {
-        List<String> discountCode = discountUsageHistoryRepository.findByOrderId(orderId)
+        return discountUsageHistoryRepository.findByOrderId(orderId)
                 .stream().map(d -> d.getDiscount().getCouponCode())
                 .toList();
-
-        return discountCode;
     }
 
 }
