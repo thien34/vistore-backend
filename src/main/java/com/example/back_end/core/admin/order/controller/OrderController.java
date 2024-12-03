@@ -96,10 +96,21 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.OK.value(), "Change order status success");
     }
 
-
     @GetMapping("/customer/order/{orderId}")
     public ResponseData<OrderCustomerResponse> getCustomerOrder(@PathVariable Long orderId) {
         return new ResponseData<>(HttpStatus.OK.value(), "Fetch customer order success", orderService.getCustomerById(orderId));
     }
+
+    @GetMapping("/discounts/{orderId}")
+    public ResponseData<List<String>> getDiscounts(@PathVariable Long orderId) {
+        return new ResponseData<>(HttpStatus.OK.value(), "Fetch discounts success", orderService.getDiscountByOrderId(orderId));
+    }
+
+    @GetMapping("/cancel-order/{orderId}")
+    public ResponseData<Void> cancelOrder(@PathVariable Long orderId, @RequestParam String note) {
+        orderService.cancelOrder(orderId, note);
+        return new ResponseData<>(HttpStatus.OK.value(), "Cancel order success");
+    }
+
 
 }

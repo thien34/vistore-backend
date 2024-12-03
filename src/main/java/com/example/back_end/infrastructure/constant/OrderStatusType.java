@@ -14,6 +14,7 @@ public enum OrderStatusType {
     DELIVERING(5),         // Đang giao hàng
     DELIVERED(6),          // Đã giao hàng
     PAID(7),               // Đã thanh toán
-    COMPLETED(8);        // Thành công
+    COMPLETED(8),        // Thành công
+    CANCELLED(9);        // Huy
     public final int value;
 }

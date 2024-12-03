@@ -24,7 +24,6 @@ import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.entity.Ward;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
-import com.example.back_end.infrastructure.constant.PaymentStatusType;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
@@ -459,8 +458,6 @@ public class OrderServiceImpl implements OrderService {
             customerResponse.setDelivery("At Repair");
             customerResponse.setBillId(order.getBillCode());
             customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
-
-
             return customerResponse;
         }
 
@@ -479,6 +476,53 @@ public class OrderServiceImpl implements OrderService {
         if (orderItem.isPresent()) {
             return orderItem.get().getProductJson();
         } else return "";
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrder(Long orderId, String note) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if (Boolean.TRUE.equals(order.getDeleted())) {
+            throw new IllegalStateException("Order is already deleted");
+        }
+
+        LocalDateTime createdDate = LocalDateTime.now();
+        Instant instant = createdDate.atZone(ZoneId.systemDefault()).toInstant();
+
+        List<OrderItem> orderItems = order.getOrderItems();
+
+        for (OrderItem orderItem : orderItems) {
+            Product product = orderItem.getProduct();
+            if (product != null) {
+                product.setQuantity(product.getQuantity() + orderItem.getQuantity());
+                productRepository.save(product);
+            }
+        }
+
+        order.setOrderStatusId(OrderStatusType.CANCELLED);
+        order.setDeleted(true);
+
+        OrderStatusHistory orderStatusHistory = new OrderStatusHistory();
+        orderStatusHistory.setStatus(OrderStatusType.CANCELLED);
+        orderStatusHistory.setNotes(note);
+        orderStatusHistory.setOrder(order);
+        orderStatusHistory.setPaidDate(instant);
+
+        orderRepository.save(order);
+        orderStatusHistoryRepository.save(orderStatusHistory);
+    }
+
+
+
+    @Override
+    public List<String> getDiscountByOrderId(Long orderId) {
+        List<String> discountCode = discountUsageHistoryRepository.findByOrderId(orderId)
+                .stream().map(d -> d.getDiscount().getCouponCode())
+                .toList();
+
+        return discountCode;
     }
 
 }

@@ -24,7 +24,6 @@ public interface OrderService {
 
     Optional<Order> getOrderById(Long orderId);
 
-
     List<OrderResponse> getOrders(OrderFilter filter);
 
     List<OrderItemsResponse> getOrderItemsByOrderId(Long orderId);
@@ -34,7 +33,6 @@ public interface OrderService {
     void updateQuantity(Long id, Integer quantity);
 
     void addProductToOrder(OrderRequest.OrderItemRequest itemRequest, Long orderId);
-
 
     PageResponse1<List<CustomerOrderResponse>> getCustomerOrders(PageRequest pageRequest);
 
@@ -46,4 +44,7 @@ public interface OrderService {
   
     String getProductJsonByOrderId(Long orderId);
 
+    List<String> getDiscountByOrderId(Long orderId);
+
+    void cancelOrder(Long orderId, String note);
 }
