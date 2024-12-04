@@ -73,8 +73,9 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
                             .orElseThrow(() -> new EntityNotFoundException("Product parent not found with ID: " + product.getParentProductId()));
                     cartResponse.setSlug(productParent.getSlug());
                     cartResponse.setAttributeProduct(getAttributeProduct(product));
+                    cartResponse.setQuantityProduct(product.getQuantity());
                 })
-                .sorted(Comparator.comparing(CartResponse::getId))
+                .sorted(Comparator.comparing(CartResponse::getId).reversed())
                 .toList();
     }
 

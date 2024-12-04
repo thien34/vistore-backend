@@ -80,14 +80,15 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void saveOrder(OrderRequest request) {
         ShoppingCartItem cartItem = cartItemRepository.findByCartUUID(request.getOrderGuid());
-        if (cartItem == null) {
-            throw new NotFoundException("Shopping cart item not found for order GUID: " + request.getOrderGuid());
+        LocalDateTime cartItemCreateDate = LocalDateTime.now();
+        if (cartItem != null) {
+            cartItemCreateDate = cartItem.getCreatedDate();
         }
 
         Order order = OrderRequest.toEntity(request);
         Address address = resolveAddress(request);
         order.setShippingAddress(address);
-        order.setCreatedDate(cartItem.getCreatedDate());
+        order.setCreatedDate(cartItemCreateDate);
         Order savedOrder = orderRepository.save(order);
         if (request.getIdVouchers() != null && !request.getIdVouchers().isEmpty()) {
             List<Long> voucherIds = request.getIdVouchers();
@@ -141,8 +142,8 @@ public class OrderServiceImpl implements OrderService {
             discountUsageHistoryRepository.saveAll(discountUsageHistories);
         }
 
-        createOrderStatusHistory(savedOrder, cartItem.getCreatedDate());
-        updateOrderStatusHistory(savedOrder, request.getOrderStatusId(), cartItem.getCreatedDate());
+        createOrderStatusHistory(savedOrder, cartItemCreateDate);
+        updateOrderStatusHistory(savedOrder, request.getOrderStatusId(), cartItemCreateDate);
 
         if (request.getOrderItems() != null && !request.getOrderItems().isEmpty()) {
             List<OrderItem> orderItems = createOrderItems(request, savedOrder);
@@ -403,7 +404,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
         result = new PageImpl<>(filteredCompletedOrders, pageable, filteredCompletedOrders.size());
         List<CustomerOrderResponse> customerOrderResponse = orderMapper.toOrderResponses(result.getContent());
-      
+
         return PageResponse1.<List<CustomerOrderResponse>>builder()
                 .totalItems(result.getTotalElements())
                 .totalPages(result.getTotalPages())
@@ -513,7 +514,6 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         orderStatusHistoryRepository.save(orderStatusHistory);
     }
-
 
 
     @Override
