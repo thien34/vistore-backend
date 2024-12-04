@@ -12,9 +12,9 @@ public class CategoryRequest {
 
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    @Size(max = 25, message = "Name must be max 25 characters")
-    @Pattern(regexp = "^[^<>]*$", message = "Name must not contain special characters")
+    @NotBlank(message = "Tên là bắt buộc")
+    @Size(max = 25, message = "Tên phải có tối đa 25 ký tự")
+    @Pattern(regexp = "^[^<>]*$", message = "Tên không được chứa ký tự đặc biệt")
     private String name;
 
     private String description;

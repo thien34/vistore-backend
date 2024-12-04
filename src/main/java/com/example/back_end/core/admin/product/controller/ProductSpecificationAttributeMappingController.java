@@ -32,8 +32,8 @@ public class ProductSpecificationAttributeMappingController {
 
     private final ProductSpecificationAttributeMappingService productSpecificationAttributeMappingService;
 
-    @Operation(method = "POST", summary = "Add new product specification attribute mapping",
-            description = "Send a request via this API to create new product specification attribute mapping")
+    @Operation(method = "POST", summary = "Thêm ánh xạ thuộc tính đặc tả sản phẩm mới",
+            description = "Gửi yêu cầu qua API này để tạo ánh xạ thuộc tính đặc tả sản phẩm mới")
     @PostMapping
     public ResponseData<ProductSpecificationAttributeMappingResponse> createProductSpecificationAttributeMapping(
             @Valid @RequestBody ProductSpecificationAttributeMappingRequest dto) {
@@ -42,12 +42,12 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<ProductSpecificationAttributeMappingResponse>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Product specification attribute mapping created successfully")
+                .message("Ánh xạ thuộc tính đặc tả sản phẩm được tạo thành công")
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get all product specification attribute mappings",
-            description = "Send a request via this API to get all product specification attribute mappings")
+    @Operation(method = "GET", summary = "Nhận tất cả ánh xạ thuộc tính đặc tả sản phẩm",
+            description = "Gửi yêu cầu qua API này để lấy tất cả ánh xạ thuộc tính đặc tả sản phẩm")
     @GetMapping
     public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
@@ -60,13 +60,13 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product specification attribute mappings success")
+                .message("Ánh xạ thuộc tính đặc tả sản phẩm thành công")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get product specification attribute mapping by ID",
-            description = "Send a request via this API to get product specification attribute mapping by ID")
+    @Operation(method = "GET", summary = "Nhận ánh xạ thuộc tính đặc tả sản phẩm theo ID",
+            description = "Gửi yêu cầu qua API này để lấy ánh xạ thuộc tính đặc tả sản phẩm theo ID")
     @GetMapping("/{id}")
     public ResponseData<ProductSpecificationAttributeMappingByIdResponse> getById(@PathVariable Long id) {
 
@@ -75,13 +75,13 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<ProductSpecificationAttributeMappingByIdResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product specification attribute mapping by ID success")
+                .message("Nhận ánh xạ thuộc tính đặc tả sản phẩm theo ID thành công")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "DELETE", summary = "Delete product specification attribute mappings",
-            description = "Send a request via this API to delete product specification attribute mappings")
+    @Operation(method = "DELETE", summary = "Xóa ánh xạ thuộc tính đặc tả sản phẩm",
+            description = "Gửi yêu cầu qua API này để xóa ánh xạ thuộc tính đặc tả sản phẩm")
     @DeleteMapping
     public ResponseData<Void> deleteProductSpecificationAttributeMappings(@RequestBody List<Long> ids) {
 
@@ -89,12 +89,12 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Delete product specification attribute mappings success")
+                .message("Xóa ánh xạ thuộc tính đặc tả sản phẩm thành công")
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get product specification attribute mappings by product ID",
-            description = "Send a request via this API to get product specification attribute mappings by product ID")
+    @Operation(method = "GET", summary = "Nhận ánh xạ thuộc tính đặc tả sản phẩm theo ID sản phẩm",
+            description = "Gửi yêu cầu qua API này để lấy ánh xạ thuộc tính đặc tả sản phẩm theo ID sản phẩm")
     @GetMapping("/by-product")
     public ResponseData<PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>>> getByProductId(
             @RequestParam Long productId,
@@ -107,13 +107,13 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<PageResponse<List<ProductSpecificationAttributeMappingByProductResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product specification attribute mappings by product ID success")
+                .message("Nhận ánh xạ thuộc tính đặc tả sản phẩm theo thành công của ID sản phẩm")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "PUT", summary = "Update product specification attribute mapping",
-            description = "Send a request via this API to update product specification attribute mapping")
+    @Operation(method = "PUT", summary = "Cập nhật ánh xạ thuộc tính đặc tả sản phẩm",
+            description = "Gửi yêu cầu qua API này để cập nhật ánh xạ thuộc tính đặc tả sản phẩm")
     @PutMapping("/{id}")
     public ResponseData<ProductSpecificationAttributeMappingUpdateResponse> updateProductSpecificationAttributeMapping(
             @PathVariable Long id,
@@ -124,7 +124,7 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<ProductSpecificationAttributeMappingUpdateResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Product specification attribute mapping updated successfully")
+                .message("Ánh xạ thuộc tính đặc tả sản phẩm được cập nhật thành công")
                 .data(response)
                 .build();
     }
@@ -136,7 +136,7 @@ public class ProductSpecificationAttributeMappingController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Product specification attribute mapping deleted successfully")
+                .message("Xóa thành công ánh xạ thuộc tính đặc tả sản phẩm")
                 .build();
     }
 

@@ -50,7 +50,7 @@ public class VoucherController {
 
         return ResponseData.<List<VoucherResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all vouchers successfully")
+                .message("Lấy tất cả mã giảm giá thành công")
                 .data(response)
                 .build();
     }
@@ -60,18 +60,18 @@ public class VoucherController {
     public ResponseEntity<String> generateBirthdayVouchers() {
         try {
             voucherService.checkAndGenerateBirthdayVoucher();
-            return ResponseEntity.ok("Birthday vouchers generated successfully!");
+            return ResponseEntity.ok("Phiếu quà tặng sinh nhật đã được tạo thành công!");
         } catch (Exception e) {
-            return ResponseEntity.status(400).body("Failed to generate birthday vouchers: " + e.getMessage());
+            return ResponseEntity.status(400).body("Không tạo được phiếu quà tặng sinh nhật:" + e.getMessage());
         }
     }
 
     @PutMapping("/{voucherId}")
-    @Operation(summary = "Update an existing voucher", description = "Update the details of an existing voucher by ID.")
+    @Operation(summary = "Cập nhật phiếu giảm giá hiện có", description = "Cập nhật chi tiết phiếu giảm giá hiện có theo ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Voucher updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request payload"),
-            @ApiResponse(responseCode = "404", description = "Voucher not found")
+            @ApiResponse(responseCode = "200", description = "Voucher được cập nhật thành công"),
+            @ApiResponse(responseCode = "400", description = "Tải trọng yêu cầu không hợp lệ"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy phiếu giảm giá")
     })
     public ResponseEntity<?> updateVoucher(
             @PathVariable Long voucherId,
@@ -79,7 +79,7 @@ public class VoucherController {
         try {
             voucherService.updateVoucher(voucherId, updateRequest);
             return ResponseEntity.ok(
-                    Map.of("message", "Voucher updated successfully")
+                    Map.of("message", "Voucher được cập nhật thành công")
             );
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -91,15 +91,16 @@ public class VoucherController {
             );
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    Map.of("message", "Unexpected error occurred: " + e.getMessage())
+                    Map.of("message", "Đã xảy ra lỗi không mong muốn: " + e.getMessage())
             );
         }
     }
     @GetMapping("/{voucherId}")
-    @Operation(summary = "Get a voucher by ID", description = "Retrieve details of a voucher by its ID.")
+    @Operation(summary = "Nhận voucher bằng ID", 
+               description = "Truy xuất thông tin chi tiết của phiếu giảm giá theo ID của nó.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Voucher retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Voucher not found")
+            @ApiResponse(responseCode = "200", description = "Đã lấy phiếu giảm giá thành công"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy phiếu giảm giá")
     })
     public ResponseEntity<?> getVoucherById(@PathVariable Long voucherId) {
         try {
@@ -111,17 +112,18 @@ public class VoucherController {
             );
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    Map.of("message", "Unexpected error occurred: " + e.getMessage())
+                    Map.of("message", "Đã xảy ra lỗi không mong muốn: " + e.getMessage())
             );
         }
     }
 
 
     @PostMapping("/validate-coupons")
-    @Operation(summary = "Validate and Calculate Discounts", description = "Check the validity of multiple coupon codes and calculate discount amounts.")
+    @Operation(summary = "Xác nhận và tính toán giảm giá", 
+            description = "Kiểm tra tính hợp lệ của nhiều phiếu giảm giá và tính toán số tiền chiết khấu.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Validation completed"),
-            @ApiResponse(responseCode = "400", description = "Validation failed")
+            @ApiResponse(responseCode = "200", description = "Xác thực hoàn tất"),
+            @ApiResponse(responseCode = "400", description = "Xác thực không thành công")
     })
     public ResponseEntity<?> validateCoupons(@RequestBody ValidateCouponsRequest request) {
         try {
@@ -139,17 +141,17 @@ public class VoucherController {
 
 
     @PostMapping
-    @Operation(summary = "Create a new voucher", description = "Create a new voucher with the provided details.")
+    @Operation(summary = "Tạo một phiếu giảm giá mới", description = "Tạo một phiếu giảm giá mới với các chi tiết được cung cấp.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Voucher created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request payload")
+            @ApiResponse(responseCode = "201", description = "Đã tạo voucher thành công"),
+            @ApiResponse(responseCode = "400", description = "Tải trọng yêu cầu không hợp lệ")
     })
     public ResponseData<Void> createDiscount(@Valid @RequestBody VoucherRequest discountRequest) {
         voucherService.createDiscount(discountRequest);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Voucher created successfully")
+                .message("Đã tạo voucher thành công")
                 .data(null)
                 .build();
     }

@@ -37,7 +37,7 @@ public class ManufacturerController {
 
         return ResponseData.<PageResponse1<List<ManufacturerResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Manufacturers successfully")
+                .message("Lấy toàn bộ nhà sản xuất thành công")
                 .data(response)
                 .build();
     }
@@ -49,7 +49,7 @@ public class ManufacturerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Add new Manufacturer successfully")
+                .message("Thêm nhà sản xuất mới thành công")
                 .build();
     }
 
@@ -62,7 +62,7 @@ public class ManufacturerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Update Manufacturer successfully")
+                .message("Cập nhật nhà sản xuất thành công")
                 .build();
     }
 
@@ -73,7 +73,7 @@ public class ManufacturerController {
 
         return ResponseData.<List<ManufacturerNameResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all manufacturers name successfully")
+                .message("Lấy tất cả tên nhà sản xuất thành công")
                 .data(manufacturerNameResponses)
                 .build();
     }
@@ -85,7 +85,7 @@ public class ManufacturerController {
 
         return ResponseData.<ManufacturerResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Manufacturer successfully")
+                .message("Lấy nhà sản xuất thành công")
                 .data(manufacturerResponse)
                 .build();
     }
@@ -97,7 +97,7 @@ public class ManufacturerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Delete Manufacturers successfully")
+                .message("Xóa nhà sản xuất thành công")
                 .build();
     }
 

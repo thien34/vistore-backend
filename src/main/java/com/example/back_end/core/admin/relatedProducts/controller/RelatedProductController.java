@@ -34,7 +34,7 @@ public class RelatedProductController {
         PageResponse<List<RelatedProductResponse>> response = relatedProductServices.getAll(productId, page, size);
         return ResponseData.<PageResponse<List<RelatedProductResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Related Product Of Product ID: " + productId + " successfully")
+                .message("Nhận sản phẩm liên quan của ID sản phẩm: " + productId + " thành công")
                 .data(response)
                 .build();
     }
@@ -44,7 +44,7 @@ public class RelatedProductController {
         relatedProductServices.addRelatedProducts(relatedProductRequests);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Add new Related Products successfully")
+                .message("Thêm thành công các sản phẩm liên quan mới")
                 .build();
     }
 
@@ -53,7 +53,7 @@ public class RelatedProductController {
         relatedProductServices.deleteRelatedProducts(ids);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Delete Related Products successfully")
+                .message("Xóa thành công các sản phẩm liên quan")
                 .build();
     }
 
@@ -62,7 +62,7 @@ public class RelatedProductController {
         relatedProductServices.updateRelatedProducts(id, relatedProductRequest);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Update Related Products successfully")
+                .message("Cập nhật thành công các sản phẩm liên quan")
                 .build();
     }
 

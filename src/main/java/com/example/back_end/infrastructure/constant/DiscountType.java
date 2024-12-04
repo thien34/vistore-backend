@@ -18,7 +18,7 @@ public enum DiscountType implements IdentifiableEnum<Integer> {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Invalid discount type id: " + id);
+        throw new IllegalArgumentException("Id loại giảm giá không hợp lệ: " + id);
     }
 
     @Override

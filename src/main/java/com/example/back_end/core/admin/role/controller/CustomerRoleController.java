@@ -36,7 +36,7 @@ public class CustomerRoleController {
         customerRoleService.createCustomerRole(customerRoleRequest);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Customer role created successfully")
+                .message("Tạo vai trò khách hàng thành công")
                 .build();
     }
 
@@ -48,7 +48,7 @@ public class CustomerRoleController {
         customerRoleService.updateCustomerRole(id, customerRoleRequest);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Customer role updated successfully")
+                .message("Vai trò khách hàng được cập nhật thành công")
                 .data(null)
                 .build();
     }
@@ -60,7 +60,7 @@ public class CustomerRoleController {
 
         return ResponseData.<List<RoleNameResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get customer roles name success")
+                .message("Nhận vai trò khách hàng thành công")
                 .data(response)
                 .build();
     }
@@ -71,7 +71,7 @@ public class CustomerRoleController {
         CustomerRoleResponse response = customerRoleService.getCustomerRole(id);
         return ResponseData.<CustomerRoleResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Customer role retrieved successfully")
+                .message("Đã truy xuất vai trò khách hàng thành công")
                 .data(response)
                 .build();
     }
@@ -83,7 +83,7 @@ public class CustomerRoleController {
 
         return ResponseData.<PageResponse1<List<CustomerRoleResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all customer roles successfully")
+                .message("Nhận thành công tất cả các vai trò của khách hàng")
                 .data(response)
                 .build();
     }
@@ -93,7 +93,7 @@ public class CustomerRoleController {
         customerRoleService.deleteCustomerRoles(id);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Customer roles deleted successfully")
+                .message("Vai trò khách hàng đã xóa thành công")
                 .build();
     }
 

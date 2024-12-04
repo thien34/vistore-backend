@@ -27,7 +27,7 @@ public class ProductClientController {
 
         return ResponseData.<List<ProductResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get root categories success")
+                .message("Đạt được thành công của các danh mục gốc")
                 .data(response)
                 .build();
     }
@@ -39,7 +39,7 @@ public class ProductClientController {
 
         return ResponseData.<List<ProductResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get root categories by category slug success")
+                .message("Nhận các danh mục gốc theo thành công của sên danh mục")
                 .data(response)
                 .build();
     }
@@ -51,7 +51,7 @@ public class ProductClientController {
 
         return ResponseData.<ProductDetailResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product by slug success")
+                .message("Lấy sản phẩm thành công bằng ảnh nhỏ")
                 .data(response)
                 .build();
     }

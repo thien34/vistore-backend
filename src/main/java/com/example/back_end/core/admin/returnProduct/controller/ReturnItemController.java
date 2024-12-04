@@ -30,7 +30,7 @@ public class ReturnItemController {
         List<ReturnItemResponse> responses = services.addReturnItems(requests);
         return ResponseData.<List<ReturnItemResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message(responses.size() + " Return Items saved success!")
+                .message(responses.size() + " Trả lại các mặt hàng đã lưu thành công!")
                 .data(responses).build();
     }
 
@@ -39,7 +39,7 @@ public class ReturnItemController {
         ReturnItemResponse response = services.getReturnItemById(id);
         return ResponseData.<ReturnItemResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Return Item with id: " + id + " success!")
+                .message("Nhận mặt hàng trả lại với id: " + id + " thành công!")
                 .data(response).build();
     }
 
@@ -48,7 +48,7 @@ public class ReturnItemController {
         PageResponse1<List<ReturnItemResponse>> responses = services.getAllReturnItemsByReturnRequestId(returnRequestId, pageRequest);
         return ResponseData.<PageResponse1<List<ReturnItemResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Return Items with Return Request Id : " + returnRequestId + " success!")
+                .message("Nhận các mặt hàng trả lại với ID yêu cầu trả lại : " + returnRequestId + " thành công!")
                 .data(responses).build();
     }
 }

@@ -37,7 +37,7 @@ public class CategoryController {
 
         return ResponseData.<PageResponse1<List<CategoryResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get categories success")
+                .message("Nhận thành công danh mục")
                 .data(response)
                 .build();
     }
@@ -49,7 +49,7 @@ public class CategoryController {
 
         return ResponseData.<List<CategoryNameResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get categories name success")
+                .message("Nhận thành công tên danh mục")
                 .data(response)
                 .build();
     }
@@ -61,7 +61,7 @@ public class CategoryController {
 
         return ResponseData.<CategoryResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get category success")
+                .message("Nhận thành công danh mục")
                 .data(response)
                 .build();
     }
@@ -73,7 +73,7 @@ public class CategoryController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Add product tag success")
+                .message("Thêm thẻ sản phẩm thành công")
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class CategoryController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Update category success")
+                .message("Cập nhật danh mục thành công")
                 .build();
     }
 
@@ -95,7 +95,7 @@ public class CategoryController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Delete categories success")
+                .message("Xóa danh mục thành công")
                 .build();
     }
 

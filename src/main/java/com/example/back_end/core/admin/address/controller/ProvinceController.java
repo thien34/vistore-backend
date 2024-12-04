@@ -28,7 +28,7 @@ public class ProvinceController {
 
         return ResponseData.<List<ProvinceResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all provinces successfully")
+                .message("Lấy tất cả tỉnh thành công")
                 .data(response)
                 .build();
     }

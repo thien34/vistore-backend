@@ -25,7 +25,7 @@ public class CategoryClientController {
 
         return ResponseData.<List<CategoryResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get root categories success")
+                .message("Đạt được thành công của các danh mục gốc")
                 .data(response)
                 .build();
     }

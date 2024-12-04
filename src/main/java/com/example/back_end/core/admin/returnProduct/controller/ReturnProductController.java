@@ -27,13 +27,13 @@ public class ReturnProductController {
     @PostMapping("/pending-return-item")
     public ResponseData<Void> savePendingReturnItems(@RequestBody List<PendingReturnItemRequest> pendingReturnItems) {
         returnProductServices.createPendingReturnItem(pendingReturnItems);
-        return new ResponseData<>(HttpStatus.OK.value(), "Save pending return item success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Lưu thành công mặt hàng trả lại đang chờ xử lý");
     }
 
     @PostMapping("/processed-return-item")
     public ResponseData<Void> saveProcessedReturnItems(@RequestBody List<ProcessedReturnItemRequest> processedReturnItems) {
         returnProductServices.createProcessReturnItem(processedReturnItems);
-        return new ResponseData<>(HttpStatus.OK.value(), "Save processed return item success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Lưu thành công mặt hàng trả lại đã xử lý");
     }
 
     @GetMapping("/pending-return-item")
@@ -41,7 +41,7 @@ public class ReturnProductController {
         PageResponse1<List<PendingReturnItemResponse>> responses = returnProductServices.getPendingReturnItems(pageRequest);
         return ResponseData.<PageResponse1<List<PendingReturnItemResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all Pending Return Items successfully!")
+                .message("Nhận thành công tất cả các mặt hàng trả lại đang chờ xử lý!")
                 .data(responses).build();
     }
 
@@ -50,7 +50,7 @@ public class ReturnProductController {
         PageResponse1<List<ProcessedReturnItemResponse>> responses = returnProductServices.getProcessReturnItems(pageRequest);
         return ResponseData.<PageResponse1<List<ProcessedReturnItemResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all Pending Return Items successfully!")
+                .message("Nhận thành công tất cả các mặt hàng trả lại đang chờ xử lý!")
                 .data(responses).build();
     }
 }

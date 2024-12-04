@@ -56,7 +56,7 @@ public class ReturnRequestServicesImpl implements ReturnRequestServices {
     @Override
     public ReturnRequestResponse getReturnRequestByOrderId(Long orderId) {
         Optional<ReturnRequest> result = Optional.ofNullable(repository.findByOrderId(orderId));
-        ReturnRequest returnRequest = result.orElseThrow(() -> new RuntimeException("Return Request not found with Order id: " + orderId));
+        ReturnRequest returnRequest = result.orElseThrow(() -> new RuntimeException("Không tìm thấy Yêu cầu trả hàng với ID đơn hàng: " + orderId));
         return mapper.toResponse(returnRequest);
     }
 

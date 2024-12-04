@@ -37,7 +37,7 @@ public class ProductAttributeController {
 
         return ResponseData.<PageResponse1<List<ProductAttributeResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all product attribute successfully")
+                .message("Nhận thành công tất cả thuộc tính sản phẩm")
                 .data(response)
                 .build();
     }
@@ -49,7 +49,7 @@ public class ProductAttributeController {
 
         return ResponseData.<ProductAttributeResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product attribute successfully ")
+                .message("Nhận thuộc tính sản phẩm thành công ")
                 .data(attribute)
                 .build();
     }
@@ -61,7 +61,7 @@ public class ProductAttributeController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Product attribute created successfully")
+                .message("Thuộc tính sản phẩm được tạo thành công")
                 .build();
     }
 
@@ -72,7 +72,7 @@ public class ProductAttributeController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Product attribute updated successfully")
+                .message("Thuộc tính sản phẩm được cập nhật thành công")
                 .build();
 
     }
@@ -84,7 +84,7 @@ public class ProductAttributeController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Delete product attributes success")
+                .message("Xóa thuộc tính sản phẩm thành công")
                 .build();
     }
 
@@ -95,7 +95,7 @@ public class ProductAttributeController {
 
         return ResponseData.<List<ProductAttributeNameResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all product attribute names successfully")
+                .message("Nhận thành công tất cả tên thuộc tính sản phẩm")
                 .data(names)
                 .build();
     }

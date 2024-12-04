@@ -96,7 +96,7 @@ public class DiscountServiceImpl implements DiscountService {
         List<DiscountAppliedToProduct> appliedDiscounts = discountAppliedToProductRepository.findByProductId(productId);
 
         if (appliedDiscounts.isEmpty()) {
-            throw new NotFoundException("No discounts found for the product with ID: " + productId);
+            throw new NotFoundException("Không tìm thấy giảm giá cho sản phẩm có ID: " + productId);
         }
 
         List<Discount> discounts = new ArrayList<>();
@@ -145,7 +145,7 @@ public class DiscountServiceImpl implements DiscountService {
         discount = discountRepository.save(discount);
 
         if (discountRequest.getSelectedProductVariantIds() == null || discountRequest.getSelectedProductVariantIds().isEmpty()) {
-            throw new InvalidDataException("At least one product variant must be selected to apply the discount.");
+            throw new InvalidDataException("Phải chọn ít nhất một mẫu mã sản phẩm để áp dụng ưu đãi giảm giá.");
         }
 
         saveDiscountAppliedToProducts(discount, discountRequest.getSelectedProductVariantIds());
@@ -153,14 +153,14 @@ public class DiscountServiceImpl implements DiscountService {
 
     private void saveDiscountAppliedToProducts(Discount discount, List<Long> selectedProductVariantIds) {
         if (selectedProductVariantIds == null || selectedProductVariantIds.isEmpty()) {
-            throw new InvalidDataException("At least one product variant must be selected to apply the discount.");
+            throw new InvalidDataException("Phải chọn ít nhất một mẫu mã sản phẩm để áp dụng ưu đãi giảm giá.");
         }
 
         List<Long> validProductIds = new ArrayList<>();
         for (Long productId : selectedProductVariantIds) {
 
             Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
+                    .orElseThrow(() -> new NotFoundException("Sản phẩm không được tìm thấy với ID: " + productId));
 
             if (product.getParentProductId() != null) {
                 validProductIds.add(productId);
@@ -168,12 +168,12 @@ public class DiscountServiceImpl implements DiscountService {
         }
 
         if (validProductIds.isEmpty()) {
-            throw new InvalidDataException("At least one product variant must have a non-null parent ID to apply the discount.");
+            throw new InvalidDataException("Ít nhất một mẫu mã sản phẩm phải có mã định danh chính không phải là null để áp dụng ưu đãi giảm giá.");
         }
 
         for (Long validProductId : validProductIds) {
             Product validProduct = productRepository.findById(validProductId)
-                    .orElseThrow(() -> new NotFoundException("Product not found with ID: " + validProductId));
+                    .orElseThrow(() -> new NotFoundException("Sản phẩm không được tìm thấy với ID: " + validProductId));
 
             updateProductDiscountPrice(validProduct, discount);
 
@@ -215,7 +215,7 @@ public class DiscountServiceImpl implements DiscountService {
 
         String discountName = StringUtils.sanitizeText(discountRequest.getName());
         if (discountRepository.existsByNameAndIdNot(discountName, id))
-            throw new ExistsByNameException("Discount with name '" + discountRequest.getName() + "' already exists.");
+            throw new ExistsByNameException("Giảm giá có tên '" + discountRequest.getName() + "' đã tồn tại.");
 
         discountMapper.updateEntityFromRequest(discountRequest, discount);
 
@@ -238,7 +238,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     private void saveDiscountAppliedToProduct(Discount discount, Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
-                new EntityNotFoundException("Product not found with id: " + productId));
+                new EntityNotFoundException("Sản phẩm không được tìm thấy với id: " + productId));
         DiscountAppliedToProduct discountAppliedToProduct = DiscountAppliedToProduct.builder()
                 .discount(discount)
                 .product(product)
@@ -297,25 +297,25 @@ public class DiscountServiceImpl implements DiscountService {
         DiscountType discountType = discount.getDiscountTypeId();
 
         if (discountType == DiscountType.ASSIGNED_TO_PRODUCTS && (usePercentage == null || !usePercentage)) {
-            throw new InvalidDataException("Please use percentage-based discounts for product-specific discounts.");
+            throw new InvalidDataException("Vui lòng sử dụng giảm giá dựa trên tỷ lệ phần trăm để giảm giá dành riêng cho sản phẩm.");
         }
 
         if (usePercentage != null && usePercentage) {
             if (discountAmount != null) {
                 throw new IllegalArgumentException(
-                        "When 'usePercentage' is true, 'discountAmount' should not be provided.");
+                        "Khi 'usePercentage' là true, 'discountAmount' không nên được cung cấp.");
             }
         } else {
             if (discountPercentage != null) {
                 throw new IllegalArgumentException(
-                        "When 'usePercentage' is false, 'discountPercentage' should not be provided.");
+                        "Khi 'usePercentage' là sai, không nên cung cấp 'discountPercentage'.");
             }
         }
     }
 
     private void validateDiscountNameLength(String discountName) {
         if (discountName.length() > 50) {
-            throw new IllegalArgumentException("The 'name' must not exceed 50 characters.");
+            throw new IllegalArgumentException("'Name' không được vượt quá 50 ký tự.");
         }
     }
 
@@ -324,14 +324,14 @@ public class DiscountServiceImpl implements DiscountService {
             throw new IllegalArgumentException("The 'discountPercentage' cannot be null.");
         }
         if (discountPercentage.compareTo(BigDecimal.ZERO) < 0 || discountPercentage.compareTo(BigDecimal.valueOf(100)) > 0) {
-            throw new IllegalArgumentException("The 'discountPercentage' must be between 0 and 100.");
+            throw new IllegalArgumentException("'discountPercentage' phải nằm trong khoảng từ 0 đến 100.");
         }
     }
 
     private void validateMaxDiscountAmount(Discount discount) {
         BigDecimal maxDiscountAmount = discount.getMaxDiscountAmount();
         if (maxDiscountAmount != null && maxDiscountAmount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("The 'maxDiscountAmount' must be a positive value.");
+            throw new IllegalArgumentException("'maxDiscountAmount' phải là giá trị dương.");
         }
     }
 
@@ -342,7 +342,7 @@ public class DiscountServiceImpl implements DiscountService {
         Runnable couponCodeValidation = () -> {
             if (discount.getCouponCode() == null || discount.getCouponCode().trim().isEmpty()) {
                 throw new IllegalArgumentException(
-                        "If 'requiresCouponCode' is true, 'couponCode' cannot be null or empty.");
+                        "Nếu 'requiresCouponCode' là true, 'couponCode' không thể rỗng hoặc trống.");
             }
         };
 
@@ -353,7 +353,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     private void validateDate(Instant startDate, Instant endDate) {
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            throw new InvalidDataException("The 'startDateUtc' must be before 'endDateUtc'.");
+            throw new InvalidDataException("'startDateUtc' phải đứng trước 'endDateUtc'.");
         }
     }
 

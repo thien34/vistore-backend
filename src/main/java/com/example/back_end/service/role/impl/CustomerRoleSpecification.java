@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 public class CustomerRoleSpecification {
 
     private CustomerRoleSpecification() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("Đây là một lớp tiện ích và không thể được khởi tạo");
     }
 
     public static Specification<CustomerRole> filterByNameAndActive(String name, Boolean active) {

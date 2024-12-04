@@ -107,7 +107,7 @@ public class AddressServiceImpl implements AddressService {
         List<Address> addresses = addressRepository.findAllById(ids);
 
         if (addresses.size() != ids.size())
-            throw new NotFoundException("One or more addresses not found for the given ids");
+            throw new NotFoundException("Một hoặc nhiều địa chỉ không được tìm thấy với các id đã cho");
 
         addressRepository.deleteAll(addresses);
     }
@@ -115,15 +115,15 @@ public class AddressServiceImpl implements AddressService {
     private void validateLocation(String wardId, String districtId, String provinceId) {
 
         Ward ward = Optional.ofNullable(wardRepository.findByCode(wardId))
-                .orElseThrow(() -> new NotFoundException("Ward with ID " + wardId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy phường với ID " + wardId));
 
         District district = Optional.ofNullable(ward.getDistrictCode())
                 .filter(d -> d.getCode().equals(districtId))
-                .orElseThrow(() -> new NotExistsException("Ward does not belong to the provided District"));
+                .orElseThrow(() -> new NotExistsException("Phường không thuộc Quận đã cung cấp"));
 
         Optional.ofNullable(district.getProvinceCode())
                 .filter(p -> p.getCode().equals(provinceId))
-                .orElseThrow(() -> new NotExistsException("District does not belong to the provided Province"));
+                .orElseThrow(() -> new NotExistsException("Quận không thuộc Tỉnh đã cung cấp"));
     }
 
     private Address findAddressById(Long id) {
@@ -139,7 +139,7 @@ public class AddressServiceImpl implements AddressService {
 
     private void validateAddressOwnership(Address address, Long customerId) {
         if (!address.getCustomer().getId().equals(customerId)) {
-            throw new NotExistsException("Address does not belong to the specified Customer");
+            throw new NotExistsException("Địa chỉ không thuộc về khách hàng đã chỉ định");
         }
     }
 

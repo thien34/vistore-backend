@@ -32,7 +32,7 @@ public class CartClientController {
     
         List<CartResponse> cartResponses = shoppingCartClientService.getAllCartByCustomerId(idCustomer);
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Get all cart by customer ID successfully", cartResponses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Nhận tất cả giỏ hàng theo ID khách hàng thành công", cartResponses);
     }
 
     @PostMapping("/{idCustomer}")
@@ -40,7 +40,7 @@ public class CartClientController {
 
         List<CartResponse> cartResponses = shoppingCartClientService.getCartsByCustomerId(idCustomer, cartPaymentRequest);
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Get all cart by customer ID successfully", cartResponses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Nhận tất cả giỏ hàng theo ID khách hàng thành công", cartResponses);
     }
 
     @PostMapping
@@ -48,7 +48,7 @@ public class CartClientController {
 
         shoppingCartClientService.addCart(cartRequest);
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Add to cart successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Thêm vào giỏ hàng thành công");
     }
 
     @PutMapping("/{id}")
@@ -56,7 +56,7 @@ public class CartClientController {
 
         shoppingCartClientService.updateQuantityProduct(id, cartUpdateRequest.getQuantity());
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Update quantity product successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật sản phẩm số lượng thành công");
     }
 
     @DeleteMapping("/{id}")
@@ -64,7 +64,7 @@ public class CartClientController {
 
         shoppingCartClientService.deleteProduct(id);
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Delete product successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Xóa sản phẩm thành công");
     }
 
 }

@@ -32,7 +32,7 @@ public class ReturnRequestController {
         PageResponse1<List<ReturnRequestResponse>> response = returnRequestServices.getAllReturnRequests(pageRequest);
         return ResponseData.<PageResponse1<List<ReturnRequestResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all return requests success!")
+                .message("Nhận tất cả các yêu cầu trả lại thành công!")
                 .data(response).build();
     }
 
@@ -41,7 +41,7 @@ public class ReturnRequestController {
         PageResponse1<List<ReturnRequestResponse>> response = returnRequestServices.getAllReturnRequestsByCustomerId(customerId, pageRequest);
         return ResponseData.<PageResponse1<List<ReturnRequestResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all return requests by CustomerId: " + customerId + " success!")
+                .message("Nhận tất cả các yêu cầu trả lại bằng CustomerId: " + customerId + " thành công!")
                 .data(response).build();
     }
 
@@ -50,7 +50,7 @@ public class ReturnRequestController {
         ReturnRequestResponse response = returnRequestServices.getReturnRequestByOrderId(orderId);
         return ResponseData.<ReturnRequestResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get  return request by OrderId: " + orderId + " success!")
+                .message("Nhận yêu cầu trả lại bằng OrderId: " + orderId + " thành công!")
                 .data(response).build();
     }
 
@@ -59,7 +59,7 @@ public class ReturnRequestController {
         ReturnRequestResponse response = returnRequestServices.getReturnRequestById(id);
         return ResponseData.<ReturnRequestResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get  return request by Id: " + id + " success!")
+                .message("Nhận yêu cầu trả lại theo Id: " + id + " thành công!")
                 .data(response).build();
     }
 
@@ -68,7 +68,7 @@ public class ReturnRequestController {
         ReturnRequestResponse response = returnRequestServices.createReturnRequest(request);
         return ResponseData.<ReturnRequestResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("A new return request created success!")
+                .message("Một yêu cầu trả lại mới đã tạo ra thành công!")
                 .data(response).build();
     }
 
@@ -77,7 +77,7 @@ public class ReturnRequestController {
         returnRequestServices.updateReturnRequest(id, request);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Return request with id: " + id + " updated success!")
+                .message("Yêu cầu trả hàng với id: " + id + " cập nhật thành công!")
                 .build();
     }
 
@@ -86,7 +86,7 @@ public class ReturnRequestController {
         returnRequestServices.createReturnTimeLine(request);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Create ReturnTimeLine Of Return Request Id : " + request.getReturnRequestId() + " successfully!")
+                .message("Tạo ReturnTimeLine của ID yêu cầu trả lại: " + request.getReturnRequestId() + " thành công!")
                 .build();
     }
 
@@ -95,7 +95,7 @@ public class ReturnRequestController {
         returnRequestServices.createReturnTimeLines(requests);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Create all ReturnTimeLines Of Return Request Id : " + requests.getFirst().getReturnRequestId() + " successfully!")
+                .message("Tạo tất cả ReturnTimeLines của ID yêu cầu trả lại: " + requests.getFirst().getReturnRequestId() + " thành công!")
                 .build();
     }
 
@@ -104,7 +104,7 @@ public class ReturnRequestController {
         List<ReturnTimeLineResponse> response = returnRequestServices.getReturnTimeLineByRequestId(returnRequestId);
         return ResponseData.<List<ReturnTimeLineResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all  timeline of Return Request has Id: "+ returnRequestId+" successfully!")
+                .message("Nhận tất cả các mốc thời gian của Yêu cầu trả lại có Id: "+ returnRequestId+" thành công!")
                 .data(response).build();
     }
 }

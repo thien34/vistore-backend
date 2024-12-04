@@ -29,15 +29,15 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse authenticate(LoginRequest loginRequest) {
 
         Customer customer = customerRepository.findByEmailAndDeletedFalse(loginRequest.getEmail()).orElseThrow(
-                () -> new NotFoundException("Invalid email or password")
+                () -> new NotFoundException("Email hoặc mật khẩu không hợp lệ")
         );
         if (!customer.getActive()) {
-            throw new NotFoundException("Account is not activated");
+            throw new NotFoundException("Tài khoản chưa được kích hoạt");
         }
         CustomerPassword customerPassword = passwordRepository.findByCustomer(customer)
-                .orElseThrow(() -> new NotFoundException("Password not found"));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy mật khẩu"));
         if (!passwordService.verifyPassword(loginRequest.getRawPassword(), customerPassword)) {
-            throw new NotFoundException("Invalid email or password");
+            throw new NotFoundException("Email hoặc mật khẩu không hợp lệ");
         }
 
         CustomerFullResponse customerDTO = customerMapper.toFullResponse(customer);

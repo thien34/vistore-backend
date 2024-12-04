@@ -60,7 +60,7 @@ public class ReturnItemServicesImpl implements ReturnItemServices {
     @Override
     public ReturnItemResponse getReturnItemById(Long id) {
         ReturnItem returnItem = repository.findById(id).orElseThrow(
-                () -> new RuntimeException("ReturnItem not found with id: " + id)
+                () -> new RuntimeException("Không tìm thấy ReturnItem với id: " + id)
         );
         return mapper.maptoResponse(returnItem);
     }

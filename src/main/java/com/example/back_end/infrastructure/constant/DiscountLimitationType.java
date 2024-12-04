@@ -22,6 +22,6 @@
                     return type;
                 }
             }
-            throw new IllegalArgumentException("Invalid discount limitation type id: " + id);
+            throw new IllegalArgumentException("Id loại giới hạn giảm giá không hợp lệ: " + id);
         }
     }

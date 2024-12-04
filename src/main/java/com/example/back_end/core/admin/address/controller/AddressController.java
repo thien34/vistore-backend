@@ -36,7 +36,7 @@ public class AddressController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Address created successfully")
+                .message("Tạo địa chỉ thành công")
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class AddressController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Address updated successfully")
+                .message("Cập nhật địa chỉ thành công")
                 .build();
     }
 
@@ -58,7 +58,7 @@ public class AddressController {
 
         return ResponseData.<AddressResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Address retrieved successfully")
+                .message("Lấy địa chỉ thành công")
                 .data(response)
                 .build();
     }
@@ -70,7 +70,7 @@ public class AddressController {
         PageResponse1<List<AddressesResponse>> response = addressService.getAllAddressById(searchRequest);
 
         return ResponseData.<PageResponse1<List<AddressesResponse>>>builder()
-                .message("Get all addresses successfully")
+                .message("Lấy tất cả địa chỉ thành công")
                 .data(response)
                 .build();
     }
@@ -82,7 +82,7 @@ public class AddressController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Addresses deleted successfully")
+                .message("Xóa địa chỉ thành công")
                 .build();
     }
 

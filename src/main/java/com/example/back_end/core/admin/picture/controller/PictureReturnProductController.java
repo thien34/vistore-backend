@@ -29,7 +29,7 @@ public class PictureReturnProductController {
 
         return ResponseData.<List<Long>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Upload image success!")
+                .message("Tải ảnh lên thành công!")
                 .data(ids)
                 .build();
     }
@@ -40,7 +40,7 @@ public class PictureReturnProductController {
         PictureReturnProductResponse picture = pictureReturnProductService.getPictureById(pictureId);
         return ResponseData.<PictureReturnProductResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get image success!")
+                .message("Nhận hình ảnh thành công!")
                 .data(picture)
                 .build();
     }
@@ -52,7 +52,7 @@ public class PictureReturnProductController {
 
         return ResponseData.<List<PictureReturnProductResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get images of return item id " + returnItemId + " success!")
+                .message("Nhận hình ảnh của id mặt hàng trả lại " + returnItemId + " thành công!")
                 .data(picture)
                 .build();
     }

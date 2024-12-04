@@ -99,7 +99,7 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories = categoryRepository.findAllById(ids);
 
         if (categories.size() != ids.size()) {
-            throw new ResourceNotFoundException("One or more categories not found for the given ids");
+            throw new ResourceNotFoundException("Không tìm thấy một hoặc nhiều danh mục cho các id đã cho");
         }
 
         categoryRepository.deleteAll(categories);
@@ -132,13 +132,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void validateCategoryParent(Long categoryParentId) {
         if (categoryParentId != null && !categoryRepository.existsById(categoryParentId)) {
-            throw new ResourceNotFoundException("Category parent with id not found: " + categoryParentId);
+            throw new ResourceNotFoundException("Không tìm thấy danh mục cha mẹ có id: " + categoryParentId);
         }
     }
 
     private Category findCategoryById(Long idCategory) {
         return categoryRepository.findById(idCategory)
-                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found: " + idCategory));
+                .orElseThrow(() -> new ResourceNotFoundException("Danh mục có id không được tìm thấy: " + idCategory));
     }
 
     // Private helper method to get all children of a category
@@ -158,7 +158,7 @@ public class CategoryServiceImpl implements CategoryService {
     private void validateCategoryNameAndSlug(String name, Category existingCategory) {
         if (existingCategory == null || !name.equals(existingCategory.getName())) {
             if (categoryRepository.existsByName(name)) {
-                throw new IllegalArgumentException("Category name already exists");
+                throw new IllegalArgumentException("Tên danh mục đã tồn tại");
             }
         }
     }
@@ -167,7 +167,7 @@ public class CategoryServiceImpl implements CategoryService {
     private void validateSlugUniqueness(String slug, Category existingCategory) {
         if (existingCategory == null || !slug.equals(existingCategory.getSlug())) {
             if (categoryRepository.existsBySlug(slug)) {
-                throw new IllegalArgumentException("Duplicate slug");
+                throw new IllegalArgumentException("Ảnh nhỏ trùng lặp");
             }
         }
     }
@@ -178,7 +178,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .filter(categoryId -> categoryId.equals(parentId))
                 .findFirst()
                 .ifPresent(categoryId -> {
-                    throw new IllegalArgumentException("Category parent cannot be a child of itself");
+                    throw new IllegalArgumentException("Danh mục cha không thể là con của chính nó");
                 });
     }
 

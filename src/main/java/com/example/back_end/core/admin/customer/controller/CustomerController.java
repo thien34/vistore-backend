@@ -38,7 +38,7 @@ public class CustomerController {
 
         return ResponseData.<PageResponse1<List<CustomerResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get customers success")
+                .message("Mang lại thành công cho khách hàng")
                 .data(response)
                 .build();
     }
@@ -50,7 +50,7 @@ public class CustomerController {
 
         return ResponseData.<CustomerFullResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get customer success")
+                .message("Nhận được sự thành công của khách hàng")
                 .data(response)
                 .build();
     }
@@ -62,7 +62,7 @@ public class CustomerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Customer created successfully")
+                .message("Khách hàng đã tạo thành công")
                 .build();
     }
 
@@ -73,7 +73,7 @@ public class CustomerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Customer updated successfully")
+                .message("Khách hàng đã cập nhật thành công")
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class CustomerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Customer updated successfully")
+                .message("Khách hàng đã cập nhật thành công")
                 .build();
     }
 
@@ -95,7 +95,7 @@ public class CustomerController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Customers deleted successfully")
+                .message("Khách hàng đã xóa thành công")
                 .build();
     }
 

@@ -34,18 +34,18 @@ public class CloudinaryUpload {
             return uploadResult.get("url").toString();
 
         } catch (IOException e) {
-            log.error("An error occurred during file conversion", e);
-            throw new RuntimeException("Failed to convert multipart file to file", e);
+            log.error("Đã xảy ra lỗi trong quá trình chuyển đổi tệp", e);
+            throw new RuntimeException("Không thể chuyển đổi tệp nhiều phần sang tệp", e);
         } catch (Exception e) {
-            log.error("An error occurred during file upload", e);
+            log.error("Đã xảy ra lỗi trong quá trình tải tệp lên", e);
             throw new RuntimeException(e);
         } finally {
             if (uploadedFile != null && uploadedFile.exists()) {
                 boolean isDeleted = uploadedFile.delete();
                 if (isDeleted) {
-                    log.info("Temporary file {} successfully deleted", uploadedFile.getName());
+                    log.info("Tệp tạm thời {} đã xóa thành công", uploadedFile.getName());
                 } else {
-                    log.warn("Temporary file {} doesn't exist or could not be deleted", uploadedFile.getName());
+                    log.warn("Tệp tạm thời {} không tồn tại hoặc không thể xóa", uploadedFile.getName());
                 }
             }
         }
@@ -54,7 +54,7 @@ public class CloudinaryUpload {
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null) {
-            throw new IOException("File name is null");
+            throw new IOException("Tên tệp rỗng");
         }
 
         File convFile = new File(originalFilename);

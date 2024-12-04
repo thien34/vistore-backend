@@ -39,31 +39,31 @@ public class OrderController {
         } catch (BadRequestException e) {
             throw new RuntimeException(e);
         }
-        return new ResponseData<>(HttpStatus.OK.value(), "Save order success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Lưu đơn hàng thành công");
     }
 
     @GetMapping
     public ResponseData<List<OrderResponse>> getAllOrders(OrderFilter filter) {
         List<OrderResponse> orders = orderService.getOrders(filter);
-        return new ResponseData<>(HttpStatus.OK.value(), "Fetch orders success", orders);
+        return new ResponseData<>(HttpStatus.OK.value(), "Lấy đơn hàng thành công", orders);
     }
 
     @GetMapping("/{orderId}/order-items")
     public ResponseData<List<OrderItemsResponse>> getOrderItems(@PathVariable("orderId") Long orderId) {
         List<OrderItemsResponse> responses = orderService.getOrderItemsByOrderId(orderId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Fetch order items success", responses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Tìm nạp đơn hàng thành công", responses);
     }
 
     @GetMapping("/{orderId}/order-status-history")
     public ResponseData<List<OrderStatusHistoryResponse>> getOrderHist(@PathVariable("orderId") Long orderId) {
         List<OrderStatusHistoryResponse> responses = orderService.getOrderStatusHistory(orderId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Fetch order status history success", responses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Tìm nạp lịch sử trạng thái đơn hàng thành công", responses);
     }
 
     @GetMapping("/{orderId}/order-items-summary")
     public ResponseData<List<OrderItemSummary>> getOrderItemsSummary(@PathVariable("orderId") Long orderId) {
         List<OrderItemSummary> responses = orderService.getAllOrderItemSummaryByOrderId(orderId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Fetch all order items sumary success", responses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Tìm nạp tất cả các mục đơn hàng thành công", responses);
     }
 
 
@@ -72,20 +72,20 @@ public class OrderController {
         PageResponse1<List<CustomerOrderResponse>> response = orderService.getCustomerOrders(pageRequest);
         return ResponseData.<PageResponse1<List<CustomerOrderResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get All Order success!")
+                .message("Lấy tất cả đơn hàng thành công!")
                 .data(response).build();
     }
 
     @PutMapping("/updateQuantity/{id}")
     public ResponseData<Void> updateOrderItem(@RequestParam Integer quantity, @PathVariable Long id) {
         orderService.updateQuantity(id, quantity);
-        return new ResponseData<>(HttpStatus.OK.value(), "Update order item success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật đơn hàng thành công");
     }
 
     @PutMapping("/addMoreProduct/{id}")
     public ResponseData<Void> addProductToOrder(@RequestBody OrderRequest.OrderItemRequest itemRequest, @PathVariable Long id) {
         orderService.addProductToOrder(itemRequest, id);
-        return new ResponseData<>(HttpStatus.OK.value(), "Add product to order success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Thêm sản phẩm vào đơn hàng thành công");
     }
 
     @GetMapping("/change-status/{status}")
@@ -93,23 +93,23 @@ public class OrderController {
                                            @RequestParam(name = "reason") String reason,
                                            @RequestParam(name = "orderId") Long orderId) {
         orderService.changeStatus(status, reason, orderId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Change order status success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Thay đổi trạng thái đơn hàng thành công");
     }
 
     @GetMapping("/customer/order/{orderId}")
     public ResponseData<OrderCustomerResponse> getCustomerOrder(@PathVariable Long orderId) {
-        return new ResponseData<>(HttpStatus.OK.value(), "Fetch customer order success", orderService.getCustomerById(orderId));
+        return new ResponseData<>(HttpStatus.OK.value(), "Tìm nạp đơn hàng của khách hàng thành công", orderService.getCustomerById(orderId));
     }
 
     @GetMapping("/discounts/{orderId}")
     public ResponseData<List<String>> getDiscounts(@PathVariable Long orderId) {
-        return new ResponseData<>(HttpStatus.OK.value(), "Fetch discounts success", orderService.getDiscountByOrderId(orderId));
+        return new ResponseData<>(HttpStatus.OK.value(), "Lấy phiếu giảm giá thành công", orderService.getDiscountByOrderId(orderId));
     }
 
     @GetMapping("/cancel-order/{orderId}")
     public ResponseData<Void> cancelOrder(@PathVariable Long orderId, @RequestParam String note) {
         orderService.cancelOrder(orderId, note);
-        return new ResponseData<>(HttpStatus.OK.value(), "Cancel order success");
+        return new ResponseData<>(HttpStatus.OK.value(), "Hủy đơn hàng thành công");
     }
 
 

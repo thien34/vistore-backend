@@ -55,7 +55,7 @@ public interface ProductSpecificationAttributeMappingMapper {
                 return customValueNode.has("spec_attribute_id") ? customValueNode
                         .get("spec_attribute_id").asLong() : null;
             } catch (JsonProcessingException e) {
-                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
+                throw new CustomJsonProcessingException("Không phân tích cú pháp được customValue JSON", e);
             }
         }
     }
@@ -74,7 +74,7 @@ public interface ProductSpecificationAttributeMappingMapper {
                         .get("spec_attribute_id").asText() : null;
                 return idSpecAtb;
             } catch (JsonProcessingException e) {
-                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
+                throw new CustomJsonProcessingException("Không phân tích cú pháp được customValue JSON", e);
             }
         }
     }
@@ -89,7 +89,7 @@ public interface ProductSpecificationAttributeMappingMapper {
                         .get("custom_value").asText() : null;
                 return customValue;
             } catch (JsonProcessingException e) {
-                throw new CustomJsonProcessingException("Failed to parse customValue JSON", e);
+                throw new CustomJsonProcessingException("Không phân tích cú pháp được customValue JSON", e);
             }
         }
         return mapping.getCustomValue();
