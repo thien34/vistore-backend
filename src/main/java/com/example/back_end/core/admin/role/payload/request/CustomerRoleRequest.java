@@ -10,7 +10,7 @@ public class CustomerRoleRequest {
 
     private Long id;
 
-    @NotBlank(message = "Name must not be blank")
+    @NotBlank(message = "Tên không được để trống")
     private String name;
 
     private boolean active;

@@ -24,11 +24,12 @@ public class ProductAttributeValueController {
             @RequestParam Long productId,
             @RequestParam(required = false) Long attributeId) {
 
-        List<AttributeValueResponse> responses = productAttributeValueService.getProductAttributeValues(productId, attributeId);
+        List<AttributeValueResponse> responses = productAttributeValueService
+                .getProductAttributeValues(productId, attributeId);
 
         return ResponseData.<List<AttributeValueResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get categories name success")
+                .message("Lấy toàn bộ tên thành công")
                 .data(responses)
                 .build();
     }

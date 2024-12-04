@@ -11,8 +11,8 @@ public class ManufacturerRequest {
 
     private Long id;
 
-    @NotBlank(message = "Name cannot be blank")
-    @Size(max = 255, message = "Name must be shorter than 256 characters")
+    @NotBlank(message = "Tên không được để trống")
+    @Size(max = 255, message = "Tên phải ngắn hơn 256 ký tự")
     private String name;
 
     private String description;

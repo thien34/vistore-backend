@@ -24,7 +24,7 @@ public class PictureController {
 
         return ResponseData.<String>builder()
                 .status(HttpStatus.OK.value())
-                .message("Upload image success!")
+                .message("Tải ảnh lên thành công!")
                 .data(path)
                 .build();
     }

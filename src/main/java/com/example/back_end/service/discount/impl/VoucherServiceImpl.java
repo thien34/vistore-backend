@@ -128,10 +128,10 @@ public class VoucherServiceImpl implements VoucherService {
     private void checkDuplicateCouponCode(String couponCode, Boolean isPublished) {
         if (Boolean.FALSE.equals(isPublished)) {
             if (couponCode == null || couponCode.trim().isEmpty()) {
-                throw new InvalidDataException("Coupon code must not be null or empty for unpublished vouchers.");
+                throw new InvalidDataException("Mã phiếu giảm giá không được rỗng hoặc trống đối với các phiếu giảm giá chưa được công bố.");
             }
             if (discountRepository.existsByCouponCode(couponCode)) {
-                throw new InvalidDataException("Coupon code already exists: " + couponCode);
+                throw new InvalidDataException("Mã phiếu giảm giá đã tồn tại: " + couponCode);
             }
         }
     }
@@ -139,7 +139,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     private void sendVoucherEmailsToCustomers(List<Long> customerIds, String voucherCode, String discountDetails, Instant startDate, Instant endDate, BigDecimal discountPercentage, BigDecimal discountAmount) {
         if (voucherCode == null || voucherCode.trim().isEmpty()) {
-            log.warn("Voucher code is missing, no email will be sent.");
+            log.warn("Mã phiếu thưởng bị thiếu, không có email nào được gửi.");
             return;
         }
 
@@ -150,15 +150,15 @@ public class VoucherServiceImpl implements VoucherService {
         try {
             if (discountPercentage != null) {
                 emailService.sendVoucherEmails(customerEmails, voucherCode, discountDetails, startDate, endDate, discountPercentage, null);
-                log.info("Voucher emails with percentage sent successfully.");
+                log.info("Email phiếu giảm giá với tỷ lệ phần trăm được gửi thành công.");
             } else if (discountAmount != null) {
                 emailService.sendVoucherEmails(customerEmails, voucherCode, discountDetails, startDate, endDate, null, discountAmount);
-                log.info("Voucher emails with fixed amount sent successfully.");
+                log.info("Email voucher với số tiền cố định được gửi thành công.");
             } else {
-                log.warn("Neither discount percentage nor discount amount found, no email sent.");
+                log.warn("Không tìm thấy tỷ lệ phần trăm chiết khấu và số tiền chiết khấu, không có email nào được gửi.");
             }
         } catch (MessagingException e) {
-            log.error("Failed to send voucher emails.", e);
+            log.error("Không gửi được email voucher.", e);
         }
     }
 
@@ -171,7 +171,7 @@ public class VoucherServiceImpl implements VoucherService {
         for (Customer customer : customers) {
             createBirthdayVoucher(customer);
         }
-        log.info("Processed birthday vouchers for {} customers", customers.size());
+        log.info("Voucher sinh nhật đã được xử lý cho {} khách hàng", customers.size());
     }
 
     @Transactional
@@ -180,7 +180,7 @@ public class VoucherServiceImpl implements VoucherService {
         Instant startDate = Instant.now();
         Instant endDate = startDate.plusSeconds(86400L * 5);
         VoucherRequest voucherRequest = VoucherRequest.builder()
-                .name("Birthday Voucher for " + customer.getFirstName() + " " + customer.getLastName())
+                .name("Voucher sinh nhật cho " + customer.getFirstName() + " " + customer.getLastName())
                 .couponCode(generateVoucherCode("BDAY_", customer.getId()))
                 .discountPercentage(discountPercent)
                 .startDateUtc(startDate)
@@ -197,7 +197,7 @@ public class VoucherServiceImpl implements VoucherService {
                 .requiresCouponCode(true)
                 .build();
         createDiscount(voucherRequest);
-        log.info("Created birthday voucher for customer: {}", customer.getEmail());
+        log.info("Tạo voucher sinh nhật cho khách hàng: {}", customer.getEmail());
     }
 
     private void validateDiscount(Discount discount) {
@@ -215,26 +215,26 @@ public class VoucherServiceImpl implements VoucherService {
         if (usePercentage != null && usePercentage) {
             if (discountAmount != null) {
                 throw new IllegalArgumentException(
-                        "When 'usePercentage' is true, 'discountAmount' should not be provided.");
+                        "Khi 'usePercentage' là true, không nên cung cấp 'discountAmount'.");
             }
         } else {
             if (discountPercentage != null) {
                 throw new IllegalArgumentException(
-                        "When 'usePercentage' is false, 'discountPercentage' should not be provided.");
+                        "Khi 'usePercentage' là sai, không nên cung cấp 'discountPercentage'.");
             }
         }
     }
 
     private void validateDiscountNameLength(String discountName) {
         if (discountName.length() > 50) {
-            throw new IllegalArgumentException("The 'name' must not exceed 50 characters.");
+            throw new IllegalArgumentException("'Tên' không được vượt quá 50 ký tự.");
         }
     }
 
     private void validateMaxDiscountAmount(Discount discount) {
         BigDecimal maxDiscountAmount = discount.getMaxDiscountAmount();
         if (maxDiscountAmount != null && maxDiscountAmount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("The 'maxDiscountAmount' must be a positive value.");
+            throw new IllegalArgumentException("'maxDiscountAmount' phải là giá trị dương.");
         }
     }
 
@@ -245,7 +245,7 @@ public class VoucherServiceImpl implements VoucherService {
         Runnable couponCodeValidation = () -> {
             if (discount.getCouponCode() == null || discount.getCouponCode().trim().isEmpty()) {
                 throw new IllegalArgumentException(
-                        "If 'requiresCouponCode' is true, 'couponCode' cannot be null or empty.");
+                        "Nếu 'requiresCouponCode' là true, 'couponCode' không thể rỗng hoặc trống.");
             }
         };
 
@@ -256,7 +256,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     private void validateDate(Instant startDate, Instant endDate) {
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            throw new InvalidDataException("The 'startDateUtc' must be before 'endDateUtc'.");
+            throw new InvalidDataException("'startDateUtc' phải đứng trước 'endDateUtc'.");
         }
     }
 
@@ -264,7 +264,7 @@ public class VoucherServiceImpl implements VoucherService {
         initializeUsageCount(discount);
         for (Long customerId : selectedCustomerIds) {
             Customer customer = customerRepository.findById(customerId)
-                    .orElseThrow(() -> new NotFoundException("Customer not found with ID: " + customerId));
+                    .orElseThrow(() -> new NotFoundException("Khách hàng không tìm thấy ID: " + customerId));
             CustomerVoucher customerVoucher = CustomerVoucher.builder()
                     .customer(customer)
                     .discount(discount)
@@ -278,7 +278,7 @@ public class VoucherServiceImpl implements VoucherService {
             discount.setUsageCount(discount.getLimitationTimes());
             discountRepository.save(discount);
         } else if (discount.getUsageCount() <= 0) {
-            throw new InvalidDataException("Voucher has been fully redeemed.");
+            throw new InvalidDataException("Voucher đã được đổi đầy đủ.");
         }
     }
 
@@ -286,7 +286,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public void updateVoucher(Long voucherId, VoucherUpdateRequest request) {
         Discount discount = discountRepository.findById(voucherId)
-                .orElseThrow(() -> new NotFoundException("Voucher not found with ID: " + voucherId));
+                .orElseThrow(() -> new NotFoundException("Voucher không tìm thấy với ID: " + voucherId));
 
         if (request.getName() != null && !request.getName().trim().isEmpty()) {
             validateDiscountNameLength(request.getName());
@@ -302,19 +302,19 @@ public class VoucherServiceImpl implements VoucherService {
         if (request.getMaxUsageCount() != null) {
             if (discount.getUsageCount() != null && request.getMaxUsageCount() < discount.getUsageCount()) {
                 throw new InvalidDataException(
-                        "Cannot reduce max usage count below the current usage count (" + discount.getUsageCount() + ")."
+                        "Không thể giảm số lượng sử dụng tối đa dưới số lượng sử dụng hiện tại (" + discount.getUsageCount() + ")."
                 );
             }
             if ("ACTIVE".equals(discount.getStatus()) && request.getMaxUsageCount() < discount.getLimitationTimes()) {
                 throw new InvalidDataException(
-                        "Cannot reduce max usage count while the voucher is ACTIVE."
+                        "Không thể giảm số lượng sử dụng tối đa trong khi voucher đang ACTIVE."
                 );
             }
             discount.setLimitationTimes(request.getMaxUsageCount());
             initializeUsageCount(discount);
         }
         discountRepository.save(discount);
-        log.info("Updated voucher with ID: {}", voucherId);
+        log.info("Voucher cập nhật với ID: {}", voucherId);
     }
 
     @Override
@@ -354,29 +354,29 @@ public class VoucherServiceImpl implements VoucherService {
 
     private void validatePrivateVoucherForEmail(String email, Discount discount) {
         Customer customer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Customer not found with email: " + email));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy khách hàng bằng email: " + email));
         boolean isVoucherAssignedToCustomer = customerVoucherRepository.existsByCustomerAndDiscount(customer, discount);
         if (!isVoucherAssignedToCustomer) {
-            throw new InvalidDataException("Voucher is private and not assigned to this email.");
+            throw new InvalidDataException("Voucher là riêng tư và không được chỉ định cho email này.");
         }
     }
 
     private void validateVoucherApplicability(BigDecimal subTotal, Discount discount, Instant now) {
         if (Boolean.TRUE.equals(discount.getIsCanceled())) {
-            throw new InvalidDataException("Voucher has been canceled.");
+            throw new InvalidDataException("Voucher đã bị hủy.");
         }
 
         if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            throw new InvalidDataException("Voucher has expired.");
+            throw new InvalidDataException("Voucher đã hết hạn.");
         }
 
         if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            throw new InvalidDataException("Voucher is not yet valid.");
+            throw new InvalidDataException("Voucher chưa hợp lệ.");
         }
 
         if (discount.getMinOderAmount() != null &&
                 subTotal.compareTo(discount.getMinOderAmount()) < 0) {
-            throw new InvalidDataException("Order does not meet the minimum amount for the voucher.");
+            throw new InvalidDataException("Đơn hàng không đáp ứng số tiền tối thiểu cho voucher.");
         }
     }
 
@@ -413,21 +413,21 @@ public class VoucherServiceImpl implements VoucherService {
                 Discount discount = discountRepository.findByCouponCode(code);
                 if (discount == null) {
                     response.setIsApplicable(false);
-                    response.setReason("Coupon code not found.");
+                    response.setReason("Không tìm thấy mã phiếu giảm giá.");
                     responses.add(response);
                     continue;
                 }
 
                 if (Boolean.TRUE.equals(!discount.getIsCumulative()) && !applicableVoucherIds.isEmpty()) {
                     response.setIsApplicable(false);
-                    response.setReason("This voucher cannot be combined with others.");
+                    response.setReason("Voucher này không thể kết hợp với những voucher khác.");
                     responses.add(response);
                     continue;
                 }
 
                 if (hasNonCumulativeVoucher) {
                     response.setIsApplicable(false);
-                    response.setReason("Cannot add more vouchers because a non-cumulative voucher is already applied.");
+                    response.setReason("Không thể thêm phiếu giảm giá vì đã áp dụng chứng từ không tích lũy.");
                     responses.add(response);
                     continue;
                 }
@@ -441,7 +441,7 @@ public class VoucherServiceImpl implements VoucherService {
                         validatePrivateVoucherForEmail(email, discount);
                     } else {
                         response.setIsApplicable(false);
-                        response.setReason("Voucher is private. Please provide an email.");
+                        response.setReason("Voucher là riêng tư. Vui lòng cung cấp email.");
                         responses.add(response);
                         continue;
                     }

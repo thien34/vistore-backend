@@ -18,7 +18,7 @@ import java.util.List;
 public class CustomerRequest {
 
     @Email
-    @NotBlank(message = "Email must not be empty.")
+    @NotBlank(message = "Email không được để trống.")
     String email;
 
     String firstName;
@@ -31,7 +31,7 @@ public class CustomerRequest {
 
     Boolean active;
 
-    @NotEmpty(message = "Customer Roles must not be empty.")
+    @NotEmpty(message = "Vai trò khách hàng không được để trống.")
     List<Long> customerRoles;
 
 }

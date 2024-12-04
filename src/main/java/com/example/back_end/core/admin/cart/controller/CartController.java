@@ -30,35 +30,35 @@ public class CartController {
     @PostMapping("/{parentId}")
     public ResponseData<Void> addToCart(@RequestBody CartRequest cartRequest, @PathVariable String parentId) {
         shoppingCartService.addProduct(cartRequest, parentId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Add to cart successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Thêm vào giỏ hàng thành công");
     }
 
     @PostMapping("/add-bill/{billId}")
     public ResponseData<Void> addBill(@PathVariable String billId) {
         shoppingCartService.addBill(billId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Add bill successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Thêm hóa đơn thành công");
     }
 
     @GetMapping("/{parentId}")
     public ResponseData<List<CartResponse>> getCart(@PathVariable String parentId) {
         List<CartResponse> responses = shoppingCartService.getCartById(parentId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Get cart successfully", responses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Lấy giỏ hàng thành công", responses);
     }
 
     @DeleteMapping("/{billId}")
     public ResponseData<Void> deleteBill(@PathVariable String billId) {
         shoppingCartService.deleteBill(billId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Delete bill successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Xóa hóa đơn thành công");
     }
 
     @GetMapping("/get-bills")
     public ResponseData<Map<String, BillCountResponse>> getBills() {
-        return new ResponseData<>(HttpStatus.OK.value(), "Get bills successfully", shoppingCartService.getBillIdsCount());
+        return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách hóa đơn thành công", shoppingCartService.getBillIdsCount());
     }
 
     @PutMapping("/updateQuantity/{id}")
     public ResponseData<Void> updateQuantity(@RequestParam Integer quantity, @PathVariable Long id) {
         shoppingCartService.updateQuantity(id, quantity);
-        return new ResponseData<>(HttpStatus.OK.value(), "Update quantity successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật số lượng thành công");
     }
 }

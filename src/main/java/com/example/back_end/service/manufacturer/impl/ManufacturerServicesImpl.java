@@ -83,7 +83,7 @@ public class ManufacturerServicesImpl implements ManufactureServices {
 
     private Manufacturer findManufacturerById(Long manufacturerId) {
         return manufacturerRepository.findById(manufacturerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Manufacturer with id not found: " + manufacturerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhà sản xuất có id: " + manufacturerId));
     }
 
 }

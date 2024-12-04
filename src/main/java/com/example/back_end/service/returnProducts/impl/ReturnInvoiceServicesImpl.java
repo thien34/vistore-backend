@@ -46,7 +46,7 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
     @Override
     public ReturnInvoiceResponse getReturnInvoiceById(Long id) {
         ReturnInvoice returnInvoice = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Return Invoice not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Hóa đơn trả lại không tìm thấy với id: " + id));
         ReturnInvoiceResponse returnInvoiceResponse = mapper.mapReturnInvoiceResponse(returnInvoice);
         returnInvoiceResponse.setReturnItems(returnItemServices.getListReturnItemsByReturnRequestId(returnInvoiceResponse.getReturnRequestId()));
         return returnInvoiceResponse;
@@ -55,7 +55,7 @@ public class ReturnInvoiceServicesImpl implements ReturnInvoiceServices {
     @Override
     public ReturnInvoiceResponse getReturnInvoiceByOrderId(Long orderId) {
         Optional<ReturnInvoice> result = Optional.ofNullable(repository.findByOrderId(orderId));
-        ReturnInvoice returnInvoice = result.orElseThrow(() -> new RuntimeException("Return Invoice not found with id: " + orderId));
+        ReturnInvoice returnInvoice = result.orElseThrow(() -> new RuntimeException("Hóa đơn trả lại không tìm thấy với id: " + orderId));
         ReturnInvoiceResponse returnInvoiceResponse = mapper.mapReturnInvoiceResponse(returnInvoice);
         returnInvoiceResponse.setReturnItems(returnItemServices.getListReturnItemsByReturnRequestId(returnInvoiceResponse.getReturnRequestId()));
         return returnInvoiceResponse;

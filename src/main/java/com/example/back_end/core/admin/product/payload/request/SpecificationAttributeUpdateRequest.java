@@ -14,7 +14,7 @@ import java.util.List;
 public class SpecificationAttributeUpdateRequest {
 
     @NotBlank
-    @Size(max = 255, message = "Name must not exceed 255 characters")
+    @Size(max = 255, message = "Tên không được vượt quá 255 ký tự")
     private String name;
 
     private String specificationAttributeGroupId;

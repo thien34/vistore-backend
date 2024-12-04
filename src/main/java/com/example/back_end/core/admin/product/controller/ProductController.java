@@ -34,14 +34,17 @@ public class ProductController {
 
     @PostMapping
     public ResponseData<Void> add(@RequestParam("products") String productsJson,
-                                  @RequestParam(value = "images", required = false) MultipartFile[] images) throws IOException {
-        List<ProductRequest> requests = objectMapper.readValue(productsJson, objectMapper.getTypeFactory().constructCollectionType(List.class, ProductRequest.class));
+                                  @RequestParam(value = "images", required = false)
+                                  MultipartFile[] images) throws IOException {
+        List<ProductRequest> requests = objectMapper
+                .readValue(productsJson, objectMapper.getTypeFactory()
+                        .constructCollectionType(List.class, ProductRequest.class));
 
         productService.createProduct(requests, images);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Add product success")
+                .message("Thêm sản phẩm thành công")
                 .build();
     }
 
@@ -51,7 +54,7 @@ public class ProductController {
 
         return ResponseData.<List<ProductResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all products  successfully")
+                .message("Nhận tất cả các sản phẩm thành công")
                 .data(responses)
                 .build();
     }
@@ -63,7 +66,7 @@ public class ProductController {
 
         return ResponseData.<ProductResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product successfully")
+                .message("Nhận sản phẩm thành công")
                 .data(productResponse)
                 .build();
     }
@@ -73,7 +76,7 @@ public class ProductController {
         productService.reStockQuantityProduct(requests);
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Restock product successfully")
+                .message("Restock sản phẩm thành công")
                 .build();
     }
 
@@ -83,7 +86,7 @@ public class ProductController {
 
         return ResponseData.<List<ProductResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get products successfully")
+                .message("Lấy sản phẩm thành công")
                 .data(productResponses)
                 .build();
     }
@@ -94,7 +97,7 @@ public class ProductController {
 
         return ResponseData.<List<ProductResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get products successfully")
+                .message("Lấy toàn bộ sản phẩm thành công")
                 .data(productResponses)
                 .build();
     }
@@ -106,7 +109,7 @@ public class ProductController {
 
         return ResponseData.<ProductResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product details successfully")
+                .message("Lấy toàn bộ sản phẩm chi tiết thành công")
                 .data(productResponse)
                 .build();
     }
@@ -118,20 +121,20 @@ public class ProductController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Update product success")
+                .message("Cập nhật sản phẩm thành công")
                 .build();
     }
 
     @GetMapping("/product-details")
     public ResponseData<List<ProductResponse>> getAllProductDetails() {
         List<ProductResponse> responses = productService.getAllProductDetails();
-        return new ResponseData<>(HttpStatus.OK.value(), "Get all products successfully", responses);
+        return new ResponseData<>(HttpStatus.OK.value(), "Nhận tất cả các sản phẩm thành công", responses);
     }
 
     @PutMapping("/parent-update/{id}")
     public ResponseData<Void> updateParentProduct(@RequestBody ProductParentRequest requestUpdate, @PathVariable Long id) {
         productService.updateParentProduct(requestUpdate, id);
-        return new ResponseData<>(HttpStatus.OK.value(), "Update product successfully");
+        return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật sản phẩm thành công");
     }
 
     @PutMapping("/add-child/{id}")
@@ -141,7 +144,7 @@ public class ProductController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Update product success")
+                .message("Cập nhật thành công sản phẩm")
                 .build();
     }
 }

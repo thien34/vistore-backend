@@ -52,7 +52,7 @@ public class ProductTagServiceImpl implements ProductTagService {
     public void updateProductTag(Long id, ProductTagUpdateRequest request) {
 
         if (!productTagRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product tag with id not found: " + id);
+            throw new ResourceNotFoundException("Không tìm thấy thẻ sản phẩm có id: " + id);
         }
 
         ProductTag productTag = productTagMapper.toEntity(request);
@@ -138,7 +138,7 @@ public class ProductTagServiceImpl implements ProductTagService {
 
     private Product getProduct(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id not found: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm có id: " + productId));
     }
 
     private ProductTag saveProductTag(ProductTagRequest request) {

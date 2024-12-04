@@ -35,7 +35,7 @@ public class WardServiceImpl implements WardService {
         List<Ward> wards = wardApiResponses.stream()
                 .map(apiResponse -> {
                     District district = districtRepository.findById(apiResponse.getDistrictId())
-                            .orElseThrow(() -> new IllegalArgumentException("District not found"));
+                            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy quận/huyện"));
                     return convertToWard(apiResponse, district);
                 })
                 .toList();

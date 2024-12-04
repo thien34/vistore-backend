@@ -150,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
                         }
                         return response;
                     } catch (Exception e) {
-                        log.error("Error processing product with ID {}: {}", product.getId(), e.getMessage());
+                        log.error("Lỗi xử lý sản phẩm có ID {}: {}", product.getId(), e.getMessage());
                         return null;
                     }
                 })
@@ -162,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void updateParentProduct(ProductParentRequest request, Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy sản phẩm"));
 
         request.toEntity(request, product);
         product = productRepository.save(product);
@@ -198,7 +198,7 @@ public class ProductServiceImpl implements ProductService {
         product.setName(request.getName());
 
         if (!request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
-            throw new IllegalArgumentException("SKU already exists.");
+            throw new IllegalArgumentException("SKU đã tồn tại.");
 
         List<ProductAttributeValue> newAttributeValues = new ArrayList<>();
 
@@ -234,7 +234,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void reStockQuantityProduct(List<ReStockQuanityProductRequest> requests) {
         if (requests.isEmpty()) {
-            throw new IllegalArgumentException("List Restock is empty!");
+            throw new IllegalArgumentException("Danh sách Restock trống!");
         }
         List<Product> listProduct = new ArrayList<>();
         requests.forEach(
@@ -248,7 +248,7 @@ public class ProductServiceImpl implements ProductService {
                     }
                 });
         if (listProduct.isEmpty()) {
-            throw new IllegalArgumentException("List Product is empty!");
+            throw new IllegalArgumentException("Danh sách Sản phẩm trống!");
         } else productRepository.saveAll(listProduct);
     }
 
@@ -284,7 +284,7 @@ public class ProductServiceImpl implements ProductService {
         if (optionalProduct.isPresent()) {
             return ProductResponse.fromProduct(optionalProduct.get());
         } else {
-            throw new EntityNotFoundException("Product not found with id: " + id);
+            throw new EntityNotFoundException("Sản phẩm không được tìm thấy với id: " + id);
         }
     }
 
@@ -314,7 +314,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (!product.getSku().equals(request.getSku())
                 && !request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
-            throw new IllegalArgumentException("SKU already exists.");
+            throw new IllegalArgumentException("SKU đã tồn tại.");
 
         productAttributeValueRepository.deleteByProduct(product);
 
@@ -438,7 +438,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 return Optional.of(cloudinaryUpload.uploadFile(request.getImage(), CloudinaryTypeFolder.PRODUCTS));
             } catch (Exception e) {
-                log.error("Error uploading image: {}", e.getMessage(), e);
+                log.error("Lỗi tải lên hình ảnh: {}", e.getMessage(), e);
             }
         }
         return Optional.empty();

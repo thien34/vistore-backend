@@ -30,8 +30,8 @@ public class ProductTagController {
 
     private final ProductTagService productTagService;
 
-    @Operation(method = "GET", summary = "Get all product tags",
-            description = "Send a request via this API to get all product tags")
+    @Operation(method = "GET", summary = "Nhận tất cả thẻ sản phẩm",
+            description = "Gửi yêu cầu qua API này để lấy tất cả các thẻ sản phẩm")
     @GetMapping
     public ResponseData<PageResponse1<List<ProductTagsResponse>>> getAll(@ParameterObject ProductTagSearchRequest searchRequest) {
 
@@ -39,13 +39,13 @@ public class ProductTagController {
 
         return ResponseData.<PageResponse1<List<ProductTagsResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get product tags success")
+                .message("Nhận thẻ sản phẩm thành công")
                 .data(response)
                 .build();
     }
 
     @Operation(method = "POST", summary = "Add new product tag",
-            description = "Send a request via this API to create new product tag")
+            description = "Gửi yêu cầu qua API này để tạo thẻ sản phẩm mới")
     @PostMapping
     public ResponseData<Void> create(@Valid @RequestBody ProductTagRequest request) {
 
@@ -53,7 +53,7 @@ public class ProductTagController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Add product tag success")
+                .message("Thêm thẻ sản phẩm thành công")
                 .build();
     }
 
@@ -64,12 +64,12 @@ public class ProductTagController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Update product tag success")
+                .message("Cập nhật thẻ sản phẩm thành công")
                 .build();
     }
 
-    @Operation(method = "DELETE", summary = "Delete product tags",
-            description = "Send a request via this API to delete product tags")
+    @Operation(method = "DELETE", summary = "Xóa thẻ sản phẩm",
+            description = "Gửi yêu cầu qua API này để xóa thẻ sản phẩm")
     @DeleteMapping
     public ResponseData<Void> delete(@RequestBody List<Long> ids) {
 
@@ -77,7 +77,7 @@ public class ProductTagController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Delete product tags success")
+                .message("Xóa thẻ sản phẩm thành công")
                 .build();
     }
 

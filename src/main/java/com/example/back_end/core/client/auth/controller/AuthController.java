@@ -26,7 +26,7 @@ public class AuthController {
 
         return ResponseData.<LoginResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Login successfully")
+                .message("Đăng nhập thành công")
                 .data(response)
                 .build();
     }

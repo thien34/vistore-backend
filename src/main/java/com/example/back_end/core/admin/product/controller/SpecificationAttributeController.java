@@ -30,8 +30,8 @@ public class SpecificationAttributeController {
 
     private final SpecificationAttributeService specificationAttributesService;
 
-    @Operation(method = "POST", summary = "Add new specification attribute",
-            description = "Send a request via this API to create new specification attribute")
+    @Operation(method = "POST", summary = "Thêm thuộc tính đặc tả mới",
+            description = "Gửi yêu cầu qua API này để tạo thuộc tính đặc tả mới")
     @PostMapping
     public ResponseData<SpecificationAttributeResponse> createSpecificationAttribute(
             @Valid @RequestBody SpecificationAttributeRequest dto
@@ -41,13 +41,13 @@ public class SpecificationAttributeController {
 
         return ResponseData.<SpecificationAttributeResponse>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Specification attribute created successfully")
+                .message("Thuộc tính đặc tả được tạo thành công")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get all specification attribute",
-            description = "Send a request via this API to get all specification attribute")
+    @Operation(method = "GET", summary = "Nhận thuộc tính tất cả thông số kỹ thuật",
+            description = "Gửi yêu cầu qua API này để lấy tất cả thuộc tính thông số kỹ thuật")
     @GetMapping
     public ResponseData<PageResponse<List<SpecificationAttributeResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
@@ -59,7 +59,7 @@ public class SpecificationAttributeController {
 
         return ResponseData.<PageResponse<List<SpecificationAttributeResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get specification attribute success")
+                .message("Nhận thành công thuộc tính đặc tả")
                 .data(response)
                 .build();
     }
@@ -71,13 +71,13 @@ public class SpecificationAttributeController {
 
         return ResponseData.<SpecificationAttributeResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get specification attribute by id successfully")
+                .message("Nhận thuộc tính đặc tả bằng id thành công")
                 .data(attribute)
                 .build();
     }
 
-    @Operation(method = "PUT", summary = "Update specification attribute",
-            description = "Send a request via this API to update an existing specification attribute")
+    @Operation(method = "PUT", summary = "Cập nhật thuộc tính đặc tả",
+            description = "Gửi yêu cầu qua API này để cập nhật thuộc tính đặc tả hiện có")
     @PutMapping("/{id}")
     public ResponseData<SpecificationAttributeUpdateResponse> updateSpecificationAttribute(
             @PathVariable Long id,
@@ -88,13 +88,13 @@ public class SpecificationAttributeController {
 
         return ResponseData.<SpecificationAttributeUpdateResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Specification attribute updated successfully")
+                .message("Thuộc tính thông số kỹ thuật được cập nhật thành công")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "DELETE", summary = "Delete specification attributes",
-            description = "Send a request via this API to delete specification attributes")
+    @Operation(method = "DELETE", summary = "Xóa các thuộc tính thông số kỹ thuật",
+            description = "Gửi yêu cầu qua API này để xóa các thuộc tính đặc tả")
     @DeleteMapping
     public ResponseData<Void> deleteProductAttributes(@RequestBody List<Long> ids) {
 
@@ -102,12 +102,12 @@ public class SpecificationAttributeController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Delete specification attributes success")
+                .message("Xóa thành công thuộc tính đặc tả")
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get all specification attribute no group or invalid",
-            description = "Send a request via this API to get all specification attribute no group")
+    @Operation(method = "GET", summary = "Nhận tất cả thuộc tính đặc tả không có nhóm hoặc không hợp lệ",
+            description = "Gửi yêu cầu qua API này để lấy tất cả thuộc tính đặc tả không có nhóm")
     @GetMapping("/no-group-or-invalid")
     public ResponseData<PageResponse<List<SpecificationAttributeResponse>>> getAllAttributeNoGroup(
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
@@ -118,7 +118,7 @@ public class SpecificationAttributeController {
 
         return ResponseData.<PageResponse<List<SpecificationAttributeResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get specification attribute success no group")
+                .message("Nhận thuộc tính đặc tả thành công không có nhóm")
                 .data(response)
                 .build();
     }
@@ -130,7 +130,7 @@ public class SpecificationAttributeController {
 
         return ResponseData.<List<SpecificationAttributeResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all specification attribute name successfully")
+                .message("Nhận thành công tất cả tên thuộc tính đặc tả")
                 .data(response)
                 .build();
     }

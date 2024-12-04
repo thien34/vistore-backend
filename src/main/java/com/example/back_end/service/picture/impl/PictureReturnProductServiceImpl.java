@@ -42,7 +42,7 @@ public class PictureReturnProductServiceImpl implements PictureReturnProductServ
     public PictureReturnProductResponse getPictureById(Long id) {
 
         PictureReturnProduct picture = pictureRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Picture Return Product not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Hình ảnh trả lại Sản phẩm không được tìm thấy với id: " + id));
 
         return pictureMapper.toDto(picture);
     }

@@ -17,7 +17,7 @@ import java.util.function.Function;
 public class CustomerSpecification {
 
     private CustomerSpecification() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("Đây là một lớp tiện ích và không thể được khởi tạo");
     }
 
     public static Specification<Customer> filterCustomers(CustomerSearchRequest criteria) {

@@ -29,7 +29,7 @@ public class DistrictController {
 
         return ResponseData.<List<DistrictResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all districts successfully")
+                .message("Lấy tất cả quận thành công")
                 .data(response)
                 .build();
     }

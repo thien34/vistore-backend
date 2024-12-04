@@ -84,19 +84,19 @@ public class ProductClientServiceImpl implements ProductClientService {
     public ProductDetailResponse getProductBySlug(String productSlug) {
         Product product = productRepository.findBySlug(productSlug);
         if (product == null) {
-            throw new NotFoundException("Product not found");
+            throw new NotFoundException("Không tìm thấy sản phẩm");
         }
 
         ProductDetailResponse response = productClientMapper.toDetailDto(product);
 
         List<Product> childProducts = productRepository.findByParentProductId(product.getId());
         if (childProducts.isEmpty()) {
-            throw new NotFoundException("Product child not found");
+            throw new NotFoundException("Không tìm thấy sản phẩm con");
         }
 
         Product cheapestProduct = childProducts.stream()
                 .min(Comparator.comparing(Product::getUnitPrice))
-                .orElseThrow(() -> new NotFoundException("No child product with valid price"));
+                .orElseThrow(() -> new NotFoundException("Không có sản phẩm con có giá hợp lệ"));
 
         response.setUnitPrice(cheapestProduct.getUnitPrice());
         response.setDiscountPrice(cheapestProduct.getDiscountPrice() == null ? BigDecimal.valueOf(0) : cheapestProduct.getDiscountPrice());

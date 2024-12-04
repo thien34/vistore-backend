@@ -38,7 +38,7 @@ public class CustomerPasswordServiceImpl implements CustomerPasswordService {
             return passwordEncoder.matches(rawPassword, customerPassword.getPassword());
         } catch (Exception e) {
             // Log error nhưng không throw để tránh leak thông tin
-            log.error("Error verifying password", e);
+            log.error("Lỗi xác minh mật khẩu", e);
             return false;
         }
     }

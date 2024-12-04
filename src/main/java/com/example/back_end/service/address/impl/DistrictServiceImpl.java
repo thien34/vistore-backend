@@ -35,7 +35,7 @@ public class DistrictServiceImpl implements DistrictService {
         List<District> districts = districtApiResponses.stream()
                 .map(apiResponse -> {
                     Province province = provinceRepository.findById(apiResponse.getProvinceId().toString())
-                            .orElseThrow(() -> new IllegalArgumentException("Province not found"));
+                            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tỉnh"));
                     return convertToDistrict(apiResponse, province);
                 })
                 .toList();

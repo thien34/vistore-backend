@@ -29,7 +29,7 @@ public class WardController {
 
         return ResponseData.<List<WardResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all wards successfully")
+                .message("Lấy tất cả phường xã thành công")
                 .data(response)
                 .build();
     }

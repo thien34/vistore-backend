@@ -11,11 +11,11 @@ public class ProductAttributeRequest {
 
     private Long id;
 
-    @NotBlank(message = "Name must not be blank")
-    @Size(max = 255, message = "Name must not exceed 255 characters")
+    @NotBlank(message = "Tên không được để trống")
+    @Size(max = 255, message = "Tên không được vượt quá 255 ký tự")
     private String name;
 
-    @Size(max = 1000, message = "Description must not exceed 1000 characters")
+    @Size(max = 1000, message = "Mô tả không được vượt quá 1000 ký tự")
     private String description;
 
 }

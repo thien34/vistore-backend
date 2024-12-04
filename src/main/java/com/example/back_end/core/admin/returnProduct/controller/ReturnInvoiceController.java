@@ -28,7 +28,7 @@ public class ReturnInvoiceController {
         ReturnInvoiceResponse response = returnInvoiceServices.saveReturnInvoice(request);
         return ResponseData.<ReturnInvoiceResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("A New Return Invoice saved success!")
+                .message("Hóa đơn trả lại mới đã cứu thành công!")
                 .data(response).build();
     }
 
@@ -37,7 +37,7 @@ public class ReturnInvoiceController {
         ReturnInvoiceResponse response = returnInvoiceServices.getReturnInvoiceById(id);
         return ResponseData.<ReturnInvoiceResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Return Invoice With ID: " + id + " success!")
+                .message("Nhận hóa đơn trả lại có ID: " + id + " thành công!")
                 .data(response).build();
     }
 
@@ -46,7 +46,7 @@ public class ReturnInvoiceController {
         ReturnInvoiceResponse response = returnInvoiceServices.getReturnInvoiceByOrderId(orderId);
         return ResponseData.<ReturnInvoiceResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get Return Invoice With Order ID: " + orderId + " success!")
+                .message("Nhận hóa đơn trả lại với ID đơn hàng: " + orderId + " thành công!")
                 .data(response).build();
     }
 
@@ -55,7 +55,7 @@ public class ReturnInvoiceController {
         PageResponse1<List<ReturnInvoiceResponse>> response = returnInvoiceServices.getAllReturnInvoices(pageRequest);
         return ResponseData.<PageResponse1<List<ReturnInvoiceResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all return product invoices success!")
+                .message("Nhận tất cả các hóa đơn sản phẩm trả lại thành công!")
                 .data(response).build();
     }
 }

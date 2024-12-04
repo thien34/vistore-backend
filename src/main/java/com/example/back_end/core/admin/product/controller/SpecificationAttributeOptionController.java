@@ -28,8 +28,8 @@ public class SpecificationAttributeOptionController {
 
     private final SpecificationAttributeOptionService specificationAttributeOptionService;
 
-    @Operation(method = "POST", summary = "Add new specification attribute option",
-            description = "Send a request via this API to create new specification attribute option")
+    @Operation(method = "POST", summary = "Thêm tùy chọn thuộc tính đặc tả mới",
+            description = "Gửi yêu cầu qua API này để tạo tùy chọn thuộc tính đặc tả mới")
     @PostMapping
     public ResponseData<SpecificationAttributeOptionResponse> createSpecificationAttributeOption(
             @Valid @RequestBody SpecificationAttributeOptionRequest dto
@@ -40,13 +40,14 @@ public class SpecificationAttributeOptionController {
 
         return ResponseData.<SpecificationAttributeOptionResponse>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Specification attribute created successfully")
+                .message("Tạo tùy chọn thuộc tính đặc tả thành công")
                 .data(response)
                 .build();
 
     }
-    @Operation(method = "GET", summary = "Get all options by specification attribute ID",
-            description = "Send a request via this API to get all options by specification attribute ID")
+
+    @Operation(method = "GET", summary = "Lấy tất cả tùy chọn theo ID thuộc tính đặc tả",
+            description = "Gửi yêu cầu qua API này để lấy tất cả tùy chọn theo ID thuộc tính đặc tả")
     @GetMapping("/by-spec/{specificationAttributeId}")
     public ResponseData<List<SpecificationAttributeOptionNameResponse>> getAllOptionsBySpecificationAttributeId(
             @PathVariable Long specificationAttributeId) {
@@ -56,13 +57,13 @@ public class SpecificationAttributeOptionController {
 
         return ResponseData.<List<SpecificationAttributeOptionNameResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get specification attribute options by specification attribute ID success")
+                .message("Lấy các tùy chọn thuộc tính đặc tả theo ID thuộc tính đặc tả thành công")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "GET", summary = "Get all specification attribute options",
-            description = "Send a request via this API to get all specification attribute options")
+    @Operation(method = "GET", summary = "Lấy tất cả tùy chọn thuộc tính đặc tả",
+            description = "Gửi yêu cầu qua API này để lấy tất cả tùy chọn thuộc tính đặc tả")
     @GetMapping
     public ResponseData<PageResponse<List<SpecificationAttributeOptionResponse>>> getAll(
             @RequestParam(value = "name", defaultValue = "") String name,
@@ -74,13 +75,13 @@ public class SpecificationAttributeOptionController {
 
         return ResponseData.<PageResponse<List<SpecificationAttributeOptionResponse>>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get specification attribute options success")
+                .message("Lấy các tùy chọn thuộc tính đặc tả thành công")
                 .data(response)
                 .build();
     }
 
-    @Operation(method = "DELETE", summary = "Delete specification attribute options",
-            description = "Send a request via this API to delete specification attribute options")
+    @Operation(method = "DELETE", summary = "Xóa các tùy chọn thuộc tính đặc tả",
+            description = "Gửi yêu cầu qua API này để xóa các tùy chọn thuộc tính đặc tả")
     @DeleteMapping
     public ResponseData<Void> deleteSpecificationAttributeOptions(@RequestBody List<Long> ids) {
 
@@ -88,7 +89,7 @@ public class SpecificationAttributeOptionController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Delete specification attribute options success")
+                .message("Xóa các tùy chọn thuộc tính đặc tả thành công")
                 .build();
     }
 

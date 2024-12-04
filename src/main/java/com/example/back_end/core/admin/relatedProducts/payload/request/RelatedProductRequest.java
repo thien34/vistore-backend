@@ -16,8 +16,8 @@ public class RelatedProductRequest {
     @NotNull
     private Long product2Id;
 
-    @Min(value = 0, message = " Start from 0")
-    @Max(value = 100, message = "End at 100")
+    @Min(value = 0, message = " Bắt đầu từ 0")
+    @Max(value = 100, message = "Kết thúc lúc 100")
     private Integer displayOrder;
 
 }

@@ -69,9 +69,9 @@ public class EmailService {
         if (discountPercentage != null) {
             discountInfo = "<strong>" + discountPercentage + "% OFF</strong>";
         } else if (discountAmount != null) {
-            discountInfo = "<strong>" + discountAmount + " USD</strong>";
+            discountInfo = "<strong>" + discountAmount + " VNĐ</strong>";
         } else {
-            discountInfo = "No discount information available.";
+            discountInfo = "Không có thông tin giảm giá.";
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -86,7 +86,7 @@ public class EmailService {
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Subscription Confirmation</title>
+                    <title>Xác nhận đăng ký</title>
                 </head>
                 <body style="font-family: 'Arial', sans-serif; color: #333; background-color: #f4f4f9; margin: 0; padding: 20px;">
                     <div style="max-width: 500px; background-color: #fff; border-radius: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); margin: 0 auto; padding: 20px; text-align: center;">
@@ -95,18 +95,18 @@ public class EmailService {
                             <img src="https://cdn-icons-png.flaticon.com/512/122/122598.png" alt="//" style="width: 20%%;">
                         </div>
                         <h4 style="color: #000; font-size: 35px; margin-top: 10px;">%s</h4>
-                        <p style="font-size: 16px; color: #666; margin: 15px 0;">Our brand is paying tribute to new customers. For those who want to celebrate with us, we're offering sitewide discounts and free shipping.</p>
+                        <p style="font-size: 16px; color: #666; margin: 15px 0;">Thương hiệu của chúng tôi đang tri ân khách hàng mới. Đối với những người muốn ăn mừng với chúng tôi, chúng tôi đang giảm giá trên toàn trang web .</p>
                         <p style="font-size: 16px; color: #666; margin-bottom: 30px;">The sale lasts from %s to %s.</p>
                        
                         <div style="color: #666; margin-top: 20px;">Our gift to you:</div>
                         <div style="border: 2px dashed #94c0f9; border-radius: 20px; padding: 20px; margin: 20px 0; background-color: #e1ebff; width: 80%%; margin: 0 auto;">
-                            <div style="font-size: 18px; font-weight: 600;">Gift Card</div>
+                            <div style="font-size: 18px; font-weight: 600;">Thẻ quà tặng</div>
                             <div style="font-size: 48px; font-weight: bold; color: #020202; margin: 10px 0;">%s</div>
-                            <div style="font-size: 12px; color: #666;">Off anything in-store<br>Now through December 31, 2024*</div>
+                            <div style="font-size: 12px; color: #666;">Off anything in-store<br>Từ nay đến ngày 31 tháng 12 năm 2024</div>
                         </div>
                        
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                            <div style="font-size: 20px;">Gift Card Code:</div>
+                            <div style="font-size: 20px;">Mã thẻ quà tặng:</div>
                         </div>
                         <div style="font-weight: bold; margin: 20px 0; background-color: #ecf0f9; padding: 10px; border-radius: 10px;">
                             <h2 style="color: red;">%s</h2>

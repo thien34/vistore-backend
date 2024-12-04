@@ -47,7 +47,7 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CUSTOMER_ROLE_NOT_FOUND.getMessage()));
 
         if (PROTECTED_ROLES.contains(customerRole.getName()) && !customerRole.getName().equals(request.getName()))
-            throw new IllegalArgumentException("The system name of system customer roles can't be edited.");
+            throw new IllegalArgumentException("Không thể chỉnh sửa tên hệ thống của vai trò khách hàng hệ thống.");
 
         if (!customerRole.getName().equals(request.getName())) {
             validateRoleNameUniqueForUpdate(request.getName(), id);
@@ -101,7 +101,7 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
 
         }
         if (customerRoles.size() != ids.size())
-            throw new NotFoundException("One or more customer roles not found for the given ids");
+            throw new NotFoundException("Một hoặc nhiều vai trò khách hàng không được tìm thấy cho các id nhất định");
 
         customerRoleRepository.deleteAll(customerRoles);
     }
@@ -117,7 +117,7 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
     private void validateRoleNameUnique(String roleName) {
         boolean exists = customerRoleRepository.existsByName(roleName);
         if (exists) {
-            throw new AlreadyExistsException("Role name already exists: " + roleName);
+            throw new AlreadyExistsException("Tên vai trò đã tồn tại: " + roleName);
         }
     }
 
@@ -125,7 +125,7 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
     private void validateRoleNameUniqueForUpdate(String roleName, Long id) {
         boolean exists = customerRoleRepository.existsByNameAndIdNot(roleName, id);
         if (exists) {
-            throw new AlreadyExistsException("Role name already exists for another role: " + roleName);
+            throw new AlreadyExistsException("Tên vai trò đã tồn tại cho một vai trò khác: " + roleName);
         }
     }
 

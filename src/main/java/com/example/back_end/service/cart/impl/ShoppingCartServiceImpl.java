@@ -38,7 +38,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void addProduct(CartRequest cartRequest, String parentId) {
         Product product = productRepository.findById(cartRequest.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartRequest.getProductId()));
+                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không tồn tại với ID: " + cartRequest.getProductId()));
 
         List<ShoppingCartItem> existingCartItems = cartItemRepository.findByParentId(parentId);
         boolean productExistsInCart = false;
@@ -47,7 +47,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             if (existingCartItem.getProduct().getId().equals(product.getId())) {
                 int newQuantity = existingCartItem.getQuantity() + cartRequest.getQuantity();
                 if (newQuantity > product.getQuantity()) {
-                    throw new RuntimeException("Cannot add more than available stock for product: " + product.getName());
+                    throw new RuntimeException("Không thể thêm số lượng vượt quá số lượng tồn kho cho sản phẩm: " + product.getName());
                 }
                 existingCartItem.setQuantity(newQuantity);
                 cartItemRepository.save(existingCartItem);
@@ -58,7 +58,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         if (!productExistsInCart) {
             if (cartRequest.getQuantity() > product.getQuantity()) {
-                throw new RuntimeException("Cannot add more than available stock for product: " + product.getName());
+                throw new RuntimeException("Không thể thêm số lượng vượt quá số lượng tồn kho cho sản phẩm: " + product.getName());
             }
             ShoppingCartItem newCartItem = cartRequest.toShoppingCartItem(product, null);
             newCartItem.setParentId(parentId);
@@ -119,12 +119,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void updateQuantity(Long id, Integer quantity) {
 
         ShoppingCartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Không thể tìm thấy sản phẩm với ID: " + id));
         cartItem.setQuantity(quantity);
         Product product = productRepository.findById(cartItem.getProduct().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartItem.getProduct().getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Không thể tìm thấy sản phẩm với ID: " + cartItem.getProduct().getId()));
         if (cartItem.getQuantity() > product.getQuantity()) {
-            throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
+            throw new RuntimeException("Không đủ hàng cho sản phẩm:" + product.getName() + ".Số lượng có sẵn: " + product.getQuantity());
         }
         cartItemRepository.save(cartItem);
     }

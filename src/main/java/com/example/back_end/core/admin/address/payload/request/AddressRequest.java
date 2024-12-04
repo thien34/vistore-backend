@@ -10,26 +10,26 @@ import lombok.Setter;
 @Setter
 public class AddressRequest {
 
-    @NotBlank(message = "First name is required")
+    @NotBlank(message = "Họ là bắt buộc")
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
+    @NotBlank(message = "Tên là bắt buộc")
     private String lastName;
 
     private String email;
 
     private String company;
 
-    @NotNull(message = "District ID is required")
+    @NotNull(message = "Mã quận/huyện là bắt buộc")
     private String districtId;
 
-    @NotNull(message = "Province ID is required")
+    @NotNull(message = "Mã tỉnh thành là bắt buộc")
     private String provinceId;
 
-    @NotNull(message = "Ward ID is required")
+    @NotNull(message = "Mã phường/xã là bắt buộc")
     private String wardId;
 
-    @NotBlank(message = "Address name is required")
+    @NotBlank(message = "Tên địa chỉ là bắt buộc")
     private String addressName;
 
     @Pattern(
@@ -38,7 +38,7 @@ public class AddressRequest {
     )
     private String phoneNumber;
 
-    @NotNull(message = "Customer ID is required")
+    @NotNull(message = "Mã khách hàng là bắt buộc")
     private Long customerId;
 
 }

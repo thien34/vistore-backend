@@ -32,7 +32,7 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
     public void addCart(CartRequest cartRequest) {
 
         Product product = productRepository.findById(cartRequest.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartRequest.getProductId()));
+                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với ID: " + cartRequest.getProductId()));
 
         List<ShoppingCartItem> existingCartItems = cartItemRepository.findAllByCustomerId(cartRequest.getCustomerId());
         boolean productExistsInCart = false;
@@ -41,7 +41,7 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
             if (existingCartItem.getProduct().getId().equals(product.getId())) {
                 int newQuantity = existingCartItem.getQuantity() + cartRequest.getQuantity();
                 if (newQuantity > product.getQuantity()) {
-                    throw new IllegalArgumentException("Cannot add more than available stock for product: " + product.getName());
+                    throw new IllegalArgumentException("Không thể thêm nhiều hơn hàng có sẵn cho sản phẩm: " + product.getName());
                 }
                 cartItemRepository.save(existingCartItem);
                 productExistsInCart = true;
@@ -51,7 +51,7 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
 
         if (!productExistsInCart) {
             if (cartRequest.getQuantity() > product.getQuantity()) {
-                throw new IllegalArgumentException("Cannot add more than available stock for product: " + product.getName());
+                throw new IllegalArgumentException("Không thể thêm nhiều hơn số lượng hàng có sẵn cho sản phẩm: " + product.getName());
             }
             ShoppingCartItem newCartItem = cartClientMapper.toEntity(cartRequest);
             cartItemRepository.save(newCartItem);
@@ -68,9 +68,9 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
                 .map(cartClientMapper::toDto)
                 .peek(cartResponse -> {
                     Product product = productRepository.findById(cartResponse.getIdProduct())
-                            .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartResponse.getIdProduct()));
+                            .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với ID: " + cartResponse.getIdProduct()));
                     Product productParent = productRepository.findById(product.getParentProductId())
-                            .orElseThrow(() -> new EntityNotFoundException("Product parent not found with ID: " + product.getParentProductId()));
+                            .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy sản phẩm mẹ có ID: " + product.getParentProductId()));
                     cartResponse.setSlug(productParent.getSlug());
                     cartResponse.setAttributeProduct(getAttributeProduct(product));
                     cartResponse.setQuantityProduct(product.getQuantity());
@@ -88,9 +88,9 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
                 .map(cartClientMapper::toDto)
                 .peek(cartResponse -> {
                     Product product = productRepository.findById(cartResponse.getIdProduct())
-                            .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartResponse.getIdProduct()));
+                            .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với ID: " + cartResponse.getIdProduct()));
                     Product productParent = productRepository.findById(product.getParentProductId())
-                            .orElseThrow(() -> new EntityNotFoundException("Product parent not found with ID: " + product.getParentProductId()));
+                            .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy cha mẹ sản phẩm với ID: " + product.getParentProductId()));
                     cartResponse.setSlug(productParent.getSlug());
                     cartResponse.setAttributeProduct(getAttributeProduct(product));
                 })
@@ -110,14 +110,14 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
     public void updateQuantityProduct(Long id, int quantity) {
 
         ShoppingCartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cart item not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy mặt hàng giỏ hàng có ID: " + id));
         Product product = productRepository.findById(cartItem.getProduct().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + cartItem.getProduct().getId()));
+                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với ID: " + cartItem.getProduct().getId()));
 
         cartItem.setQuantity(quantity);
 
         if (cartItem.getQuantity() > product.getQuantity()) {
-            throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getName() + ". Số lượng có sẵn: " + product.getQuantity());
         }
 
         cartItemRepository.save(cartItem);
@@ -127,7 +127,7 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
     public void deleteProduct(Long id) {
 
         if (!cartItemRepository.existsById(id)) {
-            throw new EntityNotFoundException("Cart item not found with ID: " + id);
+            throw new EntityNotFoundException("Không tìm thấy mặt hàng giỏ hàng có ID: " + id);
         }
 
         cartItemRepository.deleteById(id);

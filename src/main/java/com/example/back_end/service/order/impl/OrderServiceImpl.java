@@ -153,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
 
     private Discount findDiscountById(Long discountId) {
         return discountRepository.findById(discountId)
-                .orElseThrow(() -> new NotFoundException("Discount not found with ID: " + discountId));
+                .orElseThrow(() -> new NotFoundException("Giảm giá không được tìm thấy với ID: " + discountId));
     }
 
     @Override
@@ -185,7 +185,7 @@ public class OrderServiceImpl implements OrderService {
         Address address = request.getAddressRequest().toEntity();
         if (address.getWard() != null && address.getWard().getCode() != null) {
             Ward ward = wardRepository.findById(address.getWard().getCode())
-                    .orElseThrow(() -> new NotFoundException("Ward not found with ID: " + address.getWard().getCode()));
+                    .orElseThrow(() -> new NotFoundException("Phường không được tìm thấy với ID: " + address.getWard().getCode()));
             address.setWard(ward);
         }
         return addressRepository.save(address);
@@ -238,7 +238,7 @@ public class OrderServiceImpl implements OrderService {
 
         int newQuantity = product.getQuantity() - request.getQuantity();
         if (newQuantity < 0) {
-            throw new RuntimeException("Not enough stock for product: " + product.getId());
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
         }
         product.setQuantity(newQuantity);
         productRepository.save(product);
@@ -267,7 +267,7 @@ public class OrderServiceImpl implements OrderService {
             ProductJsonConverter converter = new ProductJsonConverter();
             return converter.convertProductToJson(product);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert product to json", e);
+            throw new RuntimeException("Không thể chuyển đổi sản phẩm sang json", e);
         }
     }
 
@@ -317,7 +317,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void updateQuantity(Long id, Integer quantity) {
         OrderItem orderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với ID: " + id));
         Integer oldQuantity = orderItem.getQuantity();
         orderItem.setQuantity(quantity);
 
@@ -332,7 +332,7 @@ public class OrderServiceImpl implements OrderService {
         product = productRepository.save(product);
 
         if (orderItem.getQuantity() > product.getQuantity()) {
-            throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Available quantity: " + product.getQuantity());
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getName() + ". Số lượng có sẵn: " + product.getQuantity());
         }
 
         orderItem.setQuantity(quantity);
@@ -366,7 +366,7 @@ public class OrderServiceImpl implements OrderService {
         Product product = findProductById(itemRequest.getProductId());
 
         if (itemRequest.getQuantity() > product.getQuantity()) {
-            throw new RuntimeException("Insufficient stock for product: " + product.getName());
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getName());
         }
 
         OrderItem orderItem = createOrderItem(itemRequest, order);
@@ -382,12 +382,12 @@ public class OrderServiceImpl implements OrderService {
 
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy sản phẩm"));
     }
 
     private Order findOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy đơn hàng"));
     }
 
     @Override
@@ -483,10 +483,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void cancelOrder(Long orderId, String note) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy đơn hàng"));
 
         if (Boolean.TRUE.equals(order.getDeleted())) {
-            throw new IllegalStateException("Order is already deleted");
+            throw new IllegalStateException("Đơn hàng đã bị xóa");
         }
 
         LocalDateTime createdDate = LocalDateTime.now();
@@ -518,11 +518,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<String> getDiscountByOrderId(Long orderId) {
-        List<String> discountCode = discountUsageHistoryRepository.findByOrderId(orderId)
+        return discountUsageHistoryRepository.findByOrderId(orderId)
                 .stream().map(d -> d.getDiscount().getCouponCode())
                 .toList();
-
-        return discountCode;
     }
 
 }

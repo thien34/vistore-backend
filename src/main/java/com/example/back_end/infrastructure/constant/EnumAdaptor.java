@@ -22,7 +22,7 @@ public final class EnumAdaptor {
             }
         }
 
-        throw new IllegalArgumentException(String.format("not found: %d of %s", constantValue, enumClass.getName()));
+        throw new IllegalArgumentException(String.format("Không tìm thấy: %d of %s", constantValue, enumClass.getName()));
     }
 
     public static <E> Optional<E> optionalOf(Integer constantValueNullable, Class<E> enumClass) {
@@ -41,7 +41,7 @@ public final class EnumAdaptor {
         try {
             return enumClass.getField("value");
         } catch (SecurityException | NoSuchFieldException var2) {
-            throw new IllegalArgumentException(String.format("value field is not defined: %s", enumClass.getName()), var2);
+            throw new IllegalArgumentException(String.format("trường giá trị không được xác định: %s", enumClass.getName()), var2);
         }
     }
 

@@ -41,7 +41,7 @@ public class DiscountController {
 
         return ResponseData.<List<DiscountNameResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get categories name success")
+                .message("Nhận thành công tên danh mục")
                 .data(responses)
                 .build();
     }
@@ -54,23 +54,23 @@ public class DiscountController {
 
         return ResponseData.<List<DiscountResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Get all discounts successfully")
+                .message("Nhận tất cả giảm giá thành công")
                 .data(response)
                 .build();
     }
 
     @PostMapping
-    @Operation(summary = "Create a new discount", description = "Create a new discount with the provided details.")
+    @Operation(summary = "Tạo giảm giá mới", description = "Tạo giảm giá mới với các chi tiết được cung cấp.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Discount created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request payload")
+            @ApiResponse(responseCode = "201", description = "Giảm giá được tạo thành công"),
+            @ApiResponse(responseCode = "400", description = "Tải trọng yêu cầu không hợp lệ")
     })
     public ResponseData<Void> createDiscount(@Valid @RequestBody DiscountRequest discountRequest) {
         discountService.createDiscount(discountRequest);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.CREATED.value())
-                .message("Discount created successfully")
+                .message("Giảm giá được tạo thành công")
                 .data(null)
                 .build();
     }
@@ -81,16 +81,16 @@ public class DiscountController {
 
         return ResponseData.<List<DiscountResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Discounts retrieved successfully")
+                .message("Giảm giá được truy xuất thành công")
                 .data(responses)
                 .build();
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update discount by ID", description = "Update an existing discount using the provided ID.")
+    @Operation(summary = "Cập nhật giảm giá theo ID", description = "Cập nhật ưu đãi giảm giá hiện có bằng ID được cung cấp.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Discount updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Discount not found")
+            @ApiResponse(responseCode = "200", description = "Cập nhật giảm giá thành công"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy giảm giá")
     })
     public ResponseData<Void> updateDiscount(
             @PathVariable Long id,
@@ -100,42 +100,44 @@ public class DiscountController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Discount updated successfully")
+                .message("Cập nhật giảm giá thành công")
                 .data(null)
                 .build();
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a discount by ID", description = "Delete an existing discount using the provided ID.")
+    @Operation(summary = "Xóa giảm giá theo ID", description = "Xóa giảm giá hiện có bằng ID được cung cấp.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Discount deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Discount not found")
+            @ApiResponse(responseCode = "204", description = "Giảm giá đã được xóa thành công"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy giảm giá")
     })
     public ResponseData<Void> deleteDiscount(@PathVariable Long id) {
         discountService.deleteDiscount(id);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.NO_CONTENT.value())
-                .message("Discount deleted successfully")
+                .message("Giảm giá đã được xóa thành công")
                 .build();
     }
+
     @PutMapping("/{id}/end-date-now")
-    @Operation(summary = "Update endDateUtc to current time", description = "Update the endDateUtc of a discount to the current date and time.")
+    @Operation(summary = "Cập nhật endDateUtc thành thời điểm hiện tại", description = "Cập nhật endDateUtc của ưu đãi giảm giá thành ngày và giờ hiện tại.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "End date updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Discount not found")
+            @ApiResponse(responseCode = "200", description = "Ngày kết thúc được cập nhật thành công"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy giảm giá")
     })
     public ResponseData<Void> updateEndDateToNow(@PathVariable Long id) {
         discountService.updateEndDateToNow(id);
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("End date updated to current time successfully")
+                .message("Ngày kết thúc được cập nhật thành thời gian hiện tại thành công")
                 .data(null)
                 .build();
     }
+
     @PutMapping("/{id}/cancel")
-    @Operation(summary = "Cancel discount by ID", description = "Set the status of a discount to 'CANCEL' using the provided ID.")
+    @Operation(summary = "Hủy giảm giá theo ID", description = "Đặt trạng thái giảm giá thành 'CANCEL' bằng ID được cung cấp")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Discount status set to 'CANCEL' successfully"),
             @ApiResponse(responseCode = "404", description = "Discount not found")
@@ -145,37 +147,40 @@ public class DiscountController {
 
         return ResponseData.<Void>builder()
                 .status(HttpStatus.OK.value())
-                .message("Discount status set to 'CANCEL' successfully")
+                .message("Trạng thái giảm giá được đặt thành 'CANCEL' thành công")
                 .data(null)
                 .build();
     }
+
     @GetMapping("/{id}")
-    @Operation(summary = "Get discount by ID", description = "Retrieve discount details using the provided ID.")
+    @Operation(summary = "Nhận giảm giá theo ID", description = "Truy xuất chi tiết giảm giá bằng ID được cung cấp.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Discount found successfully"),
-            @ApiResponse(responseCode = "404", description = "Discount not found")
+            @ApiResponse(responseCode = "200", description = "Đã tìm thấy giảm giá thành công"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy giảm giá")
     })
     public ResponseData<DiscountFullResponse> getDiscountById(@PathVariable Long id) {
         DiscountFullResponse discountResponse = discountService.getDiscountById(id);
 
         return ResponseData.<DiscountFullResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Discount retrieved successfully")
+                .message("Giảm giá được lấy thành công")
                 .data(discountResponse)
                 .build();
     }
+
     @GetMapping("/by-product/{productId}")
-    @Operation(summary = "Get discounts applied to a specific product", description = "Retrieve all discounts applied to a product using the provided product ID.")
+    @Operation(summary = "Nhận giảm giá áp dụng cho một sản phẩm cụ thể",
+            description = "Truy xuất tất cả các khoản giảm giá áp dụng cho một sản phẩm bằng ID sản phẩm được cung cấp.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Discounts retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Product not found or no discounts applied to this product")
+            @ApiResponse(responseCode = "200", description = "Giảm giá được truy xuất thành công"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy sản phẩm hoặc không áp dụng giảm giá cho sản phẩm này")
     })
     public ResponseData<List<DiscountResponse>> getDiscountsByProductId(@PathVariable Long productId) {
         List<DiscountResponse> responses = discountService.getDiscountsByProductId(productId);
 
         return ResponseData.<List<DiscountResponse>>builder()
                 .status(HttpStatus.OK.value())
-                .message("Discounts applied to product retrieved successfully")
+                .message("Giảm giá áp dụng cho sản phẩm được truy xuất thành công")
                 .data(responses)
                 .build();
     }
