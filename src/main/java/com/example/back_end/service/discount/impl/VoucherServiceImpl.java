@@ -1,13 +1,10 @@
 package com.example.back_end.service.discount.impl;
 
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
-import com.example.back_end.core.admin.discount.mapper.DiscountMapper;
 import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherUpdateRequest;
-import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
-import com.example.back_end.core.admin.discount.payload.response.ProductResponseDetails;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponseWrapper;
 import com.example.back_end.core.admin.discount.payload.response.VoucherFullResponse;
@@ -15,15 +12,12 @@ import com.example.back_end.core.admin.discount.payload.response.VoucherResponse
 import com.example.back_end.entity.Customer;
 import com.example.back_end.entity.CustomerVoucher;
 import com.example.back_end.entity.Discount;
-import com.example.back_end.entity.DiscountAppliedToProduct;
-import com.example.back_end.entity.Product;
 import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.constant.ErrorCode;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.CustomerVoucherRepository;
-import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.service.discount.EmailService;
 import com.example.back_end.service.discount.VoucherService;
@@ -41,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -54,7 +49,6 @@ public class VoucherServiceImpl implements VoucherService {
     CustomerRepository customerRepository;
     CustomerVoucherRepository customerVoucherRepository;
     EmailService emailService;
-    DiscountMapper discountMapper;
     private static final Random RANDOM = new Random();
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -162,7 +156,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
     }
 
-    @Scheduled(cron = "0 1 0 * * *")
+    @Scheduled(fixedDelay = 10000)
     @Override
     @Transactional
     public void checkAndGenerateBirthdayVoucher() {
@@ -278,7 +272,7 @@ public class VoucherServiceImpl implements VoucherService {
             discount.setUsageCount(discount.getLimitationTimes());
             discountRepository.save(discount);
         } else if (discount.getUsageCount() <= 0) {
-            throw new InvalidDataException("Voucher đã được đổi đầy đủ.");
+            throw new InvalidDataException("Voucher đã được đổi đủ.");
         }
     }
 
@@ -298,31 +292,50 @@ public class VoucherServiceImpl implements VoucherService {
             discount.setStartDateUtc(request.getStartDate());
             discount.setEndDateUtc(request.getEndDate());
         }
-
-        if (request.getMaxUsageCount() != null) {
-            if (discount.getUsageCount() != null && request.getMaxUsageCount() < discount.getUsageCount()) {
-                throw new InvalidDataException(
-                        "Không thể giảm số lượng sử dụng tối đa dưới số lượng sử dụng hiện tại (" + discount.getUsageCount() + ")."
-                );
-            }
-            if ("ACTIVE".equals(discount.getStatus()) && request.getMaxUsageCount() < discount.getLimitationTimes()) {
-                throw new InvalidDataException(
-                        "Không thể giảm số lượng sử dụng tối đa trong khi voucher đang ACTIVE."
-                );
-            }
-            discount.setLimitationTimes(request.getMaxUsageCount());
-            initializeUsageCount(discount);
+        if (request.getIsCumulative() != null) {
+            discount.setIsCumulative(request.getIsCumulative());
         }
+
+        if (request.getComment() != null && !request.getComment().trim().isEmpty()) {
+            discount.setComment(request.getComment());
+        }
+        if (request.getMaxUsageCount() != null) {
+            int currentUsageCount = (discount.getUsageCount() != null) ? discount.getUsageCount() : 0;
+            int currentLimitationTimes = getCurrentLimitationTimes(request, discount, currentUsageCount);
+            if (request.getMaxUsageCount() != currentLimitationTimes) {
+                if (request.getMaxUsageCount() > currentLimitationTimes) {
+                    int difference = request.getMaxUsageCount() - currentLimitationTimes;
+                    discount.setUsageCount(currentUsageCount + difference);
+                }
+                discount.setLimitationTimes(request.getMaxUsageCount());
+            }
+        }
+
         discountRepository.save(discount);
         log.info("Voucher cập nhật với ID: {}", voucherId);
+    }
+
+    private static int getCurrentLimitationTimes(VoucherUpdateRequest request, Discount discount, int currentUsageCount) {
+        int currentLimitationTimes = (discount.getLimitationTimes() != null) ? discount.getLimitationTimes() : 0;
+
+        if (request.getMaxUsageCount() < currentUsageCount) {
+            throw new InvalidDataException(
+                    "Không thể giảm số lượng sử dụng tối đa dưới số lượng sử dụng hiện tại (" + currentUsageCount + ")."
+            );
+        }
+
+        if ("ACTIVE".equals(discount.getStatus()) && request.getMaxUsageCount() < currentLimitationTimes) {
+            throw new InvalidDataException(
+                    "Không thể giảm số lượng sử dụng tối đa trong khi voucher đang ACTIVE."
+            );
+        }
+        return currentLimitationTimes;
     }
 
     @Override
     public VoucherFullResponse getVoucherById(Long id) {
         Discount discount = findDiscountById(id);
         updateStatusVoucher(discount, discountRepository);
-
-        // Lấy danh sách khách hàng được áp dụng
         List<CustomerVoucher> customerVouchers = customerVoucherRepository.findByDiscount(discount);
         List<CustomerResponse> appliedCustomers = customerVouchers.stream()
                 .map(customerVoucher -> {
@@ -336,7 +349,6 @@ public class VoucherServiceImpl implements VoucherService {
                 })
                 .toList();
 
-        // Tạo response
         VoucherFullResponse response = voucherMapper.toFullResponse(discount);
         response.setAppliedCustomers(appliedCustomers);
 
@@ -348,9 +360,6 @@ public class VoucherServiceImpl implements VoucherService {
         return discountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.DISCOUNT_NOT_FOUND.getMessage()));
     }
-
-
-    //voucher applied to order
 
     private void validatePrivateVoucherForEmail(String email, Discount discount) {
         Customer customer = customerRepository.findByEmail(email)
@@ -364,6 +373,9 @@ public class VoucherServiceImpl implements VoucherService {
     private void validateVoucherApplicability(BigDecimal subTotal, Discount discount, Instant now) {
         if (Boolean.TRUE.equals(discount.getIsCanceled())) {
             throw new InvalidDataException("Voucher đã bị hủy.");
+        }
+        if (discount.getUsageCount() == null || discount.getUsageCount() <= 0) {
+            throw new InvalidDataException("Voucher đã được sử dụng hết.");
         }
 
         if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
@@ -410,13 +422,14 @@ public class VoucherServiceImpl implements VoucherService {
                     .couponCode(code)
                     .build();
             try {
-                Discount discount = discountRepository.findByCouponCode(code);
-                if (discount == null) {
+                Optional<Discount> discountOptional = discountRepository.findActiveVoucherByCouponCode(code);
+                if (discountOptional.isEmpty()) {
                     response.setIsApplicable(false);
-                    response.setReason("Không tìm thấy mã phiếu giảm giá.");
+                    response.setReason("Không tìm thấy mã phiếu giảm giá hoặc mã đã hết hạn.");
                     responses.add(response);
                     continue;
                 }
+                Discount discount = discountOptional.get();
 
                 if (Boolean.TRUE.equals(!discount.getIsCumulative()) && !applicableVoucherIds.isEmpty()) {
                     response.setIsApplicable(false);
@@ -472,6 +485,5 @@ public class VoucherServiceImpl implements VoucherService {
                 .applicableVoucherIds(applicableVoucherIds)
                 .build();
     }
-
 
 }

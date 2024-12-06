@@ -38,8 +38,6 @@ public class VoucherResponse {
 
     BigDecimal maxDiscountAmount;
 
-//    Integer maxDiscountedQuantity;
-
     BigDecimal minOderAmount;
 
     Boolean usePercentage;
@@ -49,4 +47,6 @@ public class VoucherResponse {
     List<Long> appliedCustomerIds;
 
     Boolean isPublished;
+
+    Integer usageCount;
 }

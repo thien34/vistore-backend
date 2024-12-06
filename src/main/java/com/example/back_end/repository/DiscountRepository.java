@@ -8,11 +8,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
-    boolean existsByName(String name);
-    Discount findByCouponCode(String couponCode);
+    @Query("SELECT d FROM Discount d WHERE d.couponCode = :couponCode AND (d.status = 'ACTIVE' OR d.status = 'UPCOMING')")
+    Optional<Discount> findActiveVoucherByCouponCode(@Param("couponCode") String couponCode);
+
 
     boolean existsByNameAndIdNot(String name, Long id);
 

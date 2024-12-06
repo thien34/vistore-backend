@@ -43,7 +43,6 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -99,11 +98,7 @@ public class OrderServiceImpl implements OrderService {
                 if (discount.getUsageCount() != null && discount.getUsageCount() > 0) {
                     discount.setUsageCount(discount.getUsageCount() - 1);
                 } else {
-                    try {
-                        throw new BadRequestException("Voucher đã hết số lần sử dụng: " + discount.getCouponCode());
-                    } catch (BadRequestException e) {
-                        throw new RuntimeException(e);
-                    }
+                    throw new IllegalArgumentException("Voucher đã hết số lần sử dụng: " + discount.getCouponCode());
                 }
                 CustomerVoucher customerVoucher = customerVoucherRepository.findByCustomerIdAndDiscountId(
                         request.getCustomerId(), discount.getId()
@@ -116,11 +111,7 @@ public class OrderServiceImpl implements OrderService {
                 if (customerVoucher.getUsageCountPerCustomer() != null) {
                     if (discount.getPerCustomerLimit() != null &&
                             customerVoucher.getUsageCountPerCustomer() >= discount.getPerCustomerLimit()) {
-                        try {
-                            throw new BadRequestException("Voucher đã vượt giới hạn sử dụng cho khách hàng: " + discount.getCouponCode());
-                        } catch (BadRequestException e) {
-                            throw new RuntimeException(e);
-                        }
+                        throw new IllegalArgumentException("Voucher đã vượt giới hạn sử dụng cho khách hàng: " + discount.getCouponCode());
                     }
                     customerVoucher.setUsageCountPerCustomer(customerVoucher.getUsageCountPerCustomer() + 1);
                 } else {
@@ -238,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
 
         int newQuantity = product.getQuantity() - request.getQuantity();
         if (newQuantity < 0) {
-            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
+            throw new IllegalArgumentException("Không đủ hàng cho sản phẩm: " + product.getId());
         }
         product.setQuantity(newQuantity);
         productRepository.save(product);
