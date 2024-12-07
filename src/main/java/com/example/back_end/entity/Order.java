@@ -25,6 +25,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -109,8 +110,8 @@ public class Order extends Auditable {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
-    private List<OrderItem> orderItems;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     private List<OrderStatusHistory> statusHistories;
