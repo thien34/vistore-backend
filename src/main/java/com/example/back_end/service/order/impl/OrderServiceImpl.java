@@ -28,6 +28,7 @@ import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
 import com.example.back_end.repository.AddressRepository;
+import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.CustomerVoucherRepository;
 import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.repository.DiscountUsageHistoryRepository;
@@ -74,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
     WardRepository wardRepository;
     CustomerVoucherRepository customerVoucherRepository;
     OrderMapper orderMapper;
+    CustomerRepository customerRepository;
 
     @Override
     @Transactional
@@ -298,8 +300,19 @@ public class OrderServiceImpl implements OrderService {
                 findByOrderId(orderId);
         return statusHistories.stream()
                 .sorted(Comparator.comparing(OrderStatusHistory::getPaidDate))
-                .map(OrderStatusHistoryResponse::fromOrderStatusHistoryResponse)
+                .map(status -> {
+                    Customer customerCreated = customerRepository.findById(status.getCreatedBy()).orElse(null);
+                    Customer customerUpdated = customerRepository.findById(status.getLastModifiedBy()).orElse(null);
+                    return OrderStatusHistoryResponse.fromOrderStatusHistoryResponse(status, toFullName(customerCreated), toFullName(customerUpdated));
+                })
                 .toList();
+    }
+
+    private String toFullName(Customer customer) {
+        if (customer == null) {
+            return "";
+        }
+        return customer.getFirstName() + " " + customer.getLastName();
     }
 
     @Override
@@ -434,18 +447,20 @@ public class OrderServiceImpl implements OrderService {
 //        PaymentStatusType statusType = EnumAdaptor.valueOf(order.getPaymentStatusId().value, PaymentStatusType.class);
         if (order.getShippingAddress() != null) {
             Address address = order.getShippingAddress();
+            customerResponse.setId(address.getId());
+            customerResponse.setCustomerId(address.getCustomer().getId());
             customerResponse.setFirstName(address.getFirstName());
             customerResponse.setLastName(address.getLastName());
             customerResponse.setPhoneNumber(address.getPhoneNumber());
             customerResponse.setBillId(order.getBillCode());
-            customerResponse.setDelivery("Delivery");
+            customerResponse.setDelivery("Giao Hàng");
             customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
             return customerResponse;
         }
 
         if (customer.getId() == 1) {
-            customerResponse.setFirstName("Retail");
-            customerResponse.setDelivery("At Repair");
+            customerResponse.setFirstName("Khách Lẻ");
+            customerResponse.setDelivery("Tại Quầy");
             customerResponse.setBillId(order.getBillCode());
             customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
             return customerResponse;

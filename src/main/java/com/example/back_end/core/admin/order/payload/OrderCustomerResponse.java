@@ -10,6 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderCustomerResponse {
+    private Long id;
+    private Long customerId;
     private String billId;
     private String firstName;
     private String lastName;
