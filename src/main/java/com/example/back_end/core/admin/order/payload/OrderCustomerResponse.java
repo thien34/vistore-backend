@@ -18,4 +18,6 @@ public class OrderCustomerResponse {
     private String phoneNumber;
     private String delivery;
     private Long orderStatusType;
+    private Long paymentStatusType;
+    private Long paymentMethod;
 }

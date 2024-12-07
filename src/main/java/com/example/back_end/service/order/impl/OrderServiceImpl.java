@@ -455,6 +455,8 @@ public class OrderServiceImpl implements OrderService {
             customerResponse.setBillId(order.getBillCode());
             customerResponse.setDelivery("Giao Hàng");
             customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
+            customerResponse.setPaymentMethod((long) order.getPaymentMethodId().value);
+            customerResponse.setPaymentStatusType((long) order.getPaymentStatusId().value);
             return customerResponse;
         }
 
@@ -463,6 +465,8 @@ public class OrderServiceImpl implements OrderService {
             customerResponse.setDelivery("Tại Quầy");
             customerResponse.setBillId(order.getBillCode());
             customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
+            customerResponse.setPaymentMethod((long) order.getPaymentMethodId().value);
+            customerResponse.setPaymentStatusType((long) order.getPaymentStatusId().value);
             return customerResponse;
         }
 
@@ -472,6 +476,8 @@ public class OrderServiceImpl implements OrderService {
         customerResponse.setBillId(customerResponse.getBillId());
 //        customerResponse.setDelivery("Delivery");
         customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
+        customerResponse.setPaymentMethod((long) order.getPaymentMethodId().value);
+        customerResponse.setPaymentStatusType((long) order.getPaymentStatusId().value);
 
         return customerResponse;
     }
