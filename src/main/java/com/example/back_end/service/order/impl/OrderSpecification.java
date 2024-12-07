@@ -31,7 +31,7 @@ public class OrderSpecification {
             if (filter.getEndDate() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), filter.getEndDate()));
             }
-
+            query.orderBy(criteriaBuilder.desc(root.get("id")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
