@@ -55,5 +55,7 @@ public class VoucherFullResponse {
 
     String status;
 
+    Integer usageCount;
+
     List<CustomerResponse> appliedCustomers;
 }

@@ -11,4 +11,6 @@ public class VoucherUpdateRequest {
     private Instant startDate;
     private Instant endDate;
     private Integer maxUsageCount;
+    private Boolean isCumulative;
+    private String comment;
 }

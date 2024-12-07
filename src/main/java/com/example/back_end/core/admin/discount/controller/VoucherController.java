@@ -4,13 +4,14 @@ import com.example.back_end.core.admin.discount.payload.request.ValidateCouponsR
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherUpdateRequest;
-import com.example.back_end.core.admin.discount.payload.response.DiscountFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponseWrapper;
 import com.example.back_end.core.admin.discount.payload.response.VoucherFullResponse;
 import com.example.back_end.core.admin.discount.payload.response.VoucherResponse;
 import com.example.back_end.core.common.ResponseData;
+import com.example.back_end.entity.Discount;
 import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
+import com.example.back_end.infrastructure.exception.ResourceNotFoundException;
 import com.example.back_end.service.discount.VoucherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,6 +67,24 @@ public class VoucherController {
         }
     }
 
+    @PostMapping("/birthday")
+    public ResponseEntity<String> updateBirthdayDiscount(@RequestBody Map<String, BigDecimal> request) {
+        BigDecimal discountPercentage = request.get("discountPercentageBirthday");
+        if (discountPercentage == null || discountPercentage.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("discountPercentageBirthday phải lớn hơn 0.");
+        }
+        voucherService.setDefaultBirthdayDiscountPercentage(discountPercentage);
+        return ResponseEntity.ok("Giá trị giảm giá sinh nhật mặc định đã được cập nhật thành công.");
+    }
+    @GetMapping("/birthday-discount")
+    public ResponseEntity<BigDecimal> getBirthdayDiscountPercentage() {
+        BigDecimal discountPercentage = voucherService.findByName("Birthday Default Discount")
+                .map(Discount::getDiscountPercentage)
+                .orElseThrow(() -> new ResourceNotFoundException("Discount not found"));
+
+        return ResponseEntity.ok(discountPercentage);
+    }
+
     @PutMapping("/{voucherId}")
     @Operation(summary = "Cập nhật phiếu giảm giá hiện có", description = "Cập nhật chi tiết phiếu giảm giá hiện có theo ID.")
     @ApiResponses(value = {
@@ -95,9 +114,10 @@ public class VoucherController {
             );
         }
     }
+
     @GetMapping("/{voucherId}")
-    @Operation(summary = "Nhận voucher bằng ID", 
-               description = "Truy xuất thông tin chi tiết của phiếu giảm giá theo ID của nó.")
+    @Operation(summary = "Nhận voucher bằng ID",
+            description = "Truy xuất thông tin chi tiết của phiếu giảm giá theo ID của nó.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Đã lấy phiếu giảm giá thành công"),
             @ApiResponse(responseCode = "404", description = "Không tìm thấy phiếu giảm giá")
@@ -119,7 +139,7 @@ public class VoucherController {
 
 
     @PostMapping("/validate-coupons")
-    @Operation(summary = "Xác nhận và tính toán giảm giá", 
+    @Operation(summary = "Xác nhận và tính toán giảm giá",
             description = "Kiểm tra tính hợp lệ của nhiều phiếu giảm giá và tính toán số tiền chiết khấu.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Xác thực hoàn tất"),

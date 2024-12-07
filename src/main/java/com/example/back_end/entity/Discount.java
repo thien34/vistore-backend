@@ -101,4 +101,7 @@ public class Discount extends Auditable {
     @Column(name = "per_customer_limit")
     private Integer perCustomerLimit;
 
+    @Column(name = "is_birthday")
+    private Boolean isBirthday;
+
 }

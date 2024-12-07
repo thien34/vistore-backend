@@ -31,7 +31,7 @@ public class EmailService {
     ) throws MessagingException {
 
         MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom("kiennkph42576@fpt.edu.vn");
         helper.setTo(recipientEmail);
 
@@ -95,14 +95,13 @@ public class EmailService {
                             <img src="https://cdn-icons-png.flaticon.com/512/122/122598.png" alt="//" style="width: 20%%;">
                         </div>
                         <h4 style="color: #000; font-size: 35px; margin-top: 10px;">%s</h4>
-                        <p style="font-size: 16px; color: #666; margin: 15px 0;">Thương hiệu của chúng tôi đang tri ân khách hàng mới. Đối với những người muốn ăn mừng với chúng tôi, chúng tôi đang giảm giá trên toàn trang web .</p>
-                        <p style="font-size: 16px; color: #666; margin-bottom: 30px;">The sale lasts from %s to %s.</p>
+                        <p style="font-size: 16px; color: #666; margin: 15px 0;">Thương hiệu của chúng tôi đang tri ân khách hàng mới. Đối với những người đã là thành viên với chúng tôi, chúng tôi đang giảm giá trên toàn bộ website .</p>
+                        <p style="font-size: 16px; color: #666; margin-bottom: 30px;">Thời gian bán kéo dài từ %s đến %s.</p>
                        
-                        <div style="color: #666; margin-top: 20px;">Our gift to you:</div>
+                        <div style="color: #666; margin-top: 20px;">Món quà của chúng tôi dành cho bạn:</div>
                         <div style="border: 2px dashed #94c0f9; border-radius: 20px; padding: 20px; margin: 20px 0; background-color: #e1ebff; width: 80%%; margin: 0 auto;">
                             <div style="font-size: 18px; font-weight: 600;">Thẻ quà tặng</div>
                             <div style="font-size: 48px; font-weight: bold; color: #020202; margin: 10px 0;">%s</div>
-                            <div style="font-size: 12px; color: #666;">Off anything in-store<br>Từ nay đến ngày 31 tháng 12 năm 2024</div>
                         </div>
                        
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
@@ -112,7 +111,7 @@ public class EmailService {
                             <h2 style="color: red;">%s</h2>
                         </div>
                        
-                        <a href="http://localhost:3000/admin/vouchers" style="background-color: #2B8284; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-size: 18px; display: inline-block; margin: 20px 0; transition: background-color 0.3s;">Shop now</a>
+                        <a href="http://localhost:3001" style="background-color: #2B8284; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-size: 18px; display: inline-block; margin: 20px 0; transition: background-color 0.3s;">Mua ngay</a>
                       
                     </div>
                 </body>
