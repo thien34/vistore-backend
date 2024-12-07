@@ -86,6 +86,7 @@ public class DiscountServiceImpl implements DiscountService {
                 filterRequest.getStartDate(),
                 filterRequest.getEndDate(),
                 filterRequest.getStatus(),
+                filterRequest.getIsBirthday(),
                 filterRequest.getIsPublished()
         );
         discounts.forEach(this::updateDiscountStatus);

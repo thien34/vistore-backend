@@ -95,7 +95,9 @@ public class OrderServiceImpl implements OrderService {
             List<Discount> discounts = discountRepository.findAllById(voucherIds);
 
             for (Discount discount : discounts) {
-                if (discount.getUsageCount() != null && discount.getUsageCount() <= 0) {
+                if (discount.getUsageCount() != null && discount.getUsageCount() > 0) {
+                    discount.setUsageCount(discount.getUsageCount() - 1);
+                } else {
                     throw new IllegalArgumentException("Voucher đã hết số lần sử dụng: " + discount.getCouponCode());
                 }
                 CustomerVoucher customerVoucher = customerVoucherRepository.findByCustomerIdAndDiscountId(
