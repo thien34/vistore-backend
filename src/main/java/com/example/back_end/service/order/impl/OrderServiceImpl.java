@@ -229,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
 
         int newQuantity = product.getQuantity() - request.getQuantity();
         if (newQuantity < 0) {
-            throw new IllegalArgumentException("Không đủ hàng cho sản phẩm: " + product.getId());
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
         }
         product.setQuantity(newQuantity);
         productRepository.save(product);
