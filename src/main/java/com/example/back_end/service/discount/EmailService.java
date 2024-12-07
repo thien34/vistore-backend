@@ -67,12 +67,13 @@ public class EmailService {
         String discountInfo;
 
         if (discountPercentage != null) {
-            discountInfo = "<strong>" + discountPercentage + "% OFF</strong>";
+            discountInfo = "<strong>" + discountPercentage.stripTrailingZeros().toPlainString() + "% OFF</strong>";
         } else if (discountAmount != null) {
             discountInfo = "<strong>" + discountAmount + " VNĐ</strong>";
         } else {
             discountInfo = "Không có thông tin giảm giá.";
         }
+
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 .withZone(ZoneId.systemDefault());

@@ -77,9 +77,6 @@ public class Discount extends Auditable {
     @Column(name = "limitation_times")
     private Integer limitationTimes;
 
-    @Column(name = "max_discounted_quantity")
-    private Integer maxDiscountedQuantity;
-
     @Column(name = "applied_to_sub_categories")
     private Boolean appliedToSubCategories;
 
@@ -100,8 +97,5 @@ public class Discount extends Auditable {
 
     @Column(name = "per_customer_limit")
     private Integer perCustomerLimit;
-
-    @Column(name = "is_birthday")
-    private Boolean isBirthday;
 
 }
