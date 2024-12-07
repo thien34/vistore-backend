@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -61,10 +62,15 @@ public class VoucherServiceImpl implements VoucherService {
                 filterRequest.getStartDate(),
                 filterRequest.getEndDate(),
                 filterRequest.getStatus(),
+                filterRequest.getIsBirthday(),
                 filterRequest.getIsPublished()
         );
         discounts.forEach(this::updateVoucherStatus);
         return voucherMapper.toResponseList(discounts);
+    }
+    @Override
+    public Optional<Discount> findByName(String name) {
+        return discountRepository.findByName(name);
     }
 
     public static String generateVoucherCode(String prefix, Long id) {
@@ -95,7 +101,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     @Transactional
-    public void createDiscount(VoucherRequest voucherRequest) {
+    public Discount createDiscount(VoucherRequest voucherRequest) {
         checkDuplicateCouponCode(voucherRequest.getCouponCode(), voucherRequest.getIsPublished());
         Discount discount = voucherMapper.toEntity(voucherRequest);
         validateDiscount(discount);
@@ -117,6 +123,7 @@ public class VoucherServiceImpl implements VoucherService {
                 discount.getEndDateUtc(),
                 discount.getDiscountPercentage(),
                 discount.getDiscountAmount());
+        return discount;
     }
 
     private void checkDuplicateCouponCode(String couponCode, Boolean isPublished) {
@@ -156,33 +163,53 @@ public class VoucherServiceImpl implements VoucherService {
         }
     }
 
-    @Scheduled(fixedDelay = 10000)
-    @Override
+    @Scheduled(cron = "0 1 0 * * *")
     @Transactional
     public void checkAndGenerateBirthdayVoucher() {
         LocalDate today = LocalDate.now();
         List<Customer> customers = customerRepository.findAllByBirthday(today);
+        BigDecimal discountPercentage = getBirthdayDiscountPercentage().setScale(0, RoundingMode.HALF_UP);
         for (Customer customer : customers) {
-            createBirthdayVoucher(customer);
+            createBirthdayVoucher(customer, discountPercentage);
         }
-        log.info("Voucher sinh nhật đã được xử lý cho {} khách hàng", customers.size());
+        log.info("Voucher sinh nhật đã được xử lý cho {} khách hàng với giảm giá {}%",
+                customers.size(), discountPercentage);
+    }
+    public BigDecimal getBirthdayDiscountPercentage() {
+        return discountRepository.findByName("Birthday Default Discount")
+                .map(Discount::getDiscountPercentage)
+                .orElse(BigDecimal.TEN);
+    }
+    @Transactional
+    @Override
+    public void setDefaultBirthdayDiscountPercentage(BigDecimal discountPercentage) {
+        Discount defaultDiscount = discountRepository.findByName("Birthday Default Discount")
+                .orElseGet(() -> Discount.builder()
+                        .name("Birthday Default Discount")
+                        .usePercentage(true)
+                        .isPublished(false)
+                        .build()
+                );
+        defaultDiscount.setDiscountPercentage(discountPercentage);
+        discountRepository.save(defaultDiscount);
     }
 
     @Transactional
-    public void createBirthdayVoucher(Customer customer) {
-        BigDecimal discountPercent = BigDecimal.TEN;
+    public void createBirthdayVoucher(Customer customer, BigDecimal discountPercentage) {
         Instant startDate = Instant.now();
         Instant endDate = startDate.plusSeconds(86400L * 5);
+
         VoucherRequest voucherRequest = VoucherRequest.builder()
                 .name("Voucher sinh nhật cho " + customer.getFirstName() + " " + customer.getLastName())
                 .couponCode(generateVoucherCode("BDAY_", customer.getId()))
-                .discountPercentage(discountPercent)
+                .discountPercentage(discountPercentage)
                 .startDateUtc(startDate)
                 .endDateUtc(endDate)
                 .limitationTimes(1)
                 .comment("Happy birthday")
                 .isPublished(false)
                 .minOderAmount(BigDecimal.ZERO)
+                .isBirthday(true)
                 .isCumulative(false)
                 .maxDiscountAmount(BigDecimal.valueOf(100000))
                 .discountTypeId(DiscountType.ASSIGNED_TO_ORDER_TOTAL)
@@ -190,8 +217,18 @@ public class VoucherServiceImpl implements VoucherService {
                 .selectedCustomerIds(List.of(customer.getId()))
                 .requiresCouponCode(true)
                 .build();
-        createDiscount(voucherRequest);
-        log.info("Tạo voucher sinh nhật cho khách hàng: {}", customer.getEmail());
+
+        Discount discount = createDiscount(voucherRequest);
+
+        CustomerVoucher customerVoucher = CustomerVoucher.builder()
+                .customer(customer)
+                .discount(discount)
+                .usageCountPerCustomer(0)
+                .build();
+
+        customerVoucherRepository.save(customerVoucher);
+
+        log.info("Tạo voucher sinh nhật cho {} với giảm giá {}%", customer.getEmail(), discountPercentage);
     }
 
     private void validateDiscount(Discount discount) {

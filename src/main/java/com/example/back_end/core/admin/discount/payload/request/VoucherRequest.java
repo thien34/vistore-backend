@@ -47,8 +47,6 @@ public class VoucherRequest {
 
     Integer limitationTimes;
 
-//    Integer maxDiscountedQuantity;
-
     BigDecimal minOderAmount;
 
     List<Long> selectedCustomerIds;
@@ -56,5 +54,7 @@ public class VoucherRequest {
     Boolean isPublished;
 
     Integer perCustomerLimit;
+
+    Boolean isBirthday;
 
 }

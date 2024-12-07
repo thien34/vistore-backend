@@ -20,23 +20,27 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
     boolean existsByCouponCode(String couponCode);
 
+    Optional<Discount> findByName(String name);
+
     @Query("""
-        SELECT d FROM Discount d WHERE
-        (:name IS NULL OR d.name LIKE %:name%) AND
-        (:couponCode IS NULL OR d.couponCode LIKE %:couponCode%) AND
-        (:discountTypeId IS NULL OR d.discountTypeId = :discountTypeId) AND
-        ((cast(:startDate as date) IS NULL) OR d.startDateUtc >= :startDate) AND
-        ((cast(:endDate as date) IS NULL) OR d.endDateUtc <= :endDate) AND
-        (:isPublished IS NULL OR d.isPublished = :isPublished) AND
-        (:status IS NULL OR d.status = :status)
-        ORDER BY d.createdDate desc
-        """)
+            SELECT d FROM Discount d WHERE
+            (:name IS NULL OR d.name LIKE %:name%) AND
+            (:couponCode IS NULL OR d.couponCode LIKE %:couponCode%) AND
+            (:discountTypeId IS NULL OR d.discountTypeId = :discountTypeId) AND
+            ((cast(:startDate as date) IS NULL) OR d.startDateUtc >= :startDate) AND
+            ((cast(:endDate as date) IS NULL) OR d.endDateUtc <= :endDate) AND
+            (:isPublished IS NULL OR d.isPublished = :isPublished) AND
+            (:status IS NULL OR d.status = :status) AND
+            (:isBirthday IS NULL OR d.isBirthday = :isBirthday)
+            ORDER BY d.createdDate desc
+            """)
     List<Discount> searchDiscountsNoPage(@Param("name") String name,
                                          @Param("couponCode") String couponCode,
                                          @Param("discountTypeId") DiscountType discountTypeId,
                                          @Param("startDate") Instant startDate,
                                          @Param("endDate") Instant endDate,
                                          @Param("status") String status,
+                                         @Param("isBirthday") Boolean isBirthday,
                                          @Param("isPublished") Boolean isPublished);
 
 }

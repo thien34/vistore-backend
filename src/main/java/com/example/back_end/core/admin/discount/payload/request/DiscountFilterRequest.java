@@ -33,4 +33,6 @@ public class DiscountFilterRequest {
 
     private String status;
 
+    private Boolean isBirthday;
+
 }

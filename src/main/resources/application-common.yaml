@@ -11,18 +11,18 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 
-    show-sql: false
+    show-sql: true
 
-    properties:
-      hibernate:
-        globally_quoted_identifiers: true
-        format_sql: true
-        hbm2ddl:
-          auto: none
-        jdbc:
-          time_zone: UTC
+#    properties:
+#      hibernate:
+#        globally_quoted_identifiers: true
+#        format_sql: true
+#        hbm2ddl:
+#          auto: none
+#        jdbc:
+#          time_zone: UTC
 
   main:
     allow-bean-definition-overriding: true
