@@ -9,8 +9,7 @@ import com.example.back_end.entity.Discount;
 import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Product;
 import com.example.back_end.entity.ShoppingCartItem;
-import com.example.back_end.infrastructure.constant.EnumAdaptor;
-import com.example.back_end.infrastructure.constant.ShoppingCartType;
+import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.repository.BillCountRepository;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -19,7 +18,6 @@ import com.example.back_end.service.cart.ShoppingCartService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -64,6 +62,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             newCartItem.setParentId(parentId);
             cartItemRepository.save(newCartItem);
         }
+
+        product.setQuantity(product.getQuantity() - cartRequest.getQuantity());
+        productRepository.save(product);
     }
 
     @Override
@@ -109,10 +110,33 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return billCounts;
     }
 
-    @Transactional
+    @Override
     public void deleteBill(String id) {
-        cartItemRepository.deleteByParentId(id);
-        cartItemRepository.deleteByCartUUID(id);
+
+        List<ShoppingCartItem> cartItems = cartItemRepository.findByParentId(id);
+
+        cartItems.forEach(cartItem -> {
+            deleteItemInBill(cartItem.getCartUUID());
+        });
+
+        ShoppingCartItem cartItem = cartItemRepository.findByCartUUID(id);
+        cartItemRepository.delete(cartItem);
+    }
+
+    @Override
+    public void deleteItemInBill(String id) {
+
+        ShoppingCartItem cartItem = cartItemRepository.findByCartUUID(id);
+        if (cartItem == null) {
+            throw new NotFoundException("Không thể tìm thấy giỏ hàng với ID: " + id);
+        }
+
+        Product product = productRepository.findById(cartItem.getProduct().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Không thể tìm thấy sản phẩm với ID: " + cartItem.getProduct().getId()));
+
+        product.setQuantity(product.getQuantity() + cartItem.getQuantity());
+        productRepository.save(product);
+        cartItemRepository.delete(cartItem);
     }
 
     @Override
@@ -120,13 +144,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         ShoppingCartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không thể tìm thấy sản phẩm với ID: " + id));
-        cartItem.setQuantity(quantity);
+
+        Integer oldQuantity = cartItem.getQuantity();
         Product product = productRepository.findById(cartItem.getProduct().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Không thể tìm thấy sản phẩm với ID: " + cartItem.getProduct().getId()));
-        if (cartItem.getQuantity() > product.getQuantity()) {
-            throw new RuntimeException("Không đủ hàng cho sản phẩm:" + product.getName() + ".Số lượng có sẵn: " + product.getQuantity());
+
+        if (quantity > product.getQuantity() + oldQuantity) {
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getName()
+                    + ". Số lượng có sẵn: " + (product.getQuantity() + oldQuantity));
         }
+
+        cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
+
+        product.setQuantity(product.getQuantity() + oldQuantity - quantity);
+        productRepository.save(product);
     }
 
     @Override

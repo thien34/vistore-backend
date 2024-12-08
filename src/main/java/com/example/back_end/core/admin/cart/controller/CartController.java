@@ -51,6 +51,12 @@ public class CartController {
         return new ResponseData<>(HttpStatus.OK.value(), "Xóa hóa đơn thành công");
     }
 
+    @DeleteMapping("/delete-item-in-bill/{billId}")
+    public ResponseData<Void> deleteItemInBill(@PathVariable String billId) {
+        shoppingCartService.deleteItemInBill(billId);
+        return new ResponseData<>(HttpStatus.OK.value(), "Xóa sản phẩm khỏi hóa đơn thành công");
+    }
+
     @GetMapping("/get-bills")
     public ResponseData<Map<String, BillCountResponse>> getBills() {
         return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách hóa đơn thành công", shoppingCartService.getBillIdsCount());

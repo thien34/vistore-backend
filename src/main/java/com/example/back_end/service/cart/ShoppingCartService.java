@@ -19,6 +19,8 @@ public interface ShoppingCartService {
 
     void deleteBill(String id);
 
+    void deleteItemInBill(String id);
+
     void updateQuantity(Long id, Integer quantity);
 
     Map<String, BillCountResponse> getBillIdsCount();

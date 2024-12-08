@@ -32,9 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -143,7 +145,7 @@ public class ProductServiceImpl implements ProductService {
                         response.setLargestDiscountPercentage(largestDiscount);
                         if (largestDiscount.compareTo(BigDecimal.ZERO) > 0) {
                             BigDecimal discountPrice = product.getUnitPrice()
-                                    .multiply(BigDecimal.ONE.subtract(largestDiscount.divide(BigDecimal.valueOf(100))));
+                                    .multiply(BigDecimal.ONE.subtract(largestDiscount.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)));
                             response.setDiscountPrice(discountPrice);
                         } else {
                             response.setDiscountPrice(product.getUnitPrice());
@@ -169,7 +171,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product finalProduct = product;
         List<Product> products = productRepository.findByParentProductId(productId)
-                .stream().map(productUpdate -> {
+                .stream().peek(productUpdate -> {
                     List<ProductRequest.ProductAttribute> attributes = productUpdate
                             .getProductAttributeValues().stream().map(productAttributeValue -> {
                                 ProductRequest.ProductAttribute productAttribute = new ProductRequest.ProductAttribute();
@@ -181,7 +183,6 @@ public class ProductServiceImpl implements ProductService {
                     productUpdate.setFullName(generateFullName(request.getName(), attributes));
                     productUpdate.setCategory(finalProduct.getCategory());
                     productUpdate.setManufacturer(finalProduct.getManufacturer());
-                    return productUpdate;
                 }).toList();
 
         productRepository.saveAll(products);
@@ -375,6 +376,7 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll();
 
         return products.stream()
+                .sorted(Comparator.comparing(Product::getCreatedDate).reversed())
                 .filter(product -> product.getParentProductId() != null)
                 .map(product -> {
                     ProductResponse response = ProductResponse.fromProductFull(product, List.of());
@@ -478,18 +480,6 @@ public class ProductServiceImpl implements ProductService {
     private void saveProductsAndAttributes(List<Product> products, List<ProductAttributeValue> attributeValues) {
         productRepository.saveAll(products);
         productAttributeValueRepository.saveAll(attributeValues);
-    }
-
-    private void checkDuplicateAttributeValues(Product product, List<ProductRequest.ProductAttribute> attributes) {
-        for (ProductRequest.ProductAttribute attribute : attributes) {
-            boolean exists = productAttributeValueRepository.existsByProductAndProductAttributeAndValue(
-                    product, new ProductAttribute(attribute.getId()), attribute.getValue());
-
-            if (exists)
-                throw new IllegalArgumentException(
-                        "Giá trị " + attribute.getValue() + " đã tồn tại cho sản phẩm " + product.getName());
-
-        }
     }
 
     private boolean checkIfGtinExists(String gtin) {

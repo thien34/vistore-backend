@@ -57,7 +57,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.3.4'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.18.1'
 
-
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")

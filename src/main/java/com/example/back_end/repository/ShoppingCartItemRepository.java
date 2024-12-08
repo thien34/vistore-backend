@@ -11,10 +11,6 @@ public interface ShoppingCartItemRepository extends JpaRepository<ShoppingCartIt
 
     List<ShoppingCartItem> findByParentId(String parentId);
 
-    void deleteByCartUUID(String cartUUID);
-
-    void deleteByParentId(String parentId);
-
     List<ShoppingCartItem> findAllByCustomerId(Long idCustomer);
 
     List<ShoppingCartItem> findAllByCustomerIdAndIdIn(Long idCustomer, List<Long> idCarts);
