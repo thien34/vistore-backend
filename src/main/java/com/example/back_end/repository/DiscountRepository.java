@@ -30,8 +30,7 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
             ((cast(:startDate as date) IS NULL) OR d.startDateUtc >= :startDate) AND
             ((cast(:endDate as date) IS NULL) OR d.endDateUtc <= :endDate) AND
             (:isPublished IS NULL OR d.isPublished = :isPublished) AND
-            (:status IS NULL OR d.status = :status) AND
-            (:isBirthday IS NULL OR d.isBirthday = :isBirthday)
+            (:status IS NULL OR d.status = :status)
             ORDER BY d.createdDate desc
             """)
     List<Discount> searchDiscountsNoPage(@Param("name") String name,
@@ -40,7 +39,6 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
                                          @Param("startDate") Instant startDate,
                                          @Param("endDate") Instant endDate,
                                          @Param("status") String status,
-                                         @Param("isBirthday") Boolean isBirthday,
                                          @Param("isPublished") Boolean isPublished);
 
 }
