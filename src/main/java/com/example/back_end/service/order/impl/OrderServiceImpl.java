@@ -24,6 +24,7 @@ import com.example.back_end.entity.ShoppingCartItem;
 import com.example.back_end.entity.Ward;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
+import com.example.back_end.infrastructure.email.OrderEmailService;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
@@ -39,15 +40,19 @@ import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.repository.WardRepository;
 import com.example.back_end.service.order.OrderService;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -59,6 +64,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -75,6 +81,7 @@ public class OrderServiceImpl implements OrderService {
     WardRepository wardRepository;
     CustomerVoucherRepository customerVoucherRepository;
     OrderMapper orderMapper;
+    OrderEmailService orderEmailService;
     CustomerRepository customerRepository;
 
     @Override
@@ -91,9 +98,9 @@ public class OrderServiceImpl implements OrderService {
         order.setShippingAddress(address);
         order.setCreatedDate(cartItemCreateDate);
         Order savedOrder = orderRepository.save(order);
+
         if (request.getIdVouchers() != null && !request.getIdVouchers().isEmpty()) {
             List<Long> voucherIds = request.getIdVouchers();
-
             List<Discount> discounts = discountRepository.findAllById(voucherIds);
 
             for (Discount discount : discounts) {
@@ -140,8 +147,100 @@ public class OrderServiceImpl implements OrderService {
 
         if (request.getOrderItems() != null && !request.getOrderItems().isEmpty()) {
             List<OrderItem> orderItems = createOrderItems(request, savedOrder);
+            savedOrder.setOrderItems(orderItems);
             orderItemRepository.saveAll(orderItems);
         }
+
+        String emailContent = generateEmailContent(savedOrder);
+        try {
+            orderEmailService.sendOrderConfirmationEmail(
+                    request.getAddressRequest().getEmail(),
+                    emailContent
+            );
+        } catch (MessagingException e) {
+            log.error("Gửi email thất bại cho đơn hàng {}: {}", savedOrder.getId(), e.getMessage());
+        }
+    }
+
+    private String generateEmailContent(Order order) {
+        StringBuilder orderDetails = new StringBuilder();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+            order.getOrderItems().forEach(item -> {
+                String productName = "Unknown Product";
+                if (item.getProductJson() != null) {
+                    try {
+                        JsonNode productNode = objectMapper.readTree(item.getProductJson());
+                        productName = productNode.has("name") ? productNode.get("name").asText() : "Unknown Product";
+                    } catch (Exception e) {
+                        log.error("Failed to process product JSON for order: {}", e.getMessage(), e);
+                    }
+                }
+                orderDetails.append(String.format(
+                        "<tr style='background-color: #ffffff;'><td style='padding: 8px; border: none;'>%s</td><td style='padding: 8px; border: none;'>%d</td><td style='padding: 8px; border: none;'>$%.2f</td></tr>",
+                        productName, item.getQuantity(), item.getUnitPrice()
+                ));
+            });
+        } else {
+            orderDetails.append("<tr><td colspan='3' style='padding: 8px; border: none; text-align: center;'>No items in the order.</td></tr>");
+        }
+
+        double subtotal = order.getOrderSubtotal() != null ? order.getOrderSubtotal().doubleValue() : 0.0;
+        double discount = order.getOrderSubtotalDiscount() != null ? order.getOrderSubtotalDiscount().doubleValue() : 0.0;
+        double total = order.getOrderTotal() != null ? order.getOrderTotal().doubleValue() : 0.0;
+
+        return String.format("""
+            <!DOCTYPE html>
+            <html lang="vi">
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>Vistore</title>
+              <link href="https://fonts.googleapis.com/css?family=Poppins:ital,wght@0,400;0,600" rel="stylesheet" />
+            </head>
+            <body style="font-family: 'Poppins', Arial, sans-serif; margin: 0; padding: 0;">
+              <table align="center" style="width: 400px; background-color: #ffffff; border-spacing: 0; border-radius: 10px; margin-top: 20px;">
+                <tr>
+                  <td style="padding: 20px; text-align: center; background-color: #ecf1fb; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                    <h2 style="font-size: 24px; font-weight: 600; color: #001942;">Cảm ơn vì đã mua hàng của Vistore</h2>
+                    <img src="https://cloudfilesdm.com/postcards/5b305647c0f5e5a664d2cca777f34bf4.png" alt="Confirmed" style="width: 40px; height: 40px; margin-bottom: 8px;">
+                    <p style="color: #0067ff; font-size: 14px; font-weight: 500;">Chúng tôi mong sản phẩm sẽ làm hài lòng bạn!</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="background-color: #ecf1fb; padding: 20px;">
+                    <p style="font-size: 14px; color: #001942;">Mã đơn hàng: #%s</p>
+                    <table width="400px" style="background-color: #fff; padding: 10px; border-radius: 10px;">
+                      %s
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 20px; background-color: #ffffff; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                    <table width="400px">
+                      <tr>
+                        <td style="font-size: 16px; color: #001942;">Subtotal</td>
+                        <td align="right" style="font-size: 16px; color: #001942;">$%.2f</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 16px; color: #001942;">Discount</td>
+                        <td align="right" style="font-size: 16px; color: #001942;">-$%.2f</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 16px; font-weight: 600; color: #001942;">Tổng cộng</td>
+                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">$%.2f</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
+        """,
+                order.getId(),
+                orderDetails,
+                subtotal, discount, total);
     }
 
     private Discount findDiscountById(Long discountId) {
