@@ -2,6 +2,7 @@ package com.example.back_end.core.admin.discount.controller;
 
 import com.example.back_end.core.admin.discount.payload.request.ValidateCouponsRequest;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
+import com.example.back_end.core.admin.discount.payload.request.VoucherBirthdayUpdateRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherUpdateRequest;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponseWrapper;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/vouchers")
@@ -67,6 +69,18 @@ public class VoucherController {
         }
     }
 
+    @PutMapping("/default-birthday-discount")
+    public ResponseEntity<String> updateDefaultBirthdayDiscount(@RequestBody VoucherBirthdayUpdateRequest request) {
+        try {
+            voucherService.updateDefaultBirthdayDiscount(request);
+            return ResponseEntity.ok("Cập nhật giảm giá sinh nhật mặc định thành công.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    "Đã xảy ra lỗi không mong muốn: " + e.getMessage());
+        }
+    }
+
+
     @PostMapping("/birthday")
     public ResponseEntity<String> updateBirthdayDiscount(@RequestBody Map<String, BigDecimal> request) {
         BigDecimal discountPercentage = request.get("discountPercentageBirthday");
@@ -76,14 +90,20 @@ public class VoucherController {
         voucherService.setDefaultBirthdayDiscountPercentage(discountPercentage);
         return ResponseEntity.ok("Giá trị giảm giá sinh nhật mặc định đã được cập nhật thành công.");
     }
-    @GetMapping("/birthday-discount")
-    public ResponseEntity<BigDecimal> getBirthdayDiscountPercentage() {
-        BigDecimal discountPercentage = voucherService.findByName("Birthday Default Discount")
-                .map(Discount::getDiscountPercentage)
-                .orElseThrow(() -> new ResourceNotFoundException("Discount not found"));
 
-        return ResponseEntity.ok(discountPercentage);
+    @GetMapping("/default-birthday")
+    public ResponseEntity<?> getDefaultBirthdayVoucher() {
+        Optional<Discount> defaultDiscount = voucherService.getDefaultBirthdayDiscount();
+
+        if (defaultDiscount.isPresent()) {
+            return ResponseEntity.ok(defaultDiscount.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    Map.of("message", "Giảm giá mặc định cho sinh nhật không tồn tại.")
+            );
+        }
     }
+
 
     @PutMapping("/{voucherId}")
     @Operation(summary = "Cập nhật phiếu giảm giá hiện có", description = "Cập nhật chi tiết phiếu giảm giá hiện có theo ID.")
@@ -101,16 +121,8 @@ public class VoucherController {
                     Map.of("message", "Voucher được cập nhật thành công")
             );
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    Map.of("message", e.getMessage())
-            );
-        } catch (InvalidDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("message", e.getMessage())
-            );
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    Map.of("message", "Đã xảy ra lỗi không mong muốn: " + e.getMessage())
             );
         }
     }

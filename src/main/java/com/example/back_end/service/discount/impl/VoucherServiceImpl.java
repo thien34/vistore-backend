@@ -3,6 +3,7 @@ package com.example.back_end.service.discount.impl;
 import com.example.back_end.core.admin.customer.payload.response.CustomerResponse;
 import com.example.back_end.core.admin.discount.mapper.VoucherMapper;
 import com.example.back_end.core.admin.discount.payload.request.DiscountFilterRequest;
+import com.example.back_end.core.admin.discount.payload.request.VoucherBirthdayUpdateRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherRequest;
 import com.example.back_end.core.admin.discount.payload.request.VoucherUpdateRequest;
 import com.example.back_end.core.admin.discount.payload.response.VoucherApplyResponse;
@@ -21,6 +22,7 @@ import com.example.back_end.repository.CustomerVoucherRepository;
 import com.example.back_end.repository.DiscountRepository;
 import com.example.back_end.service.discount.EmailService;
 import com.example.back_end.service.discount.VoucherService;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -62,16 +64,34 @@ public class VoucherServiceImpl implements VoucherService {
                 filterRequest.getStartDate(),
                 filterRequest.getEndDate(),
                 filterRequest.getStatus(),
-                filterRequest.getIsBirthday(),
                 filterRequest.getIsPublished()
         );
         discounts.forEach(this::updateVoucherStatus);
         return voucherMapper.toResponseList(discounts);
     }
-    @Override
-    public Optional<Discount> findByName(String name) {
-        return discountRepository.findByName(name);
+
+    public Optional<Discount> getDefaultBirthdayDiscount() {
+        return discountRepository.findByName("Birthday Default Discount");
     }
+
+    @PostConstruct
+    public void createDefaultBirthdayDiscountIfNotExist() {
+        boolean exists = discountRepository.findByName("Birthday Default Discount").isPresent();
+
+        if (!exists) {
+            Discount defaultDiscount = Discount.builder()
+                    .name("Birthday Default Discount")
+                    .discountPercentage(BigDecimal.TEN)
+                    .usePercentage(true)
+                    .isPublished(false)
+                    .build();
+            discountRepository.save(defaultDiscount);
+            log.info("Đã tạo giảm giá mặc định cho sinh nhật: {}", defaultDiscount);
+        } else {
+            log.info("Giảm giá mặc định sinh nhật đã tồn tại, không cần tạo mới.");
+        }
+    }
+
 
     public static String generateVoucherCode(String prefix, Long id) {
         StringBuilder randomPart = new StringBuilder();
@@ -131,9 +151,6 @@ public class VoucherServiceImpl implements VoucherService {
             if (couponCode == null || couponCode.trim().isEmpty()) {
                 throw new InvalidDataException("Mã phiếu giảm giá không được rỗng hoặc trống đối với các phiếu giảm giá chưa được công bố.");
             }
-            if (discountRepository.existsByCouponCode(couponCode)) {
-                throw new InvalidDataException("Mã phiếu giảm giá đã tồn tại: " + couponCode);
-            }
         }
     }
 
@@ -168,18 +185,71 @@ public class VoucherServiceImpl implements VoucherService {
     public void checkAndGenerateBirthdayVoucher() {
         LocalDate today = LocalDate.now();
         List<Customer> customers = customerRepository.findAllByBirthday(today);
-        BigDecimal discountPercentage = getBirthdayDiscountPercentage().setScale(0, RoundingMode.HALF_UP);
-        for (Customer customer : customers) {
-            createBirthdayVoucher(customer, discountPercentage);
+
+        if (customers.isEmpty()) {
+            log.info("Không có khách hàng nào có sinh nhật hôm nay.");
+            return;
         }
-        log.info("Voucher sinh nhật đã được xử lý cho {} khách hàng với giảm giá {}%",
-                customers.size(), discountPercentage);
+
+        Discount defaultDiscount = discountRepository.findByName("Birthday Default Discount")
+                .orElseThrow(() -> new NotFoundException("Giảm giá mặc định sinh nhật không tồn tại."));
+
+        BigDecimal discountPercentage = defaultDiscount.getDiscountPercentage();
+        BigDecimal discountAmount = defaultDiscount.getDiscountAmount();
+        boolean usePercentage = defaultDiscount.getUsePercentage();
+
+        Instant startDate = Instant.now();
+        Instant endDate = startDate.plusSeconds(86400L * 5);
+
+        VoucherRequest voucherRequest = VoucherRequest.builder()
+                .name("Voucher sinh nhật ngày " + today)
+                .couponCode("BDAY_" + today)
+                .discountPercentage(discountPercentage)
+                .discountAmount(discountAmount)
+                .startDateUtc(startDate)
+                .endDateUtc(endDate)
+                .limitationTimes(1)
+                .comment("Happy birthday")
+                .isPublished(false)
+                .minOderAmount(BigDecimal.ZERO)
+                .isCumulative(false)
+                .maxDiscountAmount(BigDecimal.valueOf(100000))
+                .discountTypeId(DiscountType.ASSIGNED_TO_ORDER_TOTAL)
+                .usePercentage(usePercentage)
+                .selectedCustomerIds(customers.stream().map(Customer::getId).toList())
+                .requiresCouponCode(true)
+                .build();
+
+        Discount discount = createDiscount(voucherRequest);
+
+        List<CustomerVoucher> customerVouchers = customers.stream()
+                .map(customer -> CustomerVoucher.builder()
+                        .customer(customer)
+                        .discount(discount)
+                        .usageCountPerCustomer(0)
+                        .build())
+                .toList();
+
+        customerVoucherRepository.saveAll(customerVouchers);
+
+        if (usePercentage) {
+            log.info("Tạo 1 voucher sinh nhật áp dụng cho {} khách hàng với giảm giá {}%",
+                    customers.size(),
+                    discountPercentage);
+        } else {
+            log.info("Tạo 1 voucher sinh nhật áp dụng cho {} khách hàng với giảm giá {} VNĐ",
+                    customers.size(),
+                    discountAmount);
+        }
     }
+
+
     public BigDecimal getBirthdayDiscountPercentage() {
         return discountRepository.findByName("Birthday Default Discount")
                 .map(Discount::getDiscountPercentage)
                 .orElse(BigDecimal.TEN);
     }
+
     @Transactional
     @Override
     public void setDefaultBirthdayDiscountPercentage(BigDecimal discountPercentage) {
@@ -192,43 +262,6 @@ public class VoucherServiceImpl implements VoucherService {
                 );
         defaultDiscount.setDiscountPercentage(discountPercentage);
         discountRepository.save(defaultDiscount);
-    }
-
-    @Transactional
-    public void createBirthdayVoucher(Customer customer, BigDecimal discountPercentage) {
-        Instant startDate = Instant.now();
-        Instant endDate = startDate.plusSeconds(86400L * 5);
-
-        VoucherRequest voucherRequest = VoucherRequest.builder()
-                .name("Voucher sinh nhật cho " + customer.getFirstName() + " " + customer.getLastName())
-                .couponCode(generateVoucherCode("BDAY_", customer.getId()))
-                .discountPercentage(discountPercentage)
-                .startDateUtc(startDate)
-                .endDateUtc(endDate)
-                .limitationTimes(1)
-                .comment("Happy birthday")
-                .isPublished(false)
-                .minOderAmount(BigDecimal.ZERO)
-                .isBirthday(true)
-                .isCumulative(false)
-                .maxDiscountAmount(BigDecimal.valueOf(100000))
-                .discountTypeId(DiscountType.ASSIGNED_TO_ORDER_TOTAL)
-                .usePercentage(true)
-                .selectedCustomerIds(List.of(customer.getId()))
-                .requiresCouponCode(true)
-                .build();
-
-        Discount discount = createDiscount(voucherRequest);
-
-        CustomerVoucher customerVoucher = CustomerVoucher.builder()
-                .customer(customer)
-                .discount(discount)
-                .usageCountPerCustomer(0)
-                .build();
-
-        customerVoucherRepository.save(customerVoucher);
-
-        log.info("Tạo voucher sinh nhật cho {} với giảm giá {}%", customer.getEmail(), discountPercentage);
     }
 
     private void validateDiscount(Discount discount) {
@@ -244,16 +277,17 @@ public class VoucherServiceImpl implements VoucherService {
         BigDecimal discountPercentage = discount.getDiscountPercentage();
         BigDecimal discountAmount = discount.getDiscountAmount();
         if (usePercentage != null && usePercentage) {
-            if (discountAmount != null) {
+            if (discountAmount != null && discountAmount.compareTo(BigDecimal.ZERO) > 0) {
                 throw new IllegalArgumentException(
-                        "Khi 'usePercentage' là true, không nên cung cấp 'discountAmount'.");
+                        "Khi 'usePercentage' là true, không nên cung cấp 'discountAmount' lớn hơn 0.");
             }
         } else {
-            if (discountPercentage != null) {
+            if (discountPercentage != null && discountPercentage.compareTo(BigDecimal.ZERO) > 0) {
                 throw new IllegalArgumentException(
-                        "Khi 'usePercentage' là sai, không nên cung cấp 'discountPercentage'.");
+                        "Khi 'usePercentage' là false, không nên cung cấp 'discountPercentage' lớn hơn 0.");
             }
         }
+
     }
 
     private void validateDiscountNameLength(String discountName) {
@@ -369,6 +403,60 @@ public class VoucherServiceImpl implements VoucherService {
         return currentLimitationTimes;
     }
 
+    @Transactional
+    public void updateDefaultBirthdayDiscount(VoucherBirthdayUpdateRequest request) {
+        Discount defaultDiscount = discountRepository.findByName("Birthday Default Discount")
+                .orElseThrow(() -> new NotFoundException("Giảm giá mặc định sinh nhật không tồn tại."));
+
+        if (request.getDiscountAmount() != null || request.getDiscountPercentage() != null) {
+            if (defaultDiscount.getUsePercentage() != null) {
+                if (Boolean.TRUE.equals(defaultDiscount.getUsePercentage())) {
+                    defaultDiscount.setDiscountAmount(null);
+                } else {
+                    defaultDiscount.setDiscountPercentage(null);
+                }
+            }
+            if (request.getDiscountAmount() != null) {
+                defaultDiscount.setDiscountAmount(request.getDiscountAmount());
+                defaultDiscount.setUsePercentage(false);
+            }
+            if (request.getDiscountPercentage() != null) {
+                defaultDiscount.setDiscountPercentage(request.getDiscountPercentage());
+                defaultDiscount.setUsePercentage(true);
+            }
+        }
+
+        if (request.getUsePercentage() != null) {
+            defaultDiscount.setUsePercentage(request.getUsePercentage());
+        }
+
+        if (request.getMaxDiscountAmount() != null) {
+            defaultDiscount.setMaxDiscountAmount(request.getMaxDiscountAmount());
+        }
+
+        if (request.getIsCumulative() != null) {
+            defaultDiscount.setIsCumulative(request.getIsCumulative());
+        }
+
+        if (request.getLimitationTimes() != null) {
+            defaultDiscount.setLimitationTimes(request.getLimitationTimes());
+        }
+
+        if (request.getPerCustomerLimit() != null) {
+            defaultDiscount.setPerCustomerLimit(request.getPerCustomerLimit());
+        }
+
+        if (request.getMinOrderAmount() != null) {
+            defaultDiscount.setMinOderAmount(request.getMinOrderAmount());
+        }
+
+        discountRepository.save(defaultDiscount);
+
+        log.info("Cập nhật giảm giá sinh nhật mặc định thành công với giảm giá {}",
+                defaultDiscount.getUsePercentage() ? defaultDiscount.getDiscountPercentage() + "%" : defaultDiscount.getDiscountAmount() + " VNĐ");
+    }
+
+
     @Override
     public VoucherFullResponse getVoucherById(Long id) {
         Discount discount = findDiscountById(id);
@@ -477,7 +565,7 @@ public class VoucherServiceImpl implements VoucherService {
 
                 if (hasNonCumulativeVoucher) {
                     response.setIsApplicable(false);
-                    response.setReason("Không thể thêm phiếu giảm giá vì đã áp dụng chứng từ không tích lũy.");
+                    response.setReason("Không thể thêm phiếu giảm giá vì đã áp dụng voucher không tích lũy.");
                     responses.add(response);
                     continue;
                 }

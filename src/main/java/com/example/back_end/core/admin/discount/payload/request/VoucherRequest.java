@@ -55,6 +55,4 @@ public class VoucherRequest {
 
     Integer perCustomerLimit;
 
-    Boolean isBirthday;
-
 }

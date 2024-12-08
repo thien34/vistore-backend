@@ -14,8 +14,8 @@ import com.example.back_end.entity.ProductAttribute;
 import com.example.back_end.entity.ProductAttributeValue;
 import com.example.back_end.infrastructure.cloudinary.CloudinaryUpload;
 import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
-import com.example.back_end.infrastructure.utils.CollectionUtil;
 import com.example.back_end.infrastructure.exception.NotFoundException;
+import com.example.back_end.infrastructure.utils.CollectionUtil;
 import com.example.back_end.infrastructure.utils.StringUtils;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
@@ -40,8 +40,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -194,6 +194,10 @@ public class ProductServiceImpl implements ProductService {
         Product productParent = productRepository.findById(productId)
                 .orElseThrow(EntityNotFoundException::new);
 
+        List<Product> products = productRepository.findByParentProductId(productParent.getId());
+
+        checkDuplicateAtb(request, products);
+
         Product product = new Product();
         product.setName(request.getName());
 
@@ -311,6 +315,9 @@ public class ProductServiceImpl implements ProductService {
     public void updateProduct(ProductRequestUpdate request, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(EntityNotFoundException::new);
+        List<Product> products = productRepository.findByParentProductId(product.getParentProductId());
+
+        checkDuplicateAtb(request, products);
 
         if (!product.getSku().equals(request.getSku())
                 && !request.getSku().isEmpty() && productRepository.existsBySku(request.getSku()))
@@ -344,6 +351,23 @@ public class ProductServiceImpl implements ProductService {
 
         request.toEntity(product);
         productRepository.save(product);
+    }
+
+    private void checkDuplicateAtb(ProductRequestUpdate request, List<Product> products) {
+        boolean isDuplicate = products.stream().anyMatch(productCheck -> {
+            if (productCheck.getProductAttributeValues().size() != request.getAttributes().size()) {
+                return false;
+            }
+            return productCheck.getProductAttributeValues().stream().allMatch(attributeValue ->
+                    request.getAttributes().stream().anyMatch(requestAttribute ->
+                            requestAttribute.getAttributeId().equals(attributeValue.getProductAttribute().getId())
+                                    && requestAttribute.getValue().equals(attributeValue.getValue())
+                    )
+            );
+        });
+        if (isDuplicate) {
+            throw new IllegalArgumentException("Biến thể sản phẩm đã tồn tại.");
+        }
     }
 
     @Override
@@ -414,7 +438,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private List<ProductAttributeValue> mapAttributesToValues(Product product,
-            List<ProductRequest.ProductAttribute> attributes) {
+                                                              List<ProductRequest.ProductAttribute> attributes) {
         if (attributes == null || attributes.isEmpty()) {
             return new ArrayList<>();
         }
@@ -473,7 +497,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String generateSku(String productName, Long categoryId, Long manufacturerId, Long productId,
-            List<ProductRequest.ProductAttribute> attributes) {
+                               List<ProductRequest.ProductAttribute> attributes) {
         String[] words = productName.split(" ");
         StringBuilder productCodeBuilder = new StringBuilder();
 
