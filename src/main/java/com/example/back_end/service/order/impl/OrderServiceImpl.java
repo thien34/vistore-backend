@@ -53,8 +53,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -193,53 +191,53 @@ public class OrderServiceImpl implements OrderService {
         double total = order.getOrderTotal() != null ? order.getOrderTotal().doubleValue() : 0.0;
 
         return String.format("""
-            <!DOCTYPE html>
-            <html lang="vi">
-            <head>
-              <meta charset="UTF-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <title>Vistore</title>
-              <link href="https://fonts.googleapis.com/css?family=Poppins:ital,wght@0,400;0,600" rel="stylesheet" />
-            </head>
-            <body style="font-family: 'Poppins', Arial, sans-serif; margin: 0; padding: 0;">
-              <table align="center" style="width: 400px; background-color: #ffffff; border-spacing: 0; border-radius: 10px; margin-top: 20px;">
-                <tr>
-                  <td style="padding: 20px; text-align: center; background-color: #ecf1fb; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                    <h2 style="font-size: 24px; font-weight: 600; color: #001942;">Cảm ơn vì đã mua hàng của Vistore</h2>
-                    <img src="https://cloudfilesdm.com/postcards/5b305647c0f5e5a664d2cca777f34bf4.png" alt="Confirmed" style="width: 40px; height: 40px; margin-bottom: 8px;">
-                    <p style="color: #0067ff; font-size: 14px; font-weight: 500;">Chúng tôi mong sản phẩm sẽ làm hài lòng bạn!</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="background-color: #ecf1fb; padding: 20px;">
-                    <p style="font-size: 14px; color: #001942;">Mã đơn hàng: #%s</p>
-                    <table width="400px" style="background-color: #fff; padding: 10px; border-radius: 10px;">
-                      %s
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 20px; background-color: #ffffff; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                    <table width="400px">
-                      <tr>
-                        <td style="font-size: 16px; color: #001942;">Subtotal</td>
-                        <td align="right" style="font-size: 16px; color: #001942;">$%.2f</td>
-                      </tr>
-                      <tr>
-                        <td style="font-size: 16px; color: #001942;">Discount</td>
-                        <td align="right" style="font-size: 16px; color: #001942;">-$%.2f</td>
-                      </tr>
-                      <tr>
-                        <td style="font-size: 16px; font-weight: 600; color: #001942;">Tổng cộng</td>
-                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">$%.2f</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
-        """,
+                            <!DOCTYPE html>
+                            <html lang="vi">
+                            <head>
+                              <meta charset="UTF-8" />
+                              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                              <title>Vistore</title>
+                              <link href="https://fonts.googleapis.com/css?family=Poppins:ital,wght@0,400;0,600" rel="stylesheet" />
+                            </head>
+                            <body style="font-family: 'Poppins', Arial, sans-serif; margin: 0; padding: 0;">
+                              <table align="center" style="width: 400px; background-color: #ffffff; border-spacing: 0; border-radius: 10px; margin-top: 20px;">
+                                <tr>
+                                  <td style="padding: 20px; text-align: center; background-color: #ecf1fb; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                    <h2 style="font-size: 24px; font-weight: 600; color: #001942;">Cảm ơn vì đã mua hàng của Vistore</h2>
+                                    <img src="https://cloudfilesdm.com/postcards/5b305647c0f5e5a664d2cca777f34bf4.png" alt="Confirmed" style="width: 40px; height: 40px; margin-bottom: 8px;">
+                                    <p style="color: #0067ff; font-size: 14px; font-weight: 500;">Chúng tôi mong sản phẩm sẽ làm hài lòng bạn!</p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td style="background-color: #ecf1fb; padding: 20px;">
+                                    <p style="font-size: 14px; color: #001942;">Mã đơn hàng: #%s</p>
+                                    <table width="400px" style="background-color: #fff; padding: 10px; border-radius: 10px;">
+                                      %s
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td style="padding: 20px; background-color: #ffffff; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                                    <table width="400px">
+                                      <tr>
+                                        <td style="font-size: 16px; color: #001942;">Subtotal</td>
+                                        <td align="right" style="font-size: 16px; color: #001942;">$%.2f</td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size: 16px; color: #001942;">Discount</td>
+                                        <td align="right" style="font-size: 16px; color: #001942;">-$%.2f</td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size: 16px; font-weight: 600; color: #001942;">Tổng cộng</td>
+                                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">$%.2f</td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
+                            </body>
+                            </html>
+                        """,
                 order.getId(),
                 orderDetails,
                 subtotal, discount, total);
@@ -299,21 +297,21 @@ public class OrderServiceImpl implements OrderService {
     private void updateOrderStatusHistory(Order order, Integer orderStatusId, LocalDateTime createdDate) {
         Instant instant = createdDate.atZone(ZoneId.systemDefault()).toInstant();
         OrderStatusType statusType = EnumAdaptor.valueOf(orderStatusId, OrderStatusType.class);
-        OrderStatusHistory paidHistory = createOrderStatusHistory(order, statusType, instant, "");
+        OrderStatusHistory paidHistory = createOrderStatusHistory(order, statusType, instant);
         orderStatusHistoryRepository.save(paidHistory);
 
         if (statusType == OrderStatusType.PAID) {
-            OrderStatusHistory completedHistory = createOrderStatusHistory(order, OrderStatusType.COMPLETED, instant, "");
+            OrderStatusHistory completedHistory = createOrderStatusHistory(order, OrderStatusType.COMPLETED, instant);
             orderStatusHistoryRepository.save(completedHistory);
         }
     }
 
     private OrderStatusHistory createOrderStatusHistory(Order order, OrderStatusType statusType, Instant
-            paidDate, String notes) {
+            paidDate) {
         OrderStatusHistory statusHistory = new OrderStatusHistory();
         statusHistory.setPaidDate(paidDate);
         statusHistory.setStatus(statusType);
-        statusHistory.setNotes(notes);
+        statusHistory.setNotes("");
         statusHistory.setOrder(order);
         return statusHistory;
     }
@@ -422,7 +420,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void updateQuantity(Long id, Integer quantity) {
         OrderItem orderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Sản phẩm không được tìm thấy với ID: " + id));
         Integer oldQuantity = orderItem.getQuantity();
         orderItem.setQuantity(quantity);
 
@@ -675,7 +673,6 @@ public class OrderServiceImpl implements OrderService {
 
                         item.setProductName(productName);
                     } catch (Exception e) {
-                        e.printStackTrace();
                         item.setProductName("Unknown");
                     }
 
