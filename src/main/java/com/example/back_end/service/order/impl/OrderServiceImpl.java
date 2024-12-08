@@ -2,6 +2,7 @@ package com.example.back_end.service.order.impl;
 
 import com.example.back_end.core.admin.order.mapper.OrderMapper;
 import com.example.back_end.core.admin.order.payload.CustomerOrderResponse;
+import com.example.back_end.core.admin.order.payload.InvoiceData;
 import com.example.back_end.core.admin.order.payload.OrderCustomerResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
 import com.example.back_end.core.admin.order.payload.OrderItemSummary;
@@ -39,6 +40,8 @@ import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.repository.WardRepository;
 import com.example.back_end.service.order.OrderService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -525,6 +528,71 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
         orderStatusHistoryRepository.save(orderStatusHistory);
+    }
+
+    @Override
+    public InvoiceData getByOrderId(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return null;
+        }
+        InvoiceData invoiceData = new InvoiceData();
+        invoiceData.setInvoiceNumber(order.getBillCode());
+        invoiceData.setDate(order.getPaidDateUtc().toString());
+        invoiceData.setDueDate(order.getPaidDateUtc().toString());
+
+        InvoiceData.Company company = new InvoiceData.Company();
+        company.setName("ViStore");
+        company.setAddress("Km12 Cầu Diễn, Phường Phúc Diễn, Quận Bắc Từ Liêm, Hà Nội");
+        company.setPhone("+84 981 234 567");
+        company.setEmail("vistore@vistore.com");
+        invoiceData.setCompany(company);
+
+        InvoiceData.Client client = new InvoiceData.Client();
+        if (order.getShippingAddress() != null) {
+            client.setName(order.getShippingAddress().getFirstName());
+            client.setAddress(order.getShippingAddress().getAddressName());
+            client.setEmail(order.getShippingAddress().getEmail());
+            client.setPhone(order.getShippingAddress().getPhoneNumber());
+
+            invoiceData.setClient(client);
+        } else {
+            Address address = addressRepository.findByCustomerId(order.getCustomer().getId()).getFirst();
+            client.setName(order.getCustomer().getFirstName() + " " + order.getCustomer().getLastName());
+            client.setAddress(address.getAddressName());
+            client.setEmail(order.getCustomer().getEmail());
+            client.setPhone(address.getPhoneNumber());
+            invoiceData.setClient(client);
+        }
+
+        List<InvoiceData.Item> items = order.getOrderItems().stream()
+                .map(orderItem -> {
+                    InvoiceData.Item item = new InvoiceData.Item();
+
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode productJsonNode = mapper.readTree(orderItem.getProductJson());
+
+                        String productName = productJsonNode.path("fullName").asText();
+
+                        item.setProductName(productName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        item.setProductName("Unknown");
+                    }
+
+                    item.setQuantity(orderItem.getQuantity());
+                    item.setRate(orderItem.getUnitPrice());
+                    item.setAmount(orderItem.getPriceTotal());
+
+                    return item;
+                })
+                .toList();
+        invoiceData.setItems(items);
+        invoiceData.setSubtotal(order.getOrderSubtotal());
+        invoiceData.setDiscount(order.getOrderDiscount());
+        invoiceData.setTotal(order.getOrderTotal());
+        return invoiceData;
     }
 
 

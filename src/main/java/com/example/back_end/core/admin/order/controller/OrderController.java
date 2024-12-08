@@ -1,5 +1,6 @@
 package com.example.back_end.core.admin.order.controller;
 
+import com.example.back_end.core.admin.order.payload.InvoiceData;
 import com.example.back_end.core.admin.order.payload.OrderCustomerResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
 import com.example.back_end.core.admin.order.payload.OrderItemSummary;
@@ -110,6 +111,11 @@ public class OrderController {
     public ResponseData<Void> cancelOrder(@PathVariable Long orderId, @RequestParam String note) {
         orderService.cancelOrder(orderId, note);
         return new ResponseData<>(HttpStatus.OK.value(), "Hủy đơn hàng thành công");
+    }
+
+    @GetMapping("/invoice/{orderId}")
+    public ResponseData<InvoiceData> getInvoice(@PathVariable Long orderId) {
+        return new ResponseData<>(HttpStatus.OK.value(),"Lấy hóa đơn thành công", orderService.getByOrderId(orderId));
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.back_end.service.order;
 
 import com.example.back_end.core.admin.order.payload.CustomerOrderResponse;
+import com.example.back_end.core.admin.order.payload.InvoiceData;
 import com.example.back_end.core.admin.order.payload.OrderCustomerResponse;
 import com.example.back_end.core.admin.order.payload.OrderFilter;
 import com.example.back_end.core.admin.order.payload.OrderItemSummary;
@@ -47,4 +48,6 @@ public interface OrderService {
     List<String> getDiscountByOrderId(Long orderId);
 
     void cancelOrder(Long orderId, String note);
+
+    InvoiceData getByOrderId(Long orderId);
 }
