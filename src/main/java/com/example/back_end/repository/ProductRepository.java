@@ -24,6 +24,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     List<Product> findByParentProductId(Long parentProductId);
 
+    @Query("select p.image from Product p where p.parentProductId = :productId")
+    List<String> findImagesByProductId(Long productId);
+
+    @Query("select sum(p.quantity) from Product p where p.parentProductId = :productId")
+    Long findTotalQuantityByParentProductId(Long productId);
+
     Product findBySlug(String slug);
 
 
