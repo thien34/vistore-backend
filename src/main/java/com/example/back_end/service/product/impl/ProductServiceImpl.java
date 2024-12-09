@@ -128,6 +128,13 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductResponse mapProductToProductResponse(Product product) {
         ProductResponse response = ProductResponse.fromProduct(product);
+        List<String> productImages = productRepository.findImagesByProductId(product.getId());
+        if(!productImages.isEmpty()){
+        String image = productImages.stream()
+                .filter(img ->img != null && !img.isEmpty())
+                .findFirst().orElse("");
+        response.setImageUrl(image);}
+        response.setQuantity(Math.toIntExact(productRepository.findTotalQuantityByParentProductId(product.getId())));
         response.setLargestDiscountPercentage(calculateLargestDiscountPercentage(product));
         return response;
     }
