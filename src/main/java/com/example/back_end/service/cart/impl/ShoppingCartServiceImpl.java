@@ -16,6 +16,7 @@ import com.example.back_end.repository.ProductRepository;
 import com.example.back_end.repository.ShoppingCartItemRepository;
 import com.example.back_end.service.cart.ShoppingCartService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +112,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public void deleteBill(String id) {
 
         List<ShoppingCartItem> cartItems = cartItemRepository.findByParentId(id);
