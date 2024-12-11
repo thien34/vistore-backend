@@ -1,11 +1,11 @@
 spring:
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/store_db
+    url: jdbc:postgresql://localhost:5432/data_test
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:123456}
+    password: ${DB_PASSWORD:1}
 
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME:dccuxj8ll}
-  api-key: ${CLOUDINARY_API_KEY:934946519676845}
-  api-secret: ${CLOUDINARY_API_SECRET:JORMLqc5oK1HzEPqS3toNumm5XI}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:dqowrxzgs}
+  api-key: ${CLOUDINARY_API_KEY:976739115954629}
+  api-secret: ${CLOUDINARY_API_SECRET:PNCF3TlvTFmaaoMIV1B0Z2ZNqYU}
