@@ -1,6 +1,7 @@
 package com.example.back_end.core.admin.product.controller;
 
 import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductFilter;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
@@ -49,9 +50,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseData<List<ProductResponse>> getAllProducts() {
-        List<ProductResponse> responses = productService.getAllProducts();
-
+    public ResponseData<List<ProductResponse>> getAllProducts(ProductFilter filter) {
+        List<ProductResponse> responses = productService.getAllProducts(filter);
         return ResponseData.<List<ProductResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Nhận tất cả các sản phẩm thành công")

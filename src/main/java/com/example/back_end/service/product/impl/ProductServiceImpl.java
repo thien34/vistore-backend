@@ -1,6 +1,7 @@
 package com.example.back_end.service.product.impl;
 
 import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductFilter;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
@@ -117,9 +118,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getAllProducts() {
-        List<Product> products = productRepository.findAll();
-
+    public List<ProductResponse> getAllProducts(ProductFilter filter) {
+        List<Product> products = productRepository.findAll(ProductSpecification.filterBy(filter));
         return products.stream()
                 .filter(x -> x.getParentProductId() == null)
                 .map(this::mapProductToProductResponse)

@@ -1,6 +1,7 @@
 package com.example.back_end.service.product;
 
 import com.example.back_end.core.admin.order.payload.ReStockQuanityProductRequest;
+import com.example.back_end.core.admin.product.payload.request.ProductFilter;
 import com.example.back_end.core.admin.product.payload.request.ProductParentRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequest;
 import com.example.back_end.core.admin.product.payload.request.ProductRequestUpdate;
@@ -14,7 +15,7 @@ public interface ProductService {
 
     void createProduct(List<ProductRequest> requests, MultipartFile[] images);
 
-    List<ProductResponse> getAllProducts();
+    List<ProductResponse> getAllProducts(ProductFilter filter);
 
     ProductResponse getProductById(Long id);
 
