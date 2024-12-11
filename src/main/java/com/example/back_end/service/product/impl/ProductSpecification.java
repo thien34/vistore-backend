@@ -26,10 +26,10 @@ public class ProductSpecification {
                 ));
             }
 
-            if (filter.getCategoryId() != null) {
+            if (filter.getCategoryId() != null && filter.getCategoryId() != -1) {
                 predicates.add(criteriaBuilder.equal(root.get("category").get("id"), filter.getCategoryId()));
             }
-            if (filter.getManufacturerId() != null) {
+            if (filter.getManufacturerId() != null && filter.getManufacturerId() != -1) {
                 predicates.add(criteriaBuilder.equal(root.get("manufacturer").get("id"), filter.getManufacturerId()));
             }
             query.orderBy(criteriaBuilder.desc(root.get("id")));
