@@ -92,6 +92,11 @@ public class OrderServiceImpl implements OrderService {
         if (cartItem != null) {
             cartItemCreateDate = cartItem.getCreatedDate();
         }
+        Order orderCheck = orderRepository.findByOrderGuid(UUID.fromString(request.getOrderGuid()));
+
+        if (orderCheck != null) {
+            throw new NotFoundException("Đơn hàng không tồn tại vui lòng thử lại!!!");
+        }
 
         Order order = OrderRequest.toEntity(request);
         Address address = resolveAddress(request);
@@ -151,14 +156,16 @@ public class OrderServiceImpl implements OrderService {
             orderItemRepository.saveAll(orderItems);
         }
 
-        String emailContent = generateEmailContent(savedOrder);
-        try {
-            orderEmailService.sendOrderConfirmationEmail(
-                    request.getAddressRequest().getEmail(),
-                    emailContent
-            );
-        } catch (MessagingException e) {
-            log.error("Gửi email thất bại cho đơn hàng {}: {}", savedOrder.getId(), e.getMessage());
+        if (request.getCustomerId() != 1) {
+            String emailContent = generateEmailContent(savedOrder);
+            try {
+                orderEmailService.sendOrderConfirmationEmail(
+                        request.getAddressRequest().getEmail(),
+                        emailContent
+                );
+            } catch (MessagingException e) {
+                log.error("Gửi email thất bại cho đơn hàng {}: {}", savedOrder.getId(), e.getMessage());
+            }
         }
     }
 
@@ -652,12 +659,16 @@ public class OrderServiceImpl implements OrderService {
             client.setPhone(order.getShippingAddress().getPhoneNumber());
 
             invoiceData.setClient(client);
-        } else {
+        } else if (order.getCustomer().getId() != 1) {
             Address address = addressRepository.findByCustomerId(order.getCustomer().getId()).getFirst();
             client.setName(order.getCustomer().getFirstName() + " " + order.getCustomer().getLastName());
             client.setAddress(address.getAddressName());
             client.setEmail(order.getCustomer().getEmail());
             client.setPhone(address.getPhoneNumber());
+            invoiceData.setClient(client);
+        } else if (order.getCustomer().getId() == 1) {
+            client.setName("Khách lẻ");
+
             invoiceData.setClient(client);
         }
 

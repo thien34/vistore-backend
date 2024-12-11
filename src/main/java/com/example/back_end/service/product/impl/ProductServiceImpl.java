@@ -239,6 +239,8 @@ public class ProductServiceImpl implements ProductService {
         request.toEntity(product);
         product.setParentProductId(productParent.getId());
         product.setGtin(UUID.randomUUID().toString());
+        product.setCategory(productParent.getCategory());
+        product.setManufacturer(productParent.getManufacturer());
         productRepository.save(product);
     }
 
