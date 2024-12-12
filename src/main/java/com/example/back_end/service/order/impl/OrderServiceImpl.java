@@ -156,7 +156,7 @@ public class OrderServiceImpl implements OrderService {
             orderItemRepository.saveAll(orderItems);
         }
 
-        if (request.getCustomerId() != 1) {
+        if (request.getCustomerId() != 1 && !request.getIdVouchers().isEmpty()) {
             String emailContent = generateEmailContent(savedOrder);
             try {
                 orderEmailService.sendOrderConfirmationEmail(
