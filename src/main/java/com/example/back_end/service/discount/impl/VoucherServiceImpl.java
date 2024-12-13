@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -47,13 +46,52 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VoucherServiceImpl implements VoucherService {
+    private static final Random RANDOM = new Random();
+    private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     DiscountRepository discountRepository;
     VoucherMapper voucherMapper;
     CustomerRepository customerRepository;
     CustomerVoucherRepository customerVoucherRepository;
     EmailService emailService;
-    private static final Random RANDOM = new Random();
-    private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    public static String generateVoucherCode(String prefix, Long id) {
+        StringBuilder randomPart = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            randomPart.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+        }
+        return prefix + id + randomPart;
+    }
+
+    public static void updateStatusVoucher(Discount discount, DiscountRepository discountRepository) {
+        Instant now = Instant.now();
+        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
+            discount.setStatus("CANCEL");
+        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
+            discount.setStatus("EXPIRED");
+        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
+            discount.setStatus("UPCOMING");
+        } else {
+            discount.setStatus("ACTIVE");
+        }
+        discountRepository.save(discount);
+    }
+
+    private static int getCurrentLimitationTimes(VoucherUpdateRequest request, Discount discount, int currentUsageCount) {
+        int currentLimitationTimes = (discount.getLimitationTimes() != null) ? discount.getLimitationTimes() : 0;
+
+        if (request.getMaxUsageCount() < currentUsageCount) {
+            throw new InvalidDataException(
+                    "Không thể giảm số lượng sử dụng tối đa dưới số lượng sử dụng hiện tại (" + currentUsageCount + ")."
+            );
+        }
+
+        if ("ACTIVE".equals(discount.getStatus()) && request.getMaxUsageCount() < currentLimitationTimes) {
+            throw new InvalidDataException(
+                    "Không thể giảm số lượng sử dụng tối đa trong khi voucher đang ACTIVE."
+            );
+        }
+        return currentLimitationTimes;
+    }
 
     @Override
     public List<VoucherResponse> getAllVouchers(DiscountFilterRequest filterRequest) {
@@ -70,8 +108,10 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherMapper.toResponseList(discounts);
     }
 
-    public Optional<Discount> getDefaultBirthdayDiscount() {
-        return discountRepository.findByName("Birthday Default Discount");
+    @Override
+    public Discount getDefaultBirthdayDiscount() {
+        Optional<Discount> discount = discountRepository.findByName("Birthday Default Discount");
+        return discount.orElseThrow(() -> new NotFoundException("Không tìm thấy giảm giá sinh nhật mặc định."));
     }
 
     @PostConstruct
@@ -92,31 +132,8 @@ public class VoucherServiceImpl implements VoucherService {
         }
     }
 
-
-    public static String generateVoucherCode(String prefix, Long id) {
-        StringBuilder randomPart = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            randomPart.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
-        }
-        return prefix + id + randomPart;
-    }
-
     public void updateVoucherStatus(Discount discount) {
         updateStatusVoucher(discount, discountRepository);
-    }
-
-    public static void updateStatusVoucher(Discount discount, DiscountRepository discountRepository) {
-        Instant now = Instant.now();
-        if (discount.getIsCanceled() != null && discount.getIsCanceled()) {
-            discount.setStatus("CANCEL");
-        } else if (discount.getEndDateUtc() != null && now.isAfter(discount.getEndDateUtc())) {
-            discount.setStatus("EXPIRED");
-        } else if (discount.getStartDateUtc() != null && now.isBefore(discount.getStartDateUtc())) {
-            discount.setStatus("UPCOMING");
-        } else {
-            discount.setStatus("ACTIVE");
-        }
-        discountRepository.save(discount);
     }
 
     @Override
@@ -153,7 +170,6 @@ public class VoucherServiceImpl implements VoucherService {
             }
         }
     }
-
 
     private void sendVoucherEmailsToCustomers(List<Long> customerIds, String voucherCode, String discountDetails, Instant startDate, Instant endDate, BigDecimal discountPercentage, BigDecimal discountAmount) {
         if (voucherCode == null || voucherCode.trim().isEmpty()) {
@@ -241,13 +257,6 @@ public class VoucherServiceImpl implements VoucherService {
                     customers.size(),
                     discountAmount);
         }
-    }
-
-
-    public BigDecimal getBirthdayDiscountPercentage() {
-        return discountRepository.findByName("Birthday Default Discount")
-                .map(Discount::getDiscountPercentage)
-                .orElse(BigDecimal.TEN);
     }
 
     @Transactional
@@ -386,25 +395,9 @@ public class VoucherServiceImpl implements VoucherService {
         log.info("Voucher cập nhật với ID: {}", voucherId);
     }
 
-    private static int getCurrentLimitationTimes(VoucherUpdateRequest request, Discount discount, int currentUsageCount) {
-        int currentLimitationTimes = (discount.getLimitationTimes() != null) ? discount.getLimitationTimes() : 0;
-
-        if (request.getMaxUsageCount() < currentUsageCount) {
-            throw new InvalidDataException(
-                    "Không thể giảm số lượng sử dụng tối đa dưới số lượng sử dụng hiện tại (" + currentUsageCount + ")."
-            );
-        }
-
-        if ("ACTIVE".equals(discount.getStatus()) && request.getMaxUsageCount() < currentLimitationTimes) {
-            throw new InvalidDataException(
-                    "Không thể giảm số lượng sử dụng tối đa trong khi voucher đang ACTIVE."
-            );
-        }
-        return currentLimitationTimes;
-    }
-
     @Transactional
     public void updateDefaultBirthdayDiscount(VoucherBirthdayUpdateRequest request) {
+
         Discount defaultDiscount = discountRepository.findByName("Birthday Default Discount")
                 .orElseThrow(() -> new NotFoundException("Giảm giá mặc định sinh nhật không tồn tại."));
 
@@ -451,9 +444,6 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         discountRepository.save(defaultDiscount);
-
-        log.info("Cập nhật giảm giá sinh nhật mặc định thành công với giảm giá {}",
-                defaultDiscount.getUsePercentage() ? defaultDiscount.getDiscountPercentage() + "%" : defaultDiscount.getDiscountAmount() + " VNĐ");
     }
 
 
@@ -479,7 +469,6 @@ public class VoucherServiceImpl implements VoucherService {
 
         return response;
     }
-
 
     private Discount findDiscountById(Long id) {
         return discountRepository.findById(id)
