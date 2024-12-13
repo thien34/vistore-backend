@@ -4,12 +4,15 @@ import com.example.back_end.infrastructure.constant.DiscountLimitationType;
 import com.example.back_end.infrastructure.constant.DiscountType;
 import com.example.back_end.infrastructure.utils.DiscountLimitationTypeConverter;
 import com.example.back_end.infrastructure.utils.DiscountTypeConverter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +22,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -98,4 +102,7 @@ public class Discount extends Auditable {
     @Column(name = "per_customer_limit")
     private Integer perCustomerLimit;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.REMOVE)
+    private List<DiscountAppliedToProduct> appliedToProducts;
 }

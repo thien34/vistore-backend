@@ -122,7 +122,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAll().stream()
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
+                .toList();
 
         return products.stream()
                 .filter(x -> x.getParentProductId() == null)
@@ -145,7 +147,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
-        List<Product> products = productRepository.findByParentProductIds(parentIds);
+        List<Product> products = productRepository.findByParentProductIds(parentIds)
+                .stream()
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
+                .toList();
 
         return products.stream()
                 .map(product -> {
@@ -311,6 +316,7 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll().stream()
                 .filter(product -> product.getParentProductId() != null
                         && product.getParentProductId().equals(parentId))
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
                 .toList();
         return products.stream().map(product -> ProductResponse.fromProductParentId(product, List.of())).toList();
     }
@@ -386,7 +392,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProductDetails() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAll().stream()
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
+                .toList();;
 
         return products.stream()
                 .sorted(Comparator.comparing(Product::getCreatedDate).reversed())
