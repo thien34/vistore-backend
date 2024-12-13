@@ -374,17 +374,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void checkDuplicateAtb(ProductRequestUpdate request, List<Product> products) {
-        boolean isDuplicate = products.stream().anyMatch(productCheck -> {
-            if (productCheck.getProductAttributeValues().size() != request.getAttributes().size()) {
-                return false;
-            }
-            return productCheck.getProductAttributeValues().stream().allMatch(attributeValue ->
-                    request.getAttributes().stream().anyMatch(requestAttribute ->
-                            requestAttribute.getAttributeId().equals(attributeValue.getProductAttribute().getId())
-                                    && requestAttribute.getValue().equals(attributeValue.getValue())
-                    )
-            );
-        });
+        boolean isDuplicate = products.stream()
+                .filter(productCheck -> !productCheck.getId().equals(request.getId()))
+                .anyMatch(productCheck -> {
+                    if (productCheck.getProductAttributeValues().size() != request.getAttributes().size()) {
+                        return false;
+                    }
+                    return productCheck.getProductAttributeValues().stream().allMatch(attributeValue ->
+                            request.getAttributes().stream().anyMatch(requestAttribute ->
+                                    requestAttribute.getAttributeId().equals(attributeValue.getProductAttribute().getId())
+                                            && requestAttribute.getValue().equals(attributeValue.getValue())
+                            )
+                    );
+                });
+
         if (isDuplicate) {
             throw new IllegalArgumentException("Biến thể sản phẩm đã tồn tại.");
         }

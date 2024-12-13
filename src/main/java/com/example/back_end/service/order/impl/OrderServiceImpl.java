@@ -155,12 +155,14 @@ public class OrderServiceImpl implements OrderService {
             savedOrder.setOrderItems(orderItems);
             orderItemRepository.saveAll(orderItems);
         }
+        Customer customer = customerRepository.findById(request.getCustomerId()).orElse(null);
 
-        if (request.getCustomerId() != 1 && !request.getIdVouchers().isEmpty()) {
+        if (request.getCustomerId() != 1 && !request.getIdVouchers().isEmpty() && customer != null) {
             String emailContent = generateEmailContent(savedOrder);
             try {
+
                 orderEmailService.sendOrderConfirmationEmail(
-                        request.getAddressRequest().getEmail(),
+                        customer.getEmail(),
                         emailContent
                 );
             } catch (MessagingException e) {
