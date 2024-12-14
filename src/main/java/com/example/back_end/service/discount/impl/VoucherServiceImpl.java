@@ -142,6 +142,10 @@ public class VoucherServiceImpl implements VoucherService {
         checkDuplicateCouponCode(voucherRequest.getCouponCode(), voucherRequest.getIsPublished());
         Discount discount = voucherMapper.toEntity(voucherRequest);
         validateDiscount(discount);
+        boolean checkCode= discountRepository.existsByCouponCode(voucherRequest.getCouponCode());
+        if(checkCode) {
+            throw new InvalidDataException("Mã code đã tồn tại !");
+        }
 
         if (discount.getStartDateUtc() == null)
             discount.setStartDateUtc(Instant.now());
