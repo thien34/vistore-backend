@@ -343,9 +343,9 @@ public class OrderServiceImpl implements OrderService {
         Product product = findProductById(request.getProductId());
 
         int newQuantity = product.getQuantity() - request.getQuantity();
-        if (newQuantity < 0) {
-            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
-        }
+//        if (newQuantity < 0) {
+//            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
+//        }
         product.setQuantity(newQuantity);
         productRepository.save(product);
 
@@ -448,7 +448,7 @@ public class OrderServiceImpl implements OrderService {
         }
         product = productRepository.save(product);
 
-        if (orderItem.getQuantity() >= product.getQuantity()) {
+        if (orderItem.getQuantity() > product.getQuantity()) {
             throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getName() + ". Số lượng có sẵn: " + product.getQuantity());
         }
 
