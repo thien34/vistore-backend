@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InvoiceData {
+    private String orderCode;
     private String invoiceNumber;
     private String date;
     private String dueDate;

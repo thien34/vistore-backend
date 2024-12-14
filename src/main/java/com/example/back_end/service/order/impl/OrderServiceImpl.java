@@ -645,6 +645,7 @@ public class OrderServiceImpl implements OrderService {
         invoiceData.setInvoiceNumber(order.getBillCode());
         invoiceData.setDate(order.getPaidDateUtc().toString());
         invoiceData.setDueDate(order.getPaidDateUtc().toString());
+        invoiceData.setOrderCode(order.getOrderGuid().toString());
 
         InvoiceData.Company company = new InvoiceData.Company();
         company.setName("ViStore");
