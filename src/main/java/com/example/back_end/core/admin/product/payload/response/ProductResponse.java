@@ -32,8 +32,9 @@ public class ProductResponse {
     private String gtin;
     private String categoryName;
     private String manufacturerName;
+    private String fullDescription;
 
-    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName, BigDecimal weight) {
+    public ProductResponse(Long id, String name, Boolean deleted, Long categoryId, Long manufacturerId, String categoryName, String manufacturerName, BigDecimal weight, String fullDescription) {
         this.id = id;
         this.name = name;
         this.deleted = deleted;
@@ -42,6 +43,7 @@ public class ProductResponse {
         this.categoryName = categoryName;
         this.manufacturerName = manufacturerName;
         this.weight = weight;
+        this.fullDescription = fullDescription;
     }
 
     public ProductResponse(Long id, String fullName, Boolean deleted, Long aLong, Long aLong1, String sku, BigDecimal unitPrice, Integer quantity, BigDecimal productCost, List<ProductAttribute> attributes, String image, String gtin, BigDecimal discountPrice, String categoryName, String manufacturerName) {
@@ -110,7 +112,8 @@ public class ProductResponse {
                 product.getManufacturer() != null ? product.getManufacturer().getId() : null,
                 product.getCategory() != null ? product.getCategory().getName() : null,
                 product.getManufacturer() != null ? product.getManufacturer().getName() : null,
-                product.getWeight()
+                product.getWeight(),
+                product.getFullDescription()
         );
     }
 

@@ -32,6 +32,30 @@ public class ProductClientController {
                 .build();
     }
 
+    @GetMapping("/best-selling")
+    public ResponseData<List<ProductResponse>> getRootProductsBestSelling() {
+
+        List<ProductResponse> response = productClientService.getRootProductsBestSelling();
+
+        return ResponseData.<List<ProductResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Nhận các danh mục gốc theo thành công của sên danh mục")
+                .data(response)
+                .build();
+    }
+
+    @GetMapping("/product-discount")
+    public ResponseData<List<ProductResponse>> getRootProductsProductDiscount() {
+
+        List<ProductResponse> response = productClientService.getRootProductsDiscount();
+
+        return ResponseData.<List<ProductResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Nhận các danh mục gốc theo thành công của sên danh mục")
+                .data(response)
+                .build();
+    }
+
     @GetMapping("/{categorySlug}")
     public ResponseData<List<ProductResponse>> getRootProductsByCategorySlug(@PathVariable String categorySlug) {
 

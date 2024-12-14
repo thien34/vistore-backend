@@ -92,6 +92,11 @@ public class OrderServiceImpl implements OrderService {
         if (cartItem != null) {
             cartItemCreateDate = cartItem.getCreatedDate();
         }
+        Order orderCheck = orderRepository.findByOrderGuid(UUID.fromString(request.getOrderGuid()));
+
+        if (orderCheck != null) {
+            throw new NotFoundException("Đơn hàng không tồn tại vui lòng thử lại!!!");
+        }
 
         Order order = OrderRequest.toEntity(request);
         Address address = resolveAddress(request);
@@ -104,6 +109,10 @@ public class OrderServiceImpl implements OrderService {
             List<Discount> discounts = discountRepository.findAllById(voucherIds);
 
             for (Discount discount : discounts) {
+                if (discount.getEndDateUtc() != null && discount.getEndDateUtc().isBefore(Instant.now())) {
+                    throw new IllegalArgumentException("Voucher đã hết hạn sử dụng: " + discount.getCouponCode());
+                }
+
                 if (discount.getUsageCount() != null && discount.getUsageCount() > 0) {
                     discount.setUsageCount(discount.getUsageCount() - 1);
                 } else {
@@ -150,15 +159,19 @@ public class OrderServiceImpl implements OrderService {
             savedOrder.setOrderItems(orderItems);
             orderItemRepository.saveAll(orderItems);
         }
+        Customer customer = customerRepository.findById(request.getCustomerId()).orElse(null);
 
-        String emailContent = generateEmailContent(savedOrder);
-        try {
-            orderEmailService.sendOrderConfirmationEmail(
-                    request.getAddressRequest().getEmail(),
-                    emailContent
-            );
-        } catch (MessagingException e) {
-            log.error("Gửi email thất bại cho đơn hàng {}: {}", savedOrder.getId(), e.getMessage());
+        if (request.getCustomerId() != 1 && !request.getIdVouchers().isEmpty() && customer != null) {
+            String emailContent = generateEmailContent(savedOrder);
+            try {
+
+                orderEmailService.sendOrderConfirmationEmail(
+                        customer.getEmail(),
+                        emailContent
+                );
+            } catch (MessagingException e) {
+                log.error("Gửi email thất bại cho đơn hàng {}: {}", savedOrder.getId(), e.getMessage());
+            }
         }
     }
 
@@ -219,18 +232,19 @@ public class OrderServiceImpl implements OrderService {
                                 <tr>
                                   <td style="padding: 20px; background-color: #ffffff; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                                     <table width="400px">
-                                      <tr>
-                                        <td style="font-size: 16px; color: #001942;">Subtotal</td>
-                                        <td align="right" style="font-size: 16px; color: #001942;">$%.2f</td>
-                                      </tr>
-                                      <tr>
-                                        <td style="font-size: 16px; color: #001942;">Discount</td>
-                                        <td align="right" style="font-size: 16px; color: #001942;">-$%.2f</td>
-                                      </tr>
-                                      <tr>
+                                    <tr>
+                                        <td style="font-size: 16px; color: #001942;">Tổng Tiền</td>
+                                        <td align="right" style="font-size: 16px; color: #001942;">%.2f₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 16px; color: #001942;">Giảm giá</td>
+                                        <td align="right" style="font-size: 16px; color: #001942;">-%.2f₫</td>
+                                    </tr>
+                                    <tr>
                                         <td style="font-size: 16px; font-weight: 600; color: #001942;">Tổng cộng</td>
-                                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">$%.2f</td>
-                                      </tr>
+                                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">%.2f₫</td>
+                                    </tr>
+                        
                                     </table>
                                   </td>
                                 </tr>
@@ -329,9 +343,9 @@ public class OrderServiceImpl implements OrderService {
         Product product = findProductById(request.getProductId());
 
         int newQuantity = product.getQuantity() - request.getQuantity();
-        if (newQuantity < 0) {
-            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
-        }
+//        if (newQuantity < 0) {
+//            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
+//        }
         product.setQuantity(newQuantity);
         productRepository.save(product);
 
@@ -636,6 +650,7 @@ public class OrderServiceImpl implements OrderService {
         invoiceData.setInvoiceNumber(order.getBillCode());
         invoiceData.setDate(order.getPaidDateUtc().toString());
         invoiceData.setDueDate(order.getPaidDateUtc().toString());
+        invoiceData.setOrderCode(order.getOrderGuid().toString());
 
         InvoiceData.Company company = new InvoiceData.Company();
         company.setName("ViStore");
@@ -652,12 +667,16 @@ public class OrderServiceImpl implements OrderService {
             client.setPhone(order.getShippingAddress().getPhoneNumber());
 
             invoiceData.setClient(client);
-        } else {
+        } else if (order.getCustomer().getId() != 1) {
             Address address = addressRepository.findByCustomerId(order.getCustomer().getId()).getFirst();
             client.setName(order.getCustomer().getFirstName() + " " + order.getCustomer().getLastName());
             client.setAddress(address.getAddressName());
             client.setEmail(order.getCustomer().getEmail());
             client.setPhone(address.getPhoneNumber());
+            invoiceData.setClient(client);
+        } else if (order.getCustomer().getId() == 1) {
+            client.setName("Khách lẻ");
+
             invoiceData.setClient(client);
         }
 

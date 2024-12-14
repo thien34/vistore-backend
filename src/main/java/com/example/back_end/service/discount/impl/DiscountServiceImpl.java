@@ -201,7 +201,8 @@ public class DiscountServiceImpl implements DiscountService {
             BigDecimal discountPrice = product.getUnitPrice().subtract(discountAmount);
             product.setDiscountPrice(discountPrice);
         }
-        productRepository.save(product);
+        product = productRepository.save(product);
+        log.info(product.getDiscountPrice().toString());
     }
 
     private void updateDiscountStatus(Discount discount) {

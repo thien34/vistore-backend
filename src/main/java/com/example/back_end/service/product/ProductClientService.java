@@ -9,6 +9,10 @@ public interface ProductClientService {
 
     List<ProductResponse> getRootProducts();
 
+    List<ProductResponse> getRootProductsBestSelling();
+
+    List<ProductResponse> getRootProductsDiscount();
+
     List<ProductResponse> getRootProductsByCategorySlug(String categorySlug);
 
     ProductDetailResponse getProductBySlug(String productSlug);

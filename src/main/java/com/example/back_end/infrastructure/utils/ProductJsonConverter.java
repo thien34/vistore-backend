@@ -34,7 +34,8 @@ public class ProductJsonConverter {
                 }
                 field.setAccessible(true);
 
-                if ("product".equals(field.getName())) {
+               
+                if ("product".equals(field.getName()) || "fullDescription".equals(field.getName())) {
                     continue;
                 }
 

@@ -1,11 +1,13 @@
 package com.example.back_end.repository;
 
+import com.example.back_end.entity.Discount;
 import com.example.back_end.entity.DiscountAppliedToProduct;
 import com.example.back_end.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface DiscountAppliedToProductRepository extends JpaRepository<DiscountAppliedToProduct, Long> {
@@ -20,4 +22,8 @@ public interface DiscountAppliedToProductRepository extends JpaRepository<Discou
     List<DiscountAppliedToProduct> findByProduct(Product product);
 
     List<DiscountAppliedToProduct> findByProductId(Long productId);
+
+    List<DiscountAppliedToProduct> findByDiscount(Discount discount);
+
+    List<DiscountAppliedToProduct> findByDiscountIdIn(List<Long> discountIds);
 }

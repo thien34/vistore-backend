@@ -17,8 +17,10 @@ import com.example.back_end.infrastructure.constant.CloudinaryTypeFolder;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.CollectionUtil;
 import com.example.back_end.infrastructure.utils.StringUtils;
+import com.example.back_end.repository.CategoryRepository;
 import com.example.back_end.repository.DiscountAppliedToProductRepository;
 import com.example.back_end.repository.DiscountRepository;
+import com.example.back_end.repository.ManufacturerRepository;
 import com.example.back_end.repository.ProductAttributeRepository;
 import com.example.back_end.repository.ProductAttributeValueRepository;
 import com.example.back_end.repository.ProductRepository;
@@ -58,6 +60,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductAttributeRepository productAttributeRepository;
     private final CloudinaryUpload cloudinaryUpload;
     private final DiscountRepository discountRepository;
+    private final CategoryRepository categoryRepository;
+    private final ManufacturerRepository manufacturerRepository;
 
     public static void discountStatus(Discount discount, DiscountRepository discountRepository) {
         VoucherServiceImpl.updateStatusVoucher(discount, discountRepository);
@@ -118,7 +122,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAll().stream()
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
+                .toList();
 
         return products.stream()
                 .filter(x -> x.getParentProductId() == null)
@@ -128,13 +134,23 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductResponse mapProductToProductResponse(Product product) {
         ProductResponse response = ProductResponse.fromProduct(product);
+        List<String> productImages = productRepository.findImagesByProductId(product.getId());
+        if(!productImages.isEmpty()){
+        String image = productImages.stream()
+                .filter(img ->img != null && !img.isEmpty())
+                .findFirst().orElse("");
+        response.setImageUrl(image);}
+        response.setQuantity(Math.toIntExact(productRepository.findTotalQuantityByParentProductId(product.getId())));
         response.setLargestDiscountPercentage(calculateLargestDiscountPercentage(product));
         return response;
     }
 
     @Override
     public List<ProductResponse> getAllProductsByParentIds(List<Long> parentIds) {
-        List<Product> products = productRepository.findByParentProductIds(parentIds);
+        List<Product> products = productRepository.findByParentProductIds(parentIds)
+                .stream()
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
+                .toList();
 
         return products.stream()
                 .map(product -> {
@@ -232,6 +248,8 @@ public class ProductServiceImpl implements ProductService {
         request.toEntity(product);
         product.setParentProductId(productParent.getId());
         product.setGtin(UUID.randomUUID().toString());
+        product.setCategory(productParent.getCategory());
+        product.setManufacturer(productParent.getManufacturer());
         productRepository.save(product);
     }
 
@@ -298,6 +316,7 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll().stream()
                 .filter(product -> product.getParentProductId() != null
                         && product.getParentProductId().equals(parentId))
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
                 .toList();
         return products.stream().map(product -> ProductResponse.fromProductParentId(product, List.of())).toList();
     }
@@ -355,17 +374,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void checkDuplicateAtb(ProductRequestUpdate request, List<Product> products) {
-        boolean isDuplicate = products.stream().anyMatch(productCheck -> {
-            if (productCheck.getProductAttributeValues().size() != request.getAttributes().size()) {
-                return false;
-            }
-            return productCheck.getProductAttributeValues().stream().allMatch(attributeValue ->
-                    request.getAttributes().stream().anyMatch(requestAttribute ->
-                            requestAttribute.getAttributeId().equals(attributeValue.getProductAttribute().getId())
-                                    && requestAttribute.getValue().equals(attributeValue.getValue())
-                    )
-            );
-        });
+        boolean isDuplicate = products.stream()
+                .filter(productCheck -> !productCheck.getId().equals(request.getId()))
+                .anyMatch(productCheck -> {
+                    if (productCheck.getProductAttributeValues().size() != request.getAttributes().size()) {
+                        return false;
+                    }
+                    return productCheck.getProductAttributeValues().stream().allMatch(attributeValue ->
+                            request.getAttributes().stream().anyMatch(requestAttribute ->
+                                    requestAttribute.getAttributeId().equals(attributeValue.getProductAttribute().getId())
+                                            && requestAttribute.getValue().equals(attributeValue.getValue())
+                            )
+                    );
+                });
+
         if (isDuplicate) {
             throw new IllegalArgumentException("Biến thể sản phẩm đã tồn tại.");
         }
@@ -373,7 +395,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProductDetails() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAll().stream()
+                .sorted(Comparator.comparing(Product::getLastModifiedDate).reversed())
+                .toList();;
 
         return products.stream()
                 .sorted(Comparator.comparing(Product::getCreatedDate).reversed())
@@ -490,25 +514,55 @@ public class ProductServiceImpl implements ProductService {
                                List<ProductRequest.ProductAttribute> attributes) {
         String[] words = productName.split(" ");
         StringBuilder productCodeBuilder = new StringBuilder();
-
         for (String word : words) {
             if (!word.isEmpty())
                 productCodeBuilder.append(word.charAt(0));
         }
+
         List<String> skuParts = new ArrayList<>();
         skuParts.add(productCodeBuilder.toString().toUpperCase());
-        if (categoryId != null)
-            skuParts.add(String.valueOf(categoryId));
-        if (manufacturerId != null)
-            skuParts.add(String.valueOf(manufacturerId));
-        if (productId != null)
-            skuParts.add(String.valueOf(productId));
-        for (ProductRequest.ProductAttribute attribute : attributes) {
-            if (attribute.getValue() != null)
-                skuParts.add(attribute.getValue());
+
+        Category category = categoryRepository.findById(categoryId).orElse(null);
+        if (category != null && category.getName() != null) {
+            StringBuilder categoryCode = new StringBuilder();
+            for (String word : category.getName().split(" ")) {
+                if (!word.isEmpty())
+                    categoryCode.append(word.charAt(0));
+            }
+            skuParts.add(categoryCode.toString().toUpperCase());
         }
-        return String.join("-", skuParts);
+
+        Manufacturer manufacturer = manufacturerRepository.findById(manufacturerId).orElse(null);
+        if (manufacturer != null && manufacturer.getName() != null) {
+            StringBuilder manufacturerCode = new StringBuilder();
+            for (String word : manufacturer.getName().split(" ")) {
+                if (!word.isEmpty())
+                    manufacturerCode.append(word.charAt(0));
+            }
+            skuParts.add(manufacturerCode.toString().toUpperCase());
+        }
+
+        if (productId != null) {
+            skuParts.add(String.valueOf(productId));
+        }
+
+        for (ProductRequest.ProductAttribute attribute : attributes) {
+            if (attribute.getValue() != null && !attribute.getValue().isEmpty()) {
+                String[] attributeWords = attribute.getValue().split(" ");
+                StringBuilder attributeCode = new StringBuilder();
+                for (String word : attributeWords) {
+                    if (!word.isEmpty())
+                        attributeCode.append(word.charAt(0));
+                }
+                skuParts.add(attributeCode.toString().toUpperCase());
+            }
+        }
+
+        return String.join("", skuParts);
     }
+
+
+
 
     private boolean checkIfSkuExists(String sku) {
         return productRepository.existsBySku(sku);
