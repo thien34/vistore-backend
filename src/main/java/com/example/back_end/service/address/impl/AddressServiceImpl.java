@@ -25,6 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,25 +73,54 @@ public class AddressServiceImpl implements AddressService {
                 .flatMap(customerRepository::findById)
                 .orElse(null);
 
+        if (customer == null) {
+            return PageResponse1.<List<AddressesResponse>>builder()
+                    .totalItems(0L)
+                    .totalPages(0)
+                    .items(Collections.emptyList())
+                    .build();
+        }
+
         Specification<Address> spec = AddressSpecification.hasCustomerId(customer);
 
         Page<Address> addressPage = addressRepository.findAll(spec, pageable);
-        List<AddressesResponse> addressResponses = addressPage.getContent().stream()
+
+        List<AddressesResponse> addressResponsesList = addressPage.getContent().stream()
                 .map(address -> {
                     AddressesResponse response = addressMapper.toResponses(address);
-                    String addressDetail = address.getProvince().getName() + " " +
-                            address.getDistrict().getName() + " " +
-                            address.getWard().getName() + " " +
-                            address.getAddressName();
-                    response.setAddressDetail(addressDetail);
+                    if (address.getProvince() != null && address.getDistrict() != null && address.getWard() != null) {
+                        String addressDetail = address.getProvince().getName() + " " +
+                                address.getDistrict().getName() + " " +
+                                address.getWard().getName() + " " +
+                                address.getAddressName();
+                        response.setAddressDetail(addressDetail);
+                        return response;
+                    }
                     return response;
                 })
                 .toList();
 
+        if (addressResponsesList.isEmpty()) {
+            AddressesResponse addressesResponse = AddressesResponse
+                    .builder()
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .build();
+            Address address = Address.builder()
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .email(customer.getEmail())
+                    .customer(customer)
+                    .build();
+            address = addressRepository.save(address);
+            addressesResponse.setId(address.getId());
+            addressResponsesList = List.of(addressesResponse);
+        }
+
         return PageResponse1.<List<AddressesResponse>>builder()
                 .totalItems(addressPage.getTotalElements())
                 .totalPages(addressPage.getTotalPages())
-                .items(addressResponses)
+                .items(addressResponsesList)
                 .build();
     }
 
