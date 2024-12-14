@@ -232,18 +232,19 @@ public class OrderServiceImpl implements OrderService {
                                 <tr>
                                   <td style="padding: 20px; background-color: #ffffff; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                                     <table width="400px">
-                                      <tr>
-                                        <td style="font-size: 16px; color: #001942;">Subtotal</td>
-                                        <td align="right" style="font-size: 16px; color: #001942;">$%.2f</td>
-                                      </tr>
-                                      <tr>
-                                        <td style="font-size: 16px; color: #001942;">Discount</td>
-                                        <td align="right" style="font-size: 16px; color: #001942;">-$%.2f</td>
-                                      </tr>
-                                      <tr>
+                                    <tr>
+                                        <td style="font-size: 16px; color: #001942;">Tổng Tiền</td>
+                                        <td align="right" style="font-size: 16px; color: #001942;">%.2f₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 16px; color: #001942;">Giảm giá</td>
+                                        <td align="right" style="font-size: 16px; color: #001942;">-%.2f₫</td>
+                                    </tr>
+                                    <tr>
                                         <td style="font-size: 16px; font-weight: 600; color: #001942;">Tổng cộng</td>
-                                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">$%.2f</td>
-                                      </tr>
+                                        <td align="right" style="font-size: 16px; font-weight: 600; color: #001942;">%.2f₫</td>
+                                    </tr>
+                        
                                     </table>
                                   </td>
                                 </tr>
