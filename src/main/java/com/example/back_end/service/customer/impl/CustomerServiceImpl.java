@@ -76,11 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = customerMapper.toEntity(request);
         customer.setCustomerGuid(UUID.randomUUID());
-        if(request.getActive()) {
-            customer.setActive(true);
-        }else {
-            customer.setActive(false);
-        }
+        customer.setActive(request.getActive() != null);
         customer.setDeleted(false);
 
         Customer customerSaved = customerRepository.save(customer);

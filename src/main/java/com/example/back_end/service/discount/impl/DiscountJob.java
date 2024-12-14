@@ -26,9 +26,13 @@ public class DiscountJob {
     public void checkAndUpdateExpiredDiscounts() {
         Instant now = Instant.now();
         List<Discount> expiredDiscounts = discountRepository.findAll()
-                .stream()
-                .filter(discount -> discount.getEndDateUtc() != null && discount.getEndDateUtc().isBefore(now))
+                .parallelStream()
+                .filter(discount -> discount.getEndDateUtc() != null)
+                .filter(discount -> discount.getDiscountTypeId().getId() == 1)
+                .filter(discount -> discount.getEndDateUtc().isBefore(now))
+                .filter(discount -> "ACTIVE".equals(discount.getStatus()))
                 .toList();
+
 
         for (Discount discount : expiredDiscounts) {
             updateDiscountForProducts(discount);

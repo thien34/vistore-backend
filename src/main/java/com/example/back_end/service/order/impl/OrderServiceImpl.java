@@ -109,6 +109,10 @@ public class OrderServiceImpl implements OrderService {
             List<Discount> discounts = discountRepository.findAllById(voucherIds);
 
             for (Discount discount : discounts) {
+                if (discount.getEndDateUtc() != null && discount.getEndDateUtc().isBefore(Instant.now())) {
+                    throw new IllegalArgumentException("Voucher đã hết hạn sử dụng: " + discount.getCouponCode());
+                }
+
                 if (discount.getUsageCount() != null && discount.getUsageCount() > 0) {
                     discount.setUsageCount(discount.getUsageCount() - 1);
                 } else {
