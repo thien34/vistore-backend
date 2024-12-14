@@ -53,6 +53,67 @@ public class ProductClientServiceImpl implements ProductClientService {
     }
 
     @Override
+    public List<ProductResponse> getRootProductsBestSelling() {
+        List<Product> products = productRepository.findByParentProductIdIsNull();
+
+        List<ProductResponse> responseList = new ArrayList<>(products.stream().map(productClientMapper::toDto).toList());
+
+        responseList.forEach(product -> {
+            List<Product> childProducts = productRepository.findByParentProductId(product.getId());
+            if (!childProducts.isEmpty()) {
+                Product cheapestProduct = childProducts.stream().min(Comparator.comparing(Product::getUnitPrice)).orElse(null);
+                product.setUnitPrice(cheapestProduct.getUnitPrice());
+                product.setDiscountPrice(cheapestProduct.getDiscountPrice() != null ? cheapestProduct.getDiscountPrice() : BigDecimal.valueOf(0));
+                product.setImage(cheapestProduct.getImage());
+            }
+            Integer sold = orderItemRepository.sumQuantityByParentProductIdAndOrderStatus(product.getId(), OrderStatusType.COMPLETED);
+            product.setSold(sold != null ? sold : 0);
+        });
+
+        responseList.sort(Comparator.comparing(ProductResponse::getSold).reversed());
+        return responseList;
+    }
+
+    @Override
+    public List<ProductResponse> getRootProductsDiscount() {
+        List<Product> products = productRepository.findByParentProductIdIsNull();
+
+        List<ProductResponse> responseList = new ArrayList<>(products.stream()
+                .map(productClientMapper::toDto)
+                .filter(product -> {
+                    List<Product> childProducts = productRepository.findByParentProductId(product.getId());
+                    if (childProducts.isEmpty()) {
+                        return product.getDiscountPrice() != null && product.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0;
+                    }
+                    return childProducts.stream()
+                            .anyMatch(child -> child.getDiscountPrice() != null && child.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0);
+                })
+                .toList());
+
+        responseList.forEach(product -> {
+            List<Product> childProducts = productRepository.findByParentProductId(product.getId());
+            if (!childProducts.isEmpty()) {
+                Product cheapestDiscountedProduct = childProducts.stream()
+                        .filter(p -> p.getDiscountPrice() != null && p.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0)
+                        .min(Comparator.comparing(Product::getUnitPrice))
+                        .orElse(null);
+
+                if (cheapestDiscountedProduct != null) {
+                    product.setUnitPrice(cheapestDiscountedProduct.getUnitPrice());
+                    product.setDiscountPrice(cheapestDiscountedProduct.getDiscountPrice());
+                    product.setImage(cheapestDiscountedProduct.getImage());
+                }
+            }
+
+            Integer sold = orderItemRepository.sumQuantityByParentProductIdAndOrderStatus(product.getId(), OrderStatusType.COMPLETED);
+            product.setSold(sold != null ? sold : 0);
+        });
+
+        responseList.sort(Comparator.comparing(ProductResponse::getDiscountPrice).reversed());
+        return responseList;
+    }
+
+    @Override
     public List<ProductResponse> getRootProductsByCategorySlug(String categorySlug) {
 
         Category category = categoryRepository.findBySlug(categorySlug);
