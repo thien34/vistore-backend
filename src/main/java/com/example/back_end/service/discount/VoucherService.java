@@ -11,7 +11,6 @@ import com.example.back_end.entity.Discount;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface VoucherService {
 
@@ -19,12 +18,16 @@ public interface VoucherService {
 
     Discount createDiscount(VoucherRequest voucherRequest);
 
-    Optional<Discount> getDefaultBirthdayDiscount();
+    Discount getDefaultBirthdayDiscount();
 
     void checkAndGenerateBirthdayVoucher();
+
     void updateVoucher(Long voucherId, VoucherUpdateRequest request);
+
     void updateDefaultBirthdayDiscount(VoucherBirthdayUpdateRequest request);
+
     VoucherFullResponse getVoucherById(Long id);
+
     void setDefaultBirthdayDiscountPercentage(BigDecimal discountPercentage);
 
     VoucherApplyResponseWrapper validateAndCalculateDiscounts(BigDecimal subTotal, List<String> couponCodes, String email);
