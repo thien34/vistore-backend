@@ -99,6 +99,7 @@ public class OrderRequest {
         private BigDecimal discountAmount;
         private BigDecimal originalProductCost;
         private String attributeDescription;
+        private BigDecimal discountPrice;
     }
 
     @Data

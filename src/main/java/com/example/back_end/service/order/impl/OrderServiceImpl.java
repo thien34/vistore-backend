@@ -26,6 +26,7 @@ import com.example.back_end.entity.Ward;
 import com.example.back_end.infrastructure.constant.EnumAdaptor;
 import com.example.back_end.infrastructure.constant.OrderStatusType;
 import com.example.back_end.infrastructure.email.OrderEmailService;
+import com.example.back_end.infrastructure.exception.InvalidDataException;
 import com.example.back_end.infrastructure.exception.NotFoundException;
 import com.example.back_end.infrastructure.utils.PageUtils;
 import com.example.back_end.infrastructure.utils.ProductJsonConverter;
@@ -55,6 +56,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -83,6 +85,7 @@ public class OrderServiceImpl implements OrderService {
     OrderMapper orderMapper;
     OrderEmailService orderEmailService;
     CustomerRepository customerRepository;
+    private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
 
     @Override
     @Transactional
@@ -346,6 +349,21 @@ public class OrderServiceImpl implements OrderService {
 //        if (newQuantity < 0) {
 //            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
 //        }
+        if (product.getDiscountPrice() != null) {
+            BigDecimal expectedTotalPrice = product.getDiscountPrice()
+                    .multiply(BigDecimal.valueOf(request.getQuantity().doubleValue()))
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal actualPrice = request.getDiscountPrice()
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            if (expectedTotalPrice.subtract(actualPrice).abs().compareTo(TOLERANCE) > 0) {
+                throw new InvalidDataException(
+                        "Giá giảm của sản phẩm (Tên: " + product.getFullName() + ") đã bị thay đổi, vui lòng kiểm tra lại! "
+                                + "Giá dự kiến: " + expectedTotalPrice + ", Giá nhận được: " + actualPrice
+                );
+            }
+        }
         product.setQuantity(newQuantity);
         productRepository.save(product);
 

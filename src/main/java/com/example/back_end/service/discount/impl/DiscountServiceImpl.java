@@ -229,13 +229,32 @@ public class DiscountServiceImpl implements DiscountService {
 
         existingProductIds.stream()
                 .filter(productId -> !newProductIds.contains(productId))
-                .forEach(productId -> discountAppliedToProductRepository.deleteByDiscountIdAndProductId(id, productId));
+                .forEach(productId -> {
+                    discountAppliedToProductRepository.deleteByDiscountIdAndProductId(id, productId);
+                    resetProductDiscountPrice(productId);
+                });
 
         newProductIds.stream()
                 .filter(productId -> !existingProductIds.contains(productId))
-                .forEach(productId -> saveDiscountAppliedToProduct(discount, productId));
+                .forEach(productId -> {
+                    saveDiscountAppliedToProduct(discount, productId);
+                    updateProductDiscountPrice(productRepository.findById(productId)
+                            .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với id: " + productId)), discount);
+                });
+
+        newProductIds.forEach(productId -> {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm không được tìm thấy với id: " + productId));
+            updateProductDiscountPrice(product, discount);
+        });
     }
 
+    private void resetProductDiscountPrice(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new EntityNotFoundException("Sản phẩm không được tìm thấy với id: " + productId));
+        product.setDiscountPrice(null);
+        productRepository.save(product);
+    }
 
     private void saveDiscountAppliedToProduct(Discount discount, Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
