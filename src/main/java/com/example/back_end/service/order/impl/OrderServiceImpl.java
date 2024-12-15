@@ -191,7 +191,7 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
                 orderDetails.append(String.format(
-                        "<tr style='background-color: #ffffff;'><td style='padding: 8px; border: none;'>%s</td><td style='padding: 8px; border: none;'>%d</td><td style='padding: 8px; border: none;'>$%.2f</td></tr>",
+                        "<tr style='background-color: #ffffff;'><td style='padding: 8px; border: none;'>%s</td><td style='padding: 8px; border: none;'>%d</td><td style='padding: 8px; border: none;'>%.2f₫</td></tr>",
                         productName, item.getQuantity(), item.getUnitPrice()
                 ));
             });
