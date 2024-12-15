@@ -33,6 +33,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SalesServiceImpl implements SalesService {
+
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
@@ -69,6 +70,7 @@ public class SalesServiceImpl implements SalesService {
         Instant endOfWeek = startOfWeek.plus(7, ChronoUnit.DAYS);
         return getSalesResponse(startOfWeek, endOfWeek);
     }
+
     public SalesResponse getThisMonthSales() {
         Instant startOfMonth = LocalDate.now()
                 .withDayOfMonth(1)
@@ -81,6 +83,7 @@ public class SalesServiceImpl implements SalesService {
                 .toInstant();
         return getSalesResponse(startOfMonth, endOfMonth);
     }
+
     public SalesResponse getThisYearSales() {
         Instant startOfYear = LocalDate.now()
                 .withDayOfYear(1)
@@ -93,8 +96,9 @@ public class SalesServiceImpl implements SalesService {
                 .toInstant();
         return getSalesResponse(startOfYear, endOfYear);
     }
+
     @Override
-    public AllSalesResponse getAllSaless() {
+    public AllSalesResponse getAllSales() {
         SalesResponse todaySales = getTodaySales();
         SalesResponse weekSales = getWeekSales();
         SalesResponse monthSales = getThisMonthSales();
@@ -102,6 +106,7 @@ public class SalesServiceImpl implements SalesService {
         GrowthRateResponse growthRateResponse = getGrowthRate();
         return new AllSalesResponse(todaySales, weekSales, monthSales, yearSales, growthRateResponse);
     }
+
     private GrowthRate calculateGrowthRate(SalesResponse current, SalesResponse previous) {
         BigDecimal revenueGrowthRate = calculateGrowth(current.getTotalRevenue(), previous.getTotalRevenue());
         BigDecimal orderGrowthRate = calculateGrowth(new BigDecimal(current.getTotalInvoices()), new BigDecimal(previous.getTotalInvoices()));
@@ -109,12 +114,14 @@ public class SalesServiceImpl implements SalesService {
 
         return new GrowthRate(revenueGrowthRate, orderGrowthRate, productGrowthRate);
     }
+
     private BigDecimal calculateGrowth(BigDecimal current, BigDecimal previous) {
         if (previous.compareTo(BigDecimal.ZERO) == 0) {
             return current.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : BigDecimal.valueOf(100);
         }
         return current.subtract(previous).divide(previous, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
     }
+
     public GrowthRateResponse getGrowthRate() {
         SalesResponse todaySales = getTodaySales();
         SalesResponse weekSales = getWeekSales();
@@ -127,20 +134,17 @@ public class SalesServiceImpl implements SalesService {
 
         return new GrowthRateResponse(todayGrowthRate, weekGrowthRate, monthGrowthRate, yearGrowthRate);
     }
+
     private SalesResponse getPreviousSales(String period) {
-        switch (period) {
-            case "day":
-                return getYesterdaySales();
-            case "week":
-                return getLastWeekSales();
-            case "month":
-                return getLastMonthSales();
-            case "year":
-                return getLastYearSales();
-            default:
-                return new SalesResponse(0, BigDecimal.ZERO, 0, 0, 0);
-        }
+        return switch (period) {
+            case "day" -> getYesterdaySales();
+            case "week" -> getLastWeekSales();
+            case "month" -> getLastMonthSales();
+            case "year" -> getLastYearSales();
+            default -> new SalesResponse(0, BigDecimal.ZERO, 0, 0, 0);
+        };
     }
+
     private SalesResponse getLastMonthSales() {
         LocalDateTime lastMonth = LocalDateTime.now().minusMonths(1);
         Instant startOfLastMonth = lastMonth.toLocalDate().withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -148,6 +152,7 @@ public class SalesServiceImpl implements SalesService {
 
         return getSalesResponse(startOfLastMonth, endOfLastMonth);
     }
+
     private SalesResponse getLastYearSales() {
         LocalDateTime lastYear = LocalDateTime.now().minusYears(1);
         Instant startOfLastYear = lastYear.toLocalDate().withDayOfYear(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -155,6 +160,7 @@ public class SalesServiceImpl implements SalesService {
 
         return getSalesResponse(startOfLastYear, endOfLastYear);
     }
+
     private SalesResponse getYesterdaySales() {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         Instant startOfYesterday = yesterday.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -162,6 +168,7 @@ public class SalesServiceImpl implements SalesService {
 
         return getSalesResponse(startOfYesterday, endOfYesterday);
     }
+
     private SalesResponse getLastWeekSales() {
         LocalDateTime lastWeek = LocalDateTime.now().minusWeeks(1);
         Instant startOfLastWeek = lastWeek.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -169,6 +176,7 @@ public class SalesServiceImpl implements SalesService {
 
         return getSalesResponse(startOfLastWeek, endOfLastWeek);
     }
+
     @Override
     public DynamicResponse getSalesSummary(Instant startDate, Instant endDate) {
         if (startDate == null) {
@@ -235,7 +243,9 @@ public class SalesServiceImpl implements SalesService {
 
         return response;
     }
+
     private double calculatePercentage(long count, long total) {
         return total == 0 ? 0 : (double) count / total * 100;
     }
+
 }
