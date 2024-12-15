@@ -45,9 +45,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         for (ShoppingCartItem existingCartItem : existingCartItems) {
             if (existingCartItem.getProduct().getId().equals(product.getId())) {
                 int newQuantity = existingCartItem.getQuantity() + cartRequest.getQuantity();
-                if (newQuantity > product.getQuantity()) {
-                    throw new RuntimeException("Không thể thêm số lượng vượt quá số lượng tồn kho cho sản phẩm: " + product.getName());
-                }
+//                if (newQuantity > product.getQuantity()) {
+//                    throw new RuntimeException("Không thể thêm số lượng vượt quá số lượng tồn kho cho sản phẩm: " + product.getName());
+//                }
                 existingCartItem.setQuantity(newQuantity);
                 cartItemRepository.save(existingCartItem);
                 productExistsInCart = true;
