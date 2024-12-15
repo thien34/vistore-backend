@@ -103,6 +103,10 @@ public class OrderServiceImpl implements OrderService {
         Address address = resolveAddress(request);
         order.setShippingAddress(address);
         order.setCreatedDate(cartItemCreateDate);
+        if (order.getOrderDiscount().compareTo(order.getOrderSubtotal()) > 0) {
+            order.setOrderDiscount(order.getOrderSubtotal());
+            order.setOrderTotal(BigDecimal.ZERO);
+        }
         Order savedOrder = orderRepository.save(order);
 
         if (request.getIdVouchers() != null && !request.getIdVouchers().isEmpty()) {
