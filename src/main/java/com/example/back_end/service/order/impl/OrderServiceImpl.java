@@ -589,10 +589,11 @@ public class OrderServiceImpl implements OrderService {
         customerResponse.setLastName(customer.getLastName());
         customerResponse.setPhoneNumber(customerResponse.getPhoneNumber());
         customerResponse.setBillId(customerResponse.getBillId());
-//        customerResponse.setDelivery("Delivery");
+        customerResponse.setDelivery("Tại Quầy");
         customerResponse.setOrderStatusType((long) order.getOrderStatusId().value);
         customerResponse.setPaymentMethod((long) order.getPaymentMethodId().value);
         customerResponse.setPaymentStatusType((long) order.getPaymentStatusId().value);
+
 
         return customerResponse;
     }

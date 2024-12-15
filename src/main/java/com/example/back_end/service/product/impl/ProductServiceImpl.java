@@ -99,7 +99,8 @@ public class ProductServiceImpl implements ProductService {
                         request.getCategoryId(),
                         request.getManufacturerId(),
                         product.getId(),
-                        request.getAttributes());
+                        request.getAttributes(),
+                        request.getWeight());
 
                 while (checkIfSkuExists(sku)) {
                     sku = appendRandomSuffixToSku(sku);
@@ -511,12 +512,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String generateSku(String productName, Long categoryId, Long manufacturerId, Long productId,
-                               List<ProductRequest.ProductAttribute> attributes) {
+                               List<ProductRequest.ProductAttribute> attributes, BigDecimal weight) {
         String[] words = productName.split(" ");
         StringBuilder productCodeBuilder = new StringBuilder();
         for (String word : words) {
             if (!word.isEmpty())
                 productCodeBuilder.append(word.charAt(0));
+        }
+        if (weight != null) {
+            productCodeBuilder.append(weight.stripTrailingZeros().toPlainString());
         }
 
         List<String> skuParts = new ArrayList<>();

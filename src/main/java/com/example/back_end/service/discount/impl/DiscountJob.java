@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -29,8 +30,9 @@ public class DiscountJob {
                 .parallelStream()
                 .filter(discount -> discount.getEndDateUtc() != null)
                 .filter(discount -> discount.getDiscountTypeId().getId() == 1)
-                .filter(discount -> discount.getEndDateUtc().isBefore(now))
-                .filter(discount -> "ACTIVE".equals(discount.getStatus()))
+                .filter(discount ->
+                        discount.getEndDateUtc().truncatedTo(ChronoUnit.MINUTES).isBefore(now)
+                )                .filter(discount -> "ACTIVE".equals(discount.getStatus()))
                 .toList();
 
 
