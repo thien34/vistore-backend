@@ -67,4 +67,5 @@ public class CartController {
         shoppingCartService.updateQuantity(id, quantity);
         return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật số lượng thành công");
     }
+
 }

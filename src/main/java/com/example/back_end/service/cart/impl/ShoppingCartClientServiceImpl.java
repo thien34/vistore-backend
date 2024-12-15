@@ -43,6 +43,7 @@ public class ShoppingCartClientServiceImpl implements ShoppingCartClientService 
                 if (newQuantity > product.getQuantity()) {
                     throw new IllegalArgumentException("Không thể thêm nhiều hơn hàng có sẵn cho sản phẩm: " + product.getName());
                 }
+                existingCartItem.setQuantity(newQuantity);
                 cartItemRepository.save(existingCartItem);
                 productExistsInCart = true;
                 break;
