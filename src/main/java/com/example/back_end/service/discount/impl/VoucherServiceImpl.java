@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -126,9 +127,6 @@ public class VoucherServiceImpl implements VoucherService {
                     .isPublished(false)
                     .build();
             discountRepository.save(defaultDiscount);
-            log.info("Đã tạo giảm giá mặc định cho sinh nhật: {}", defaultDiscount);
-        } else {
-            log.info("Giảm giá mặc định sinh nhật đã tồn tại, không cần tạo mới.");
         }
     }
 
@@ -204,6 +202,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Transactional
     public void checkAndGenerateBirthdayVoucher() {
         LocalDate today = LocalDate.now();
+        String formattedToday = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         List<Customer> customers = customerRepository.findAllByBirthday(today);
 
         if (customers.isEmpty()) {
@@ -222,8 +221,8 @@ public class VoucherServiceImpl implements VoucherService {
         Instant endDate = startDate.plusSeconds(86400L * 5);
 
         VoucherRequest voucherRequest = VoucherRequest.builder()
-                .name("Voucher sinh nhật ngày " + today)
-                .couponCode("BDAY_" + today)
+                .name("Voucher sinh nhật ngày " + formattedToday)
+                .couponCode("BDAY" + formattedToday)
                 .discountPercentage(discountPercentage)
                 .discountAmount(discountAmount)
                 .startDateUtc(startDate)

@@ -16,6 +16,7 @@ public class OrderResponse {
     private String orderCode;
     private String billCode;
     private String customerName;
+    private BigDecimal orderSubtotal;
     private BigDecimal orderTotal;
     private BigDecimal orderShippingTotal;
     private BigDecimal orderDiscountTotal;
@@ -33,6 +34,7 @@ public class OrderResponse {
         response.setId(order.getId());
         response.setCustomerName(order.getCustomer().getFirstName() + " " + order.getCustomer().getLastName());
         response.setOrderCode(order.getOrderGuid().toString());
+        response.setOrderSubtotal(order.getOrderSubtotal());
         response.setOrderTotal(order.getOrderTotal());
         response.setPaidDateUtc(order.getPaidDateUtc());
         response.setBillCode(order.getBillCode());
