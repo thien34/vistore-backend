@@ -83,7 +83,6 @@ public class OrderServiceImpl implements OrderService {
     OrderMapper orderMapper;
     OrderEmailService orderEmailService;
     CustomerRepository customerRepository;
-    private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
 
     @Override
     @Transactional
@@ -695,9 +694,8 @@ public class OrderServiceImpl implements OrderService {
             client.setEmail(order.getCustomer().getEmail());
             client.setPhone(address.getPhoneNumber());
             invoiceData.setClient(client);
-        } else if (order.getCustomer().getId() == 1) {
+        } else {
             client.setName("Khách lẻ");
-
             invoiceData.setClient(client);
         }
 

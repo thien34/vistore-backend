@@ -222,17 +222,7 @@ public class VoucherServiceImpl implements VoucherService {
                 .requiresCouponCode(true)
                 .build();
 
-        Discount discount = createDiscount(voucherRequest);
-
-        List<CustomerVoucher> customerVouchers = customers.stream()
-                .map(customer -> CustomerVoucher.builder()
-                        .customer(customer)
-                        .discount(discount)
-                        .usageCountPerCustomer(0)
-                        .build())
-                .toList();
-
-        customerVoucherRepository.saveAll(customerVouchers);
+        createDiscount(voucherRequest);
     }
 
     @Override
@@ -317,6 +307,7 @@ public class VoucherServiceImpl implements VoucherService {
             CustomerVoucher customerVoucher = CustomerVoucher.builder()
                     .customer(customer)
                     .discount(discount)
+                    .usageCountPerCustomer(0)
                     .build();
             customerVoucherRepository.save(customerVoucher);
         }
