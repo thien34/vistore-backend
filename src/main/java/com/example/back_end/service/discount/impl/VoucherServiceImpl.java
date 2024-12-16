@@ -24,9 +24,7 @@ import com.example.back_end.service.discount.EmailService;
 import com.example.back_end.service.discount.VoucherService;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -39,29 +37,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Predicate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VoucherServiceImpl implements VoucherService {
-    private static final Random RANDOM = new Random();
-    private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    DiscountRepository discountRepository;
-    VoucherMapper voucherMapper;
-    CustomerRepository customerRepository;
-    CustomerVoucherRepository customerVoucherRepository;
-    EmailService emailService;
 
-    public static String generateVoucherCode(String prefix, Long id) {
-        StringBuilder randomPart = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            randomPart.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
-        }
-        return prefix + id + randomPart;
-    }
+    private final DiscountRepository discountRepository;
+    private final VoucherMapper voucherMapper;
+    private final CustomerRepository customerRepository;
+    private final CustomerVoucherRepository customerVoucherRepository;
+    private final EmailService emailService;
 
     public static void updateStatusVoucher(Discount discount, DiscountRepository discountRepository) {
         Instant now = Instant.now();
@@ -140,8 +127,8 @@ public class VoucherServiceImpl implements VoucherService {
         checkDuplicateCouponCode(voucherRequest.getCouponCode(), voucherRequest.getIsPublished());
         Discount discount = voucherMapper.toEntity(voucherRequest);
         validateDiscount(discount);
-        boolean checkCode= discountRepository.existsByCouponCode(voucherRequest.getCouponCode());
-        if(checkCode) {
+        boolean checkCode = discountRepository.existsByCouponCode(voucherRequest.getCouponCode());
+        if (checkCode) {
             throw new InvalidDataException("Mã code đã tồn tại !");
         }
 
@@ -212,29 +199,25 @@ public class VoucherServiceImpl implements VoucherService {
 
         Discount defaultDiscount = discountRepository.findByName("Birthday Default Discount")
                 .orElseThrow(() -> new NotFoundException("Giảm giá mặc định sinh nhật không tồn tại."));
-
-        BigDecimal discountPercentage = defaultDiscount.getDiscountPercentage();
-        BigDecimal discountAmount = defaultDiscount.getDiscountAmount();
-        boolean usePercentage = defaultDiscount.getUsePercentage();
-
         Instant startDate = Instant.now();
         Instant endDate = startDate.plusSeconds(86400L * 5);
 
         VoucherRequest voucherRequest = VoucherRequest.builder()
                 .name("Voucher sinh nhật ngày " + formattedToday)
                 .couponCode("BDAY" + formattedToday)
-                .discountPercentage(discountPercentage)
-                .discountAmount(discountAmount)
+                .discountPercentage(defaultDiscount.getDiscountPercentage())
+                .discountAmount(defaultDiscount.getDiscountAmount())
                 .startDateUtc(startDate)
                 .endDateUtc(endDate)
-                .limitationTimes(1)
+                .limitationTimes(customers.size())
+                .perCustomerLimit(1)
                 .comment("Happy birthday")
-                .isPublished(false)
-                .minOderAmount(BigDecimal.ZERO)
-                .isCumulative(false)
-                .maxDiscountAmount(BigDecimal.valueOf(100000))
+                .isPublished(defaultDiscount.getIsPublished())
+                .minOderAmount(defaultDiscount.getMinOderAmount())
+                .isCumulative(defaultDiscount.getIsCumulative())
+                .maxDiscountAmount(defaultDiscount.getMaxDiscountAmount())
                 .discountTypeId(DiscountType.ASSIGNED_TO_ORDER_TOTAL)
-                .usePercentage(usePercentage)
+                .usePercentage(defaultDiscount.getUsePercentage())
                 .selectedCustomerIds(customers.stream().map(Customer::getId).toList())
                 .requiresCouponCode(true)
                 .build();
@@ -250,19 +233,8 @@ public class VoucherServiceImpl implements VoucherService {
                 .toList();
 
         customerVoucherRepository.saveAll(customerVouchers);
-
-        if (usePercentage) {
-            log.info("Tạo 1 voucher sinh nhật áp dụng cho {} khách hàng với giảm giá {}%",
-                    customers.size(),
-                    discountPercentage);
-        } else {
-            log.info("Tạo 1 voucher sinh nhật áp dụng cho {} khách hàng với giảm giá {} VNĐ",
-                    customers.size(),
-                    discountAmount);
-        }
     }
 
-    @Transactional
     @Override
     public void setDefaultBirthdayDiscountPercentage(BigDecimal discountPercentage) {
         Discount defaultDiscount = discountRepository.findByName("Birthday Default Discount")
