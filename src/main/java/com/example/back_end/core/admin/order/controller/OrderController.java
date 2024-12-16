@@ -115,7 +115,7 @@ public class OrderController {
 
     @GetMapping("/invoice/{orderId}")
     public ResponseData<InvoiceData> getInvoice(@PathVariable Long orderId) {
-        return new ResponseData<>(HttpStatus.OK.value(),"Lấy hóa đơn thành công", orderService.getByOrderId(orderId));
+        return new ResponseData<>(HttpStatus.OK.value(), "Lấy hóa đơn thành công", orderService.getByOrderId(orderId));
     }
 
 
