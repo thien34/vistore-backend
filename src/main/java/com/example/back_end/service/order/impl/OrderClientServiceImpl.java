@@ -2,6 +2,7 @@ package com.example.back_end.service.order.impl;
 
 import com.example.back_end.core.admin.order.payload.OrderResponse;
 import com.example.back_end.entity.Customer;
+import com.example.back_end.entity.Order;
 import com.example.back_end.repository.CustomerRepository;
 import com.example.back_end.repository.OrderRepository;
 import com.example.back_end.service.order.OrderClientService;
@@ -19,10 +20,12 @@ public class OrderClientServiceImpl implements OrderClientService {
 
     @Override
     public List<OrderResponse> getOrders(Long customerId) {
+
         Customer customer = customerRepository.findById(customerId).orElseThrow();
-        return orderRepository.findOrderByCustomer(customer)
-                .stream()
-                .map(OrderResponse::fromOrder)
+
+        List<Order> orders = orderRepository.findOrderByCustomer(customer);
+        return orders.stream().map(OrderResponse::fromOrder)
+                .sorted((o1, o2) -> o2.getPaidDateUtc().compareTo(o1.getPaidDateUtc()))
                 .toList();
     }
 
