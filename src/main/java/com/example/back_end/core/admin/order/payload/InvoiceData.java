@@ -21,6 +21,8 @@ public class InvoiceData {
     private BigDecimal  subtotal;
     private BigDecimal discount;
     private BigDecimal  total;
+    private BigDecimal shipping;
+    private Boolean isShipping;
 
     @Data
     @AllArgsConstructor

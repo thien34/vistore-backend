@@ -156,7 +156,11 @@ public class OrderServiceImpl implements OrderService {
         }
 
         createOrderStatusHistory(savedOrder, cartItemCreateDate);
-        updateOrderStatusHistory(savedOrder, request.getOrderStatusId(), cartItemCreateDate);
+        boolean checkMode = request.getAddressRequest() != null && request.getPaymentMode() == 1 && (request.getPaymentMethodId() == 1 || request.getPaymentMethodId() == 0);
+        if (checkMode) {
+            updateOrderStatusHistory(savedOrder, OrderStatusType.PAID.value, cartItemCreateDate, true);
+        }
+        updateOrderStatusHistory(savedOrder, request.getOrderStatusId(), cartItemCreateDate, checkMode);
 
         if (request.getOrderItems() != null && !request.getOrderItems().isEmpty()) {
             List<OrderItem> orderItems = createOrderItems(request, savedOrder);
@@ -312,13 +316,13 @@ public class OrderServiceImpl implements OrderService {
         orderStatusHistoryRepository.save(statusHistory);
     }
 
-    private void updateOrderStatusHistory(Order order, Integer orderStatusId, LocalDateTime createdDate) {
+    private void updateOrderStatusHistory(Order order, Integer orderStatusId, LocalDateTime createdDate, boolean checkMode) {
         Instant instant = createdDate.atZone(ZoneId.systemDefault()).toInstant();
         OrderStatusType statusType = EnumAdaptor.valueOf(orderStatusId, OrderStatusType.class);
         OrderStatusHistory paidHistory = createOrderStatusHistory(order, statusType, instant);
         orderStatusHistoryRepository.save(paidHistory);
 
-        if (statusType == OrderStatusType.PAID) {
+        if (statusType == OrderStatusType.PAID && !checkMode) {
             OrderStatusHistory completedHistory = createOrderStatusHistory(order, OrderStatusType.COMPLETED, instant);
             orderStatusHistoryRepository.save(completedHistory);
         }
@@ -678,6 +682,7 @@ public class OrderServiceImpl implements OrderService {
         company.setPhone("+84 981 234 567");
         company.setEmail("vistore@vistore.com");
         invoiceData.setCompany(company);
+        invoiceData.setIsShipping(false);
 
         InvoiceData.Client client = new InvoiceData.Client();
         if (order.getShippingAddress() != null) {
@@ -685,7 +690,7 @@ public class OrderServiceImpl implements OrderService {
             client.setAddress(order.getShippingAddress().getAddressName());
             client.setEmail(order.getShippingAddress().getEmail());
             client.setPhone(order.getShippingAddress().getPhoneNumber());
-
+            invoiceData.setIsShipping(true);
             invoiceData.setClient(client);
         } else if (order.getCustomer().getId() != 1) {
             Address address = addressRepository.findByCustomerId(order.getCustomer().getId()).getFirst();
@@ -725,6 +730,7 @@ public class OrderServiceImpl implements OrderService {
         invoiceData.setSubtotal(order.getOrderSubtotal());
         invoiceData.setDiscount(order.getOrderDiscount());
         invoiceData.setTotal(order.getOrderTotal());
+        invoiceData.setShipping(order.getOrderShipping());
         return invoiceData;
     }
 
