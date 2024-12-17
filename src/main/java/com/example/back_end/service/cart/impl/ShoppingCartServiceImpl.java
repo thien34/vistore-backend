@@ -145,7 +145,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void updateQuantity(Long id, Integer quantity) {
 
         ShoppingCartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Không thể tìm thấy sản phẩm với ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Lỗi Khánh"));
 
         Integer oldQuantity = cartItem.getQuantity();
         Product product = productRepository.findById(cartItem.getProduct().getId())

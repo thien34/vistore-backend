@@ -351,9 +351,9 @@ public class OrderServiceImpl implements OrderService {
         Product product = findProductById(request.getProductId());
 
         int newQuantity = product.getQuantity() - request.getQuantity();
-//        if (newQuantity < 0) {
-//            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getId());
-//        }
+        if (newQuantity < 0 && !request.isCheckQuantity()) {
+            throw new RuntimeException("Không đủ hàng cho sản phẩm: " + product.getFullName());
+        }
 //        if (product.getDiscountPrice() != null) {
 //            BigDecimal expectedTotalPrice = product.getDiscountPrice()
 //                    .multiply(BigDecimal.valueOf(request.getQuantity().doubleValue()))

@@ -100,6 +100,7 @@ public class OrderRequest {
         private BigDecimal originalProductCost;
         private String attributeDescription;
         private BigDecimal discountPrice;
+        private boolean checkQuantity = false;
     }
 
     @Data
