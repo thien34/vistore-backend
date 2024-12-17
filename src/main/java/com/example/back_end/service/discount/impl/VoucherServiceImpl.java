@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -92,6 +93,7 @@ public class VoucherServiceImpl implements VoucherService {
                 filterRequest.getStatus(),
                 filterRequest.getIsPublished()
         );
+        discounts.sort(Comparator.comparing(Discount::getCreatedDate).reversed());
         discounts.forEach(this::updateVoucherStatus);
         return voucherMapper.toResponseList(discounts);
     }
