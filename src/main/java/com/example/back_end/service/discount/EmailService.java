@@ -9,10 +9,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +58,11 @@ public class EmailService {
             sendVoucherEmail(email, voucherCode, discountDetails, startDate, endDate, discountPercentage, discountAmount);
         }
     }
+    private String formatCurrency(BigDecimal amount) {
+        if (amount == null) return null;
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return currencyFormatter.format(amount);
+    }
     private String createEmailBody(
             String voucherCode,
             String discountDetails,
@@ -69,7 +76,7 @@ public class EmailService {
         if (discountPercentage != null) {
             discountInfo = "<strong>" + discountPercentage.stripTrailingZeros().toPlainString() + "% OFF</strong>";
         } else if (discountAmount != null) {
-            discountInfo = "<strong>" + discountAmount + " VNĐ</strong>";
+            discountInfo = "<strong>" + formatCurrency(discountAmount) + "</strong>";
         } else {
             discountInfo = "Không có thông tin giảm giá.";
         }

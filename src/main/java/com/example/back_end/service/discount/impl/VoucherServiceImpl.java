@@ -173,11 +173,17 @@ public class VoucherServiceImpl implements VoucherService {
                 .toList();
 
         try {
-            if (discountPercentage != null) {
-                emailService.sendVoucherEmails(customerEmails, voucherCode, discountDetails, startDate, endDate, discountPercentage, null);
+            BigDecimal validDiscountPercentage = (discountPercentage != null && discountPercentage.compareTo(BigDecimal.ZERO) > 0)
+                    ? discountPercentage
+                    : null;
+            BigDecimal validDiscountAmount = (discountAmount != null && discountAmount.compareTo(BigDecimal.ZERO) > 0)
+                    ? discountAmount
+                    : null;
+            if (validDiscountPercentage != null) {
+                emailService.sendVoucherEmails(customerEmails, voucherCode, discountDetails, startDate, endDate, validDiscountPercentage, null);
                 log.info("Email phiếu giảm giá với tỷ lệ phần trăm được gửi thành công.");
-            } else if (discountAmount != null) {
-                emailService.sendVoucherEmails(customerEmails, voucherCode, discountDetails, startDate, endDate, null, discountAmount);
+            } else if (validDiscountAmount != null) {
+                emailService.sendVoucherEmails(customerEmails, voucherCode, discountDetails, startDate, endDate, null, validDiscountAmount);
                 log.info("Email voucher với số tiền cố định được gửi thành công.");
             } else {
                 log.warn("Không tìm thấy tỷ lệ phần trăm chiết khấu và số tiền chiết khấu, không có email nào được gửi.");
@@ -185,6 +191,7 @@ public class VoucherServiceImpl implements VoucherService {
         } catch (MessagingException e) {
             log.error("Không gửi được email voucher.", e);
         }
+
     }
 
     @Scheduled(cron = "0 1 0 * * *")
