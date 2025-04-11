@@ -8,7 +8,7 @@ class BackEndApplicationTests {
 
     @Test
     void contextLoads() {
-        throw new RuntimeException("Test not implemented");
+        throw new RuntimeException("Test not implemented testttttt");
     }
 
 }
